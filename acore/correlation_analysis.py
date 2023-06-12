@@ -1,10 +1,10 @@
-import utils
+import acore.utils
 import numpy as np
 import pandas as pd
 from scipy import stats
 import pingouin as pg
 from scipy.special import betainc
-from multiple_testing import apply_pvalue_correction
+from acore.multiple_testing import apply_pvalue_correction
 import itertools
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
@@ -120,29 +120,9 @@ def calculate_rm_correlation(df, x, y, subject):
 
         result = calculate_rm_correlation(df, x='feature a', y='feature b', subject='subject')
     """
-    # ANCOVA model
-    cols = ["col0","col1", subject]
-    a = "col0"
-    b = "col1"
-    df.columns = cols
+    result = pg.rm_corr(data=df, x=x, y=y, subject=subject)
 
-    formula = b + ' ~ ' + 'C(' + subject + ') + ' + a
-    model = ols(formula, data=df).fit()
-    table = sm.stats.anova_lm(model, typ=3)
-    # Extract the sign of the correlation and dof
-    sign = np.sign(model.params[a])
-    dof = int(table.loc['Residual', 'df'])
-    # Extract correlation coefficient from sum of squares
-    ssfactor = table.loc[a, 'sum_sq']
-    sserror = table.loc['Residual', 'sum_sq']
-    rm = sign * np.sqrt(ssfactor / (ssfactor + sserror))
-    # Extract p-value
-    pvalue = table.loc[a, 'PR(>F)']
-    pvalue *= 0.5
-
-    #r, dof, pvalue, ci, power = pg.rm_corr(data=df, x=x, y=y, subject=subject)
-
-    return (x, y, rm, pvalue, dof)
+    return (x, y, result["r"].values[0], result["pval"].values[0], result["dof"].values[0])
 
 
 def run_rm_correlation(df, alpha=0.05, subject='subject', correction='fdr_bh'):

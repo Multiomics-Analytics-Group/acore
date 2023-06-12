@@ -1,5 +1,6 @@
 import pandas as pd
 from Bio import Entrez, Medline
+from urllib import error
 
 Entrez.email = 'kg@dtu.dk' # TODO: This should probably be changed to the email of the person installing ckg?
 

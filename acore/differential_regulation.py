@@ -1,12 +1,12 @@
 import re
-import utils
+import acore.utils
 import numpy as np
 import pandas as pd
 import pingouin as pg
 from statsmodels.formula.api import ols
 import scipy.stats
 import statsmodels.api as sm
-from multiple_testing import correct_pairwise_ttest, apply_pvalue_correction, get_max_permutations, apply_pvalue_permutation_fdrcorrection
+from acore.multiple_testing import correct_pairwise_ttest, apply_pvalue_correction, get_max_permutations, apply_pvalue_permutation_fdrcorrection
 
 def calculate_ttest(df, condition1, condition2, paired=False, is_logged=True, non_par=False, tail='two-sided',  correction='auto', r=0.707):
     """
@@ -39,10 +39,10 @@ def calculate_ttest(df, condition1, condition2, paired=False, is_logged=True, no
 
     test = 't-Test'
     if not non_par:
-        result = pg.ttest(group1, group2, paired, tail, correction, r)
+        result = pg.ttest(df[condition1], df[condition2], paired=paired, alternative=tail, correction=correction, r=r)
     else:
         test = 'Mann Whitney'
-        result = pg.mwu(group1, group2, tail=tail)
+        result = pg.mwu(group1, group2, alternative=tail)
 
     if 'T' in result.columns:
         t = result['T'].values[0]
@@ -69,8 +69,8 @@ def calculate_THSD(df, column, group='group', alpha=0.05, is_logged=True):
         result = calculate_THSD(df, column='HBG2~P69892', group='group', alpha=0.05)
     """
     posthoc = None
-    posthoc = pg.pairwise_tukey(data=df, dv=column, between=group, alpha=alpha, tail='two-sided')
-    posthoc.columns = ['group1', 'group2', 'mean(group1)', 'mean(group2)', 'log2FC', 'std_error', 'tail', 't-statistics', 'posthoc pvalue', 'effsize']
+    posthoc = pg.pairwise_tukey(data=df, dv=column, between=group)
+    posthoc.columns = ['group1', 'group2', 'mean(group1)', 'mean(group2)', 'log2FC', 'std_error', 't-statistics', 'posthoc pvalue', 'effsize']
     posthoc['efftype'] = 'hedges'
     posthoc = complement_posthoc(posthoc, identifier=column, is_logged=is_logged)
 
