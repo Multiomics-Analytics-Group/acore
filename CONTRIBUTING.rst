@@ -8,7 +8,7 @@ little bit helps, and credit will always be given.
 Bug reports
 ===========
 
-When `reporting a bug <https://github.com/albsantosdel/acore/issues>`_ please include:
+When `reporting a bug <https://github.com/Multiomics-Analytics-Group/acore/issues>`_ please include:
 
     * Your operating system name and version.
     * Any details about your local setup that might be helpful in troubleshooting.
@@ -24,7 +24,7 @@ articles, and such.
 Feature requests and feedback
 =============================
 
-The best way to send feedback is to file an issue at https://github.com/albsantosdel/acore/issues.
+The best way to send feedback is to file an issue at https://github.com/Multiomics-Analytics-Group/acore/issues.
 
 If you are proposing a feature:
 
@@ -37,7 +37,7 @@ Development
 
 To set up `acore` for local development:
 
-1. Fork `acore <https://github.com/albsantosdel/acore>`_
+1. Fork `acore <https://github.com/Multiomics-Analytics-Group/acore>`_
    (look for the "Fork" button).
 2. Clone your fork locally::
 
@@ -72,14 +72,3 @@ For merging, you should:
 2. Update documentation when there's new API, functionality etc.
 3. Add a note to ``CHANGELOG.rst`` about the changes.
 4. Add yourself to ``AUTHORS.rst``.
-
-Tips
-----
-
-To run a subset of tests::
-
-    tox -e envname -- pytest -k test_myfeature
-
-To run all the test environments in *parallel*::
-
-    tox -p auto

@@ -19,9 +19,9 @@ Overview
     :target: https://acore.readthedocs.io/
     :alt: Documentation Status
 
-.. |github-actions| image:: https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/github-actions.yml/badge.svg
-    :alt: GitHub Actions Build Status
-    :target: https://github.com/Multiomics-Analytics-Group/acore/actions
+.. |Pylint| image:: https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/pylint.yml/badge.svg
+    :alt: GitHub Actions Pylint Status
+    :target: https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/pylint.yml
 
 .. |codecov| image:: https://codecov.io/gh/Multiomics-Analytics-Group/acore/branch/main/graphs/badge.svg?branch=main
     :alt: Coverage Status
@@ -42,12 +42,6 @@ Overview
 .. |supported-implementations| image:: https://img.shields.io/pypi/implementation/acore.svg
     :alt: Supported implementations
     :target: https://pypi.org/project/acore
-
-.. |commits-since| image:: https://img.shields.io/github/commits-since/Multiomics-Analytics-Group/acore/v0.1.0.svg
-    :alt: Commits since latest release
-    :target: https://github.com/Multiomics-Analytics-Group/acore/compare/v0.1.0...main
-
-
 
 .. end-badges
 
@@ -79,21 +73,4 @@ Development
 
 To run all the tests run::
 
-    tox
-
-Note, to combine the coverage data from all the tox environments run:
-
-.. list-table::
-    :widths: 10 90
-    :stub-columns: 1
-
-    - - Windows
-      - ::
-
-            set PYTEST_ADDOPTS=--cov-append
-            tox
-
-    - - Other
-      - ::
-
-            PYTEST_ADDOPTS=--cov-append tox
+    pytest 

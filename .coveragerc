@@ -1,0 +1,16 @@
+[paths]
+source =
+   acore
+   */site-packages
+
+[run]
+branch = true
+source =
+    acore
+    tests
+parallel = true
+
+[report]
+show_missing = true
+precision = 2
+omit = *migrations*
