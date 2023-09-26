@@ -10,11 +10,11 @@ Overview
     * - docs
       - |docs|
     * - tests
-      - | |github-actions|
+      - | |Pylint|
         | |codecov|
     * - package
       - | |version| |wheel| |supported-versions| |supported-implementations|
-        | |commits-since|
+      
 .. |docs| image:: https://readthedocs.org/projects/acore/badge/?style=flat
     :target: https://acore.readthedocs.io/
     :alt: Documentation Status
