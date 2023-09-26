@@ -19,13 +19,13 @@ Overview
     :target: https://acore.readthedocs.io/
     :alt: Documentation Status
 
-.. |github-actions| image:: https://github.com/albsantosdel/acore/actions/workflows/github-actions.yml/badge.svg
+.. |github-actions| image:: https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/github-actions.yml/badge.svg
     :alt: GitHub Actions Build Status
-    :target: https://github.com/albsantosdel/acore/actions
+    :target: https://github.com/Multiomics-Analytics-Group/acore/actions
 
-.. |codecov| image:: https://codecov.io/gh/albsantosdel/acore/branch/main/graphs/badge.svg?branch=main
+.. |codecov| image:: https://codecov.io/gh/Multiomics-Analytics-Group/acore/branch/main/graphs/badge.svg?branch=main
     :alt: Coverage Status
-    :target: https://app.codecov.io/github/albsantosdel/acore
+    :target: https://app.codecov.io/github/Multiomics-Analytics-Group/acore
 
 .. |version| image:: https://img.shields.io/pypi/v/acore.svg
     :alt: PyPI Package latest release
@@ -43,9 +43,9 @@ Overview
     :alt: Supported implementations
     :target: https://pypi.org/project/acore
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/albsantosdel/acore/v0.1.0.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/Multiomics-Analytics-Group/acore/v0.1.0.svg
     :alt: Commits since latest release
-    :target: https://github.com/albsantosdel/acore/compare/v0.1.0...main
+    :target: https://github.com/Multiomics-Analytics-Group/acore/compare/v0.1.0...main
 
 
 
@@ -64,7 +64,7 @@ Installation
 
 You can also install the in-development version with::
 
-    pip install https://github.com/albsantosdel/acore/archive/main.zip
+    pip install https://github.com/Multiomics-Analytics-Group/acore/archive/main.zip
 
 
 Documentation
