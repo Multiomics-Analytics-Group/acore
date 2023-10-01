@@ -19,9 +19,9 @@ Analytics Core
     :target: https://acore.readthedocs.io/
     :alt: Documentation Status
 
-.. |Pylint| image:: https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/pylint.yml/badge.svg
-    :alt: GitHub Actions Pylint Status
-    :target: https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/pylint.yml
+.. |Pylint| image:: https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/tox-gha.yml/badge.svg
+    :alt: GitHub Actions Tox Status
+    :target: https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/tox.yml
 
 .. |version| image:: https://img.shields.io/pypi/v/acore.svg
     :alt: PyPI Package latest release
