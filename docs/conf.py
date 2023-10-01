@@ -20,6 +20,8 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath( '../acore'))
+sys.path.insert(0, os.path.abspath( '../tests'))
 
 import acore
 
@@ -31,8 +33,28 @@ import acore
 # needs_sphinx = '1.0'
 
 # Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
+# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
+# ones.
+extensions = [
+    'sphinx.ext.autosectionlabel',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.todo',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.coverage',
+    'sphinx.ext.imgmath',
+    'sphinx.ext.ifconfig',
+    'sphinx.ext.viewcode',
+    'recommonmark',
+    'nbsphinx',
+    'rst2pdf.pdfbuilder'
+]
+
+autodoc_mock_imports = ['pandas', 'numpy', 'scipy', 'matplotlib', 'h5py', 'rpy2',
+                        'sklearn', 'lifelines', 'autograd', 'umap', 'numba', 'pingouin',
+                        'seaborn', 'fancyimpute', 'cvxpy', 'kmapper', 'statsmodels']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
