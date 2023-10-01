@@ -23,10 +23,9 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
     ],
     description="A Python package with statistical functions to analyse multimodal molecular data",
     entry_points={
@@ -43,7 +42,7 @@ setup(
     packages=find_packages(include=['acore', 'acore.*']),
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/albsantosdel/acore',
+    url='https://github.com/Multiomics-Analytics-Group/acore',
     version='0.1.0',
     zip_safe=False,
 )
