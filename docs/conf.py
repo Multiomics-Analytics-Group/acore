@@ -56,6 +56,22 @@ autodoc_mock_imports = ['pandas', 'numpy', 'scipy', 'matplotlib', 'h5py', 'rpy2'
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
+# If true, the current module name will be prepended to all description
+# unit titles (such as .. function::).
+add_module_names = False
+
+autosectionlabel_prefix_document = True
+
+## Include Python objects as they appear in source files
+## Default: alphabetically ('alphabetical')
+autodoc_member_order = 'bysource'
+## Default flags used by autodoc directives
+autodoc_default_options = {'members': True,
+                            'show-inheritance': True,
+                            'undoc-members': True}
+## Generate autodoc stubs with summaries from code
+autosummary_generate = True
+
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
@@ -67,8 +83,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'acore'
-copyright = "2023, Alberto Santos Delgado"
-author = "Alberto Santos Delgado"
+copyright = "2023, Multi-omics Network Analytics Group"
+author = "Multi-omics Network Analytics Group"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -84,7 +100,7 @@ release = acore.__version__
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -149,7 +165,7 @@ latex_elements = {
 latex_documents = [
     (master_doc, 'acore.tex',
      'Analytics Core Documentation',
-     'Alberto Santos Delgado', 'manual'),
+     'Multi-omics Network Analytics Group', 'manual'),
 ]
 
 
