@@ -1,54 +1,49 @@
-# builtin
-import setuptools
+#!/usr/bin/env python
 
-def get_long_description():
-    with open("README.md", "r") as readme_file:
-        long_description = readme_file.read()
-    return long_description
+"""The setup script."""
 
+from setuptools import setup, find_packages
 
-def get_requirements():
-    with open('requirements.txt') as f:
-        required = f.read().splitlines()
-    return required
-    
+with open('README.rst') as readme_file:
+    readme = readme_file.read()
 
-def create_pip_wheel():
-    requirements = get_requirements()
-    setuptools.setup(
-        name="acore",
-        version="0.1.0",
-        license="MIT",
-        description="An open-source Python package for Statistical Analysis of Omics datasets",
-        long_description=get_long_description(),
-        long_description_content_type="text/markdown",
-        author="Multi-omics Network Analytics lab",
-        author_email="albsad@dtu.dk",
-        url="",
-        project_urls={
-            "Multi-omics Network Analytics": "",
-            "GitHub": "",
-            "ReadTheDocs": "",
-            "PyPi": "",
-            "Scientific paper": "https://www.nature.com/articles/s41587-021-01145-6",
-        },
-        keywords=["statistics", "bioinformatics", "multi-omics",],
-        classifiers=[
-            "Intended Audience :: Science/Research",
-            "License :: OSI Approved :: MIT License",
-            "Operating System :: OS Independent",
-            "Programming Language :: Python :: 3",
-            "Topic :: Scientific :: Bioinformatics",
+with open('HISTORY.rst') as history_file:
+    history = history_file.read()
+
+requirements = ['Click>=7.0', ]
+
+test_requirements = ['pytest>=3', ]
+
+setup(
+    author="Alberto Santos Delgado",
+    author_email='albsad@dtu.dk',
+    python_requires='>=3.6',
+    classifiers=[
+        'Development Status :: 2 - Pre-Alpha',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Natural Language :: English',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+    ],
+    description="A Python package with statistical functions to analyse multimodal molecular data",
+    entry_points={
+        'console_scripts': [
+            'acore=acore.cli:main',
         ],
-        packages=[
-            "acore",
-        ],
-        include_package_data=True,
-        entry_points={},
-        install_requires=requirements,
-        python_requires=">=3.9,<4",
-    )
-
-
-if __name__ == "__main__":
-    create_pip_wheel()
+    },
+    install_requires=requirements,
+    license="GNU General Public License v3",
+    long_description=readme + '\n\n' + history,
+    include_package_data=True,
+    keywords='acore',
+    name='acore',
+    packages=find_packages(include=['acore', 'acore.*']),
+    test_suite='tests',
+    tests_require=test_requirements,
+    url='https://github.com/albsantosdel/acore',
+    version='0.1.0',
+    zip_safe=False,
+)

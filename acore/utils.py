@@ -2,6 +2,7 @@ from collections.abc import Iterable
 import numpy as np
 import pandas as pd
 
+
 def convertToEdgeList(data, cols):
     """
     This function converts a pandas dataframe to an edge list where index becomes the source nodes and columns the target nodes.
@@ -15,6 +16,7 @@ def convertToEdgeList(data, cols):
     edge_list.columns = cols
 
     return edge_list
+
 
 def check_is_paired(df, subject, group):
     """
@@ -108,7 +110,6 @@ def transform_into_long_format(data, drop_columns, group, columns=['name', 'y'])
     return long_data
 
 
-
 def remove_group(data):
     """
     Removes column with label 'group'.
@@ -122,8 +123,6 @@ def remove_group(data):
     """
     data.drop(['group'], axis=1)
     return data
-
-
 
 
 def calculate_fold_change(df, condition1, condition2):
@@ -159,7 +158,7 @@ def calculate_fold_change(df, condition1, condition2):
     return fold_change
 
 
-def pooled_standard_deviation(sample1,sample2, ddof):
+def pooled_standard_deviation(sample1, sample2, ddof):
     """
     Calculates the pooled standard deviation.
     For more information visit https://www.hackdeploy.com/learn-what-is-statistical-power-with-python/.
@@ -168,16 +167,16 @@ def pooled_standard_deviation(sample1,sample2, ddof):
     :param array sample2: numpy array with values for second group
     :param int ddof: degrees of freedom
     """
-    #calculate the sample size
+    # calculate the sample size
     n1, n2 = len(sample1), len(sample2)
-    #calculate the variances
+    # calculate the variances
     var1, var2 = np.var(sample1, ddof=1), np.var(sample2, ddof=ddof)
-    #calculate the pooled standard deviation
-    numerator = ((n1-1) * var1) + ((n2-1) * var2)
-    denominator = n1+n2-2
-    return np.sqrt(numerator/denominator)
+    # calculate the pooled standard deviation
+    numerator = ((n1 - 1) * var1) + ((n2 - 1) * var2)
+    denominator = n1 + n2 - 2
+    return np.sqrt(numerator / denominator)
 
-#
+
 def cohens_d(sample1, sample2, ddof):
     """
     Calculates Cohen's d effect size based on the distance between two means, measured in standard deviations.
@@ -193,7 +192,7 @@ def cohens_d(sample1, sample2, ddof):
     return ((u1 - u2) / s_pooled)
 
 
-def hedges_g(df, condition1, condition2, ddof = 0):
+def hedges_g(df, condition1, condition2, ddof=0):
     """
     Calculates Hedges’ g effect size (more accurate for sample sizes below 20 than Cohen's d).
     For more information visit https://docs.scipy.org/doc/numpy/reference/generated/numpy.nanstd.html.
@@ -220,24 +219,24 @@ def hedges_g(df, condition1, condition2, ddof = 0):
     else:
         group2 = group2.values
 
-
     ng1 = group1.size
     ng2 = group2.size
-    dof = ng1 + ng2 - 2
+    # dof = ng1 + ng2 - 2
     if np.isnan(group1).all() or np.isnan(group2).all():
         g = np.nan
     else:
         meang1 = np.nanmean(group1)
         meang2 = np.nanmean(group2)
-        sdpooled = np.nanstd(np.concatenate([group1, group2]), ddof = ddof)
+        sdpooled = np.nanstd(np.concatenate([group1, group2]), ddof=ddof)
 
-        #Correct bias small sample size
-        if ng1+ng2 < 50:
-            g = ((meang1 - meang2) / sdpooled) * ((ng1+ng2-3) / (ng1+ng2-2.25)) * np.sqrt((ng1+ng2-2) / (ng1+ng2))
+        # Correct bias small sample size
+        if ng1 + ng2 < 50:
+            g = ((meang1 - meang2) / sdpooled) * ((ng1 + ng2 - 3) / (ng1 + ng2 - 2.25)) * np.sqrt((ng1 + ng2 - 2) / (ng1 + ng2))
         else:
             g = ((meang1 - meang2) / sdpooled)
 
     return g
+
 
 def unit_vector(vector):
     """
@@ -289,12 +288,10 @@ def append_to_list(mylist, myappend):
     else:
         mylist.append(myappend)
 
-#
+
 def generator_to_dict(genvar):
     dictvar = {}
     for i, gen in enumerate(genvar):
         dictvar.update({n: i for n in gen})
 
     return dictvar
-
-

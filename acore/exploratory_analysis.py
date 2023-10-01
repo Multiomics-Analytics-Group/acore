@@ -57,6 +57,7 @@ def get_coefficient_variation(data, drop_columns, group, columns=['name', 'y']):
 
     return cvs_df
 
+
 def extract_number_missing(data, min_valid, drop_cols=['sample'], group='group'):
     """
     Counts how many valid values exist in each column and filters column labels with more valid values than the minimum threshold defined.
@@ -75,8 +76,9 @@ def extract_number_missing(data, min_valid, drop_cols=['sample'], group='group')
         groups = data.loc[:, data.notnull().sum(axis=0) >= min_valid]
     else:
         groups = data.copy()
-        groups = groups.drop(drop_cols, axis=1)
-        groups = groups.set_index(group).notnull().groupby(level=0).sum(axis=1)
+        if len(set(drop_cols).intersection(groups.columns.tolist())) == len(drop_cols):
+            groups = groups.drop(drop_cols, axis=1)
+        groups = groups.set_index(group).notnull().groupby(level=0).sum()
         groups = groups[groups >= min_valid]
 
     groups = groups.dropna(how='all', axis=1)
@@ -141,7 +143,7 @@ def run_pca(data, drop_cols=['sample', 'subject'], group='group', annotation_col
     if not data.empty:
         df = data.copy()
         annotations = pd.DataFrame()
-        if annotation_cols is not None: 
+        if annotation_cols is not None:
             if len(list(set(annotation_cols).intersection(data.columns))) > 0:
                 annotations = data.set_index(group)[annotation_cols]
         drop_cols_int = list(set(drop_cols).intersection(df.columns))
@@ -154,37 +156,36 @@ def run_pca(data, drop_cols=['sample', 'subject'], group='group', annotation_col
         if dropna:
             df = df.dropna(axis=1)
         X = df.values
-        
-        
+
         if X.size > 0 and X.shape[1] > components:
             pca = PCA(n_components=components)
             X = pca.fit_transform(X)
             var_exp = pca.explained_variance_ratio_
             loadings = pd.DataFrame(pca.components_.transpose())
             loadings.index = df.columns
-            values = {index:np.sqrt(np.power(row, 2).sum()) for index, row in loadings.iterrows()}
+            values = {index: np.sqrt(np.power(row, 2).sum()) for index, row in loadings.iterrows()}
             loadings['value'] = loadings.index.map(values.get)
             loadings = loadings.sort_values(by='value', ascending=False)
-            args = {"x_title":"PC1"+" ({0:.2f})".format(var_exp[0]),"y_title":"PC2"+" ({0:.2f})".format(var_exp[1]), 'group':'group'}
+            args = {"x_title": "PC1" + " ({0:.2f})".format(var_exp[0]), "y_title": "PC2" + " ({0:.2f})".format(var_exp[1]), 'group': 'group'}
             if components == 2:
-                resultDf = pd.DataFrame(X, index = y, columns = ["x","y"])
+                resultDf = pd.DataFrame(X, index=y, columns=["x", "y"])
                 resultDf = resultDf.assign(**annotations)
                 resultDf = resultDf.reset_index()
                 resultDf.columns = ["group", "x", "y"] + annotation_cols
 
                 loadings.columns = ['x', 'y', 'value']
             if components > 2:
-                args.update({"z_title":"PC3"+" ({0:.2f})".format(var_exp[2])})
-                resultDf = pd.DataFrame(X, index = y)
+                args.update({"z_title": "PC3" + " ({0:.2f})".format(var_exp[2])})
+                resultDf = pd.DataFrame(X, index=y)
                 resultDf = resultDf.assign(**annotations)
                 resultDf = resultDf.reset_index()
                 pca_cols = []
                 loading_cols = []
-                if components>3:
+                if components > 3:
                     pca_cols = [str(i) for i in resultDf.columns[4:]]
                     loading_cols = [str(i) for i in loadings.columns[3:]]
 
-                resultDf.columns = ["group", "x", "y", "z"]  + pca_cols
+                resultDf.columns = ["group", "x", "y", "z"] + pca_cols
                 loadings.columns = ['x', 'y', 'z'] + loading_cols
 
     return (resultDf, loadings, var_exp), args
@@ -227,17 +228,17 @@ def run_tsne(data, drop_cols=['sample', 'subject'], group='group', annotation_co
     if X.size > 0:
         tsne = TSNE(n_components=components, verbose=0, perplexity=perplexity, n_iter=n_iter, init=init)
         X = tsne.fit_transform(X)
-        args = {"x_title":"C1","y_title":"C2"}
+        args = {"x_title": "C1", "y_title": "C2"}
         if components == 2:
-            resultDf = pd.DataFrame(X, index = y, columns = ["x","y"])
+            resultDf = pd.DataFrame(X, index=y, columns=["x", "y"])
             resultDf = resultDf.reset_index()
             resultDf.columns = ["group", "x", "y"]
         if components > 2:
-            args.update({"z_title":"C3"})
-            resultDf = pd.DataFrame(X, index = y)
+            args.update({"z_title": "C3"})
+            resultDf = pd.DataFrame(X, index=y)
             resultDf = resultDf.reset_index()
             cols = []
-            if len(components)>4:
+            if len(components) > 4:
                 cols = resultDf.columns[4:]
             resultDf.columns = ["group", "x", "y", "z"] + cols
         resultDf = resultDf.join(annotations)
@@ -282,13 +283,13 @@ def run_umap(data, drop_cols=['sample', 'subject'], group='group', annotation_co
             annotations = data[annotation_cols]
 
     if X.size:
-        X = umap.UMAP(n_neighbors=10, min_dist=0.3, metric= metric).fit_transform(X)
-        args = {"x_title":"C1","y_title":"C2"}
-        resultDf = pd.DataFrame(X, index = y)
+        X = umap.UMAP(n_neighbors=10, min_dist=0.3, metric=metric).fit_transform(X)
+        args = {"x_title": "C1", "y_title": "C2"}
+        resultDf = pd.DataFrame(X, index=y)
         resultDf = resultDf.reset_index()
         cols = []
-        if len(resultDf.columns)>3:
-                cols = resultDf.columns[3:]
+        if len(resultDf.columns) > 3:
+            cols = resultDf.columns[3:]
         resultDf.columns = ["group", "x", "y"] + cols
         resultDf = resultDf.join(annotations)
         result['umap'] = resultDf

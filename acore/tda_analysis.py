@@ -2,9 +2,9 @@ import numpy as np
 import kmapper as km
 from sklearn import ensemble, cluster
 
-def run_mapper(data, lenses=["l2norm"], n_cubes = 15, overlap=0.5, n_clusters=3, linkage="complete", affinity="correlation"):
-    """
 
+def run_mapper(data, lenses=["l2norm"], n_cubes=15, overlap=0.5, n_clusters=3, linkage="complete", affinity="correlation"):
+    """
 
     :param data:
     :param lenses:
@@ -16,8 +16,9 @@ def run_mapper(data, lenses=["l2norm"], n_cubes = 15, overlap=0.5, n_clusters=3,
     :return:
 
     """
+
     X = data._get_numeric_data()
-    labels ={i:data.index[i] for i in range(len(data.index))}
+    labels = {i: data.index[i] for i in range(len(data.index))}
 
     model = ensemble.IsolationForest(random_state=1729)
     model.fit(X)
@@ -32,11 +33,7 @@ def run_mapper(data, lenses=["l2norm"], n_cubes = 15, overlap=0.5, n_clusters=3,
 
     # Define the simplicial complex
     simplicial_complex = mapper.map(lens,
-                      X,
-                      nr_cubes=n_cubes,
-                      overlap_perc=overlap,
-                      clusterer=cluster.AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage, affinity=affinity))
+                                    X,
+                                    clusterer=cluster.AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage, affinity=affinity))
 
-
-
-    return simplicial_complex, {"labels":labels}
+    return simplicial_complex, {"labels": labels}

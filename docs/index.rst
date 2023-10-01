@@ -1,21 +1,20 @@
-========
-Contents
-========
+Welcome to acore's documentation!
+======================================
 
 .. toctree::
    :maxdepth: 2
+   :caption: Contents:
 
    readme
    installation
    usage
-   reference/index
+   modules
    contributing
    authors
-   changelog
+   history
 
 Indices and tables
 ==================
-
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`

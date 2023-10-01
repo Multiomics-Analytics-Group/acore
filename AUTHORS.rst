@@ -1,5 +1,13 @@
-
-Authors
+=======
+Credits
 =======
 
-* Alberto Santos Delgado - https://multiomics-analytics-group.github.io/
+Development Lead
+----------------
+
+* Alberto Santos Delgado <albsad@dtu.dk>
+
+Contributors
+------------
+
+None yet. Why not be the first?

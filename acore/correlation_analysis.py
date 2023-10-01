@@ -1,13 +1,12 @@
-import acore.utils
+import itertools
 import numpy as np
 import pandas as pd
 from scipy import stats
 import pingouin as pg
 from scipy.special import betainc
+import acore.utils as utils
 from acore.multiple_testing import apply_pvalue_correction
-import itertools
-import statsmodels.api as sm
-from statsmodels.formula.api import ols
+
 
 def calculate_correlations(x, y, method='pearson'):
     """
@@ -47,9 +46,9 @@ def run_correlation(df, alpha=0.05, subject='subject', group='group', method='pe
         result = run_correlation(df, alpha=0.05, subject='subject', group='group', method='pearson', correction='fdr_bh')
     """
     correlation = pd.DataFrame()
-    #ToDo
-    #The Repeated measurements correlation calculation is too time consuming so it only runs if
-    #the number of features is less than 200
+    # ToDo
+    # The Repeated measurements correlation calculation is too time consuming so it only runs if
+    # the number of features is less than 200
     if utils.check_is_paired(df, subject, group):
         if len(df[subject].unique()) > 2:
             if len(df.columns) < 200:
@@ -62,7 +61,7 @@ def run_correlation(df, alpha=0.05, subject='subject', group='group', method='pe
             pdf = pd.DataFrame(p, index=df.columns, columns=df.columns)
             correlation = utils.convertToEdgeList(rdf, ["node1", "node2", "weight"])
             pvalues = utils.convertToEdgeList(pdf, ["node1", "node2", "pvalue"])
-            correlation = pd.merge(correlation, pvalues, on=['node1','node2'])
+            correlation = pd.merge(correlation, pvalues, on=['node1', 'node2'])
 
             rejected, padj = apply_pvalue_correction(correlation["pvalue"].tolist(), alpha=alpha, method=correction)
             correlation["padj"] = padj
@@ -70,11 +69,11 @@ def run_correlation(df, alpha=0.05, subject='subject', group='group', method='pe
             correlation = correlation[correlation.rejected]
             correlation["pvalue"] = correlation["pvalue"].apply(lambda x: str(round(x, 5)))
             correlation["padj"] = correlation["padj"].apply(lambda x: str(round(x, 5)))
-    
+
     return correlation
 
 
-def run_multi_correlation(df_dict, alpha=0.05, subject='subject', on=['subject', 'biological_sample'] , group='group', method='pearson', correction='fdr_bh'):
+def run_multi_correlation(df_dict, alpha=0.05, subject='subject', on=['subject', 'biological_sample'], group='group', method='pearson', correction='fdr_bh'):
     """
     This function merges all input dataframes and calculates pairwise correlations for all columns.
 
@@ -147,7 +146,7 @@ def run_rm_correlation(df, alpha=0.05, subject='subject', correction='fdr_bh'):
         df = df.reset_index()
         for x, y in combinations:
             row = [x, y]
-            subset = df[[x,y, subject]]
+            subset = df[[x, y, subject]]
             row.extend(pg.rm_corr(subset, x, y, subject).values.tolist()[0])
             rows.append(row)
 

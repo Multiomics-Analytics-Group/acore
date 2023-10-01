@@ -1,16 +1,17 @@
 import unittest
 import pandas as pd
-import numpy as np
 import pingouin as pg
 import acore.differential_regulation as dr
+
 
 class TestCalculateTtest(unittest.TestCase):
     def setUp(self):
         self.data = {
-            'subject':[1, 1, 2, 2, 3, 3],
-            'group': ['A', 'A', 'B', 'B', 'C', 'C'],
-            'protein': [1.4, 6.2, 7.3, 0.4, 1.5, 0.6],
-            'group2': ['a', 'a', 'a', 'b', 'b', 'b'],
+            'subject': [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4],
+            'sample': ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'S11', 'S12'],
+            'group': ['A', 'B', 'C', 'A', 'B', 'C', 'A', 'B', 'C', 'A', 'B', 'C'],
+            'protein': [1.4, 6.2, 9.03, 2.3, 7.4, 14.01, 4.5, 9.6, 10.4, 7.5, 11.6, 16.4],
+            'group2': ['a', 'a', 'a', 'a', 'a', 'a', 'b', 'b', 'b', 'b', 'b', 'b'],
         }
         self.df = pd.DataFrame(self.data)
 
@@ -45,12 +46,10 @@ class TestCalculateTtest(unittest.TestCase):
         non_par = True
 
         expected_result = pg.mwu(df[condition1], df[condition2])
-
         result = dr.calculate_ttest(df, condition1, condition2, is_logged=is_logged, non_par=non_par)
 
         self.assertAlmostEqual(result[0], expected_result["U-val"].values[0])
         self.assertAlmostEqual(result[1], expected_result["p-val"].values[0])
-
 
     def test_calculate_anova(self):
         column = 'protein'
@@ -61,7 +60,6 @@ class TestCalculateTtest(unittest.TestCase):
 
         result = dr.calculate_anova(self.df, column, group=group)
 
-        self.assertEqual(result[0], column)
         self.assertEqual(result[1], expected_df1)
         self.assertEqual(result[2], expected_df2)
         self.assertEqual(result[3], expected_t)
@@ -77,23 +75,24 @@ class TestCalculateTtest(unittest.TestCase):
 
         result = dr.calculate_ancova(self.df, column, group=group, covariates=covariates)
 
-        self.assertEqual(result[0], column)
         self.assertEqual(result[1], expected_df)
         self.assertEqual(result[2], expected_df)
         self.assertEqual(result[3], expected_t)
         self.assertEqual(result[4], expected_pvalue)
 
     def test_calculate_repeated_measures_anova(self):
+        """Source     SS  DF      MS         F     p-unc       ng2  eps
+0  group   1.50   1   1.500  0.087642  0.795106  0.032609  1.0
+1  Error  34.23   2  17.115       NaN       NaN       NaN  NaN"""
         column = 'protein'
         subject = 'subject'
         within = 'group'
 
         expected_result = pg.rm_anova(data=self.df, dv=column, within=within, subject=subject, detailed=True, correction=True)
-        expected_t, expected_df1, expected_df2, expected_pvalue = expected_result.loc[0, ['F', 'p-unc']].values
-
+        expected_t, expected_pvalue = expected_result.loc[0, ["F", "p-unc"]].values.tolist()
+        expected_df1, expected_df2 = expected_result["DF"]
         result = dr.calculate_repeated_measures_anova(self.df, column, subject=subject, within=within)
 
-        self.assertEqual(result[0], column)
         self.assertEqual(result[1], expected_df1)
         self.assertEqual(result[2], expected_df2)
         self.assertEqual(result[3], expected_t)

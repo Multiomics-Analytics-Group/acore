@@ -6,6 +6,7 @@ import snf
 from sklearn.cluster import AffinityPropagation
 from sklearn import cluster
 
+
 def get_network_communities(graph, args):
     """
     Finds communities in a graph using different methods. For more information on the methods visit:
@@ -37,10 +38,10 @@ def get_network_communities(graph, args):
         adjacency = nx.to_pandas_adjacency(graph, weight='width')
         nodes = list(adjacency.columns)
         communities = AffinityPropagation().fit(adjacency.values).labels_
-        communities = {nodes[i]:communities[i] for i in range(len(communities))}
-
+        communities = {nodes[i]: communities[i] for i in range(len(communities))}
 
     return communities
+
 
 def get_snf_clusters(data_tuples, num_clusters=None, metric='euclidean', k=5, mu=0.5):
     """
@@ -62,10 +63,11 @@ def get_snf_clusters(data_tuples, num_clusters=None, metric='euclidean', k=5, mu
     if num_clusters is None:
         num_clusters, second = snf.get_n_clusters(fused_aff)
     fused_labels = cluster.spectral_clustering(fused_aff, n_clusters=num_clusters)
-    fused_labels = [i+1 for i in fused_labels]
+    fused_labels = [i + 1 for i in fused_labels]
     silhouette = snf.metrics.silhouette_score(fused_aff, fused_labels)
 
     return (fused_aff, fused_labels, num_clusters, silhouette)
+
 
 def most_central_edge(G):
     """
@@ -134,7 +136,7 @@ def run_snf(df_dict, index, num_clusters=None, distance_metric='euclidean', k_af
     indexes = [df.columns for df in datasets]
     i = 0
     for dtype in snf_features:
-        df = pd.DataFrame(dtype, index = indexes[i], columns = ["MIscore"]).sort_values(by="MIscore", ascending=False)
+        df = pd.DataFrame(dtype, index=indexes[i], columns=["MIscore"]).sort_values(by="MIscore", ascending=False)
         df['dataset'] = dataset_labels[i]
         i += 1
         feature_df = feature_df.append(df)
@@ -142,6 +144,3 @@ def run_snf(df_dict, index, num_clusters=None, distance_metric='euclidean', k_af
     feature_df = feature_df.sort_values(by='MIscore', ascending=False)
 
     return feature_df, fused_aff, fused_labels, silhouette_score
-
-
-

@@ -5,7 +5,8 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 import gseapy as gp
-from multiple_testing import apply_pvalue_correction
+from acore.multiple_testing import apply_pvalue_correction
+
 
 def run_fisher(group1, group2, alternative='two-sided'):
     '''         annotated   not-annotated
@@ -81,6 +82,7 @@ def run_site_regulation_enrichment(regulation_data, annotation, identifier='iden
 
     return result
 
+
 def run_up_down_regulation_enrichment(regulation_data, annotation, identifier='identifier', groups=['group1', 'group2'], annotation_col='annotation', reject_col='rejected', group_col='group', method='fisher', correction='fdr_bh', alpha=0.05, lfc_cutoff=1):
     """
     This function runs a simple enrichment analysis for significantly regulated proteins distinguishing between up- and down-regulated.
@@ -104,7 +106,7 @@ def run_up_down_regulation_enrichment(regulation_data, annotation, identifier='i
     """
     enrichment_results = {}
     for g1, g2 in regulation_data.groupby(groups).groups:
-        df = regulation_data.groupby(groups).get_group((g1,g2))
+        df = regulation_data.groupby(groups).get_group((g1, g2))
         if 'posthoc padj' in df:
             df['up_pairwise_regulation'] = (df['posthoc padj'] <= alpha) & (df['log2FC'] >= lfc_cutoff)
             df['down_pairwise_regulation'] = (df['posthoc padj'] <= alpha) & (df['log2FC'] <= -lfc_cutoff)
@@ -114,12 +116,13 @@ def run_up_down_regulation_enrichment(regulation_data, annotation, identifier='i
 
         enrichment = run_regulation_enrichment(df, annotation, identifier=identifier, groups=groups, annotation_col=annotation_col, reject_col='up_pairwise_regulation', group_col=group_col, method=method, correction=correction)
         enrichment['direction'] = 'upregulated'
-        enrichment_results[g1+'~'+g2] = enrichment
+        enrichment_results[g1 + '~' + g2] = enrichment
         enrichment = run_regulation_enrichment(df, annotation, identifier=identifier, groups=groups, annotation_col=annotation_col, reject_col='down_pairwise_regulation', group_col=group_col, method=method, correction=correction)
         enrichment['direction'] = 'downregulated'
-        enrichment_results[g1+'~'+g2] = enrichment_results[g1+'~'+g2].append(enrichment)
+        enrichment_results[g1 + '~' + g2] = enrichment_results[g1 + '~' + g2].append(enrichment)
 
     return enrichment_results
+
 
 def run_regulation_enrichment(regulation_data, annotation, identifier='identifier', groups=['group1', 'group2'], annotation_col='annotation', reject_col='rejected', group_col='group', method='fisher', correction='fdr_bh'):
     """
@@ -189,26 +192,30 @@ def run_enrichment(data, foreground_id, background_id, foreground_pop, backgroun
     countsdf.columns = [annotation_col, group_col, 'count']
     for annotation in countsdf[countsdf[group_col] == foreground_id][annotation_col].unique().tolist():
         counts = countsdf[countsdf[annotation_col] == annotation]
-        num_foreground = counts.loc[counts[group_col] == foreground_id,'count'].values
-        num_background = counts.loc[counts[group_col] == background_id,'count'].values
+        num_foreground = counts.loc[counts[group_col] == foreground_id, 'count'].values
+        num_background = counts.loc[counts[group_col] == background_id, 'count'].values
 
         if len(num_foreground) == 1:
             num_foreground = num_foreground[0]
         if len(num_background) == 1:
             num_background = num_background[0]
         else:
-            num_background=0
+            num_background = 0
         if method == 'fisher' and num_foreground > 1:
-            odds, pvalue = run_fisher([num_foreground, foreground_pop-num_foreground],[num_background, background_pop-foreground_pop-num_background])
+            _, pvalue = run_fisher([num_foreground, foreground_pop - num_foreground],
+                                   [num_background, background_pop - foreground_pop - num_background])
             fnum.append(num_foreground)
             bnum.append(num_background)
             terms.append(annotation)
             pvalues.append(pvalue)
-            ids.append(",".join(df.loc[(df[annotation_col]==annotation) & (df[group_col] == foreground_id), identifier_col].tolist()))
+            ids.append(",".join(df.loc[(df[annotation_col] == annotation) & (df[group_col] == foreground_id), identifier_col].tolist()))
     if len(pvalues) > 1:
         rejected, padj = apply_pvalue_correction(pvalues, alpha=0.05, method=correction)
-        result = pd.DataFrame({'terms':terms, 'identifiers':ids, 'foreground':fnum, 'background':bnum, 'foreground_pop':foreground_pop, 'background_pop':background_pop,'pvalue':pvalues, 'padj':padj, 'rejected':rejected})
-        result = result.sort_values(by='padj',ascending=True)
+        result = pd.DataFrame({'terms': terms, 'identifiers': ids, 'foreground': fnum,
+                               'background': bnum, 'foreground_pop': foreground_pop,
+                               'background_pop': background_pop, 'pvalue': pvalues, 'padj': padj,
+                               'rejected': rejected})
+        result = result.sort_values(by='padj', ascending=True)
 
     return result
 
@@ -245,8 +252,8 @@ def run_ssgsea(data, annotation, annotation_col='an notation', identifier_col='i
     result = {}
     df = data.copy()
     if not os.path.exists(outdir):
-            os.makedirs(outdir)
-    
+        os.makedirs(outdir)
+
     name = []
     index = data[set_index]
     for i, row in data[set_index].iterrows():
@@ -259,28 +266,28 @@ def run_ssgsea(data, annotation, annotation_col='an notation', identifier_col='i
     if annotation_col in annotation and identifier_col in annotation:
         grouped_annotations = annotation.groupby(annotation_col)[identifier_col].apply(list).reset_index()
         fid = uuid.uuid4()
-        file_path = os.path.join(outdir, str(fid)+'.gmt')
+        file_path = os.path.join(outdir, str(fid) + '.gmt')
         with open(file_path, 'w') as out:
             for i, row in grouped_annotations.iterrows():
-                out.write(row[annotation_col]+"\t"+"\t".join(list(filter(None, row[identifier_col])))+"\n")
+                out.write(row[annotation_col] + "\t" + "\t".join(list(filter(None, row[identifier_col]))) + "\n")
         try:
-            enrichment = gp.ssgsea(data=df, 
-                                gene_sets=str(file_path), 
-                                outdir=outdir, 
-                                min_size=min_size,
-                                max_size=max_size,
-                                scale=scale, 
-                                permutation_num=permutations, 
-                                no_plot=True, 
-                                processes=1, 
-                                seed=10, 
-                                format='png')
+            enrichment = gp.ssgsea(data=df,
+                                   gene_sets=str(file_path),
+                                   outdir=outdir,
+                                   min_size=min_size,
+                                   max_size=max_size,
+                                   scale=scale,
+                                   permutation_num=permutations,
+                                   no_plot=True,
+                                   processes=1,
+                                   seed=10,
+                                   format='png')
 
             enrichment_es = pd.DataFrame(enrichment.resultsOnSamples).transpose()
             enrichment_es = enrichment_es.join(index)
             enrichment_nes = enrichment.res2d.transpose()
             enrichment_nes = enrichment_nes.join(index)
-            
+
             result = {'es': enrichment_es, 'nes': enrichment_nes}
         except Exception as e:
             print("Error in ssGSEA.", e)

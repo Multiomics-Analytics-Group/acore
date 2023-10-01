@@ -1,7 +1,7 @@
 import unittest
-import numpy as np
 from scipy import stats
 import acore.enrichment_analysis as ea
+
 
 class TestRunFisher(unittest.TestCase):
     def test_run_fisher(self):
@@ -16,6 +16,7 @@ class TestRunFisher(unittest.TestCase):
         self.assertEqual(result[0], expected_odds)
         self.assertEqual(result[1], expected_pvalue)
 
+
 class TestRunKolmogorovSmirnov(unittest.TestCase):
     def test_run_kolmogorov_smirnov(self):
         dist1 = [1, 2, 3, 4, 5]
@@ -28,6 +29,7 @@ class TestRunKolmogorovSmirnov(unittest.TestCase):
 
         self.assertEqual(result[0], expected_result.statistic)
         self.assertEqual(result[1], expected_result.pvalue)
+
 
 if __name__ == '__main__':
     unittest.main()

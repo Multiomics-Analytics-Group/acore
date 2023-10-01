@@ -2,6 +2,7 @@ import pandas as pd
 from combat.pycombat import pycombat
 from sklearn import preprocessing
 
+
 def combat_batch_correction(data, batch_col, index_cols):
     """
     This function corrects processed data for batch effects. For more information visit: https://pypi.org/project/pycombat/
@@ -20,7 +21,7 @@ def combat_batch_correction(data, batch_col, index_cols):
     num_batches = len(data[batch_col].unique())
     if not df_numeric.empty and num_batches > 1:
         info_cols = list(set(df.columns.tolist()).difference(df_numeric.columns))
-        df_corrected = pd.DataFrame(pycombat(df_numeric.T, data[batch_col].values).T, index = df.index)
+        df_corrected = pd.DataFrame(pycombat(df_numeric.T, data[batch_col].values).T, index=df.index)
         df_corrected = df_corrected.join(df[info_cols])
         df_corrected = df_corrected.reset_index()
 

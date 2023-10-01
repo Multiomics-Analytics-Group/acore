@@ -2,7 +2,9 @@ import pandas as pd
 from Bio import Entrez, Medline
 from urllib import error
 
-Entrez.email = 'kg@dtu.dk' # TODO: This should probably be changed to the email of the person installing ckg?
+
+Entrez.email = 'kg@dtu.dk'  # TODO: This should probably be changed to the email of the person installing ckg?
+
 
 def getMedlineAbstracts(idList):
     fields = {"TI": "title", "AU": "authors", "JT": "journal", "DP": "date", "MH": "keywords", "AB": "abstract", "PMID": "PMID"}
@@ -17,6 +19,7 @@ def getMedlineAbstracts(idList):
             for field in fields:
                 if field in record:
                     aux[fields[field]] = record[field]
+
             if "PMID" in aux:
                 aux["url"] = pubmedUrl + aux["PMID"]
             else:

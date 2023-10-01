@@ -33,17 +33,17 @@ def group_data_based_on_marker(df, marker, index_col, how, value):
         if index_col in df and marker in df:
             mdf = df[[marker, index_col]]
             if how == 'cutoff':
-                mdf['new_grouping'] = mdf.apply(lambda row: str(marker) + '+' if row[marker] >= value else str(marker)+'-')
+                mdf['new_grouping'] = mdf.apply(lambda row: str(marker) + '+' if row[marker] >= value else str(marker) + '-')
             elif how == 'top' or how == 'top%':
                 mdf = mdf.sort_values(by=marker, ascending=False)
                 num_values = len(mdf[marker].values.tolist())
                 if how == 'top%':
                     value = int(num_values * value / 100)
                 if value < num_values:
-                    labels = [str(marker)+'+'] * value
-                    labels.extend([str(marker)+'-'] * (num_values - value))
+                    labels = [str(marker) + '+'] * value
+                    labels.extend([str(marker) + '-'] * (num_values - value))
                 else:
-                    print("Invalid value provided. Exceeded maximun number of samples {}".format(num_values))    
+                    print("Invalid value provided. Exceeded maximun number of samples {}".format(num_values))
                 mdf['new_grouping'] = labels
             else:
                 print("Grouping method {} not implemented. Try with 'cutoff' or 'top'".format(how))
@@ -93,8 +93,6 @@ def get_km_results(df, group_col, time_col, event_col):
 
 def get_hazard_ratio_results(df, group_col, time_col, event_col):
     models = []
-    summary_ = None
-    summary_result = None
     df = df[[event_col, time_col, group_col]].dropna()
     df[event_col] = df[event_col].astype('category')
     df[event_col] = df[event_col].cat.codes

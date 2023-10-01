@@ -3,6 +3,7 @@ import pandas as pd
 import math
 from sklearn.impute import KNNImputer
 
+
 def imputation_KNN(data, drop_cols=['group', 'sample', 'subject'], group='group', cutoff=0.6, alone=True):
     """
     k-Nearest Neighbors imputation for pandas dataframes with missing data. For more information visit https://github.com/iskandr/fancyimpute/blob/master/fancyimpute/knn.py.
@@ -39,7 +40,7 @@ def imputation_KNN(data, drop_cols=['group', 'sample', 'subject'], group='group'
             df = df.dropna(axis=1)
 
         df = df.join(data[cols])
-    
+
     return df
 
 
@@ -94,8 +95,8 @@ def imputation_normal_distribution(data, index_cols=['group', 'sample', 'subject
         missing = data_imputed[data_imputed[c].isnull()].index.tolist()
         std = data_imputed[c].std()
         mean = data_imputed[c].mean()
-        sigma = std*nstd
-        mu = mean - (std*shift)
+        sigma = std * nstd
+        mu = mean - (std * shift)
         value = 0.0
         if not math.isnan(std) and not math.isnan(mean) and not math.isnan(sigma) and not math.isnan(mu):
             value = np.random.normal(mu, sigma, size=len(missing))

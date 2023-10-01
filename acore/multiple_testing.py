@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pingouin as pg
 from scipy.special import factorial
 from statsmodels.stats import multitest
 from sklearn.utils import shuffle
@@ -91,16 +92,16 @@ def apply_pvalue_permutation_fdrcorrection(df, observed_pvalues, group, alpha=0.
     i = permutations
     df_index = df.index.values
     df_columns = df.columns.values
-    seen = [str([df_index]+df_columns.tolist())]
+    seen = [str([df_index] + df_columns.tolist())]
     rand_pvalues = []
-    while i>0:
+    while i > 0:
         df_index = shuffle(df_index)
         df_columns = shuffle(df_columns)
         df_random = df.reset_index(drop=True)
         df_random.index = df_index
         df_random.index.name = group
         df_random.columns = df_columns
-        rand_index = str([df_random.index]+df_columns.tolist())
+        rand_index = str([df_random.index] + df_columns.tolist())
         if rand_index not in seen:
             seen.append(rand_index)
             df_random = df_random.reset_index()
@@ -111,11 +112,12 @@ def apply_pvalue_permutation_fdrcorrection(df, observed_pvalues, group, alpha=0.
 
     qvalues = []
     for i, row in observed_pvalues.to_frame():
-        qvalues.append(get_counts_permutation_fdr(row['pvalue'], rand_pvalues, df['pvalue'], permutations, alpha)+(i,))
+        qvalues.append(get_counts_permutation_fdr(row['pvalue'], rand_pvalues, df['pvalue'], permutations, alpha) + (i,))
 
     qvalues = pd.DataFrame(qvalues, columns=['padj', 'rejected', 'identifier']).set_index('identifier')
 
     return qvalues
+
 
 def calculate_anova(df, column, group='group'):
     """
@@ -130,7 +132,6 @@ def calculate_anova(df, column, group='group'):
     df1, df2, t, pvalue = aov_result[['ddof1', 'ddof2', 'F', 'p-unc']].values.tolist()[0]
 
     return (column, df1, df2, t, pvalue)
-
 
 
 def get_counts_permutation_fdr(value, random, observed, n, alpha):
@@ -148,11 +149,12 @@ def get_counts_permutation_fdr(value, random, observed, n, alpha):
 
         result = get_counts_permutation_fdr(value, random, observed, n=250, alpha=0.05)
     """
-    a = random[random <= value].shape[0] + 0.0000000000001 #Offset in case of a = 0.0
+    a = random[random <= value].shape[0] + 0.0000000000001  # Offset in case of a = 0.0
     b = (observed <= value).sum()
-    qvalue = (a/b/float(n))
+    qvalue = (a / b / float(n))
 
     return (qvalue, qvalue <= alpha)
+
 
 def get_max_permutations(df, group='group'):
     """
@@ -165,21 +167,22 @@ def get_max_permutations(df, group='group'):
     """
     num_groups = len(list(df.index))
     num_per_group = df.groupby(group).size().tolist()
-    max_perm = factorial(num_groups)/np.prod(factorial(np.array(num_per_group)))
+    max_perm = factorial(num_groups) / np.prod(factorial(np.array(num_per_group)))
 
     return max_perm
+
 
 def correct_pairwise_ttest(df, alpha, correction='fdr_bh'):
     posthoc_df = pd.DataFrame()
     if 'group1' in df and 'group2' in df and "posthoc pvalue" in df:
-        for comparison in df.groupby(["group1","group2"]).groups:
-            index = df.groupby(["group1","group2"]).groups.get(comparison)
+        for comparison in df.groupby(["group1", "group2"]).groups:
+            index = df.groupby(["group1", "group2"]).groups.get(comparison)
             posthoc_pvalues = df.loc[index, "posthoc pvalue"].tolist()
-            rejected, posthoc_padj = apply_pvalue_correction(posthoc_pvalues, alpha=alpha, method=correction)
+            _, posthoc_padj = apply_pvalue_correction(posthoc_pvalues, alpha=alpha, method=correction)
             if posthoc_df.empty:
-                posthoc_df = pd.DataFrame({"index":index, "posthoc padj":posthoc_padj})
+                posthoc_df = pd.DataFrame({"index": index, "posthoc padj": posthoc_padj})
             else:
-                posthoc_df = posthoc_df.append(pd.DataFrame({"index":index, "posthoc padj":posthoc_padj}))
+                posthoc_df = posthoc_df.append(pd.DataFrame({"index": index, "posthoc padj": posthoc_padj}))
         posthoc_df = posthoc_df.set_index("index")
         df = df.join(posthoc_df)
 

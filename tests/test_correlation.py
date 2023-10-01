@@ -1,11 +1,9 @@
 import unittest
 import numpy as np
-import pandas as pd
 import pingouin as pg
 from scipy import stats
-from statsmodels.formula.api import ols
-import statsmodels.api as sm
 import acore.correlation_analysis as ca
+
 
 class TestCalculateCorrelations(unittest.TestCase):
     def test_pearson_correlation(self):
@@ -23,7 +21,7 @@ class TestCalculateCorrelations(unittest.TestCase):
         expected_coefficient, expected_pvalue = stats.spearmanr(x, y)
         self.assertAlmostEqual(coefficient, expected_coefficient)
         self.assertAlmostEqual(pvalue, expected_pvalue)
-        
+
     def test_calculate_rm_correlation(self):
         # Sample test data
         df = pg.read_dataset('rm_corr')
@@ -32,14 +30,15 @@ class TestCalculateCorrelations(unittest.TestCase):
         subject = 'Subject'
         # Expected output
         expected_result = pg.rm_corr(data=df, x=x, y=y, subject=subject)
-        
+
         # Call the function
         result = ca.calculate_rm_correlation(df, x, y, subject)
-        
+
         # Compare the results
         self.assertAlmostEqual(result[2], expected_result["r"].values[0])
         self.assertAlmostEqual(result[3], expected_result["pval"].values[0])
         self.assertEqual(result[4], expected_result["dof"].values[0])
+
 
 if __name__ == '__main__':
     unittest.main()
