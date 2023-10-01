@@ -47,7 +47,6 @@ extensions = [
     'sphinx.ext.imgmath',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
-    'recommonmark',
     'nbsphinx',
     'rst2pdf.pdfbuilder'
 ]
