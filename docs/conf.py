@@ -128,7 +128,7 @@ latex_elements = {
 # [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'acore.tex',
-     'acore Documentation',
+     'Analytics Core Documentation',
      'Alberto Santos Delgado', 'manual'),
 ]
 
@@ -139,7 +139,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (master_doc, 'acore',
-     'acore Documentation',
+     'Analytics Core Documentation',
      [author], 1)
 ]
 
@@ -151,10 +151,10 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'acore',
-     'acore Documentation',
+     'Analytics Core Documentation',
      author,
      'acore',
-     'One line description of project.',
+     'Oneline description of project.',
      'Miscellaneous'),
 ]
 
