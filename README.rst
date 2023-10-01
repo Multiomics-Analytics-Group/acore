@@ -1,5 +1,5 @@
 =====
-acore
+Analytics Core
 =====
 
 
@@ -12,7 +12,6 @@ acore
       - |docs|
     * - tests
       - | |Pylint|
-        | |codecov|
     * - package
       - | |version| |wheel| |supported-versions| |supported-implementations|
       
@@ -23,10 +22,6 @@ acore
 .. |Pylint| image:: https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/pylint.yml/badge.svg
     :alt: GitHub Actions Pylint Status
     :target: https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/pylint.yml
-
-.. |codecov| image:: https://codecov.io/gh/Multiomics-Analytics-Group/acore/branch/main/graphs/badge.svg?branch=main
-    :alt: Coverage Status
-    :target: https://app.codecov.io/github/Multiomics-Analytics-Group/acore
 
 .. |version| image:: https://img.shields.io/pypi/v/acore.svg
     :alt: PyPI Package latest release
