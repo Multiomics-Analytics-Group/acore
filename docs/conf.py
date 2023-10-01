@@ -46,9 +46,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.imgmath',
     'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
-    'nbsphinx',
-    'rst2pdf.pdfbuilder'
+    'sphinx.ext.viewcode'
 ]
 
 autodoc_mock_imports = ['pandas', 'numpy', 'scipy', 'matplotlib', 'h5py', 'rpy2',
