@@ -45,33 +45,35 @@ class TestDimensionalityReduction(unittest.TestCase):
             pd.DataFrame({
                 'group': ['A', 'A', 'B', 'B'],
                 'x': [0.877154, -3.883458, -1.550791, 4.557095],
-                'y': [2.815737, 0.420979, -2.278209, -0.958507],
+                'y': [-2.815737, -0.420979, 2.278209, 0.958507],
             }),
             pd.DataFrame({
                 'x': [0.958489, 0.092382, 0.269749],
-                'y': [0.235412, -0.790179, -0.565861],
+                'y': [-0.235412, 0.790179, 0.565861],
                 'value': [0.986975, 0.795561, 0.626868]
             },
                 index=['protein2', 'protein1', 'protein3']),
             pd.Series([0.71760534, 0.26139782])
         )
-
-        result, _ = ea.run_pca(self.data, drop_cols=[], annotation_cols=[], group='group', components=components, dropna=True)
-
+        exp_dict = {'x_title': 'PC1 (0.72)',
+                    'y_title': 'PC2 (0.26)', 'group': 'group'}
+        result, annotation = ea.run_pca(self.data, drop_cols=[], annotation_cols=[], group='group', components=components, dropna=True)
+        assert annotation == exp_dict
+        # results: tuple of 3 DFs: components, loadings, explained_variance
         pd.testing.assert_frame_equal(result[0], expected_result[0], check_exact=False)
         pd.testing.assert_frame_equal(result[1], expected_result[1], check_exact=False)
         pd.testing.assert_series_equal(pd.Series(result[2]), expected_result[2], check_exact=False, check_dtype=False)
-
+        
     def test_run_tsne(self):
         components = 2
         expected_result = pd.DataFrame({
             'group': ['A', 'A', 'B', 'B'],
-            'x': [-14.171760, -25.144415, 38.065639, 49.065693],
-            'y': [23.172457, -40.054382, -50.829048, 12.445741]})
-
+            'x': [-113.341728, 36.020717, 57.2992514, -134.729141],
+            'y': [131.169082, -59.616630, 110.601203, -39.086254]
+            })
         result, _ = ea.run_tsne(self.data, drop_cols=['sample', 'subject'], group='group', components=components, perplexity=3, n_iter=1000, init='pca', dropna=True)
-
-        pd.testing.assert_frame_equal(result['tsne'], expected_result, check_exact=False, check_dtype=False)
+        result = result['tsne']
+        pd.testing.assert_frame_equal(result, expected_result, check_exact=False, check_dtype=False)
 
     def test_run_umap(self):
         _ = ea.run_umap(self.data, drop_cols=['sample', 'subject'], group='group', n_neighbors=10, min_dist=0.3, metric='cosine', dropna=True)
