@@ -1,4 +1,5 @@
 import unittest
+import platform
 import pandas as pd
 import acore.exploratory_analysis as ea
 
@@ -66,10 +67,18 @@ class TestDimensionalityReduction(unittest.TestCase):
         
     def test_run_tsne(self):
         components = 2
+        # ! MAC ARM64 yields these results (using the similar installation)
         expected_result = pd.DataFrame({
             'group': ['A', 'A', 'B', 'B'],
             'x': [-113.341728, 36.020717, 57.2992514, -134.729141],
             'y': [131.169082, -59.616630, 110.601203, -39.086254]
+            })
+        # ! Ubuntu x64 yields these results:
+        if not platform.machine() == 'arm64':
+            expected_result = pd.DataFrame({
+                'group': ['A', 'A', 'B', 'B'],
+                'x': [-48.3592, -82.92282, -13.767805, 20.844055],
+                'y': [-49.15443, 19.951246, 54.28048, -14.870984]
             })
         result, _ = ea.run_tsne(self.data, drop_cols=['sample', 'subject'], group='group', components=components, perplexity=3, n_iter=1000, init='pca', dropna=True)
         result = result['tsne']
