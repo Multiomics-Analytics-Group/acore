@@ -226,7 +226,7 @@ def run_tsne(data, drop_cols=['sample', 'subject'], group='group', annotation_co
         if len(list(set(annotation_cols).intersection(data.columns))) > 0:
             annotations = data[annotation_cols]
     if X.size > 0:
-        tsne = TSNE(n_components=components, verbose=0, perplexity=perplexity, n_iter=n_iter, init=init)
+        tsne = TSNE(n_components=components, verbose=0, perplexity=perplexity, max_iter=n_iter, init=init)
         X = tsne.fit_transform(X)
         args = {"x_title": "C1", "y_title": "C2"}
         if components == 2:

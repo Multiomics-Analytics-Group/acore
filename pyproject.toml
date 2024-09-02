@@ -1,0 +1,61 @@
+[project]
+authors = [{ name = "Alberto Santos Delgado", email = "albsad@dtu.dk" }]
+name = "acore"
+version = "0.1.0"
+description = "A Python package with statistical functions to analyse multimodal molecular data"
+license = { text = "GNU General Public License v3" }
+readme = "README.rst"
+requires-python = ">=3.6"
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "click>=7.0",
+    "numpy==1.23.2",
+    "pandas==2.0.2",
+    "scipy==1.10.1",
+    "networkx==3.1",
+    "biopython==1.81",
+    "combat==0.3.3",
+    "gseapy==1.0.4",
+    "kmapper==2.0.1",
+    "lifelines==0.27.7",
+    "pingouin==0.5.3",
+    "python-louvain==0.16",
+    "PyWGCNA==1.16.8",
+    "snfpy==0.2.2",
+    "umap-learn==0.5.3",
+    "statsmodels",
+]
+
+
+[project.urls]
+Homepage = "https://github.com/Multiomics-Analytics-Group/acore"
+Issues = "https://github.com/Multiomics-Analytics-Group/acore/issues"
+Documentation = "https://analytics-core.readthedocs.io/"
+
+
+[project.optional-dependencies]
+dev = ["pytest >=3"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+# [entrypoints]
+# console_scripts = {
+#     "acore = acore.cli:main"
+# }
+
+# [package]
+# include = [
+#     "README.rst",
+#     "HISTORY.rst",
+# ]
