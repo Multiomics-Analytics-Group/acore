@@ -16,7 +16,7 @@ Analytics Core
       - | |version| |wheel| |supported-versions| |supported-implementations|
       
 .. |docs| image:: https://readthedocs.org/projects/acore/badge/?style=flat
-    :target: https://acore.readthedocs.io/
+    :target: https://analytics-core.readthedocs.io/
     :alt: Documentation Status
 
 .. |Pylint| image:: https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/tox-gha.yml/badge.svg
@@ -48,7 +48,7 @@ A Python package with statistical functions to analyse multimodal molecular data
 
 
 * Free software: GNU General Public License v3
-* Documentation: https://analytics_core.readthedocs.io.
+* Documentation: https://analytics-core.readthedocs.io.
 
 
 Installation
