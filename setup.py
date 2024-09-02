@@ -10,7 +10,25 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=7.0', ]
+requirements = ['click>=7.0',
+                'numpy == 1.23.2',
+                'pandas == 2.0.2',
+                'scipy == 1.10.1',
+                'networkx == 3.1',
+                'biopython == 1.81',
+                'combat == 0.3.3',
+                'gseapy == 1.0.4',
+                'kmapper == 2.0.1',
+                'lifelines == 0.27.7',
+                'pingouin == 0.5.3',
+                'python-louvain == 0.16',
+                'PyWGCNA == 1.16.8',
+                'snfpy == 0.2.2',
+                'umap-learn == 0.5.3',
+                # not in requirements_dev:
+                'statsmodels',
+                'combat',
+                ]
 
 test_requirements = ['pytest>=3', ]
 
