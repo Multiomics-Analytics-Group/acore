@@ -1,3 +1,4 @@
+import os
 import acore
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -160,4 +161,33 @@ texinfo_documents = [
 ]
 
 
+# -- Setup for sphinx-apidoc -------------------------------------------------
 
+# sphinx-apidoc needs to be called manually if Sphinx is running there.
+# https://github.com/readthedocs/readthedocs.org/issues/1139
+
+if os.environ.get("READTHEDOCS") == "True":
+    from pathlib import Path
+
+    PROJECT_ROOT = Path(__file__).parent.parent
+    PACKAGE_ROOT = PROJECT_ROOT / "acore"
+
+    def run_apidoc(_):
+        from sphinx.ext import apidoc
+
+        apidoc.main(
+            [
+                "--force",
+                "--implicit-namespaces",
+                "--module-first",
+                "--separate",
+                "-o",
+                str(PROJECT_ROOT / "docs" / "reference"),
+                str(PACKAGE_ROOT),
+                str(PACKAGE_ROOT / "*.c"),
+                str(PACKAGE_ROOT / "*.so"),
+            ]
+        )
+
+    def setup(app):
+        app.connect("builder-inited", run_apidoc)
