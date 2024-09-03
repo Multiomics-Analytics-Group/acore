@@ -35,15 +35,32 @@ dependencies = [
     "statsmodels",
 ]
 
+[project.optional-dependencies]
+docs = [
+  "sphinx",
+  "sphinx-book-theme",
+  "myst-nb",
+  "ipywidgets",
+  "sphinx-new-tab-link!=0.2.2",
+]
+dev = [
+  "black",
+  "flake8",
+  "ruff",
+  "isort",
+  "pytest",
+  "pytest-cov",
+  "twine",
+  "wheel",
+  "jupytext",
+  "ipykernel",
+]
 
 [project.urls]
 Homepage = "https://github.com/Multiomics-Analytics-Group/acore"
 Issues = "https://github.com/Multiomics-Analytics-Group/acore/issues"
 Documentation = "https://analytics-core.readthedocs.io/"
 
-
-[project.optional-dependencies]
-dev = ["pytest >=3"]
 
 [build-system]
 requires = ["setuptools"]

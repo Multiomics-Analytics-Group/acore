@@ -8,10 +8,15 @@ Welcome to acore's documentation!
    readme
    installation
    usage
-   modules
    contributing
    authors
    history
+
+.. toctree::
+   :maxdepth: 2
+   :caption: modules
+
+   reference/acore
 
 Indices and tables
 ==================
