@@ -12,9 +12,9 @@ def calculate_coefficient_variation(values):
     deviation to the mean, in percentage. For more information
     visit https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.variation.html.
 
-    :param ndarray values: numpy array
+    :param numpy.ndarray values: numpy array
     :return: The calculated variation along rows.
-    :rtype: ndarray
+    :rtype: numpy.ndarray
 
     Example::
 

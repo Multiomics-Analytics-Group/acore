@@ -12,8 +12,8 @@ def calculate_correlations(x, y, method='pearson'):
     """
     Calculates a Spearman (nonparametric) or a Pearson (parametric) correlation coefficient and p-value to test for non-correlation.
 
-    :param ndarray x: array 1
-    :param ndarray y: array 2
+    :param numpy.ndarray x: array 1
+    :param numpy.ndarray y: array 2
     :param str method: chooses which kind of correlation method to run
     :return: Tuple with two floats, correlation coefficient and two-tailed p-value.
 
@@ -37,8 +37,8 @@ def run_correlation(df, alpha=0.05, subject='subject', group='group', method='pe
     :param str subject: name of column containing subject identifiers.
     :param str group: name of column containing group identifiers.
     :param str method: method to use for correlation calculation ('pearson', 'spearman').
-    :param floar alpha: error rate. Values velow alpha are considered significant.
-    :param string correction: type of correction see apply_pvalue_correction for methods
+    :param float alpha: error rate. Values velow alpha are considered significant.
+    :param str correction: type of correction see apply_pvalue_correction for methods
     :return: Pandas dataframe with columns: 'node1', 'node2', 'weight', 'padj' and 'rejected'.
 
     Example::
@@ -83,7 +83,7 @@ def run_multi_correlation(df_dict, alpha=0.05, subject='subject', on=['subject',
     :param list on: column names to join dataframes on (must be found in all dataframes).
     :param str method: method to use for correlation calculation ('pearson', 'spearman').
     :param float alpha: error rate. Values velow alpha are considered significant.
-    :param string correction: type of correction see apply_pvalue_correction for methods
+    :param str correction: type of correction see apply_pvalue_correction for methods
     :return: Pandas dataframe with columns: 'node1', 'node2', 'weight', 'padj' and 'rejected'.
 
     Example::
@@ -131,7 +131,7 @@ def run_rm_correlation(df, alpha=0.05, subject='subject', correction='fdr_bh'):
     :param df: pandas dataframe with samples as rows and features as columns.
     :param str subject: name of column containing subject identifiers.
     :param float alpha: error rate. Values velow alpha are considered significant.
-    :param string correction: type of correction type see apply_pvalue_correction for methods
+    :param str correction: type of correction type see apply_pvalue_correction for methods
     :return: Pandas dataframe with columns: 'node1', 'node2', 'weight', 'pvalue', 'dof', 'padj' and 'rejected'.
 
     Example::

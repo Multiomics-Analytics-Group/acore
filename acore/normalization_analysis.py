@@ -56,7 +56,7 @@ def normalize_data(data, method='median', normalize=None):
     This function normalizes the data using the selected method
 
     :param data: DataFrame with the data to be normalized (samples x features)
-    :param string method: normalization method to choose among: median_polish, median,
+    :param str method: normalization method to choose among: median_polish, median,
                         quantile, linear
     :param str normalize: whether the normalization should be done by 'features' (columns) or 'samples' (rows) (default None)
     :return: Pandas dataframe.
