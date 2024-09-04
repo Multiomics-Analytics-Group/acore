@@ -283,7 +283,7 @@ def run_umap(data, drop_cols=['sample', 'subject'], group='group', annotation_co
             annotations = data[annotation_cols]
 
     if X.size:
-        X = umap.UMAP(n_neighbors=10, min_dist=0.3, metric=metric).fit_transform(X)
+        X = umap.UMAP(n_neighbors=n_neighbors, min_dist=min_dist, metric=metric).fit_transform(X)
         args = {"x_title": "C1", "y_title": "C2"}
         resultDf = pd.DataFrame(X, index=y)
         resultDf = resultDf.reset_index()

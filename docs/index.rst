@@ -1,20 +1,28 @@
 Welcome to acore's documentation!
 ======================================
 
+.. include:: ../README.rst 
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   readme
    installation
    usage
    contributing
    authors
    history
+   README.md
+
+.. toctree::
+   :maxdepth: 1
+   :caption: API examples
+
+   api_examples/exploratory_analysis
 
 .. toctree::
    :maxdepth: 2
-   :caption: modules
+   :caption: Modules
 
    reference/acore
 
