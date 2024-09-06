@@ -12,7 +12,7 @@ def imputation_KNN(data, drop_cols=['group', 'sample', 'subject'], group='group'
     :param str group: column label containing group identifiers.
     :param list drop_cols: column labels to be dropped. Final dataframe should only have gene/protein/etc identifiers as columns.
     :param float cutoff: minimum ratio of missing/valid values required to impute in each column.
-    :param boolean alone: if True removes all columns with any missing values.
+    :param bool alone: if True removes all columns with any missing values.
     :return: Pandas dataframe with samples as rows and protein identifiers as columns.
 
     Example::

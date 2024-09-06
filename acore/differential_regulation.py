@@ -438,7 +438,7 @@ def run_repeated_measurements_anova(
 
     :param df: pandas dataframe with samples as rows and protein identifiers as columns (with additional columns 'group', 'sample' and 'subject').
     :param str subject: column with subject identifiers
-    :param srt within: column with within factor identifiers
+    :param str within: column with within factor identifiers
     :param list drop_cols: column labels to be dropped from the dataframe
     :param float alpha: error rate for multiple hypothesis correction
     :param int permutations: number of permutations used to estimate false discovery rates
@@ -488,8 +488,8 @@ def run_mixed_anova(
 
     :param df: pandas dataframe with samples as rows and protein identifiers as columns (with additional columns 'group', 'sample' and 'subject').
     :param str subject: column with subject identifiers
-    :param srt within: column with within factor identifiers
-    :param srt between: column with between factor identifiers
+    :param str within: column with within factor identifiers
+    :param str between: column with between factor identifiers
     :param list drop_cols: column labels to be dropped from the dataframe
     :param float alpha: error rate for multiple hypothesis correction
     :param int permutations: number of permutations used to estimate false discovery rates

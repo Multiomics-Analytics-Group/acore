@@ -12,9 +12,9 @@ def calculate_coefficient_variation(values):
     deviation to the mean, in percentage. For more information
     visit https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.variation.html.
 
-    :param ndarray values: numpy array
+    :param numpy.ndarray values: numpy array
     :return: The calculated variation along rows.
-    :rtype: ndarray
+    :rtype: numpy.ndarray
 
     Example::
 
@@ -283,7 +283,7 @@ def run_umap(data, drop_cols=['sample', 'subject'], group='group', annotation_co
             annotations = data[annotation_cols]
 
     if X.size:
-        X = umap.UMAP(n_neighbors=10, min_dist=0.3, metric=metric).fit_transform(X)
+        X = umap.UMAP(n_neighbors=n_neighbors, min_dist=min_dist, metric=metric).fit_transform(X)
         args = {"x_title": "C1", "y_title": "C2"}
         resultDf = pd.DataFrame(X, index=y)
         resultDf = resultDf.reset_index()

@@ -10,7 +10,7 @@ def apply_pvalue_correction(pvalues, alpha=0.05, method='bonferroni'):
     """
     Performs p-value correction using the specified method. For more information visit https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html.
 
-    :param ndarray pvalues: et of p-values of the individual tests.
+    :param numpy.ndarray pvalues: et of p-values of the individual tests.
     :param float alpha: error rate.
     :param str method: method of p-value correction:
         - bonferroni : one-step correction
@@ -42,7 +42,7 @@ def apply_pvalue_fdrcorrection(pvalues, alpha=0.05, method='indep'):
     """
     Performs p-value correction for false discovery rate. For more information visit https://www.statsmodels.org/devel/generated/statsmodels.stats.multitest.fdrcorrection.html.
 
-    :param ndarray pvalues: et of p-values of the individual tests.
+    :param numpy.ndarray pvalues: et of p-values of the individual tests.
     :param float alpha: error rate.
     :param str method: method of p-value correction ('indep', 'negcorr').
     :return: Tuple with two arrays, boolen for rejecting H0 hypothesis and float for adjusted p-value.
@@ -60,7 +60,7 @@ def apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method='bh'):
     """
     Iterated two stage linear step-up procedure with estimation of number of true hypotheses. For more information visit https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.fdrcorrection_twostage.html.
 
-    :param ndarray pvalues: et of p-values of the individual tests.
+    :param numpy.ndarray pvalues: et of p-values of the individual tests.
     :param float alpha: error rate.
     :param str method: method of p-value correction ('bky', 'bh').
     :return: Tuple with two arrays, boolen for rejecting H0 hypothesis and float for adjusted p-value.
@@ -139,7 +139,7 @@ def get_counts_permutation_fdr(value, random, observed, n, alpha):
     Calculates local FDR values (q-values) by computing the fraction of accepted hits from the permuted data over accepted hits from the measured data normalized by the total number of permutations.
 
     :param float value: computed p-value on measured data for a feature.
-    :param ndarray random: p-values computed on the permuted data.
+    :param numpy.ndarray random: p-values computed on the permuted data.
     :param observed: pandas Series with p-values calculated on the originally measured data.
     :param int n: number of permutations to be applied.
     :param float alpha: error rate. Values velow alpha are considered significant.
