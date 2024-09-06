@@ -51,8 +51,8 @@ A Python package with statistical functions to analyse multimodal molecular data
 * Documentation: https://analytics-core.readthedocs.io.
 
 
-Installation
-============
+PyPI Installation
+=================
 
 ::
 
