@@ -1,17 +1,27 @@
-import pandas as pd
-from Bio import Entrez, Medline
 from urllib import error
 
+import pandas as pd
+from Bio import Entrez, Medline
 
-Entrez.email = 'kg@dtu.dk'  # TODO: This should probably be changed to the email of the person installing ckg?
+Entrez.email = "kg@dtu.dk"  # TODO: This should probably be changed to the email of the person installing ckg?
 
 
 def getMedlineAbstracts(idList):
-    fields = {"TI": "title", "AU": "authors", "JT": "journal", "DP": "date", "MH": "keywords", "AB": "abstract", "PMID": "PMID"}
+    fields = {
+        "TI": "title",
+        "AU": "authors",
+        "JT": "journal",
+        "DP": "date",
+        "MH": "keywords",
+        "AB": "abstract",
+        "PMID": "PMID",
+    }
     pubmedUrl = "https://www.ncbi.nlm.nih.gov/pubmed/"
     abstracts = pd.DataFrame()
     try:
-        handle = Entrez.efetch(db="pubmed", id=idList, rettype="medline", retmode="json")
+        handle = Entrez.efetch(
+            db="pubmed", id=idList, rettype="medline", retmode="json"
+        )
         records = Medline.parse(handle)
         results = []
         for record in records:
@@ -37,7 +47,12 @@ def getMedlineAbstracts(idList):
     return abstracts
 
 
-def get_publications_abstracts(data, publication_col="publication", join_by=['publication', 'Proteins', 'Diseases'], index="PMID"):
+def get_publications_abstracts(
+    data,
+    publication_col="publication",
+    join_by=["publication", "Proteins", "Diseases"],
+    index="PMID",
+):
     """
     Accesses NCBI PubMed over the WWW and retrieves the abstracts corresponding to a list of one or more PubMed IDs.
 
@@ -53,10 +68,14 @@ def get_publications_abstracts(data, publication_col="publication", join_by=['pu
     """
     abstracts = pd.DataFrame()
     if not data.empty:
-        abstracts = getMedlineAbstracts(list(data.reset_index()[publication_col].unique()))
+        abstracts = getMedlineAbstracts(
+            list(data.reset_index()[publication_col].unique())
+        )
         if not abstracts.empty:
             abstracts = abstracts.set_index(index)
-            abstracts = abstracts.join(data.reset_index()[join_by].set_index(publication_col))
+            abstracts = abstracts.join(
+                data.reset_index()[join_by].set_index(publication_col)
+            )
             abstracts.index.name = index
             abstracts = abstracts.reset_index()
     return abstracts

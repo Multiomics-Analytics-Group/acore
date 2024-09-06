@@ -1,14 +1,16 @@
 import itertools
+
 import numpy as np
 import pandas as pd
-from scipy import stats
 import pingouin as pg
+from scipy import stats
 from scipy.special import betainc
+
 import acore.utils as utils
 from acore.multiple_testing import apply_pvalue_correction
 
 
-def calculate_correlations(x, y, method='pearson'):
+def calculate_correlations(x, y, method="pearson"):
     """
     Calculates a Spearman (nonparametric) or a Pearson (parametric) correlation coefficient and p-value to test for non-correlation.
 
@@ -29,7 +31,14 @@ def calculate_correlations(x, y, method='pearson'):
     return (coefficient, pvalue)
 
 
-def run_correlation(df, alpha=0.05, subject='subject', group='group', method='pearson', correction='fdr_bh'):
+def run_correlation(
+    df,
+    alpha=0.05,
+    subject="subject",
+    group="group",
+    method="pearson",
+    correction="fdr_bh",
+):
     """
     This function calculates pairwise correlations for columns in dataframe, and returns it in the shape of a edge list with 'weight' as correlation score, and the ajusted p-values.
 
@@ -52,7 +61,9 @@ def run_correlation(df, alpha=0.05, subject='subject', group='group', method='pe
     if utils.check_is_paired(df, subject, group):
         if len(df[subject].unique()) > 2:
             if len(df.columns) < 200:
-                correlation = run_rm_correlation(df, alpha=alpha, subject=subject, correction=correction)
+                correlation = run_rm_correlation(
+                    df, alpha=alpha, subject=subject, correction=correction
+                )
     else:
         df = df.dropna(axis=1)._get_numeric_data()
         if not df.empty:
@@ -61,19 +72,31 @@ def run_correlation(df, alpha=0.05, subject='subject', group='group', method='pe
             pdf = pd.DataFrame(p, index=df.columns, columns=df.columns)
             correlation = utils.convertToEdgeList(rdf, ["node1", "node2", "weight"])
             pvalues = utils.convertToEdgeList(pdf, ["node1", "node2", "pvalue"])
-            correlation = pd.merge(correlation, pvalues, on=['node1', 'node2'])
+            correlation = pd.merge(correlation, pvalues, on=["node1", "node2"])
 
-            rejected, padj = apply_pvalue_correction(correlation["pvalue"].tolist(), alpha=alpha, method=correction)
+            rejected, padj = apply_pvalue_correction(
+                correlation["pvalue"].tolist(), alpha=alpha, method=correction
+            )
             correlation["padj"] = padj
             correlation["rejected"] = rejected
             correlation = correlation[correlation.rejected]
-            correlation["pvalue"] = correlation["pvalue"].apply(lambda x: str(round(x, 5)))
+            correlation["pvalue"] = correlation["pvalue"].apply(
+                lambda x: str(round(x, 5))
+            )
             correlation["padj"] = correlation["padj"].apply(lambda x: str(round(x, 5)))
 
     return correlation
 
 
-def run_multi_correlation(df_dict, alpha=0.05, subject='subject', on=['subject', 'biological_sample'], group='group', method='pearson', correction='fdr_bh'):
+def run_multi_correlation(
+    df_dict,
+    alpha=0.05,
+    subject="subject",
+    on=["subject", "biological_sample"],
+    group="group",
+    method="pearson",
+    correction="fdr_bh",
+):
     """
     This function merges all input dataframes and calculates pairwise correlations for all columns.
 
@@ -98,9 +121,16 @@ def run_multi_correlation(df_dict, alpha=0.05, subject='subject', on=['subject',
                 multidf = df_dict[dtype]
         else:
             if isinstance(df_dict[dtype], pd.DataFrame):
-                multidf = pd.merge(multidf, df_dict[dtype], how='inner', on=on)
+                multidf = pd.merge(multidf, df_dict[dtype], how="inner", on=on)
     if not multidf.empty:
-        correlation = run_correlation(multidf, alpha=alpha, subject=subject, group=group, method=method, correction=correction)
+        correlation = run_correlation(
+            multidf,
+            alpha=alpha,
+            subject=subject,
+            group=group,
+            method=method,
+            correction=correction,
+        )
 
     return correlation
 
@@ -121,10 +151,16 @@ def calculate_rm_correlation(df, x, y, subject):
     """
     result = pg.rm_corr(data=df, x=x, y=y, subject=subject)
 
-    return (x, y, result["r"].values[0], result["pval"].values[0], result["dof"].values[0])
+    return (
+        x,
+        y,
+        result["r"].values[0],
+        result["pval"].values[0],
+        result["dof"].values[0],
+    )
 
 
-def run_rm_correlation(df, alpha=0.05, subject='subject', correction='fdr_bh'):
+def run_rm_correlation(df, alpha=0.05, subject="subject", correction="fdr_bh"):
     """
     Computes pairwise repeated measurements correlations for all columns in dataframe, and returns results as an edge list with 'weight' as correlation score, p-values, degrees of freedom and ajusted p-values.
 
@@ -150,8 +186,13 @@ def run_rm_correlation(df, alpha=0.05, subject='subject', correction='fdr_bh'):
             row.extend(pg.rm_corr(subset, x, y, subject).values.tolist()[0])
             rows.append(row)
 
-        correlation = pd.DataFrame(rows, columns=["node1", "node2", "weight", "dof", "pvalue", "CI95%", "power"])
-        rejected, padj = apply_pvalue_correction(correlation["pvalue"].tolist(), alpha=alpha, method=correction)
+        correlation = pd.DataFrame(
+            rows,
+            columns=["node1", "node2", "weight", "dof", "pvalue", "CI95%", "power"],
+        )
+        rejected, padj = apply_pvalue_correction(
+            correlation["pvalue"].tolist(), alpha=alpha, method=correction
+        )
         correlation["padj"] = padj
         correlation["rejected"] = rejected
         correlation = correlation[correlation.rejected]
@@ -160,7 +201,7 @@ def run_rm_correlation(df, alpha=0.05, subject='subject', correction='fdr_bh'):
     return correlation
 
 
-def run_efficient_correlation(data, method='pearson'):
+def run_efficient_correlation(data, method="pearson"):
     """
     Calculates pairwise correlations and returns lower triangle of the matrix with correlation values and p-values.
 
@@ -173,9 +214,9 @@ def run_efficient_correlation(data, method='pearson'):
         result = run_efficient_correlation(data, method='pearson')
     """
     matrix = data.values
-    if method == 'pearson':
+    if method == "pearson":
         r = np.corrcoef(matrix, rowvar=False)
-    elif method == 'spearman':
+    elif method == "spearman":
         r, p = stats.spearmanr(matrix, axis=0)
 
     diagonal = np.triu_indices(r.shape[0], 1)
