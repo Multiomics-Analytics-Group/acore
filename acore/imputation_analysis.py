@@ -1,10 +1,17 @@
+import math
+
 import numpy as np
 import pandas as pd
-import math
 from sklearn.impute import KNNImputer
 
 
-def imputation_KNN(data, drop_cols=['group', 'sample', 'subject'], group='group', cutoff=0.6, alone=True):
+def imputation_KNN(
+    data,
+    drop_cols=["group", "sample", "subject"],
+    group="group",
+    cutoff=0.6,
+    alone=True,
+):
     """
     k-Nearest Neighbors imputation for pandas dataframes with missing data. For more information visit https://github.com/iskandr/fancyimpute/blob/master/fancyimpute/knn.py.
 
@@ -29,12 +36,16 @@ def imputation_KNN(data, drop_cols=['group', 'sample', 'subject'], group='group'
         value_cols = [c for c in df.columns if c not in drop_cols]
         for g in df[group].unique():
             missDf = df.loc[df[group] == g, value_cols]
-            missDf = missDf.loc[:, missDf.notnull().mean() >= cutoff].dropna(axis=1, how='all')
+            missDf = missDf.loc[:, missDf.notnull().mean() >= cutoff].dropna(
+                axis=1, how="all"
+            )
             if missDf.isnull().values.any():
                 X = np.array(missDf.values, dtype=np.float64)
                 X_trans = KNNImputer(n_neighbors=3).fit_transform(X)
                 missingdata_df = missDf.columns.tolist()
-                dfm = pd.DataFrame(X_trans, index=list(missDf.index), columns=missingdata_df)
+                dfm = pd.DataFrame(
+                    X_trans, index=list(missDf.index), columns=missingdata_df
+                )
                 df.update(dfm)
         if alone:
             df = df.dropna(axis=1)
@@ -44,7 +55,14 @@ def imputation_KNN(data, drop_cols=['group', 'sample', 'subject'], group='group'
     return df
 
 
-def imputation_mixed_norm_KNN(data, index_cols=['group', 'sample', 'subject'], shift=1.8, nstd=0.3, group='group', cutoff=0.6):
+def imputation_mixed_norm_KNN(
+    data,
+    index_cols=["group", "sample", "subject"],
+    shift=1.8,
+    nstd=0.3,
+    group="group",
+    cutoff=0.6,
+):
     """
     Missing values are replaced in two steps: 1) using k-Nearest Neighbors we impute protein columns with a higher ratio of missing/valid values than the defined cutoff, \
     2) the remaining missing values are replaced by random numbers that are drawn from a normal distribution.
@@ -63,13 +81,19 @@ def imputation_mixed_norm_KNN(data, index_cols=['group', 'sample', 'subject'], s
 
         result = imputation_mixed_norm_KNN(data, index_cols=['group', 'sample', 'subject'], shift = 1.8, nstd = 0.3, group='group', cutoff=0.6)
     """
-    df = imputation_KNN(data, drop_cols=index_cols, group=group, cutoff=cutoff, alone=False)
-    df = imputation_normal_distribution(df, index_cols=index_cols, shift=shift, nstd=nstd)
+    df = imputation_KNN(
+        data, drop_cols=index_cols, group=group, cutoff=cutoff, alone=False
+    )
+    df = imputation_normal_distribution(
+        df, index_cols=index_cols, shift=shift, nstd=nstd
+    )
 
     return df
 
 
-def imputation_normal_distribution(data, index_cols=['group', 'sample', 'subject'], shift=1.8, nstd=0.3):
+def imputation_normal_distribution(
+    data, index_cols=["group", "sample", "subject"], shift=1.8, nstd=0.3
+):
     """
     Missing values will be replaced by random numbers that are drawn from a normal distribution. The imputation is done for each sample (across all proteins) separately.
     For more information visit http://www.coxdocs.org/doku.php?id=perseus:user:activities:matrixprocessing:imputation:replacemissingfromgaussian.
@@ -98,7 +122,12 @@ def imputation_normal_distribution(data, index_cols=['group', 'sample', 'subject
         sigma = std * nstd
         mu = mean - (std * shift)
         value = 0.0
-        if not math.isnan(std) and not math.isnan(mean) and not math.isnan(sigma) and not math.isnan(mu):
+        if (
+            not math.isnan(std)
+            and not math.isnan(mean)
+            and not math.isnan(sigma)
+            and not math.isnan(mu)
+        ):
             value = np.random.normal(mu, sigma, size=len(missing))
         i = 0
         for m in missing:

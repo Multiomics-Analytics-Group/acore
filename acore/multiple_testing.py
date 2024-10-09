@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 import pingouin as pg
 from scipy.special import factorial
-from statsmodels.stats import multitest
 from sklearn.utils import shuffle
+from statsmodels.stats import multitest
 
 
-def apply_pvalue_correction(pvalues, alpha=0.05, method='bonferroni'):
+def apply_pvalue_correction(pvalues, alpha=0.05, method="bonferroni"):
     """
     Performs p-value correction using the specified method. For more information visit https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html.
 
@@ -38,7 +38,7 @@ def apply_pvalue_correction(pvalues, alpha=0.05, method='bonferroni'):
     return (rejected, pval_corrected.tolist())
 
 
-def apply_pvalue_fdrcorrection(pvalues, alpha=0.05, method='indep'):
+def apply_pvalue_fdrcorrection(pvalues, alpha=0.05, method="indep"):
     """
     Performs p-value correction for false discovery rate. For more information visit https://www.statsmodels.org/devel/generated/statsmodels.stats.multitest.fdrcorrection.html.
 
@@ -56,7 +56,7 @@ def apply_pvalue_fdrcorrection(pvalues, alpha=0.05, method='indep'):
     return (rejected, padj)
 
 
-def apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method='bh'):
+def apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method="bh"):
     """
     Iterated two stage linear step-up procedure with estimation of number of true hypotheses. For more information visit https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.fdrcorrection_twostage.html.
 
@@ -69,12 +69,16 @@ def apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method='bh'):
 
         result = apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method='bh')
     """
-    rejected, padj, num_hyp, alpha_stages = multitest.fdrcorrection_twostage(pvalues, alpha, method)
+    rejected, padj, num_hyp, alpha_stages = multitest.fdrcorrection_twostage(
+        pvalues, alpha, method
+    )
 
     return (rejected, padj)
 
 
-def apply_pvalue_permutation_fdrcorrection(df, observed_pvalues, group, alpha=0.05, permutations=50):
+def apply_pvalue_permutation_fdrcorrection(
+    df, observed_pvalues, group, alpha=0.05, permutations=50
+):
     """
     This function applies multiple hypothesis testing correction using a permutation-based false discovery rate approach.
 
@@ -106,20 +110,29 @@ def apply_pvalue_permutation_fdrcorrection(df, observed_pvalues, group, alpha=0.
             seen.append(rand_index)
             df_random = df_random.reset_index()
             for col in df_random.columns.drop(group):
-                rand_pvalues.append(calculate_anova(df_random, column=col, group=group)[-1])
+                rand_pvalues.append(
+                    calculate_anova(df_random, column=col, group=group)[-1]
+                )
             i -= 1
     rand_pvalues = np.array(rand_pvalues)
 
     qvalues = []
     for i, row in observed_pvalues.to_frame():
-        qvalues.append(get_counts_permutation_fdr(row['pvalue'], rand_pvalues, df['pvalue'], permutations, alpha) + (i,))
+        qvalues.append(
+            get_counts_permutation_fdr(
+                row["pvalue"], rand_pvalues, df["pvalue"], permutations, alpha
+            )
+            + (i,)
+        )
 
-    qvalues = pd.DataFrame(qvalues, columns=['padj', 'rejected', 'identifier']).set_index('identifier')
+    qvalues = pd.DataFrame(
+        qvalues, columns=["padj", "rejected", "identifier"]
+    ).set_index("identifier")
 
     return qvalues
 
 
-def calculate_anova(df, column, group='group'):
+def calculate_anova(df, column, group="group"):
     """
     Calculates one-way ANOVA using pingouin.
 
@@ -129,7 +142,9 @@ def calculate_anova(df, column, group='group'):
     :return: Tuple with t-statistics and p-value.
     """
     aov_result = pg.anova(data=df, dv=column, between=group)
-    df1, df2, t, pvalue = aov_result[['ddof1', 'ddof2', 'F', 'p-unc']].values.tolist()[0]
+    df1, df2, t, pvalue = aov_result[["ddof1", "ddof2", "F", "p-unc"]].values.tolist()[
+        0
+    ]
 
     return (column, df1, df2, t, pvalue)
 
@@ -151,12 +166,12 @@ def get_counts_permutation_fdr(value, random, observed, n, alpha):
     """
     a = random[random <= value].shape[0] + 0.0000000000001  # Offset in case of a = 0.0
     b = (observed <= value).sum()
-    qvalue = (a / b / float(n))
+    qvalue = a / b / float(n)
 
     return (qvalue, qvalue <= alpha)
 
 
-def get_max_permutations(df, group='group'):
+def get_max_permutations(df, group="group"):
     """
     Get maximum number of permutations according to number of samples.
 
@@ -172,17 +187,23 @@ def get_max_permutations(df, group='group'):
     return max_perm
 
 
-def correct_pairwise_ttest(df, alpha, correction='fdr_bh'):
+def correct_pairwise_ttest(df, alpha, correction="fdr_bh"):
     posthoc_df = pd.DataFrame()
-    if 'group1' in df and 'group2' in df and "posthoc pvalue" in df:
+    if "group1" in df and "group2" in df and "posthoc pvalue" in df:
         for comparison in df.groupby(["group1", "group2"]).groups:
             index = df.groupby(["group1", "group2"]).groups.get(comparison)
             posthoc_pvalues = df.loc[index, "posthoc pvalue"].tolist()
-            _, posthoc_padj = apply_pvalue_correction(posthoc_pvalues, alpha=alpha, method=correction)
+            _, posthoc_padj = apply_pvalue_correction(
+                posthoc_pvalues, alpha=alpha, method=correction
+            )
             if posthoc_df.empty:
-                posthoc_df = pd.DataFrame({"index": index, "posthoc padj": posthoc_padj})
+                posthoc_df = pd.DataFrame(
+                    {"index": index, "posthoc padj": posthoc_padj}
+                )
             else:
-                posthoc_df = posthoc_df.append(pd.DataFrame({"index": index, "posthoc padj": posthoc_padj}))
+                posthoc_df = posthoc_df.append(
+                    pd.DataFrame({"index": index, "posthoc padj": posthoc_padj})
+                )
         posthoc_df = posthoc_df.set_index("index")
         df = df.join(posthoc_df)
 

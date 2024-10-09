@@ -1,10 +1,10 @@
-import utils
-import pandas as pd
-import networkx as nx
 import community
+import networkx as nx
+import pandas as pd
 import snf
-from sklearn.cluster import AffinityPropagation
+import utils
 from sklearn import cluster
+from sklearn.cluster import AffinityPropagation
 
 
 def get_network_communities(graph, args):
@@ -20,22 +20,28 @@ def get_network_communities(graph, args):
     :param dict args: config file arguments
     :return: Dictionary of nodes and which community they belong to (from 0 to number of communities).
     """
-    if 'communities_algorithm' not in args:
-        args['communities_algorithm'] = 'louvain'
+    if "communities_algorithm" not in args:
+        args["communities_algorithm"] = "louvain"
 
-    if args['communities_algorithm'] == 'louvain':
-        communities = get_louvain_partitions(graph, args['values'])
-    elif args['communities_algorithm'] == 'greedy_modularity':
-        gcommunities = nx.algorithms.community.greedy_modularity_communities(graph, weight=args['values'])
+    if args["communities_algorithm"] == "louvain":
+        communities = get_louvain_partitions(graph, args["values"])
+    elif args["communities_algorithm"] == "greedy_modularity":
+        gcommunities = nx.algorithms.community.greedy_modularity_communities(
+            graph, weight=args["values"]
+        )
         communities = utils.generator_to_dict(gcommunities)
-    elif args['communities_algorithm'] == 'asyn_label_propagation':
-        gcommunities = nx.algorithms.community.label_propagation.asyn_lpa_communities(graph, args['values'])
+    elif args["communities_algorithm"] == "asyn_label_propagation":
+        gcommunities = nx.algorithms.community.label_propagation.asyn_lpa_communities(
+            graph, args["values"]
+        )
         communities = utils.generator_to_dict(gcommunities)
-    elif args['communities_algorithm'] == 'girvan_newman':
-        gcommunities = nx.algorithms.community.girvan_newman(graph, most_valuable_edge=most_central_edge)
+    elif args["communities_algorithm"] == "girvan_newman":
+        gcommunities = nx.algorithms.community.girvan_newman(
+            graph, most_valuable_edge=most_central_edge
+        )
         communities = utils.generator_to_dict(gcommunities)
-    elif args['communities_algorithm'] == 'affinity_propagation':
-        adjacency = nx.to_pandas_adjacency(graph, weight='width')
+    elif args["communities_algorithm"] == "affinity_propagation":
+        adjacency = nx.to_pandas_adjacency(graph, weight="width")
         nodes = list(adjacency.columns)
         communities = AffinityPropagation().fit(adjacency.values).labels_
         communities = {nodes[i]: communities[i] for i in range(len(communities))}
@@ -43,7 +49,7 @@ def get_network_communities(graph, args):
     return communities
 
 
-def get_snf_clusters(data_tuples, num_clusters=None, metric='euclidean', k=5, mu=0.5):
+def get_snf_clusters(data_tuples, num_clusters=None, metric="euclidean", k=5, mu=0.5):
     """
     Cluster samples based on Similarity Network Fusion (SNF) (ref: https://www.ncbi.nlm.nih.gov/pubmed/24464287)
 
@@ -57,7 +63,7 @@ def get_snf_clusters(data_tuples, num_clusters=None, metric='euclidean', k=5, mu
                     3) num_clusters: number of clusters, 4) silhouette: average silhouette score
     """
     affinities = []
-    for (d, m) in data_tuples:
+    for d, m in data_tuples:
         affinities += [snf.make_affinity(d, metric=m, K=k, mu=mu)]
     fused_aff = snf.snf(affinities, K=k)
     if num_clusters is None:
@@ -77,7 +83,7 @@ def most_central_edge(G):
     :return: Highest eigenvector centrality value.
     :rtype: float
     """
-    centrality = nx.eigenvector_centrality_numpy(G, weight='width')
+    centrality = nx.eigenvector_centrality_numpy(G, weight="width")
 
     return max(centrality, key=centrality.get)
 
@@ -96,7 +102,14 @@ def get_louvain_partitions(G, weight):
     return partition
 
 
-def run_snf(df_dict, index, num_clusters=None, distance_metric='euclidean', k_affinity=5, mu_affinity=0.5):
+def run_snf(
+    df_dict,
+    index,
+    num_clusters=None,
+    distance_metric="euclidean",
+    k_affinity=5,
+    mu_affinity=0.5,
+):
     """
     Runs Similarity Network Fusion: integration of multiple omics datasets to identify
     similar samples (clusters) (ref: https://www.ncbi.nlm.nih.gov/pubmed/24464287).
@@ -124,23 +137,31 @@ def run_snf(df_dict, index, num_clusters=None, distance_metric='euclidean', k_af
         else:
             common_samples.update(df.index.tolist())
 
-    data_tuples = [(d.loc[list(common_samples)].values, distance_metric) for d in datasets]
+    data_tuples = [
+        (d.loc[list(common_samples)].values, distance_metric) for d in datasets
+    ]
 
-    fused_aff, fused_labels, num_clusters, silhouette_score = get_snf_clusters(data_tuples, num_clusters, metric=distance_metric, k=k_affinity, mu=mu_affinity)
+    fused_aff, fused_labels, num_clusters, silhouette_score = get_snf_clusters(
+        data_tuples, num_clusters, metric=distance_metric, k=k_affinity, mu=mu_affinity
+    )
 
-    fused_labels = pd.DataFrame(fused_labels, index=common_samples, columns=['cluster'])
+    fused_labels = pd.DataFrame(fused_labels, index=common_samples, columns=["cluster"])
 
-    snf_features = snf.metrics.rank_feature_by_nmi(data_tuples, fused_aff, K=k_affinity, mu=mu_affinity, n_clusters=num_clusters)
+    snf_features = snf.metrics.rank_feature_by_nmi(
+        data_tuples, fused_aff, K=k_affinity, mu=mu_affinity, n_clusters=num_clusters
+    )
 
-    feature_df = pd.DataFrame(columns=['MIscore'])
+    feature_df = pd.DataFrame(columns=["MIscore"])
     indexes = [df.columns for df in datasets]
     i = 0
     for dtype in snf_features:
-        df = pd.DataFrame(dtype, index=indexes[i], columns=["MIscore"]).sort_values(by="MIscore", ascending=False)
-        df['dataset'] = dataset_labels[i]
+        df = pd.DataFrame(dtype, index=indexes[i], columns=["MIscore"]).sort_values(
+            by="MIscore", ascending=False
+        )
+        df["dataset"] = dataset_labels[i]
         i += 1
         feature_df = feature_df.append(df)
 
-    feature_df = feature_df.sort_values(by='MIscore', ascending=False)
+    feature_df = feature_df.sort_values(by="MIscore", ascending=False)
 
     return feature_df, fused_aff, fused_labels, silhouette_score

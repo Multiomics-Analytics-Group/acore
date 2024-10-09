@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+
 import numpy as np
 import pandas as pd
 
@@ -60,7 +61,7 @@ def transform_into_wide_format(data, index, columns, values, extra=[]):
         if not df.empty:
             if index is None:
                 df = df.reset_index()
-                index = 'index'
+                index = "index"
             cols = []
             append_to_list(cols, columns)
             append_to_list(cols, values)
@@ -71,7 +72,9 @@ def transform_into_wide_format(data, index, columns, values, extra=[]):
             df = df[cols]
             df = df.drop_duplicates()
             if isinstance(index, list):
-                df = df.pivot_table(index=index, columns=columns, values=values, aggfunc='first')
+                df = df.pivot_table(
+                    index=index, columns=columns, values=values, aggfunc="first"
+                )
             else:
                 df = df.pivot(index=index, columns=columns, values=values)
             if extra_cols is not None:
@@ -83,7 +86,7 @@ def transform_into_wide_format(data, index, columns, values, extra=[]):
     return df
 
 
-def transform_into_long_format(data, drop_columns, group, columns=['name', 'y']):
+def transform_into_long_format(data, drop_columns, group, columns=["name", "y"]):
     """
     Converts a Pandas DataDrame from wide to long format using pd.melt()
     function.
@@ -103,7 +106,9 @@ def transform_into_long_format(data, drop_columns, group, columns=['name', 'y'])
     if data is not None:
         data = data.drop(drop_columns, axis=1)
 
-        long_data = pd.melt(data, id_vars=group, var_name=columns[0], value_name=columns[1])
+        long_data = pd.melt(
+            data, id_vars=group, var_name=columns[0], value_name=columns[1]
+        )
         long_data = long_data.set_index(group)
         long_data.columns = columns
 
@@ -121,7 +126,7 @@ def remove_group(data):
 
         result = remove_group(data)
     """
-    data.drop(['group'], axis=1)
+    data.drop(["group"], axis=1)
     return data
 
 
@@ -189,7 +194,7 @@ def cohens_d(sample1, sample2, ddof):
     u1, u2 = np.mean(sample1), np.mean(sample2)
     s_pooled = pooled_standard_deviation(sample1, sample2, ddof)
 
-    return ((u1 - u2) / s_pooled)
+    return (u1 - u2) / s_pooled
 
 
 def hedges_g(df, condition1, condition2, ddof=0):
@@ -231,9 +236,13 @@ def hedges_g(df, condition1, condition2, ddof=0):
 
         # Correct bias small sample size
         if ng1 + ng2 < 50:
-            g = ((meang1 - meang2) / sdpooled) * ((ng1 + ng2 - 3) / (ng1 + ng2 - 2.25)) * np.sqrt((ng1 + ng2 - 2) / (ng1 + ng2))
+            g = (
+                ((meang1 - meang2) / sdpooled)
+                * ((ng1 + ng2 - 3) / (ng1 + ng2 - 2.25))
+                * np.sqrt((ng1 + ng2 - 2) / (ng1 + ng2))
+            )
         else:
-            g = ((meang1 - meang2) / sdpooled)
+            g = (meang1 - meang2) / sdpooled
 
     return g
 
