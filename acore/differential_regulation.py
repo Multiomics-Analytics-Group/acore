@@ -265,9 +265,8 @@ def calculate_repeated_measures_anova(df, column, subject="subject", within="gro
         df1, df2 = aov_result["DF"]
     except Exception as e:
         print(
-            "Repeated measurements Anova for column: {} could not be calculated. Error {}".format(
-                column, e
-            )
+            "Repeated measurements Anova for column: {} could not be calculated."
+            " Error {}".format(column, e)
         )
 
     return (column, df1, df2, t, pvalue)

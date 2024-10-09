@@ -3,7 +3,8 @@ from urllib import error
 import pandas as pd
 from Bio import Entrez, Medline
 
-Entrez.email = "kg@dtu.dk"  # TODO: This should probably be changed to the email of the person installing ckg?
+# TODO: This should probably be changed to the email of the person installing ckg?
+Entrez.email = "kg@dtu.dk"
 
 
 def getMedlineAbstracts(idList):
@@ -54,17 +55,23 @@ def get_publications_abstracts(
     index="PMID",
 ):
     """
-    Accesses NCBI PubMed over the WWW and retrieves the abstracts corresponding to a list of one or more PubMed IDs.
+    Accesses NCBI PubMed over the WWW and retrieves the abstracts corresponding
+    to a list of one or more PubMed IDs.
 
-    :param data: pandas dataframe of diseases and publications linked to a list of proteins (columns: 'Diseases', 'Proteins', 'linkout' and 'publication').
+    :param data: pandas dataframe of diseases and publications linked to a list of
+                proteins (columns: 'Diseases', 'Proteins', 'linkout' and 'publication').
     :param str publication_col: column label containing PubMed ids.
     :param list join_by: column labels to be kept from the input dataframe.
     :param str index: column label containing PubMed ids from the NCBI retrieved data.
-    :return: Pandas dataframe with publication information and columns 'PMID', 'abstract', 'authors', 'date', 'journal', 'keywords', 'title', 'url', 'Proteins' and 'Diseases'.
+    :return: Pandas dataframe with publication information and columns 'PMID', 'abstract',
+     'authors', 'date', 'journal', 'keywords', 'title', 'url', 'Proteins' and 'Diseases'.
 
     Example::
 
-        result = get_publications_abstracts(data, publication_col='publication', join_by=['publication','Proteins','Diseases'], index='PMID')
+        result = get_publications_abstracts(data,
+                    publication_col='publication',
+                    join_by=['publication','Proteins','Diseases'],
+                    index='PMID')
     """
     abstracts = pd.DataFrame()
     if not data.empty:
