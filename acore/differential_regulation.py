@@ -16,6 +16,59 @@ from acore.multiple_testing import (
 )
 
 
+# njab.stats.groups_comparision.py (partly renamed functions)
+def calc_means_between_groups(
+    df: pd.DataFrame,
+    boolean_array: pd.Series,
+    event_names: tuple[str, str] = ("1", "0"),
+) -> pd.DataFrame:
+    """Mean comparison between groups"""
+    sub = df.loc[boolean_array].describe().iloc[:3]
+    sub["event"] = event_names[0]
+    sub = sub.set_index("event", append=True).swaplevel()
+    ret = sub
+    sub = df.loc[~boolean_array].describe().iloc[:3]
+    sub["event"] = event_names[1]
+    sub = sub.set_index("event", append=True).swaplevel()
+    ret = pd.concat([ret, sub])
+    ret.columns.name = "variable"
+    ret.index.names = ("event", "stats")
+    return ret.T
+
+
+def calc_ttest(
+    df: pd.DataFrame, boolean_array: pd.Series, vars: list[str]
+) -> pd.DataFrame:
+    """Calculate t-test for each variable in `vars` between two groups defined
+    by boolean array."""
+    ret = []
+    for var in vars:
+        _ = pg.ttest(df.loc[boolean_array, var], df.loc[~boolean_array, var])
+        ret.append(_)
+    ret = pd.concat(ret)
+    ret = ret.set_index(vars)
+    ret.columns.name = "ttest"
+    ret.columns = pd.MultiIndex.from_product(
+        [["ttest"], ret.columns], names=("test", "var")
+    )
+    return ret
+
+
+def run_diff_analysis(
+    df: pd.DataFrame,
+    boolean_array: pd.Series,
+    event_names: tuple[str, str] = ("1", "0"),
+    ttest_vars=("alternative", "p-val", "cohen-d"),
+) -> pd.DataFrame:
+    """Differential analysis procedure between two groups. Calculaes
+    mean per group and t-test for each variable in `vars` between two groups."""
+    ret = calc_means_between_groups(df, boolean_array=boolean_array, event_names=event_names)
+    ttests = calc_ttest(df, boolean_array=boolean_array, vars=ret.index)
+    ret = ret.join(ttests.loc[:, pd.IndexSlice[:, ttest_vars]])
+    return ret
+
+# end njab.stats.groups_comparision.py
+
 def calculate_ttest(
     df,
     condition1,
@@ -28,14 +81,19 @@ def calculate_ttest(
     r=0.707,
 ):
     """
-    Calculates the t-test for the means of independent samples belonging to two different groups. For more information visit https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html.
+    Calculates the t-test for the means of independent samples belonging to two different 
+    groups. For more information visit 
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html.
 
-    :param df: pandas dataframe with groups and subjects as rows and protein identifier as column.
+    :param df: pandas dataframe with groups and subjects as rows and protein identifier 
+               as column.
     :param str condition1: identifier of first group.
     :param str condition2: ientifier of second group.
     :param bool is_logged: data is logged transformed
-    :param bool non_par: if True, normality and variance equality assumptions are checked and non-parametric test Mann Whitney U test if not passed
-    :return: Tuple with t-statistics, two-tailed p-value, mean of first group, mean of second group and logfc.
+    :param bool non_par: if True, normality and variance equality assumptions are checked
+                         and non-parametric test Mann Whitney U test if not passed
+    :return: Tuple with t-statistics, two-tailed p-value, mean of first group, 
+             mean of second group and logfc.
 
     Example::
 
@@ -81,7 +139,8 @@ def calculate_ttest(
 
 def calculate_THSD(df, column, group="group", alpha=0.05, is_logged=True):
     """
-    Pairwise Tukey-HSD posthoc test using pingouin stats. For more information visit https://pingouin-stats.org/generated/pingouin.pairwise_tukey.html
+    Pairwise Tukey-HSD posthoc test using pingouin stats. 
+    For more information visit https://pingouin-stats.org/generated/pingouin.pairwise_tukey.html
 
     :param df: pandas dataframe with group and protein identifier as columns
     :param str column: column containing the protein identifier
