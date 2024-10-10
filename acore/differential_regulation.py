@@ -1,24 +1,99 @@
 import re
+
 import numpy as np
 import pandas as pd
 import pingouin as pg
-from statsmodels.formula.api import ols
-import statsmodels.api as sm
 import scipy.stats
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+
 import acore.utils
-from acore.multiple_testing import correct_pairwise_ttest, apply_pvalue_correction, get_max_permutations, apply_pvalue_permutation_fdrcorrection
+from acore.multiple_testing import (
+    apply_pvalue_correction,
+    apply_pvalue_permutation_fdrcorrection,
+    correct_pairwise_ttest,
+    get_max_permutations,
+)
 
 
-def calculate_ttest(df, condition1, condition2, paired=False, is_logged=True, non_par=False, tail="two-sided", correction="auto", r=0.707):
+# njab.stats.groups_comparision.py (partly renamed functions)
+def calc_means_between_groups(
+    df: pd.DataFrame,
+    boolean_array: pd.Series,
+    event_names: tuple[str, str] = ("1", "0"),
+) -> pd.DataFrame:
+    """Mean comparison between groups"""
+    sub = df.loc[boolean_array].describe().iloc[:3]
+    sub["event"] = event_names[0]
+    sub = sub.set_index("event", append=True).swaplevel()
+    ret = sub
+    sub = df.loc[~boolean_array].describe().iloc[:3]
+    sub["event"] = event_names[1]
+    sub = sub.set_index("event", append=True).swaplevel()
+    ret = pd.concat([ret, sub])
+    ret.columns.name = "variable"
+    ret.index.names = ("event", "stats")
+    return ret.T
+
+
+def calc_ttest(
+    df: pd.DataFrame, boolean_array: pd.Series, vars: list[str]
+) -> pd.DataFrame:
+    """Calculate t-test for each variable in `vars` between two groups defined
+    by boolean array."""
+    ret = []
+    for var in vars:
+        _ = pg.ttest(df.loc[boolean_array, var], df.loc[~boolean_array, var])
+        ret.append(_)
+    ret = pd.concat(ret)
+    ret = ret.set_index(vars)
+    ret.columns.name = "ttest"
+    ret.columns = pd.MultiIndex.from_product(
+        [["ttest"], ret.columns], names=("test", "var")
+    )
+    return ret
+
+
+def run_diff_analysis(
+    df: pd.DataFrame,
+    boolean_array: pd.Series,
+    event_names: tuple[str, str] = ("1", "0"),
+    ttest_vars=("alternative", "p-val", "cohen-d"),
+) -> pd.DataFrame:
+    """Differential analysis procedure between two groups. Calculaes
+    mean per group and t-test for each variable in `vars` between two groups."""
+    ret = calc_means_between_groups(df, boolean_array=boolean_array, event_names=event_names)
+    ttests = calc_ttest(df, boolean_array=boolean_array, vars=ret.index)
+    ret = ret.join(ttests.loc[:, pd.IndexSlice[:, ttest_vars]])
+    return ret
+
+# end njab.stats.groups_comparision.py
+
+def calculate_ttest(
+    df,
+    condition1,
+    condition2,
+    paired=False,
+    is_logged=True,
+    non_par=False,
+    tail="two-sided",
+    correction="auto",
+    r=0.707,
+):
     """
-    Calculates the t-test for the means of independent samples belonging to two different groups. For more information visit https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html.
+    Calculates the t-test for the means of independent samples belonging to two different 
+    groups. For more information visit 
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html.
 
-    :param df: pandas dataframe with groups and subjects as rows and protein identifier as column.
+    :param df: pandas dataframe with groups and subjects as rows and protein identifier 
+               as column.
     :param str condition1: identifier of first group.
     :param str condition2: ientifier of second group.
     :param bool is_logged: data is logged transformed
-    :param bool non_par: if True, normality and variance equality assumptions are checked and non-parametric test Mann Whitney U test if not passed
-    :return: Tuple with t-statistics, two-tailed p-value, mean of first group, mean of second group and logfc.
+    :param bool non_par: if True, normality and variance equality assumptions are checked
+                         and non-parametric test Mann Whitney U test if not passed
+    :return: Tuple with t-statistics, two-tailed p-value, mean of first group, 
+             mean of second group and logfc.
 
     Example::
 
@@ -40,7 +115,14 @@ def calculate_ttest(df, condition1, condition2, paired=False, is_logged=True, no
 
     test = "t-Test"
     if not non_par:
-        result = pg.ttest(df[condition1], df[condition2], paired=paired, alternative=tail, correction=correction, r=r)
+        result = pg.ttest(
+            df[condition1],
+            df[condition2],
+            paired=paired,
+            alternative=tail,
+            correction=correction,
+            r=r,
+        )
     else:
         test = "Mann Whitney"
         result = pg.mwu(group1, group2, alternative=tail)
@@ -57,7 +139,8 @@ def calculate_ttest(df, condition1, condition2, paired=False, is_logged=True, no
 
 def calculate_THSD(df, column, group="group", alpha=0.05, is_logged=True):
     """
-    Pairwise Tukey-HSD posthoc test using pingouin stats. For more information visit https://pingouin-stats.org/generated/pingouin.pairwise_tukey.html
+    Pairwise Tukey-HSD posthoc test using pingouin stats. 
+    For more information visit https://pingouin-stats.org/generated/pingouin.pairwise_tukey.html
 
     :param df: pandas dataframe with group and protein identifier as columns
     :param str column: column containing the protein identifier
@@ -88,7 +171,9 @@ def calculate_THSD(df, column, group="group", alpha=0.05, is_logged=True):
     return posthoc
 
 
-def calculate_pairwise_ttest(df, column, subject="subject", group="group", correction="none", is_logged=True):
+def calculate_pairwise_ttest(
+    df, column, subject="subject", group="group", correction="none", is_logged=True
+):
     """
     Performs pairwise t-test using pingouin, as a posthoc test, and calculates fold-changes. For more information visit https://pingouin-stats.org/generated/pingouin.pairwise_ttests.html.
 
@@ -137,7 +222,14 @@ def calculate_pairwise_ttest(df, column, subject="subject", group="group", corre
         "posthoc BF10",
         "posthoc effsize",
     ]
-    posthoc = df.pairwise_ttests(dv=column, between=group, subject=subject, effsize="hedges", return_desc=True, padjust=correction)
+    posthoc = df.pairwise_ttests(
+        dv=column,
+        between=group,
+        subject=subject,
+        effsize="hedges",
+        return_desc=True,
+        padjust=correction,
+    )
     posthoc.columns = posthoc_columns
     posthoc = posthoc[valid_cols]
     posthoc = complement_posthoc(posthoc, column, is_logged)
@@ -174,7 +266,9 @@ def calculate_anova(df, column, group="group"):
     :return: Tuple with t-statistics and p-value.
     """
     aov_result = pg.anova(data=df, dv=column, between=group)
-    df1, df2, t, pvalue = aov_result[["ddof1", "ddof2", "F", "p-unc"]].values.tolist()[0]
+    df1, df2, t, pvalue = aov_result[["ddof1", "ddof2", "F", "p-unc"]].values.tolist()[
+        0
+    ]
 
     return (column, df1, df2, t, pvalue)
 
@@ -190,7 +284,11 @@ def calculate_ancova(data, column, group="group", covariates=[]):
     :return: Tuple with column, F-statistics and p-value.
     """
     ancova_result = pg.ancova(data=data, dv=column, between=group, covar=covariates)
-    t, df, pvalue = ancova_result.loc[ancova_result["Source"] == group, ["F", "DF", "p-unc"]].values.tolist().pop()
+    t, df, pvalue = (
+        ancova_result.loc[ancova_result["Source"] == group, ["F", "DF", "p-unc"]]
+        .values.tolist()
+        .pop()
+    )
 
     return (column, df, df, t, pvalue)
 
@@ -214,16 +312,28 @@ def calculate_repeated_measures_anova(df, column, subject="subject", within="gro
     t = np.nan
     pvalue = np.nan
     try:
-        aov_result = pg.rm_anova(data=df, dv=column, within=within, subject=subject, detailed=True, correction=True)
+        aov_result = pg.rm_anova(
+            data=df,
+            dv=column,
+            within=within,
+            subject=subject,
+            detailed=True,
+            correction=True,
+        )
         t, pvalue = aov_result.loc[0, ["F", "p-unc"]].values.tolist()
         df1, df2 = aov_result["DF"]
     except Exception as e:
-        print("Repeated measurements Anova for column: {} could not be calculated. Error {}".format(column, e))
+        print(
+            "Repeated measurements Anova for column: {} could not be calculated."
+            " Error {}".format(column, e)
+        )
 
     return (column, df1, df2, t, pvalue)
 
 
-def calculate_mixed_anova(df, column, subject="subject", within="group", between="group2"):
+def calculate_mixed_anova(
+    df, column, subject="subject", within="group", between="group2"
+):
     """
     One-way and two-way repeated measures ANOVA using pingouin stats.
 
@@ -239,10 +349,21 @@ def calculate_mixed_anova(df, column, subject="subject", within="group", between
         result = calculate_mixed_anova(df, 'protein a', subject='subject', within='group', between='group2')
     """
     try:
-        aov_result = pg.mixed_anova(data=df, dv=column, within=within, between=between, subject=subject, correction=True)
+        aov_result = pg.mixed_anova(
+            data=df,
+            dv=column,
+            within=within,
+            between=between,
+            subject=subject,
+            correction=True,
+        )
         aov_result["identifier"] = column
     except Exception as e:
-        print("Mixed Anova for column: {} could not be calculated. Error {}".format(column, e))
+        print(
+            "Mixed Anova for column: {} could not be calculated. Error {}".format(
+                column, e
+            )
+        )
 
     return aov_result[["identifier", "DF1", "DF2", "F", "p-unc", "Source"]]
 
@@ -297,7 +418,13 @@ def run_anova(
             )
         elif len(groups) > 2:
             res = run_repeated_measurements_anova(
-                df, alpha=alpha, drop_cols=drop_cols, subject=subject, within=group, permutations=0, is_logged=is_logged
+                df,
+                alpha=alpha,
+                drop_cols=drop_cols,
+                subject=subject,
+                within=group,
+                permutations=0,
+                is_logged=is_logged,
             )
     elif len(df[group].unique()) == 2:
         groups = df[group].unique()
@@ -323,11 +450,26 @@ def run_anova(
         for col in df.columns.drop(group).tolist():
             aov = calculate_anova(df[[group, col]], column=col, group=group)
             aov_results.append(aov)
-            pairwise_result = calculate_pairwise_ttest(df[[group, col]], column=col, subject=subject, group=group, is_logged=is_logged)
+            pairwise_result = calculate_pairwise_ttest(
+                df[[group, col]],
+                column=col,
+                subject=subject,
+                group=group,
+                is_logged=is_logged,
+            )
             pairwise_cols = pairwise_result.columns
             pairwise_results.extend(pairwise_result.values.tolist())
         df = df.set_index([group])
-        res = format_anova_table(df, aov_results, pairwise_results, pairwise_cols, group, permutations, alpha, correction)
+        res = format_anova_table(
+            df,
+            aov_results,
+            pairwise_results,
+            pairwise_cols,
+            group,
+            permutations,
+            alpha,
+            correction,
+        )
         res["Method"] = "One-way anova"
         res = correct_pairwise_ttest(res, alpha, correction)
 
@@ -375,13 +517,26 @@ def run_ancova(
     ancova_result = []
     for col in df.columns.tolist():
         if col not in covariates and col != group:
-            ancova = calculate_ancova(df[[group, col] + covariates], col, group=group, covariates=covariates)
+            ancova = calculate_ancova(
+                df[[group, col] + covariates], col, group=group, covariates=covariates
+            )
             ancova_result.append(ancova)
-            pairwise_result = pairwise_ttest_with_covariates(df, column=col, group=group, covariates=covariates, is_logged=is_logged)
+            pairwise_result = pairwise_ttest_with_covariates(
+                df, column=col, group=group, covariates=covariates, is_logged=is_logged
+            )
             pairwise_cols = pairwise_result.columns
             pairwise_results.extend(pairwise_result.values.tolist())
     df = df.set_index([group])
-    res = format_anova_table(df, ancova_result, pairwise_results, pairwise_cols, group, permutations, alpha, correction)
+    res = format_anova_table(
+        df,
+        ancova_result,
+        pairwise_results,
+        pairwise_cols,
+        group,
+        permutations,
+        alpha,
+        correction,
+    )
     res["Method"] = "One-way ancova"
     res = correct_pairwise_ttest(res, alpha, correction)
 
@@ -431,7 +586,14 @@ def pairwise_ttest_with_covariates(df, column, group, covariates, is_logged):
 
 
 def run_repeated_measurements_anova(
-    df, alpha=0.05, drop_cols=["sample"], subject="subject", within="group", permutations=50, correction="fdr_bh", is_logged=True
+    df,
+    alpha=0.05,
+    drop_cols=["sample"],
+    subject="subject",
+    within="group",
+    permutations=50,
+    correction="fdr_bh",
+    is_logged=True,
 ):
     """
     Performs repeated measurements anova and pairwise posthoc tests for each protein in dataframe.
@@ -454,16 +616,31 @@ def run_repeated_measurements_anova(
     index = [within, subject]
     for col in df.columns.drop(index).tolist():
         cols = index + [col]
-        aov = calculate_repeated_measures_anova(df[cols], column=col, subject=subject, within=within)
+        aov = calculate_repeated_measures_anova(
+            df[cols], column=col, subject=subject, within=within
+        )
         aov_results.append(aov)
         pairwise_result = calculate_pairwise_ttest(
-            df[[within, subject, col]], subject=subject, column=col, group=within, is_logged=is_logged
+            df[[within, subject, col]],
+            subject=subject,
+            column=col,
+            group=within,
+            is_logged=is_logged,
         )
         pairwise_cols = pairwise_result.columns
         pairwise_results.extend(pairwise_result.values.tolist())
 
     df = df.set_index([subject, within])
-    res = format_anova_table(df, aov_results, pairwise_results, pairwise_cols, within, permutations, alpha, correction)
+    res = format_anova_table(
+        df,
+        aov_results,
+        pairwise_results,
+        pairwise_cols,
+        within,
+        permutations,
+        alpha,
+        correction,
+    )
     res["Method"] = "Repeated measurements anova"
     res = correct_pairwise_ttest(res, alpha, correction=correction)
 
@@ -477,7 +654,7 @@ def run_mixed_anova(
     subject="subject",
     within="group",
     between="group2",
-    correction="fdr_bh"
+    correction="fdr_bh",
 ):
     """
     In statistics, a mixed-design analysis of variance model, also known as a split-plot ANOVA, is used to test
@@ -504,14 +681,18 @@ def run_mixed_anova(
     index = [within, subject, between]
     for col in df.columns.drop(index).tolist():
         cols = index + [col]
-        aov = calculate_mixed_anova(df[cols], column=col, subject=subject, within=within, between=between)
+        aov = calculate_mixed_anova(
+            df[cols], column=col, subject=subject, within=within, between=between
+        )
         aov_results.append(aov)
 
     res = pd.concat(aov_results)
     res = res[res["Source"] == "Interaction"]
     res = res[["identifier", "DF1", "DF2", "F", "p-unc"]]
     res.columns = ["identifier", "dfk", "dfn", "F-statistics", "pvalue"]
-    _, padj = apply_pvalue_correction(res["pvalue"].tolist(), alpha=alpha, method=correction)
+    _, padj = apply_pvalue_correction(
+        res["pvalue"].tolist(), alpha=alpha, method=correction
+    )
     res["correction"] = "FDR correction BH"
     res["padj"] = padj
     res["rejected"] = res["padj"] < alpha
@@ -522,7 +703,16 @@ def run_mixed_anova(
     return res
 
 
-def format_anova_table(df, aov_results, pairwise_results, pairwise_cols, group, permutations, alpha, correction):
+def format_anova_table(
+    df,
+    aov_results,
+    pairwise_results,
+    pairwise_cols,
+    group,
+    permutations,
+    alpha,
+    correction,
+):
     """
     Performs p-value correction (permutation-based and FDR) and converts pandas dataframe into final format.
 
@@ -545,13 +735,21 @@ def format_anova_table(df, aov_results, pairwise_results, pairwise_cols, group, 
             if max_perm < permutations:
                 permutations = max_perm
             observed_pvalues = scores.pvalue
-            count = apply_pvalue_permutation_fdrcorrection(df, observed_pvalues, group=group, alpha=alpha, permutations=permutations)
+            count = apply_pvalue_permutation_fdrcorrection(
+                df,
+                observed_pvalues,
+                group=group,
+                alpha=alpha,
+                permutations=permutations,
+            )
             scores = scores.join(count)
             scores["correction"] = "permutation FDR ({} perm)".format(permutations)
             corrected = True
 
     if not corrected:
-        _, padj = apply_pvalue_correction(scores["pvalue"].tolist(), alpha=alpha, method=correction)
+        _, padj = apply_pvalue_correction(
+            scores["pvalue"].tolist(), alpha=alpha, method=correction
+        )
         scores["correction"] = "FDR correction BH"
         scores["padj"] = padj
         corrected = True
@@ -610,7 +808,16 @@ def run_ttest(
 
         result = run_ttest(df, condition1='group1', condition2='group2', alpha = 0.05, drop_cols=['sample'], subject='subject', group='group', paired=False, correction='fdr_bh', permutations=50)
     """
-    columns = ["T-statistics", "pvalue", "mean_group1", "mean_group2", "std(group1)", "std(group2)", "log2FC", "test"]
+    columns = [
+        "T-statistics",
+        "pvalue",
+        "mean_group1",
+        "mean_group2",
+        "std(group1)",
+        "std(group2)",
+        "log2FC",
+        "test",
+    ]
     df = df.set_index(group)
     df = df.drop(drop_cols, axis=1)
     method = "Unpaired t-test"
@@ -624,7 +831,12 @@ def run_ttest(
         if subject is not None:
             df = df.drop([subject], axis=1)
 
-    scores = df.T.apply(func=calculate_ttest, axis=1, result_type="expand", args=(condition1, condition2, paired, is_logged, non_par))
+    scores = df.T.apply(
+        func=calculate_ttest,
+        axis=1,
+        result_type="expand",
+        args=(condition1, condition2, paired, is_logged, non_par),
+    )
     scores.columns = columns
     scores = scores.dropna(how="all")
 
@@ -636,13 +848,21 @@ def run_ttest(
             if max_perm < permutations:
                 permutations = max_perm
             observed_pvalues = scores.pvalue
-            count = apply_pvalue_permutation_fdrcorrection(df, observed_pvalues, group=group, alpha=alpha, permutations=permutations)
+            count = apply_pvalue_permutation_fdrcorrection(
+                df,
+                observed_pvalues,
+                group=group,
+                alpha=alpha,
+                permutations=permutations,
+            )
             scores = scores.join(count)
             scores["correction"] = "permutation FDR ({} perm)".format(permutations)
             corrected = True
 
     if not corrected:
-        rejected, padj = apply_pvalue_correction(scores["pvalue"].tolist(), alpha=alpha, method=correction)
+        rejected, padj = apply_pvalue_correction(
+            scores["pvalue"].tolist(), alpha=alpha, method=correction
+        )
         scores["correction"] = "FDR correction BH"
         scores["padj"] = padj
         scores["rejected"] = rejected
@@ -655,7 +875,9 @@ def run_ttest(
     else:
         scores = scores.rename(columns={"log2FC": "FC"})
 
-    scores["-log10 pvalue"] = [-np.log10(x) if x != 0 else -np.log10(alpha) for x in scores["pvalue"].values]
+    scores["-log10 pvalue"] = [
+        -np.log10(x) if x != 0 else -np.log10(alpha) for x in scores["pvalue"].values
+    ]
     scores["Method"] = method
     scores.index.name = "identifier"
     scores = scores.reset_index()
@@ -675,7 +897,9 @@ def calculate_pvalue_from_tstats(tstat, dfn):
     return pval
 
 
-def run_two_way_anova(df, drop_cols=["sample"], subject="subject", group=["group", "secondary_group"]):
+def run_two_way_anova(
+    df, drop_cols=["sample"], subject="subject", group=["group", "secondary_group"]
+):
     """
     Run a 2-way ANOVA when data['secondary_group'] is not empty
 
@@ -699,19 +923,32 @@ def run_two_way_anova(df, drop_cols=["sample"], subject="subject", group=["group
     residuals = {}
     for col in data.columns:
         model = ols(
-            "{} ~ C({})*C({})".format(col, factorA, factorB), data[col].reset_index().sort_values(group, ascending=[True, False])
+            "{} ~ C({})*C({})".format(col, factorA, factorB),
+            data[col].reset_index().sort_values(group, ascending=[True, False]),
         ).fit()
         aov_table = sm.stats.anova_lm(model, typ=2)
         eta_squared(aov_table)
         omega_squared(aov_table)
         for i in aov_table.index:
             if i != "Residual":
-                t, p, eta, omega = aov_table.loc[i, ["F", "PR(>F)", "eta_sq", "omega_sq"]]
+                t, p, eta, omega = aov_table.loc[
+                    i, ["F", "PR(>F)", "eta_sq", "omega_sq"]
+                ]
                 protein = col.replace("_", "-")
                 aov_result.append((protein, i, t, p, eta, omega))
         residuals[col] = model.resid
 
-    anova_df = pd.DataFrame(aov_result, columns=["identifier", "source", "F-statistics", "pvalue", "eta_sq", "omega_sq"])
+    anova_df = pd.DataFrame(
+        aov_result,
+        columns=[
+            "identifier",
+            "source",
+            "F-statistics",
+            "pvalue",
+            "eta_sq",
+            "omega_sq",
+        ],
+    )
     anova_df = anova_df.set_index("identifier")
     anova_df = anova_df.dropna(how="all")
 
@@ -739,5 +976,7 @@ def omega_squared(aov):
     """
     mse = aov["sum_sq"][-1] / aov["df"][-1]
     aov["omega_sq"] = "NaN"
-    aov["omega_sq"] = (aov[:-1]["sum_sq"] - (aov[:-1]["df"] * mse)) / (sum(aov["sum_sq"]) + mse)
+    aov["omega_sq"] = (aov[:-1]["sum_sq"] - (aov[:-1]["df"] * mse)) / (
+        sum(aov["sum_sq"]) + mse
+    )
     return aov
