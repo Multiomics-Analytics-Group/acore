@@ -115,6 +115,8 @@ def normalize_data(
     return normData
 
 
+# TODO below are low level functions used by `normalize_data` function
+# ! update docstring: example is not correct
 def median_zero_normalization(data, normalize="samples"):
     """
     This function normalizes each sample by using its median.
@@ -142,7 +144,8 @@ def median_zero_normalization(data, normalize="samples"):
 
     return normData
 
-# ! Update docstring
+
+# ! Update docstring: example is not correct
 def median_normalization(data, normalize="samples"):
     """
     This function normalizes each sample by using its median.
