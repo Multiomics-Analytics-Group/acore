@@ -7,7 +7,7 @@
 #
 # Refers to the `acore.normalization_analysis` module.
 
-# %%
+# %% tags=["hide-output"]
 # %pip install acore
 
 # %% tags=["hide-input"]
@@ -144,8 +144,7 @@ omics
 metadata
 
 # %% [markdown]
-# ## Target
-# Tabulate target and check for missing values
+# Tabulate selected metadata and check for missing values
 # 
 # %% tags=["hide-input"]
 metadata[METACOL_LABEL].value_counts(dropna=False)
@@ -171,10 +170,10 @@ y = metadata[METACOL_LABEL].astype("category")
 # here as a way to do it for your training data.
 
 # %% [markdown]
-# ## Fill missing values for preliminary plots (later normalization is done before imputation)
+# ## Fill missing values for preliminary plots
 
 # %% [markdown]
-# Impute using median to impute (before scaling, which can be changed.)
+# Impute using median to impute (before scaling, which can be changed).
 
 # %% tags=["hide-input"]
 median_imputer = sklearn.impute.SimpleImputer(strategy="median")
@@ -226,7 +225,7 @@ omics_imputed
 # global median.
 
 # %%
-%timeit
+%%time
 X = acore.normalization_analysis.normalize_data(omics_imputed, "median")
 X
 
@@ -247,7 +246,7 @@ omics_imputed - X
 # Normalize a sample by it's mean and standard deviation.
 
 # %% 
-%timeit
+%%time
 X = acore.normalization_analysis.normalize_data(omics_imputed, "zscore")
 X
 
@@ -267,7 +266,7 @@ omics_imp_scaled - X
 # - normalize iteratively features and samples to have zero median.
 
 # %%
-%timeit
+%%time
 X = acore.normalization_analysis.normalize_data(omics_imputed, "median_polish")
 X 
 
@@ -287,7 +286,7 @@ omics_imp_scaled - X
 # quantile normalize each feature column.
 
 # %%
-%timeit
+%%time
 X = acore.normalization_analysis.normalize_data(omics_imputed, "quantile")
 X
 
@@ -304,7 +303,7 @@ omics_imputed - X
 # ## Linear normalization
 
 # %%
-%timeit
+%%time
 X = acore.normalization_analysis.normalize_data(omics_imputed, "linear")
 X
 

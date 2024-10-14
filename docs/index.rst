@@ -15,6 +15,7 @@
    :hidden:
 
    api_examples/exploratory_analysis
+   api_examples/normalization_analysis
 
 .. toctree::
    :maxdepth: 2
