@@ -33,6 +33,7 @@ dependencies = [
     "snfpy",
     "umap-learn",
     "statsmodels",
+    "inmoose", # combat batch correction
 ]
 
 [project.optional-dependencies]

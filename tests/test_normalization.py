@@ -3,6 +3,30 @@ import pandas as pd
 from acore import normalization_analysis as normalization
 
 
+def test_combat_batch_correction():
+    data = pd.DataFrame.from_dict(
+        {
+            0: {"a": 2, "b": 4, "c": 4, "batch": "A"},
+            1: {"a": 5, "b": 4, "c": 14, "batch": "B"},
+            2: {"a": 4, "b": 6, "c": 8, "batch": "A"},
+            3: {"a": 3, "b": 5, "c": 8, "batch": "A"},
+            4: {"a": 3, "b": 3, "c": 9, "batch": "B"},
+        },
+        orient="index",
+    )
+    expected = {
+        0: {"a": 2.2879985660018765, "b": 3.682428536138729, "c": 5.293448325592079},
+        1: {"a": 4.482588006427705, "b": 4.5907334328411995, "c": 11.70033324453306},
+        2: {"a": 4.322327732200314, "b": 5.661304683114737, "c": 9.362703235564519},
+        3: {"a": 3.3051631491010953, "b": 4.671866609626733, "c": 9.362703235564519},
+        4: {"a": 2.537904319175784, "b": 3.589114860839033, "c": 6.885375054723476},
+    }
+    actual = normalization.combat_batch_correction(data, "batch").to_dict(
+        orient="index"
+    )
+    assert actual == expected
+
+
 def test_median_normalization_along_columns():
     data = pd.DataFrame(
         {
@@ -177,7 +201,7 @@ def test_linear_normalization_along_columns():
         },
     }
 
-    actual = normalization.linear_normalization(data, method="l1", normalize="samples").to_dict(
-        orient="index"
-    )
+    actual = normalization.linear_normalization(
+        data, method="l1", normalize="samples"
+    ).to_dict(orient="index")
     assert actual == expected

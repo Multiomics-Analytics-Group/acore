@@ -27,9 +27,9 @@ import acore.sklearn
 from acore.sklearn import pca as acore_pca  # ! to remove
 
 
-def plot_umap(X_scaled, y, meta_column, random_state=42)-> plt.Axes:
+def plot_umap(X_scaled, y, meta_column, random_state=42) -> plt.Axes:
     """Fit and plot UMAP embedding with two components with colors defined by meta_column."""
-    reducer = umap.UMAP(random_state=random_state ,n_jobs=1)
+    reducer = umap.UMAP(random_state=random_state, n_jobs=1)
     embedding = reducer.fit_transform(X_scaled)
     embedding = pd.DataFrame(
         embedding, index=X_scaled.index, columns=["UMAP 1", "UMAP 2"]
@@ -64,7 +64,9 @@ def run_and_plot_pca(
         PCs.plot.scatter(
             i, j, c=meta_column, cmap="Paired", ax=ax, colorbar=plot_heatmap
         )
-    _ = PCs.pop(meta_column,)
+    _ = PCs.pop(
+        meta_column,
+    )
     return PCs, fig
 
 
@@ -133,8 +135,16 @@ pg_map = {k: k.split(";")[0] for k in omics.columns}
 omics = omics.rename(columns=pg_map)
 # log2 transform raw intensity data:
 omics = np.log2(omics + 1)
-ax = omics.notna().sum().sort_values().plot(rot=90, ylabel="Number of samples",
-                                            xlabel="Proteins (ranked by missing values)",)
+ax = (
+    omics.notna()
+    .sum()
+    .sort_values()
+    .plot(
+        rot=90,
+        ylabel="Number of samples",
+        xlabel="Proteins (ranked by missing values)",
+    )
+)
 omics
 
 # %% [markdown]
@@ -145,7 +155,7 @@ metadata
 
 # %% [markdown]
 # Tabulate selected metadata and check for missing values
-# 
+
 # %% tags=["hide-input"]
 metadata[METACOL_LABEL].value_counts(dropna=False)
 
@@ -159,7 +169,7 @@ if target_counts.sum() < len(metadata):
     )
     mask = metadata[METACOL_LABEL].notna()
     metadata, omics = metadata.loc[mask], omics.loc[mask]
-    
+
 if METACOL_LABEL is None:
     METACOL_LABEL = METACOL_LABEL
 y = metadata[METACOL_LABEL].astype("category")
@@ -220,12 +230,37 @@ ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 omics_imputed
 
 # %% [markdown]
+# ## Combat normalization
+# Correct for batch effects in the data using a robust regression approach normalizing
+# mean and scale effetcs out for each feature by batch. Assumes normally distributed data.
+
+# %%
+# %%time
+X = acore.normalization_analysis.combat_batch_correction(
+    omics_imputed.join(y),
+    batch_col="site",
+)
+X
+
+# %% tags=["hide-input"]
+omics_imp_scaled = standard_normalize(X)
+PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
+ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
+
+# %% [markdown]
+# See change by substracting combat normalized data from original data.
+
+# %% tags=["hide-input"]
+omics_imputed - X
+
+
+# %% [markdown]
 # ## Median normalization
 # Substracts a constant from all features of a sample. All samples will have the same
 # global median.
 
 # %%
-%%time
+# %%time
 X = acore.normalization_analysis.normalize_data(omics_imputed, "median")
 X
 
@@ -245,8 +280,8 @@ omics_imputed - X
 # ## Z-score normalization
 # Normalize a sample by it's mean and standard deviation.
 
-# %% 
-%%time
+# %%
+# %%time
 X = acore.normalization_analysis.normalize_data(omics_imputed, "zscore")
 X
 
@@ -266,9 +301,9 @@ omics_imp_scaled - X
 # - normalize iteratively features and samples to have zero median.
 
 # %%
-%%time
+# %%time
 X = acore.normalization_analysis.normalize_data(omics_imputed, "median_polish")
-X 
+X
 
 # %% tags=["hide-input"]
 omics_imp_scaled = standard_normalize(X)
@@ -282,11 +317,11 @@ ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 omics_imp_scaled - X
 
 # %% [markdown]
-# ## Quantile normalization 
+# ## Quantile normalization
 # quantile normalize each feature column.
 
 # %%
-%%time
+# %%time
 X = acore.normalization_analysis.normalize_data(omics_imputed, "quantile")
 X
 
@@ -303,7 +338,7 @@ omics_imputed - X
 # ## Linear normalization
 
 # %%
-%%time
+# %%time
 X = acore.normalization_analysis.normalize_data(omics_imputed, "linear")
 X
 
@@ -317,7 +352,7 @@ omics_imputed - X
 
 # %% [markdown]
 # ## Summmary
-# Besides the median polish normalization, the structure of the data is not changed 
+# Besides the median polish normalization, the structure of the data is not changed
 # too much by the normalization using this Alzheimer example. This notebook can be opened
 # on colab and might be a good starting point for investigating the effect of normalization
 # on your data - or to disect some approaches further.
