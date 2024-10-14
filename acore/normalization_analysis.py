@@ -1,17 +1,29 @@
 import pandas as pd
-from combat.pycombat import pycombat
+
+# from combat.pycombat import pycombat
 from sklearn import preprocessing
 
 
-def combat_batch_correction(data, batch_col, index_cols):
+def combat_batch_correction(
+    data: pd.DataFrame,
+    batch_col: str,
+    index_cols: list[str],
+) -> pd.DataFrame:
     """
-    This function corrects processed data for batch effects. For more information visit: https://pypi.org/project/pycombat/
-    :param data: pandas dataframe with samples as rows and protein identifiers as columns.
+    This function corrects processed data for batch effects. For more information visit:
+    https://pypi.org/project/pycombat/
+
+    :param data: pandas.DataFrame with samples as rows and protein identifiers as columns.
     :param batch_col: column with the batch identifiers
     :param index_cols: list of columns that don't need to be corrected (i.e group)
-    :return: pandas dataframe with samples as rows and protein identifiers as columns.
+    :return: pandas.DataFrame with samples as rows and protein identifiers as columns.
     Example::
-        result = combat_batch_correction(data, batch_col='batch', index_cols=['subject', 'sample', 'group'])
+        result = combat_batch_correction(
+                    data,
+                    batch_col="batch",
+                    index_cols=["subject", "sample", "group"],
+                )
+
     """
     df_corrected = pd.DataFrame()
     index_cols = [c for c in index_cols if c != batch_col]
@@ -30,16 +42,21 @@ def combat_batch_correction(data, batch_col, index_cols):
     return df_corrected
 
 
-def normalize_data_per_group(data, group, method="median", normalize=None):
+def normalize_data_per_group(
+    data: pd.DataFrame,
+    group: str | int | list[str | int],
+    method: str = "median",
+    normalize: str = None,
+) -> pd.DataFrame:
     """
     This function normalizes the data by group using the selected method
 
     :param data: DataFrame with the data to be normalized (samples x features)
-    :param group_col: Column containing the groups
+    :param group_col: Column containing the groups, passed to pandas.DataFrame.groupby
     :param str method: normalization method to choose among: median_polish, median,
                         quantile, linear
     :param str normalize: whether the normalization should be done by 'features' (columns) or 'samples' (rows) (default None)
-    :return: Pandas dataframe.
+    :return: pandas.DataFrame.
 
     Example::
 
@@ -53,15 +70,21 @@ def normalize_data_per_group(data, group, method="median", normalize=None):
     return ndf
 
 
-def normalize_data(data, method="median", normalize=None):
+def normalize_data(
+    data: pd.DataFrame,
+    method: str = "median",
+    normalize: str = None,
+):
     """
-    This function normalizes the data using the selected method
+    This function normalizes the data using the selected method. Normalizes only nummeric 
+    data, but keeps the non-numeric columns in the output DataFrame.
 
     :param data: DataFrame with the data to be normalized (samples x features)
-    :param str method: normalization method to choose among: median_polish, median,
-                        quantile, linear
-    :param str normalize: whether the normalization should be done by 'features' (columns) or 'samples' (rows) (default None)
-    :return: Pandas dataframe.
+    :param str method: normalization method to choose among: median (default), 
+                       median_polish, median_zero, quantile, linear, zscore
+    :param str normalize: whether the normalization should be done by 'features' (columns)
+                          or 'samples' (rows) (default None)
+    :return: pandas.DataFrame.
 
     Example::
 
@@ -97,8 +120,9 @@ def median_zero_normalization(data, normalize="samples"):
     This function normalizes each sample by using its median.
 
     :param data:
-    :param str normalize: whether the normalization should be done by 'features' (columns) or 'samples' (rows)
-    :return: Pandas dataframe.
+    :param str normalize: whether the normalization should be done by 'features' (columns)
+                          or 'samples' (rows)
+    :return: pandas.DataFrame.
 
     Example::
         data = pd.DataFrame({'a': [2,5,4,3,3], 'b':[4,4,6,5,3], 'c':[4,14,8,8,9]})
@@ -118,14 +142,15 @@ def median_zero_normalization(data, normalize="samples"):
 
     return normData
 
-
+# ! Update docstring
 def median_normalization(data, normalize="samples"):
     """
     This function normalizes each sample by using its median.
 
     :param data:
-    :param str normalize: whether the normalization should be done by 'features' (columns) or 'samples' (rows)
-    :return: Pandas dataframe.
+    :param str normalize: whether the normalization should be done by 'features' (columns)
+                          or 'samples' (rows)
+    :return: pandas.DataFrame.
 
     Example::
         data = pd.DataFrame({'a': [2,5,4,3,3], 'b':[4,4,6,5,3], 'c':[4,14,8,8,9]})
@@ -148,11 +173,13 @@ def median_normalization(data, normalize="samples"):
 
 def zscore_normalization(data, normalize="samples"):
     """
-    This function normalizes each sample by using its mean and standard deviation (mean=0, std=1).
+    This function normalizes each sample by using its mean and standard deviation 
+    (mean=0, std=1).
 
     :param data:
-    :param str normalize: whether the normalization should be done by 'features' (columns) or 'samples' (rows)
-    :return: Pandas dataframe.
+    :param str normalize: whether the normalization should be done by 'features' (columns)
+                          or 'samples' (rows)
+    :return: pandas.DataFrame.
 
     Example::
         data = pd.DataFrame({'a': [2,5,4,3,3], 'b':[4,4,6,5,3], 'c':[4,14,8,8,9]})
@@ -181,7 +208,7 @@ def median_polish_normalization(data, max_iter=250):
 
     :param data:
     :param int max_iter: number of maximum iterations to prevent infinite loop.
-    :return: Pandas dataframe.
+    :return: pandas.DataFrame.
 
     Example::
         data = pd.DataFrame({'a': [2,5,4,3,3], 'b':[4,4,6,5,3], 'c':[4,14,8,8,9]})
@@ -210,12 +237,12 @@ def median_polish_normalization(data, max_iter=250):
     return normData
 
 
-def quantile_normalization(data):
+def quantile_normalization(data) -> pd.DataFrame:
     """
-    Applies quantile normalization to each column in pandas dataframe.
+    Applies quantile normalization to each column in pandas.DataFrame.
 
-    :param data: pandas dataframe with features as columns and samples as rows.
-    :return: Pandas dataframe
+    :param data: pandas.DataFrame with features as columns and samples as rows.
+    :return: pandas.DataFrame
 
     Example::
         data = pd.DataFrame({'a': [2,5,4,3,3], 'b':[4,4,6,5,3], 'c':[4,14,8,8,9]})
@@ -236,18 +263,21 @@ def quantile_normalization(data):
     return normdf
 
 
-def linear_normalization(data, method="l1", normalize="samples"):
+def linear_normalization(data, method="l1", normalize="samples") -> pd.DataFrame:
     """
-    This function scales input data to a unit norm. For more information visit https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.normalize.html.
+    This function scales input data to a unit norm. For more information visit:
+    https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.normalize.html
 
-    :param data: pandas dataframe with samples as rows and features as columns.
-    :param str method: norm to use to normalize each non-zero sample or non-zero feature (depends on axis).
-    :param str normalize: axis used to normalize the data along. If 'samples', independently normalize each sample, if 'features' normalize each feature.
-    :return: Pandas dataframe
+    :param data: pandas.DataFrame with samples as rows and features as columns.
+    :param str method: norm to use to normalize each non-zero sample or non-zero feature
+                        (depends on axis).
+    :param str normalize: axis used to normalize the data along. If 'samples',
+                independently normalize each sample, if 'features' normalize each feature.
+    :return: pandas.DataFrame
 
     Example::
         data = pd.DataFrame({'a': [2,5,4,3,3], 'b':[4,4,6,5,3], 'c':[4,14,8,8,9]})
-        result = linear_normalization(data, method = "l1", by = 'feature')
+        result = linear_normalization(data, method = "l1", by = 'samples')
         result
                 a         b         c
             0  0.117647  0.181818  0.093023
