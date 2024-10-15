@@ -65,7 +65,7 @@ def combat_batch_correction(
         index=df.index,
     )
     df_corrected = df_corrected.join(df[info_cols])
-    df_corrected = df_corrected  # .reset_index()  # ? would also not reset index here
+    # df_corrected = df_corrected  # .reset_index()  # ? would also not reset index here
 
     return df_corrected
 
@@ -91,7 +91,7 @@ def normalize_data_per_group(
         result = normalize_data_per_group(data, group='group' method='median')
     """
     ndf = pd.DataFrame(columns=data.columns)
-    for n, gdf in data.groupby(group):
+    for _, gdf in data.groupby(group):
         norm_group = normalize_data(gdf, method=method, normalize=normalize)
         ndf = ndf.append(norm_group)
 
@@ -118,26 +118,34 @@ def normalize_data(
 
         result = normalize_data(data, method='median_polish')
     """
-    normData = None
-    numeric_cols = data.select_dtypes(include=["int64", "float64"])
-    non_numeric_cols = data.select_dtypes(exclude=["int64", "float64"])
-    if not numeric_cols.empty:
-        if method == "median_polish":
-            normData = median_polish_normalization(numeric_cols, max_iter=250)
-        elif method == "median_zero":
-            normData = median_zero_normalization(numeric_cols, normalize)
-        elif method == "median":
-            normData = median_normalization(numeric_cols, normalize)
-        elif method == "quantile":
-            normData = quantile_normalization(numeric_cols)
-        elif method == "linear":
-            normData = linear_normalization(
-                numeric_cols, method="l1", normalize=normalize
-            )
-        elif method == "zscore":
-            normData = zscore_normalization(numeric_cols, normalize)
+    numeric_cols = data.select_dtypes(
+        include=["int64", "float64"]
+    )  # ! too restrictive?
+    non_numeric_cols = data.select_dtypes(
+        exclude=["int64", "float64"]
+    )  # ! too restrictive?
+    if numeric_cols.empty:
+        raise ValueError("No numeric columns found in data.")
+
+    if method == "median_polish":
+        norm_data = median_polish_normalization(numeric_cols, max_iter=250)
+    elif method == "median_zero":
+        norm_data = median_zero_normalization(numeric_cols, normalize)
+    elif method == "median":
+        norm_data = median_normalization(numeric_cols, normalize)
+    elif method == "quantile":
+        norm_data = quantile_normalization(numeric_cols)
+    elif method == "linear":
+        norm_data = linear_normalization(numeric_cols, method="l1", normalize=normalize)
+    elif method == "zscore":
+        norm_data = zscore_normalization(numeric_cols, normalize)
+    else:
+        raise ValueError(
+            "Invalid normalization method. Should be one of:"
+            " 'median', 'median_polish', 'median_zero', 'quantile', 'linear', 'zscore'"
+        )
 
     if non_numeric_cols is not None and not non_numeric_cols.empty:
-        normData = normData.join(non_numeric_cols)
+        norm_data = norm_data.join(non_numeric_cols)
 
-    return normData
+    return norm_data

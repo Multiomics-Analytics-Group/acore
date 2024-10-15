@@ -1,3 +1,5 @@
+"""Strategies for data normalization used by `normalize_data`."""
+
 import pandas as pd
 from sklearn import preprocessing
 
@@ -24,11 +26,11 @@ def median_zero_normalization(data, normalize="samples"):
             4 -2.000000 -2.000000  4.000000
     """
     if normalize is None or normalize == "samples":
-        normData = data.sub(data.median(axis=1), axis=0)
+        norm_data = data.sub(data.median(axis=1), axis=0)
     else:
-        normData = data.sub(data.median(axis=0), axis=1)
+        norm_data = data.sub(data.median(axis=0), axis=1)
 
-    return normData
+    return norm_data
 
 
 # ! Update docstring: example is not correct
@@ -53,11 +55,11 @@ def median_normalization(data, normalize="samples"):
             4 -2.000000 -2.000000  4.000000
     """
     if normalize is None or normalize == "samples":
-        normData = data.sub(data.median(axis=1) - data.median(axis=1).median(), axis=0)
+        norm_data = data.sub(data.median(axis=1) - data.median(axis=1).median(), axis=0)
     else:
-        normData = data.sub(data.median(axis=0) - data.median(axis=0).median(), axis=1)
+        norm_data = data.sub(data.median(axis=0) - data.median(axis=0).median(), axis=1)
 
-    return normData
+    return norm_data
 
 
 def zscore_normalization(data, normalize="samples"):
@@ -82,12 +84,12 @@ def zscore_normalization(data, normalize="samples"):
                 4 -0.577350 -0.577350  1.154701
     """
     if normalize is None or normalize == "samples":
-        normData = data.sub(data.mean(axis=1), axis=0).div(data.std(axis=1), axis=0)
+        norm_data = data.sub(data.mean(axis=1), axis=0).div(data.std(axis=1), axis=0)
 
     else:
-        normData = data.sub(data.mean(axis=0), axis=1).div(data.std(axis=0), axis=1)
+        norm_data = data.sub(data.mean(axis=0), axis=1).div(data.std(axis=0), axis=1)
 
-    return normData
+    return norm_data
 
 
 def median_polish_normalization(data, max_iter=250):
@@ -111,7 +113,7 @@ def median_polish_normalization(data, max_iter=250):
             4  3.0  5.0   8.0
     """
     mediandf = data.copy()
-    for i in range(max_iter):
+    for _ in range(max_iter):
         row_median = mediandf.median(axis=1)
         mediandf = mediandf.sub(row_median, axis=0)
         col_median = mediandf.median(axis=0)
@@ -121,9 +123,9 @@ def median_polish_normalization(data, max_iter=250):
         ).all():
             break
 
-    normData = data - mediandf
+    norm_data = data - mediandf
 
-    return normData
+    return norm_data
 
 
 def quantile_normalization(data) -> pd.DataFrame:
