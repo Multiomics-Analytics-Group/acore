@@ -1,6 +1,6 @@
 import pandas as pd
 
-from acore import normalization_analysis as normalization
+from acore import normalization as normalization
 
 
 def test_combat_batch_correction():

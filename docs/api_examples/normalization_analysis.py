@@ -5,7 +5,7 @@
 # We will see that the sites have a an effect where the data is in principal component space
 # and in UMAP space. We will then normalize the data and see how the effect on these plots.
 #
-# Refers to the `acore.normalization_analysis` module.
+# Refers to the `acore.normalization` module.
 
 # %% tags=["hide-output"]
 # %pip install acore
@@ -22,7 +22,7 @@ import sklearn.impute
 import sklearn.preprocessing
 import umap
 
-import acore.normalization_analysis
+import acore.normalization
 import acore.sklearn
 from acore.sklearn import pca as acore_pca  # ! to remove
 
@@ -220,7 +220,7 @@ ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
 # %% [markdown]
 # ## Normalization of samples in a dataset
-# We will use the `acore.normalization_analysis` module to normalize the data.
+# We will use the `acore.normalization` module to normalize the data.
 #
 # We will do it for each of the data on the omics dataset which is log transformed
 # and imputed, but not yet normalized. Then we will reapply standard
@@ -236,7 +236,7 @@ omics_imputed
 
 # %%
 # %%time
-X = acore.normalization_analysis.combat_batch_correction(
+X = acore.normalization.combat_batch_correction(
     omics_imputed.join(y),
     batch_col="site",
 )
@@ -261,7 +261,7 @@ omics_imputed - X
 
 # %%
 # %%time
-X = acore.normalization_analysis.normalize_data(omics_imputed, "median")
+X = acore.normalization.normalize_data(omics_imputed, "median")
 X
 
 # %% tags=["hide-input"]
@@ -282,7 +282,7 @@ omics_imputed - X
 
 # %%
 # %%time
-X = acore.normalization_analysis.normalize_data(omics_imputed, "zscore")
+X = acore.normalization.normalize_data(omics_imputed, "zscore")
 X
 
 # %% tags=["hide-input"]
@@ -302,7 +302,7 @@ omics_imp_scaled - X
 
 # %%
 # %%time
-X = acore.normalization_analysis.normalize_data(omics_imputed, "median_polish")
+X = acore.normalization.normalize_data(omics_imputed, "median_polish")
 X
 
 # %% tags=["hide-input"]
@@ -322,7 +322,7 @@ omics_imp_scaled - X
 
 # %%
 # %%time
-X = acore.normalization_analysis.normalize_data(omics_imputed, "quantile")
+X = acore.normalization.normalize_data(omics_imputed, "quantile")
 X
 
 # %% tags=["hide-input"]
@@ -339,7 +339,7 @@ omics_imputed - X
 
 # %%
 # %%time
-X = acore.normalization_analysis.normalize_data(omics_imputed, "linear")
+X = acore.normalization.normalize_data(omics_imputed, "linear")
 X
 
 # %% tags=["hide-input"]
