@@ -28,7 +28,7 @@ dependencies = [
     "kmapper",
     "lifelines",
     "pingouin",
-    # "python-louvai",
+    "python-louvain",
     "PyWGCNA",
     "snfpy",
     "umap-learn",
