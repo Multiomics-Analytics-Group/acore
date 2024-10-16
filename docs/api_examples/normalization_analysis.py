@@ -252,7 +252,7 @@ ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 omics
 
 # %% [markdown]
-# ### Combat normalization
+# ## Combat normalization
 # Correct for batch effects in the data using a robust regression approach normalizing
 # mean and scale effetcs out for each feature by batch. Assumes normally distributed data.
 #
