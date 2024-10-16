@@ -1,7 +1,7 @@
 [project]
 authors = [{ name = "Alberto Santos Delgado", email = "albsad@dtu.dk" }]
 name = "acore"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Python package with statistical functions to analyse multimodal molecular data"
 license = { text = "GNU General Public License v3" }
 readme = "README.rst"
