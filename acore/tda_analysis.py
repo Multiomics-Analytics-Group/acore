@@ -1,9 +1,17 @@
-import numpy as np
 import kmapper as km
-from sklearn import ensemble, cluster
+import numpy as np
+from sklearn import cluster, ensemble
 
 
-def run_mapper(data, lenses=["l2norm"], n_cubes=15, overlap=0.5, n_clusters=3, linkage="complete", affinity="correlation"):
+def run_mapper(
+    data,
+    lenses=["l2norm"],
+    n_cubes=15,
+    overlap=0.5,
+    n_clusters=3,
+    linkage="complete",
+    affinity="correlation",
+):
     """
 
     :param data:
@@ -32,8 +40,12 @@ def run_mapper(data, lenses=["l2norm"], n_cubes=15, overlap=0.5, n_clusters=3, l
     lens = np.c_[lens1, lens2]
 
     # Define the simplicial complex
-    simplicial_complex = mapper.map(lens,
-                                    X,
-                                    clusterer=cluster.AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage, affinity=affinity))
+    simplicial_complex = mapper.map(
+        lens,
+        X,
+        clusterer=cluster.AgglomerativeClustering(
+            n_clusters=n_clusters, linkage=linkage, affinity=affinity
+        ),
+    )
 
     return simplicial_complex, {"labels": labels}
