@@ -105,9 +105,9 @@ nb_execution_raise_on_error = True
 nb_merge_streams = True
 
 # https://myst-nb.readthedocs.io/en/latest/authoring/custom-formats.html#write-custom-formats
-nb_custom_formats = {
-    ".py": ["jupytext.reads", {"fmt": "py:percent"}]
-}
+# nb_custom_formats = {".py": ["jupytext.reads", {"fmt": "py:percent"}]}
+# ! better use jupytext directly to sync the notebook formats -> allows to download ipynb
+# ! and see start in colab button
 
 
 # Intersphinx options

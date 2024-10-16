@@ -1,3 +1,18 @@
+# ---
+# jupyter:
+#   jupytext:
+#     cell_metadata_filter: tags,-all
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.16.4
+#   kernelspec:
+#     display_name: Python 3 (ipykernel)
+#     language: python
+#     name: python3
+# ---
+
 # %% [markdown]
 # # Normalization of samples in a dataset example
 #
@@ -71,7 +86,7 @@ def run_and_plot_pca(
 
 
 # %% [markdown]
-
+#
 # ## Set some parameters
 
 # %% tags=["parameters"]
@@ -215,7 +230,7 @@ pcs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL)
 # ## UMAP
 # of median imputed and normalized omics data:
 
-# %%  tags=["hide-input"]
+# %% tags=["hide-input"]
 ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
 # %% [markdown]
