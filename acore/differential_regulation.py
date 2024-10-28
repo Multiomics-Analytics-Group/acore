@@ -179,7 +179,8 @@ def calculate_pairwise_ttest(
     df, column, subject="subject", group="group", correction="none", is_logged=True
 ):
     """
-    Performs pairwise t-test using pingouin, as a posthoc test, and calculates fold-changes. For more information visit https://pingouin-stats.org/generated/pingouin.pairwise_ttests.html.
+    Performs pairwise t-test using pingouin, as a posthoc test, and calculates fold-changes.
+    For more information visit https://pingouin-stats.org/generated/pingouin.pairwise_ttests.html.
 
     :param df: pandas dataframe with subject and group as rows and protein identifier as column.
     :param str column: column label containing the dependant variable
@@ -226,7 +227,7 @@ def calculate_pairwise_ttest(
         "posthoc BF10",
         "posthoc effsize",
     ]
-    posthoc = df.pairwise_ttests(
+    posthoc = df.pairwise_tests(
         dv=column,
         between=group,
         subject=subject,
@@ -481,16 +482,16 @@ def run_anova(
 
 
 def run_ancova(
-    df,
-    covariates,
-    alpha=0.05,
-    drop_cols=["sample", "subject"],
-    subject="subject",
-    group="group",
-    permutations=0,
-    correction="fdr_bh",
-    is_logged=True,
-    non_par=False,
+    df: pd.DataFrame,
+    covariates: list[str],
+    alpha: float = 0.05,
+    drop_col: list[str] = ["sample", "subject"],
+    subject: str = "subject",
+    group: str = "group",
+    permutations: int = 0,
+    correction: str = "fdr_bh",
+    is_logged: bool = True,
+    non_pa: bool = False,
 ):
     """
     Performs statistical test for each protein in a dataset.
