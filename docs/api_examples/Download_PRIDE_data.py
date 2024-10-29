@@ -13,7 +13,7 @@
 # ---
 
 # %% [markdown]
-# # Download PRIDE Data
+# # Download and Process PRIDE Data
 # This notebook shows how `acore` can be used to download data from
 # the Proteomics Identifications Database - PRIDE -
 # ([ebi.ac.uk/pride/](https://www.ebi.ac.uk/pride/))
