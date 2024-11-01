@@ -20,7 +20,7 @@ dependencies = [
     "click>=7.0",
     "numpy",
     "pandas",
-    "dsp_pandas", # has only pandas related dependencies
+    "dsp-pandas", # has only pandas related dependencies
     "scipy",
     "networkx",
     "biopython",
