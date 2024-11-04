@@ -57,7 +57,8 @@ folder_unzipped = Path("unzipped")  # folder to uncompress the file
 
 # %%
 ret = acore.io.download_PRIDE_data(pxd_id=pxd_id, file_name=fname, to=folder_downloads)
-ret["acore_downloaded_file"]  # folder_downloads / fname
+ret["acore_downloaded_file"] = folder_downloads / fname
+ret
 
 # %% d [markdown]
 # ## Read Data In
@@ -66,7 +67,7 @@ ret["acore_downloaded_file"]  # folder_downloads / fname
 # ### Decompress File
 
 # %%
-# ! you need a system installation of a rar archive tool
+# # ! you need a system installation of a rar archive tool
 acore.io.unrar(filepath=ret["acore_downloaded_file"], to=folder_unzipped)
 
 # %% [markdown]
@@ -128,15 +129,16 @@ pgs
 # %%
 pgs.columns.str.replace(r"\d", "", regex=True)
 
-
 # %% [markdown]
 # We add to the information as a MultiIndex of group and sample name to the columns
 # (sample metadata)
-# pgs.columns = pd.MultiIndex.from_arrays(
-#     [pgs.columns.str.replace(r"\d", "", regex=True), pgs.columns],
-#     names=["group", pgs.columns.name],
-# )
-# pgs
+
+# %%
+pgs.columns = pd.MultiIndex.from_arrays(
+    [pgs.columns.str.replace(r"\d", "", regex=True), pgs.columns],
+    names=["group", pgs.columns.name],
+)
+pgs
 
 # %% [markdown]
 # From here we can stack both levels, name the values intensity. If we reset the index we
@@ -154,8 +156,12 @@ pgs
 pgs = np.log2(pgs.replace(0.0, np.nan).dropna())
 pgs
 
+
+# %% [markdown]
+# Data to be saved in the CKG format: Reset the index.
+
 # %%
 pgs.reset_index()
 
 # %% [markdown]
-# Data to be saved in the CKG format.
+# Done.
