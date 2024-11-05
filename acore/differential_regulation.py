@@ -374,15 +374,15 @@ def calculate_mixed_anova(
 
 
 def run_anova(
-    df,
-    alpha=0.05,
-    drop_cols=["sample", "subject"],
-    subject="subject",
-    group="group",
-    permutations=0,
-    correction="fdr_bh",
-    is_logged=True,
-    non_par=False,
+    df: pd.DataFrame,
+    alpha: float = 0.05,
+    drop_cols: list[str] = ["sample", "subject"],
+    subject: str = "subject",
+    group: str = "group",
+    permutations: int = 0,
+    correction: str = "fdr_bh",
+    is_logged: bool = True,
+    non_par: bool = False,
 ):
     """
     Performs statistical test for each protein in a dataset.
@@ -485,7 +485,7 @@ def run_ancova(
     df: pd.DataFrame,
     covariates: list[str],
     alpha: float = 0.05,
-    drop_col: list[str] = ["sample", "subject"],
+    drop_cols: list[str] = ["sample", "subject"],
     subject: str = "subject",
     group: str = "group",
     permutations: int = 0,
