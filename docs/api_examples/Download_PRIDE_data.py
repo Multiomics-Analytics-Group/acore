@@ -13,7 +13,7 @@
 # ---
 
 # %% [markdown]
-# # Download and Process PRIDE Data
+# # Use proteomics data from PRIDE Data (adipose tissue)
 # This notebook shows how `acore` can be used to download data from
 # the Proteomics Identifications Database - PRIDE -
 # ([ebi.ac.uk/pride/](https://www.ebi.ac.uk/pride/))
@@ -87,8 +87,19 @@ fpath_proteinGroups = folder_unzipped / "proteinGroups.txt"
 index_cols = [
     "Majority protein IDs",
 ]
-pgs = pd.read_csv(fpath_proteinGroups, index_col=index_cols, sep="\t")
-pgs.sample(5)
+data = pd.read_csv(fpath_proteinGroups, index_col=index_cols, sep="\t")
+data.sample(5)
+
+# %% [markdown]
+# We mark the protein group by the first protein in the group, ensuring that the protein
+# group is still unique.
+
+# %%
+new_index = data.index.str.split(";").str[0].rename("first_prot")
+assert new_index.is_unique
+data = data.reset_index()
+data.index = new_index
+data
 
 # %% [markdown]
 # Get ride of potential contaminants, reverse (decoys) and identified only by a
@@ -98,12 +109,12 @@ pgs.sample(5)
 
 # %%
 filters = ["Reverse", "Only identified by site", "Contaminant"]
-pgs[filters].describe()
+data[filters].describe()
 
 # %%
-mask = pgs[filters].isna().all(axis=1)
-pgs = pgs.loc[mask]
-pgs
+mask = data[filters].isna().all(axis=1)
+data = data.loc[mask]
+data
 
 # %% [markdown]
 # Then we can filter the columns that contain the string `LFQ intensity`. The sample names
@@ -111,8 +122,16 @@ pgs
 
 # %%
 stub_intensity = "LFQ intensity"
-pgs = pgs.filter(like=stub_intensity)
+pgs = data.filter(like=stub_intensity)
 pgs
+
+
+# %% [markdown]
+# The associated metadata for protein groups we will keep for reference:
+
+# %%
+meta_pgs = data.drop(pgs.columns, axis=1)
+meta_pgs
 
 # %% [markdown]
 # No we can get rid of the common part `LFQ intensity` and keep only the sample names
