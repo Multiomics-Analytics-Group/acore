@@ -12,6 +12,9 @@
 # > https://doi.org/10.1016/j.cell.2018.08.065.
 
 # %%
+# %pip install acore openpyxl
+
+# %%
 from pathlib import Path
 
 import pandas as pd
