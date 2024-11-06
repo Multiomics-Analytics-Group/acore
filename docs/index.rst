@@ -23,6 +23,7 @@
    :hidden:
 
    api_examples/Download_PRIDE_data
+   api_examples/ovarian_cancer
 
 .. toctree::
    :maxdepth: 2
