@@ -29,7 +29,7 @@ dependencies = [
     "lifelines",
     "pingouin",
     "python-louvain",
-    "PyWGCNA",
+    "PyWGCNA!=2.2.0", # to fix.
     "snfpy",
     "umap-learn",
     "statsmodels",
