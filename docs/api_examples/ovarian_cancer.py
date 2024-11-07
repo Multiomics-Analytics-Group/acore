@@ -22,7 +22,7 @@ import pandas as pd
 import acore.io
 
 # %% [markdown]
-# specify the proteome file path
+# Specify the proteome file's url
 
 # %%
 furl_pg = "https://ars.els-cdn.com/content/image/1-s2.0-S0092867418311668-mmc2.xlsx"
@@ -79,18 +79,24 @@ pgs = pgs.assign(Patient11=lambda df: df.filter(like="Patient11").mean(axis=1)).
     ["Patient11B"], axis=1
 )
 
+# %% [markdown]
+# Keep the other information of protein groups as additional annotations on protein groups.
+
 # %%
 meta_pgs = data.drop(pgs.columns, axis=1).drop("Patient11B", axis=1)
 meta_pgs
 
+# %% [markdown]
+# View non-numeric columns of protein group metadata.
+
 # %%
 meta_pgs.describe(exclude="number")
 
-# %%
-mask = meta_pgs["Potential contaminant"].isna()
-mask.value_counts()
+# %% [markdown]
+# Get rid of potential contaminants (marked with a +, so non missing have `NAN`).
 
 # %%
+mask = meta_pgs["Potential contaminant"].isna()
 pgs = pgs.loc[mask].T
 pgs
 
