@@ -555,7 +555,9 @@ def pairwise_ttest_with_covariates(df, column, group, covariates, is_logged):
     model = ols(formula, data=df).fit()
     pw = model.t_test_pairwise("C(Q('%s'))" % (group)).result_frame
     pw = pw.reset_index()
-    groups = "|".join([re.escape(s) for s in df[group].unique().tolist()])
+    groups = "|".join(
+        [re.escape(str(s)) for s in df[group].unique().tolist()]
+    )  # ! this caused issues:
     regex = r"({})\-({})".format(groups, groups)
     pw["group1"] = pw["index"].apply(lambda x: re.search(regex, x).group(2))
     pw["group2"] = pw["index"].apply(lambda x: re.search(regex, x).group(1))
