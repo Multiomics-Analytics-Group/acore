@@ -18,6 +18,14 @@
    api_examples/normalization_analysis
 
 .. toctree::
+   :maxdepth: 1
+   :caption: Example dataset (preprocessing)
+   :hidden:
+
+   api_examples/Download_PRIDE_data
+   api_examples/ovarian_cancer
+
+.. toctree::
    :maxdepth: 2
    :caption: Modules
    :hidden:

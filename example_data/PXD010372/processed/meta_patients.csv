@@ -1,0 +1,26 @@
+Patient_id,PlatinumValue,Days to platinum resistance,Disease free days,Overall survival days,Status,Refractory
+Patient02,Resistant,-54,114,241,deceased,y
+Patient24,Sensitive,2584,2754,2903,deceased,n
+Patient08,Resistant,31,211,228,deceased,n
+Patient03,Resistant,-22,114,1489,deceased,y
+Patient13,Sensitive,382,573,1479,deceased,n
+Patient18,Sensitive,971,1133,1716,deceased,n
+Patient25,Sensitive,3100,3229,3229,alive,n
+Patient14,Sensitive,440,580,1106,deceased,n
+Patient05,Resistant,18,161,363,deceased,n
+Patient20,Sensitive,1111,1296,3046,alive,n
+Patient21,Sensitive,1271,1498,1573,deceased,n
+Patient11,Resistant,-37,391,567,deceased,n
+Patient23,Sensitive,2478,2603,2603,alive,n
+Patient16,Sensitive,462,663,1347,deceased,n
+Patient07,Resistant,20,210,345,deceased,n
+Patient17,Sensitive,864,1008,1528,deceased,n
+Patient04,Resistant,29,155,485,deceased,n
+Patient10,Resistant,104,366,922,deceased,n
+Patient12,Sensitive,366,552,973,deceased,n
+Patient06,Resistant,52,190,790,deceased,n
+Patient09,Resistant,134,335,1118,deceased,n
+Patient15,Sensitive,397,588,1078,deceased,n
+Patient22,Sensitive,1665,1804,1804,alive,n
+Patient19,Sensitive,1051,1188,1467,alive,n
+Patient01,Resistant,11,113,280,deceased,y
