@@ -12,6 +12,13 @@ GitHub directly.
   [LINK](https://analytics-core.readthedocs.io/en/latest/api_examples/Download_PRIDE_data.html)
 - only metadata in sample names (which are in columns)
 
+## PXD010372 - Ovarian cancer proteome
+
+- [article](https://www.sciencedirect.com/science/article/pii/S0092867418311668) - data taken directly from supplementary tables
+- PRIDE project [PXD010372](https://www.ebi.ac.uk/pride/archive/projects/PXD010372) - for reference
+- some custom preprocessing done
+
+
 ## PXD016278 - Alzheimer Data
 
 Proteome Profiling in Cerebrospinal Fluid Reveals Novel Biomarkers of Alzheimer's Disease
