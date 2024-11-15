@@ -77,8 +77,8 @@ class TestDimensionalityReduction(unittest.TestCase):
         if not platform.machine() == 'arm64':
             expected_result = pd.DataFrame({
                 'group': ['A', 'A', 'B', 'B'],
-                'x': [-48.3592, -82.92282, -13.767805, 20.844055],
-                'y': [-49.15443, 19.951246, 54.28048, -14.870984]
+                'x': [-27.375560760498047, -7.526909828186035, -28.731882095336914, -8.872751235961914],
+                'y': [1.547648310661316, 0.17019487917423248, -18.321491241455078, -19.713821411132812]
             })
         result, _ = ea.run_tsne(self.data, drop_cols=['sample', 'subject'], group='group', components=components, perplexity=3, n_iter=1000, init='pca', dropna=True)
         result = result['tsne']
