@@ -1,30 +1,31 @@
 import os
+
 import acore
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autosectionlabel',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autodoc.typehints',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.todo',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.coverage',
-    'sphinx.ext.imgmath',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
-    'sphinx_new_tab_link',
-    'myst_nb',
+    "sphinx.ext.autosectionlabel",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autodoc.typehints",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.doctest",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.todo",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.coverage",
+    "sphinx.ext.imgmath",
+    "sphinx.ext.ifconfig",
+    "sphinx.ext.viewcode",
+    "sphinx_new_tab_link",
+    "myst_nb",
 ]
 
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
@@ -34,11 +35,13 @@ autosectionlabel_prefix_document = True
 
 ## Include Python objects as they appear in source files
 ## Default: alphabetically ('alphabetical')
-autodoc_member_order = 'bysource'
+autodoc_member_order = "bysource"
 ## Default flags used by autodoc directives
-autodoc_default_options = {'members': True,
-                            'show-inheritance': True,
-                            'undoc-members': True}
+autodoc_default_options = {
+    "members": True,
+    "show-inheritance": True,
+    "undoc-members": True,
+}
 ## Generate autodoc stubs with summaries from code
 autosummary_generate = True
 
@@ -46,13 +49,13 @@ autosummary_generate = True
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = 'acore'
+project = "acore"
 copyright = "2023, Multi-omics Network Analytics Group"
 author = "Multi-omics Network Analytics Group"
 
@@ -70,17 +73,21 @@ release = acore.__version__
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = 'en'
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store',
-                    "jupyter_execute",
-                    "conf.py",]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    "jupyter_execute",
+    "conf.py",
+]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
@@ -158,7 +165,7 @@ html_theme_options = {
 # -- Options for HTMLHelp output ---------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'acoredoc'
+htmlhelp_basename = "acoredoc"
 
 
 # -- Options for LaTeX output ------------------------------------------
@@ -167,15 +174,12 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
-
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -185,9 +189,13 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass
 # [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'acore.tex',
-     'Analytics Core Documentation',
-     'Multi-omics Network Analytics Group', 'manual'),
+    (
+        master_doc,
+        "acore.tex",
+        "Analytics Core Documentation",
+        "Multi-omics Network Analytics Group",
+        "manual",
+    ),
 ]
 
 
@@ -195,11 +203,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'acore',
-     'Analytics Core Documentation',
-     [author], 1)
-]
+man_pages = [(master_doc, "acore", "Analytics Core Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------
@@ -208,12 +212,15 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'acore',
-     'Analytics Core Documentation',
-     author,
-     'acore',
-     'Oneline description of project.',
-     'Miscellaneous'),
+    (
+        master_doc,
+        "acore",
+        "Analytics Core Documentation",
+        author,
+        "acore",
+        "Oneline description of project.",
+        "Miscellaneous",
+    ),
 ]
 
 
