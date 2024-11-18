@@ -89,6 +89,9 @@ todo_include_todos = False
 
 #  https://myst-nb.readthedocs.io/en/latest/computation/execute.html
 nb_execution_mode = "auto"
+nb_execution_timeout = (
+    90  # increase limit of default 30 seconds max execution time per cell
+)
 
 myst_enable_extensions = ["dollarmath", "amsmath"]
 
