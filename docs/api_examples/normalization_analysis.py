@@ -39,7 +39,8 @@ import umap
 
 import acore.normalization
 import acore.sklearn
-from acore.sklearn import pca as acore_pca  # ! to remove
+from acore.decomposition import pca as acore_pca  # ! to remove
+from acore.plotting.decomposition import plot_explained_variance
 
 
 def plot_umap(X_scaled, y, meta_column, random_state=42) -> plt.Axes:
@@ -225,7 +226,7 @@ omics_imputed.shape
 omics_imp_scaled = standard_normalize(omics_imputed)
 
 PCs, pca = acore_pca.run_pca(omics_imp_scaled, n_components=4)
-ax = acore_pca.plot_explained_variance(pca)
+ax = plot_explained_variance(pca)
 ax.locator_params(axis="x", integer=True)
 omics_imp_scaled.shape
 
