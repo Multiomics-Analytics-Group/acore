@@ -2,7 +2,11 @@
 # # Exploratory Analysis
 
 # %%
+# %pip install acore
+
+# %%
 import pandas as pd
+
 import acore.exploratory_analysis as ea
 
 data = pd.DataFrame(
@@ -52,7 +56,7 @@ result, annotation = ea.run_umap(
 )
 
 # %%
-result['umap']
+result["umap"]
 
 # %%
 annotation
