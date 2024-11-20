@@ -1,3 +1,7 @@
+"""Enrichment Analysis Module. Contains different functions to perform enrichment 
+analysis.
+"""
+
 import os
 import re
 import uuid
@@ -29,15 +33,19 @@ def run_fisher(group1, group2, alternative="two-sided"):
 
 def run_kolmogorov_smirnov(dist1, dist2, alternative="two-sided"):
     """
-    Compute the Kolmogorov-Smirnov statistic on 2 samples. See https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_2samp.html
+    Compute the Kolmogorov-Smirnov statistic on 2 samples.
+    See https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_2samp.html
 
-    :param list dist1: sequence of 1-D ndarray (first distribution to compare) drawn from a continuous distribution
-    :param list dist2: sequence of 1-D ndarray (second distribution to compare) drawn from a continuous distribution
+    :param list dist1: sequence of 1-D ndarray (first distribution to compare)
+        drawn from a continuous distribution
+    :param list dist2: sequence of 1-D ndarray (second distribution to compare)
+        drawn from a continuous distribution
     :param str alternative: defines the alternative hypothesis (default is ‘two-sided’):
         * **'two-sided'**
         * **'less'**
         * **'greater'**
     :return: statistic float and KS statistic pvalue float Two-tailed p-value.
+
     Example::
 
         result = run_kolmogorov_smirnov(dist1, dist2, alternative='two-sided')
@@ -58,26 +66,45 @@ def run_site_regulation_enrichment(
     reject_col="rejected",
     group_col="group",
     method="fisher",
-    regex=r"(\w+~.+)_\w\d+\-\w+",
+    regex=r"(\w+~.+)_\w\d+\-\w+",  # ! add example to docstring of what this matches
     correction="fdr_bh",
 ):
     """
-    This function runs a simple enrichment analysis for significantly regulated protein sites in a dataset.
+    This function runs a simple enrichment analysis for significantly
+    regulated protein sites in a dataset.
 
-    :param regulation_data: pandas dataframe resulting from differential regulation analysis.
-    :param annotation: pandas dataframe with annotations for features (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
-    :param str identifier: name of the column from annotation containing feature identifiers.
-    :param list groups: column names from regulation_data containing group identifiers.
-    :param str annotation_col: name of the column from annotation containing annotation terms.
-    :param str reject_col: name of the column from regulatio_data containing boolean for rejected null hypothesis.
-    :param str group_col: column name for new column in annotation dataframe determining if feature belongs to foreground or background.
-    :param str method: method used to compute enrichment (only 'fisher' is supported currently).
+    :param regulation_data: pandas dataframe resulting from differential
+        regulation analysis.
+    :param annotation: pandas dataframe with annotations for features
+        (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
+    :param str identifier: name of the column from annotation containing
+        feature identifiers.
+    :param list groups: column names from regulation_data containing
+        group identifiers.
+    :param str annotation_col: name of the column from annotation containing
+        annotation terms.
+    :param str reject_col: name of the column from regulatio_data containing
+        boolean for rejected null hypothesis.
+    :param str group_col: column name for new column in annotation dataframe
+        determining if feature belongs to foreground or background.
+    :param str method: method used to compute enrichment
+        (only 'fisher' is supported currently).
     :param str regex: how to extract the annotated identifier from the site identifier
-    :return: Pandas dataframe with columns: 'terms', 'identifiers', 'foreground', 'background', 'pvalue', 'padj' and 'rejected'.
+    :return: Pandas dataframe with columns: 'terms', 'identifiers', 'foreground',
+        'background', 'pvalue', 'padj' and 'rejected'.
 
     Example::
 
-        result = run_site_regulation_enrichment(regulation_data, annotation, identifier='identifier', groups=['group1', 'group2'], annotation_col='annotation', reject_col='rejected', group_col='group', method='fisher', match="(\w+~.+)_\w\d+\-\w+")
+        result = run_site_regulation_enrichment(regulation_data,
+            annotation,
+            identifier='identifier',
+            groups=['group1', 'group2'],
+            annotation_col='annotation',
+            reject_col='rejected',
+            group_col='group',
+            method='fisher',
+            match="(\w+~.+)_\w\d+\-\w+"
+        )
     """
     result = pd.DataFrame()
     if regulation_data is not None:
@@ -120,24 +147,44 @@ def run_up_down_regulation_enrichment(
     lfc_cutoff=1,
 ):
     """
-    This function runs a simple enrichment analysis for significantly regulated proteins distinguishing between up- and down-regulated.
+    This function runs a simple enrichment analysis for significantly regulated proteins
+    distinguishing between up- and down-regulated.
 
-    :param regulation_data: pandas dataframe resulting from differential regulation analysis (CKG's regulation table).
-    :param annotation: pandas dataframe with annotations for features (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
+    :param regulation_data: pandas dataframe resulting from differential regulation
+        analysis (CKG's regulation table).
+    :param annotation: pandas dataframe with annotations for features
+        (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
     :param str identifier: name of the column from annotation containing feature identifiers.
     :param list groups: column names from regulation_data containing group identifiers.
     :param str annotation_col: name of the column from annotation containing annotation terms.
-    :param str reject_col: name of the column from regulation_data containing boolean for rejected null hypothesis.
-    :param str group_col: column name for new column in annotation dataframe determining if feature belongs to foreground or background.
-    :param str method: method used to compute enrichment (only 'fisher' is supported currently).
+    :param str reject_col: name of the column from regulation_data containing boolean for
+        rejected null hypothesis.
+    :param str group_col: column name for new column in annotation dataframe determining
+        if feature belongs to foreground or background.
+    :param str method: method used to compute enrichment
+        (only 'fisher' is supported currently).
     :param str correction: method to be used for multiple-testing correction
     :param float alpha: adjusted p-value cutoff to define significance
     :param float lfc_cutoff: log fold-change cutoff to define practical significance
-    :return: Pandas dataframe with columns: 'terms', 'identifiers', 'foreground', 'background', 'pvalue', 'padj' and 'rejected'.
+    :return: Pandas dataframe with columns:'terms', 'identifiers', 'foreground',
+        'background', 'pvalue', 'padj' and 'rejected'.
 
     Example::
 
-        result = run_up_down_regulation_enrichment(regulation_data, annotation, identifier='identifier', groups=['group1', 'group2'], annotation_col='annotation', reject_col='rejected', group_col='group', method='fisher', correction='fdr_bh', alpha=0.05, lfc_cutoff=1)
+        result = run_up_down_regulation_enrichment(
+            regulation_data,
+            annotation,
+            identifier='identifier',
+            groups=['group1',
+            'group2'],
+            annotation_col='annotation',
+            reject_col='rejected',
+            group_col='group',
+            method='fisher',
+            correction='fdr_bh',
+            alpha=0.05,
+            lfc_cutoff=1,
+        )
     """
     enrichment_results = {}
     for g1, g2 in regulation_data.groupby(groups).groups:
@@ -201,22 +248,37 @@ def run_regulation_enrichment(
     correction="fdr_bh",
 ):
     """
-    This function runs a simple enrichment analysis for significantly regulated features in a dataset.
+    This function runs a simple enrichment analysis for significantly regulated features
+    in a dataset.
 
     :param regulation_data: pandas dataframe resulting from differential regulation analysis.
-    :param annotation: pandas dataframe with annotations for features (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
+    :param annotation: pandas dataframe with annotations for features
+        (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
     :param str identifier: name of the column from annotation containing feature identifiers.
     :param list groups: column names from regulation_data containing group identifiers.
     :param str annotation_col: name of the column from annotation containing annotation terms.
-    :param str reject_col: name of the column from regulatio_data containing boolean for rejected null hypothesis.
-    :param str group_col: column name for new column in annotation dataframe determining if feature belongs to foreground or background.
+    :param str reject_col: name of the column from regulatio_data containing boolean for
+        rejected null hypothesis.
+    :param str group_col: column name for new column in annotation dataframe determining
+        if feature belongs to foreground or background.
     :param str method: method used to compute enrichment (only 'fisher' is supported currently).
     :param str correction: method to be used for multiple-testing correction
-    :return: Pandas dataframe with columns: 'terms', 'identifiers', 'foreground', 'background', 'pvalue', 'padj' and 'rejected'.
+    :return: Pandas dataframe with columns: 'terms', 'identifiers', 'foreground',
+        'background', 'pvalue', 'padj' and 'rejected'.
 
     Example::
 
-        result = run_regulation_enrichment(regulation_data, annotation, identifier='identifier', groups=['group1', 'group2'], annotation_col='annotation', reject_col='rejected', group_col='group', method='fisher')
+        result = run_regulation_enrichment(
+            regulation_data,
+            annotation,
+            identifier='identifier',
+            groups=['group1',
+            'group2'],
+            annotation_col='annotation',
+            reject_col='rejected',
+            group_col='group',
+            method='fisher',
+         )
     """
     result = {}
     foreground_list = (
@@ -267,20 +329,36 @@ def run_enrichment(
     correction="fdr_bh",
 ):
     """
-    Computes enrichment of the foreground relative to a given backgroung, using Fisher's exact test, and corrects for multiple hypothesis testing.
+    Computes enrichment of the foreground relative to a given backgroung,
+    using Fisher's exact test, and corrects for multiple hypothesis testing.
 
-    :param data: pandas dataframe with annotations for dataset features (columns: 'annotation', 'identifier', 'source', 'group').
+    :param data: pandas dataframe with annotations for dataset features
+        (columns: 'annotation', 'identifier', 'source', 'group').
     :param str foreground_id: group identifier of features that belong to the foreground.
     :param str background_id: group identifier of features that belong to the background.
     :param str annotation_col: name of the column containing annotation terms.
     :param str group_col: name of column containing the group identifiers.
     :param str identifier_col: name of column containing dependent variables identifiers.
     :param str method: method used to compute enrichment (only 'fisher' is supported currently).
-    :return: Pandas dataframe with annotation terms, features, number of foregroung/background features in each term, p-values and corrected p-values (columns: 'terms', 'identifiers', 'foreground', 'background', 'pvalue', 'padj' and 'rejected').
+    :return: Pandas dataframe with annotation terms, features,
+        number of foregroung/background features in each term,
+        p-values and corrected p-values
+        (columns: 'terms', 'identifiers', 'foreground',
+         'background', 'pvalue', 'padj' and 'rejected').
 
     Example::
 
-        result = run_enrichment(data, foreground='foreground', background='background', foreground_pop=len(foreground_list), background_pop=len(background_list), annotation_col='annotation', group_col='group', identifier_col='identifier', method='fisher')
+        result = run_enrichment(
+            data,
+            foreground='foreground',
+            background='background',
+            foreground_pop=len(foreground_list),
+            background_pop=len(background_list),
+            annotation_col='annotation',
+            group_col='group',
+            identifier_col='identifier',
+            method='fisher',
+         )
     """
     result = pd.DataFrame()
     df = data.copy()
@@ -359,23 +437,39 @@ def run_ssgsea(
     permutations=0,
 ):
     """
-    Project each sample within a data set onto a space of gene set enrichment scores using the ssGSEA projection methodology described in Barbie et al., 2009.
+    Project each sample within a data set onto a space of gene set enrichment scores using
+    the single sample gene set enrichment analysis (ssGSEA) projection methodology
+    described in Barbie et al., 2009:
+    https://www.nature.com/articles/nature08460#Sec3 (search "Single Sample" GSEA).
 
     :param data: pandas dataframe with the quantified features (i.e. subject x proteins)
-    :param annotation: pandas dataframe with the annotation to be used in the enrichment (i.e. CKG pathway annotation file)
+    :param annotation: pandas dataframe with the annotation to be used in the enrichment
+        (i.e. CKG pathway annotation file)
     :param str annotation_col: name of the column containing annotation terms.
     :param str identifier_col: name of column containing dependent variables identifiers.
-    :param list set_index: column/s to be used as index. Enrichment will be calculated for these values (i.e ["subject"] will return subjects x pathways matrix of enrichment scores)
-    :param str out_dir: directory path where results will be stored (default None, tmp folder is used)
-    :param int min_size: minimum number of features (i.e. proteins) in enriched terms (i.e. pathways)
-    :param int max_size: maximum number of features (i.e. proteins) in enriched terms (i.e. pathways)
+    :param list set_index: column/s to be used as index. Enrichment will be calculated
+        for these values (i.e ["subject"] will return subjects x pathways matrix of
+        enrichment scores)
+    :param str out_dir: directory path where results will be stored
+        (default None, tmp folder is used)
+    :param int min_size: minimum number of features (i.e. proteins) in enriched terms
+        (i.e. pathways)
+    :param int max_size: maximum number of features (i.e. proteins) in enriched terms
+        (i.e. pathways)
     :param bool scale: whether or not to scale the data
     :param int permutations: number of permutations used in the ssgsea analysis
-    :return: dictionary with two dataframes: es - enrichment scores, and nes - normalized enrichment scores.
+    :return: dictionary with two dataframes: es - enrichment scores,
+        and nes - normalized enrichment scores.
 
     Example::
         stproject = "P0000008"
-        p = project.Project(stproject, datasets={}, knowledge=None, report={}, configuration_files=None)
+        p = project.Project(
+            stproject,
+            datasets={},
+            knowledge=None,
+            report={},
+            configuration_files=None,
+        )
         p.build_project(False)
         p.generate_report()
 
@@ -383,7 +477,19 @@ def run_ssgsea(
         annotations = proteomics_dataset.get_dataframe("pathway annotation")
         processed = proteomics_dataset.get_dataframe('processed')
 
-        result = run_ssgsea(processed, annotations, annotation_col='annotation', identifier_col='identifier', set_index=['group', 'sample','subject'], outdir=None, min_size=10, scale=False, permutations=0)
+        result = run_ssgsea(
+            processed,
+            annotations,
+            annotation_col='annotation',
+            identifier_col='identifier',
+            set_index=['group',
+            'sample',
+            'subject'],
+            outdir=None,
+            min_size=10,
+            scale=False,
+            permutations=0
+        )
 
     """
     result = {}
