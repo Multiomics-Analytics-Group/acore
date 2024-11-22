@@ -237,16 +237,16 @@ def run_up_down_regulation_enrichment(
 
 
 def run_regulation_enrichment(
-    regulation_data,
-    annotation,
-    identifier="identifier",
-    groups=["group1", "group2"],
-    annotation_col="annotation",
-    reject_col="rejected",
-    group_col="group",
-    method="fisher",
-    correction="fdr_bh",
-):
+    regulation_data: pd.DataFrame,
+    annotation: pd.DataFrame,
+    identifier: str = "identifier",
+    groups: list[str] = ["group1", "group2"],
+    annotation_col: str = "annotation",
+    reject_col: str = "rejected",
+    group_col: str = "group",
+    method: str = "fisher",
+    correction: str = "fdr_bh",
+) -> pd.DataFrame:
     """
     This function runs a simple enrichment analysis for significantly regulated features
     in a dataset.
@@ -255,7 +255,7 @@ def run_regulation_enrichment(
     :param annotation: pandas dataframe with annotations for features
         (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
     :param str identifier: name of the column from annotation containing feature identifiers.
-    :param list groups: column names from regulation_data containing group identifiers.
+    :param list[str] groups: column names from regulation_data containing group identifiers.
     :param str annotation_col: name of the column from annotation containing annotation terms.
     :param str reject_col: name of the column from regulatio_data containing boolean for
         rejected null hypothesis.
@@ -280,7 +280,6 @@ def run_regulation_enrichment(
             method='fisher',
          )
     """
-    result = {}
     foreground_list = (
         regulation_data[regulation_data[reject_col]][identifier].unique().tolist()
     )
@@ -318,16 +317,16 @@ def run_regulation_enrichment(
 
 def run_enrichment(
     data,
-    foreground_id,
-    background_id,
-    foreground_pop,
-    background_pop,
-    annotation_col="annotation",
-    group_col="group",
-    identifier_col="identifier",
-    method="fisher",
-    correction="fdr_bh",
-):
+    foreground_id: str,
+    background_id: str,
+    foreground_pop: list[str],
+    background_pop: list[str],
+    annotation_col: str = "annotation",
+    group_col: str = "group",
+    identifier_col: str = "identifier",
+    method: str = "fisher",
+    correction: str = "fdr_bh",
+) -> pd.DataFrame:
     """
     Computes enrichment of the foreground relative to a given backgroung,
     using Fisher's exact test, and corrects for multiple hypothesis testing.
@@ -386,6 +385,7 @@ def run_enrichment(
             num_background = num_background[0]
         else:
             num_background = 0
+        # ! what happens if this is not the case?
         if method == "fisher" and num_foreground > 1:
             _, pvalue = run_fisher(
                 [num_foreground, foreground_pop - num_foreground],
