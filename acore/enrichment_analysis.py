@@ -240,7 +240,6 @@ def run_regulation_enrichment(
     regulation_data: pd.DataFrame,
     annotation: pd.DataFrame,
     identifier: str = "identifier",
-    groups: list[str] = ["group1", "group2"],
     annotation_col: str = "annotation",
     reject_col: str = "rejected",
     group_col: str = "group",
@@ -256,7 +255,6 @@ def run_regulation_enrichment(
     :param annotation: pandas dataframe with annotations for features
         (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
     :param str identifier: name of the column from annotation containing feature identifiers.
-    :param list[str] groups: column names from regulation_data containing group identifiers.
     :param str annotation_col: name of the column from annotation containing annotation terms.
     :param str reject_col: name of the column from regulatio_data containing boolean for
         rejected null hypothesis.
