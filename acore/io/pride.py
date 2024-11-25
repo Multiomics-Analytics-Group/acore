@@ -9,7 +9,11 @@ def download_PRIDE_data(
     pxd_id, file_name, to=".", user="", password="", date_field="publicationDate"
 ) -> dict:
     """
-    This function downloads a project file from the PRIDE repository
+    This function downloads a project file from the PRIDE repository. To see more of the
+    pride API, have a look at
+    https://www.ebi.ac.uk/pride/ws/archive/v3/webjars/swagger-ui/index.html
+    or EBI's commandline tool pridepy
+    https://github.com/PRIDE-Archive/pridepy
 
     :param str pxd_id: PRIDE project identifier (id. PXD013599).
     :param str file_name: name of the file to dowload
@@ -22,7 +26,7 @@ def download_PRIDE_data(
     ftp_pride = (  # same as data ["_links"]["datasetFtpUrl"]["href"]
         "ftp://ftp.pride.ebi.ac.uk/pride/data/archive/YEAR/MONTH/PXDID/FILE_NAME"
     )
-    url_pride_api = "http://www.ebi.ac.uk/pride/ws/archive/v2/projects/" + pxd_id
+    url_pride_api = "http://www.ebi.ac.uk/pride/ws/archive/v3/projects/" + pxd_id
     data = None
     r = requests.get(url_pride_api, timeout=60)
     data = r.json()
