@@ -281,23 +281,22 @@ def run_regulation_enrichment(
             method='fisher',
          )
     """
-    foreground_list = (
-        regulation_data[regulation_data[reject_col]][identifier].unique().tolist()
-    )
-    background_list = (
-        regulation_data[~regulation_data[reject_col]][identifier].unique().tolist()
-    )
+    mask_rejected = regulation_data[reject_col]
+    foreground_list = regulation_data.loc[mask_rejected, identifier].unique()
+    background_list = regulation_data.loc[~mask_rejected, identifier].unique()
     foreground_pop = len(foreground_list)
-    background_pop = len(regulation_data[identifier].unique().tolist())
-    grouping = []
-    for i in annotation[identifier]:
-        if i in foreground_list:
-            grouping.append("foreground")
-        elif i in background_list:
-            grouping.append("background")
-        else:
-            grouping.append(np.nan)
-    annotation[group_col] = grouping
+    background_pop = len(regulation_data[identifier].unique())
+    # needs to allow for missing annotations
+    annotation[group_col] = np.where(
+        annotation[identifier].isin(foreground_list),
+        "foreground",
+        # if in background list, then background, else np.nan
+        np.where(
+            annotation[identifier].isin(background_list),
+            "background",
+            np.nan,
+        ),
+    )
     annotation = annotation.dropna(subset=[group_col])
 
     result = run_enrichment(
