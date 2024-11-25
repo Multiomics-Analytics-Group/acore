@@ -38,7 +38,9 @@ class TestRunKolmogorovSmirnov(unittest.TestCase):
         self.assertEqual(result[1], expected_result.pvalue)
 
 
-def test_run_enrichtment():
+def test_run_regulation_enrichment():
+    """Integration test for run_regulation_enrichment. Indirectly tests
+    run_enrichment from enrichment_analysis module."""
     annotation = {
         "annotation": ["path1", "path1", "path1", "path2", "path2", "path3"],
         "identifier": ["gene1", "gene2", "gene3", "gene1", "gene5", "gene6"],
