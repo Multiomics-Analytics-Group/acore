@@ -319,8 +319,9 @@ def run_enrichment(
     data,
     foreground_id: str,
     background_id: str,
-    foreground_pop: list[str],
-    background_pop: list[str],
+    foreground_pop: int,
+    background_pop: int,
+    min_detected_in_set: int = 1,
     annotation_col: str = "annotation",
     group_col: str = "group",
     identifier_col: str = "identifier",
@@ -335,6 +336,8 @@ def run_enrichment(
         (columns: 'annotation', 'identifier', 'source', 'group').
     :param str foreground_id: group identifier of features that belong to the foreground.
     :param str background_id: group identifier of features that belong to the background.
+    :param int foreground_pop: number of features in the foreground.
+    :param int background_pop: number of features in the background.
     :param str annotation_col: name of the column containing annotation terms.
     :param str group_col: name of column containing the group identifiers.
     :param str identifier_col: name of column containing dependent variables identifiers.
@@ -386,7 +389,7 @@ def run_enrichment(
         else:
             num_background = 0
         # ! what happens if this is not the case?
-        if method == "fisher" and num_foreground > 1:
+        if method == "fisher" and num_foreground >= min_detected_in_set:
             _, pvalue = run_fisher(
                 [num_foreground, foreground_pop - num_foreground],
                 [num_background, background_pop - foreground_pop - num_background],
