@@ -246,6 +246,7 @@ def run_regulation_enrichment(
     group_col: str = "group",
     method: str = "fisher",
     correction: str = "fdr_bh",
+    correction_alpha: float = 0.05,
 ) -> pd.DataFrame:
     """
     This function runs a simple enrichment analysis for significantly regulated features
@@ -310,6 +311,7 @@ def run_regulation_enrichment(
         identifier_col=identifier,
         method=method,
         correction=correction,
+        correction_alpha=correction_alpha,
     )
 
     return result
@@ -327,6 +329,7 @@ def run_enrichment(
     identifier_col: str = "identifier",
     method: str = "fisher",
     correction: str = "fdr_bh",
+    correction_alpha: float = 0.05,
 ) -> pd.DataFrame:
     """
     Computes enrichment of the foreground relative to a given backgroung,
@@ -342,6 +345,8 @@ def run_enrichment(
     :param str group_col: name of column containing the group identifiers.
     :param str identifier_col: name of column containing dependent variables identifiers.
     :param str method: method used to compute enrichment (only 'fisher' is supported currently).
+    :param str correction: method to be used for multiple-testing correction.
+    :param float correction_alpha: adjusted p-value cutoff to define significance.
     :return: Pandas dataframe with annotation terms, features,
         number of foregroung/background features in each term,
         p-values and corrected p-values
@@ -408,7 +413,11 @@ def run_enrichment(
                 )
             )
     if len(pvalues) > 1:
-        rejected, padj = apply_pvalue_correction(pvalues, alpha=0.05, method=correction)
+        rejected, padj = apply_pvalue_correction(
+            pvalues,
+            alpha=correction_alpha,
+            method=correction,
+        )
         result = pd.DataFrame(
             {
                 "terms": terms,

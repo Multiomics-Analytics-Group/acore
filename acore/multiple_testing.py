@@ -5,10 +5,17 @@ from scipy.special import factorial
 from sklearn.utils import shuffle
 from statsmodels.stats import multitest
 
+# ? dictionary with available methods in statsmodels.stats.multitest.multipletests:
+# multitest.multitest_methods_names
 
-def apply_pvalue_correction(pvalues, alpha=0.05, method="bonferroni"):
+
+def apply_pvalue_correction(pvalues, alpha: float = 0.05, method: str = "bonferroni"):
     """
-    Performs p-value correction using the specified method. For more information visit https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html.
+    Performs p-value correction using the specified method as in
+    statsmodels.stats.multitest.multipletests.
+
+    For more information visit
+    https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html.
 
     :param numpy.ndarray pvalues: et of p-values of the individual tests.
     :param float alpha: error rate.
@@ -23,7 +30,9 @@ def apply_pvalue_correction(pvalues, alpha=0.05, method="bonferroni"):
         - fdr_by : Benjamini/Yekutieli (negative)
         - fdr_tsbh : two stage fdr correction (non-negative)
         - fdr_tsbky : two stage fdr correction (non-negative)
-    :return: Tuple with two arrays, boolen for rejecting H0 hypothesis and float for adjusted p-value.
+    :return: Tuple with two `numpy.array`s, boolen for rejecting H0 hypothesis
+             and float for adjusted p-value. Can contain missing values if `pvalues`
+             contain missing values.
 
     Exmaple::
 
@@ -32,10 +41,12 @@ def apply_pvalue_correction(pvalues, alpha=0.05, method="bonferroni"):
     p = np.array(pvalues)
     mask = np.isfinite(p)
     pval_corrected = np.full(p.shape, np.nan)
-    pval_corrected[mask] = multitest.multipletests(p[mask], alpha, method)[1]
-    rejected = [p <= alpha for p in pval_corrected]
+    _rejected, _pvals_corrected, _, _ = multitest.multipletests(p[mask], alpha, method)
+    pval_corrected[mask] = _pvals_corrected
+    rejected = np.full(p.shape, np.nan)
+    rejected[mask] = _rejected
 
-    return (rejected, pval_corrected.tolist())
+    return (rejected, pval_corrected)
 
 
 def apply_pvalue_fdrcorrection(pvalues, alpha=0.05, method="indep"):

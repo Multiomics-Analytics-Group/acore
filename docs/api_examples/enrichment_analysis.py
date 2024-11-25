@@ -174,8 +174,7 @@ annotations
 ret = acore.enrichment_analysis.run_regulation_enrichment(
     regulation_data=diff_reg,
     annotation=annotations,
-    # group_col="annotation",
-    groups=["groups1", "groups2"],
+    correction_alpha=0.01,
 )
 ret
 
