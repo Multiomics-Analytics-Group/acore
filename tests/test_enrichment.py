@@ -1,5 +1,6 @@
 import unittest
 
+import numpy as np
 import pandas as pd
 from scipy import stats
 
@@ -38,13 +39,33 @@ class TestRunKolmogorovSmirnov(unittest.TestCase):
         self.assertEqual(result[1], expected_result.pvalue)
 
 
+def test__annotate_features():
+    expected = pd.Series(
+        [
+            "foreground",
+            "foreground",
+            "background",
+            "foreground",
+            "background",
+            "background",
+            np.nan,
+        ]
+    )
+
+    features = pd.Series(["G1", "G2", "G3", "G4", "G5", "G6", "G9"])
+    in_foreground = ["G1", "G2", "G4"]
+    in_background = ["G3", "G5", "G6"]
+    actual = ea._annotate_features(features, in_foreground, in_background)
+    pd.testing.assert_series_equal(expected, actual)
+
+
 def test_run_regulation_enrichment():
     """Integration test for run_regulation_enrichment. Indirectly tests
     run_enrichment from enrichment_analysis module."""
     annotation = {
-        "annotation": ["path1", "path1", "path1", "path2", "path2", "path3"],
-        "identifier": ["gene1", "gene2", "gene3", "gene1", "gene5", "gene6"],
-        "source": ["GO", "GO", "GO", "GO_P", "GO_P", "GO_P"],
+        "annotation": ["path1", "path1", "path1", "path2", "path2", "path3", "path3"],
+        "identifier": ["gene1", "gene2", "gene3", "gene1", "gene5", "gene6", "gene9"],
+        "source": ["GO", "GO", "GO", "GO_P", "GO_P", "GO_P", "GO_P"],
     }
     annotation = pd.DataFrame(annotation)
     regulation_res = {

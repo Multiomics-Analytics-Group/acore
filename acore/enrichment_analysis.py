@@ -236,6 +236,35 @@ def run_up_down_regulation_enrichment(
     return enrichment_results
 
 
+# ! to move
+def _annotate_features(
+    features: pd.Series, in_foreground: list[str], in_background: list[str]
+) -> pd.Series:
+    """
+    Annotate features as foreground or background based on their presence in the
+    foreground and background lists.
+
+    :param features: pandas dataframe with features and their annotations.
+    :param in_foreground: list of features identifiers in the foreground.
+    :type in_foreground: set or list-like
+    :param in_background: list of features identifiers in the background.
+    :type in_background: set or list-like
+    :return: pandas dataframe with a new column 'group' containing 'foreground' or 'background'.
+             missing values are preserved.
+
+    Example::
+
+        result = _annotate_features(features, in_foreground, in_background)
+    """
+    in_either_or = features.isin(in_foreground) | features.isin(in_background)
+    res = (
+        features.where(in_either_or, np.nan)
+        .mask(features.isin(in_foreground), "foreground")
+        .mask(features.isin(in_background), "background")
+    )
+    return res
+
+
 def run_regulation_enrichment(
     regulation_data: pd.DataFrame,
     annotation: pd.DataFrame,
@@ -285,15 +314,10 @@ def run_regulation_enrichment(
     foreground_pop = len(foreground_list)
     background_pop = len(regulation_data[identifier].unique())
     # needs to allow for missing annotations
-    annotation[group_col] = np.where(
-        annotation[identifier].isin(foreground_list),
-        "foreground",
-        # if in background list, then background, else np.nan
-        np.where(
-            annotation[identifier].isin(background_list),
-            "background",
-            np.nan,
-        ),
+    annotation[group_col] = _annotate_features(
+        features=annotation[identifier],
+        in_foreground=foreground_list,
+        in_background=background_list,
     )
     annotation = annotation.dropna(subset=[group_col])
 
@@ -425,7 +449,7 @@ def run_enrichment(
                 "background_pop": background_pop,
                 "pvalue": pvalues,
                 "padj": padj,
-                "rejected": rejected,
+                "rejected": rejected.astype(bool),
             }
         )
         result = result.sort_values(by="padj", ascending=True)
