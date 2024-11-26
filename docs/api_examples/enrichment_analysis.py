@@ -94,6 +94,7 @@ diff_reg = acore.differential_regulation.run_anova(
 diff_reg.describe(exclude=["float"])
 
 # %%
+diff_reg["rejected"] = diff_reg["rejected"].astype(bool)  # ! needs to be fixed in anova
 diff_reg.query("rejected == True")
 
 # %% [markdown]

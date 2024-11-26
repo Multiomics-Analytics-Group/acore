@@ -308,7 +308,8 @@ def run_regulation_enrichment(
             method='fisher',
          )
     """
-    mask_rejected = regulation_data[reject_col]
+    # ? can we remove NA features in that column?
+    mask_rejected = regulation_data[reject_col].astype(bool)
     foreground_list = regulation_data.loc[mask_rejected, identifier].unique()
     background_list = regulation_data.loc[~mask_rejected, identifier].unique()
     foreground_pop = len(foreground_list)
