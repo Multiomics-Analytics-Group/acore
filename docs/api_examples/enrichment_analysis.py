@@ -18,11 +18,14 @@
 # %%
 from pathlib import Path
 
+import dsp_pandas
 import pandas as pd
 
 import acore
 import acore.differential_regulation
 import acore.enrichment_analysis
+
+dsp_pandas.format.set_pandas_options(max_colwidth=15)
 
 # %% [markdown]
 # Parameters of this notebook

@@ -1,5 +1,8 @@
 """Enrichment Analysis Module. Contains different functions to perform enrichment 
 analysis.
+
+Most things in this module are covered in https://www.youtube.com/watch?v=2NC1QOXmc5o
+by Lars Juhl Jensen.
 """
 
 import os
@@ -461,14 +464,14 @@ def run_enrichment(
 def run_ssgsea(
     data,
     annotation,
-    annotation_col="an notation",
-    identifier_col="identifier",
-    set_index=[],
-    outdir="tmp",
-    min_size=15,
-    max_size=500,
-    scale=False,
-    permutations=0,
+    set_index: list[str],
+    annotation_col: str = "an notation",
+    identifier_col: str = "identifier",
+    outdir: str = "tmp",
+    min_size: int = 15,
+    max_size: int = 500,
+    scale: bool = False,
+    permutations: int = 0,
 ):
     """
     Project each sample within a data set onto a space of gene set enrichment scores using
@@ -531,10 +534,13 @@ def run_ssgsea(
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
+    # Comine columns to create a unique name for each set (?)
     name = []
     index = data[set_index]
     for i, row in data[set_index].iterrows():
-        name.append("_".join(row[set_index].tolist()))
+        name.append(
+            "_".join(row[set_index].tolist())
+        )  # this assumes strings as identifiers
 
     df["Name"] = name
     index.index = name
@@ -554,29 +560,25 @@ def run_ssgsea(
                     + "\t".join(list(filter(None, row[identifier_col])))
                     + "\n"
                 )
-        try:
-            enrichment = gp.ssgsea(
-                data=df,
-                gene_sets=str(file_path),
-                outdir=outdir,
-                min_size=min_size,
-                max_size=max_size,
-                scale=scale,
-                permutation_num=permutations,
-                no_plot=True,
-                processes=1,
-                seed=10,
-                format="png",
-            )
+        enrichment = gp.ssgsea(
+            data=df,
+            gene_sets=str(file_path),
+            outdir=outdir,
+            min_size=min_size,
+            max_size=max_size,
+            scale=scale,
+            permutation_num=permutations,
+            no_plot=True,
+            processes=1,
+            seed=10,
+            format="png",
+        )
 
-            enrichment_es = pd.DataFrame(enrichment.resultsOnSamples).transpose()
-            enrichment_es = enrichment_es.join(index)
-            enrichment_nes = enrichment.res2d.transpose()
-            enrichment_nes = enrichment_nes.join(index)
+        enrichment_es = pd.DataFrame(enrichment.resultsOnSamples).transpose()
+        enrichment_es = enrichment_es.join(index)
+        enrichment_nes = enrichment.res2d.transpose()
+        enrichment_nes = enrichment_nes.join(index)
 
-            result = {"es": enrichment_es, "nes": enrichment_nes}
-        except Exception as e:
-            print("Error in ssGSEA.", e)
-    df = None
+        result = {"es": enrichment_es, "nes": enrichment_nes}
 
     return result
