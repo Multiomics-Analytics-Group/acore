@@ -61,13 +61,10 @@ clinic
 omics
 
 # %% [markdown]
-# ### Filtering data
+# ## Filtering data
 
 # %% [markdown]
 # If data is already filtered and/or imputed, skip this step.
-
-# %% [markdown]
-# ## Filtering features
 
 # %% tags=["hide-input"]
 M_before = omics.shape[1]
@@ -224,7 +221,24 @@ anova
 # view averages per protein group
 
 # %% tags=["hide-input"]
-anova.iloc[:, 2:7]
+view = anova.iloc[:, 2:7]
+viewed_cols = view.columns.to_list()
+view
+
+# %% [markdown]
+# Test results
+
+# %% tags=["hide-input"]
+regex_filter = "pval|padj|reject|stat|FC"
+view = anova.filter(regex=regex_filter)
+viewed_cols.extend(view.columns)
+view
+
+# %% [markdown]
+# Other information
+
+# %% tags=["hide-input"]
+anova.drop(columns=viewed_cols)
 
 # %% [markdown]
 # ## Comparing ANOVA and ANCOVA results
