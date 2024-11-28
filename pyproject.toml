@@ -20,6 +20,7 @@ classifiers = [
 dependencies = [
     "numpy",
     "pandas",
+    "dsp-pandas", # has only pandas related dependencies
     "scipy",
     "networkx",
     "biopython",

@@ -37,16 +37,16 @@ def calc_means_between_groups(
 
 
 def calc_ttest(
-    df: pd.DataFrame, boolean_array: pd.Series, vars: list[str]
+    df: pd.DataFrame, boolean_array: pd.Series, variables: list[str]
 ) -> pd.DataFrame:
-    """Calculate t-test for each variable in `vars` between two groups defined
+    """Calculate t-test for each variable in `variables` between two groups defined
     by boolean array."""
     ret = []
-    for var in vars:
+    for var in variables:
         _ = pg.ttest(df.loc[boolean_array, var], df.loc[~boolean_array, var])
         ret.append(_)
     ret = pd.concat(ret)
-    ret = ret.set_index(vars)
+    ret = ret.set_index(variables)
     ret.columns.name = "ttest"
     ret.columns = pd.MultiIndex.from_product(
         [["ttest"], ret.columns], names=("test", "var")
@@ -65,7 +65,7 @@ def run_diff_analysis(
     ret = calc_means_between_groups(
         df, boolean_array=boolean_array, event_names=event_names
     )
-    ttests = calc_ttest(df, boolean_array=boolean_array, vars=ret.index)
+    ttests = calc_ttest(df, boolean_array=boolean_array, variables=ret.index)
     ret = ret.join(ttests.loc[:, pd.IndexSlice[:, ttest_vars]])
     return ret
 
