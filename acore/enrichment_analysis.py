@@ -247,12 +247,12 @@ def _annotate_features(
     Annotate features as foreground or background based on their presence in the
     foreground and background lists.
 
-    :param features: pandas dataframe with features and their annotations.
+    :param features: pandas.Series with features and their annotations.
     :param in_foreground: list of features identifiers in the foreground.
     :type in_foreground: set or list-like
     :param in_background: list of features identifiers in the background.
     :type in_background: set or list-like
-    :return: pandas dataframe with a new column 'group' containing 'foreground' or 'background'.
+    :return: pandas.Series containing 'foreground' or 'background'.
              missing values are preserved.
 
     Example::
@@ -276,6 +276,7 @@ def run_regulation_enrichment(
     reject_col: str = "rejected",
     group_col: str = "group",
     method: str = "fisher",
+    min_detected_in_set: int = 2,
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
 ) -> pd.DataFrame:
@@ -336,6 +337,7 @@ def run_regulation_enrichment(
         identifier_col=identifier,
         method=method,
         correction=correction,
+        min_detected_in_set=min_detected_in_set,
         correction_alpha=correction_alpha,
     )
 
@@ -348,7 +350,7 @@ def run_enrichment(
     background_id: str,
     foreground_pop: int,
     background_pop: int,
-    min_detected_in_set: int = 1,
+    min_detected_in_set: int = 2,
     annotation_col: str = "annotation",
     group_col: str = "group",
     identifier_col: str = "identifier",

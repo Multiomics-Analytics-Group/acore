@@ -77,6 +77,7 @@ def test_run_regulation_enrichment():
     actual = ea.run_regulation_enrichment(
         regulation_data=regulation_res,
         annotation=annotation,
+        min_detected_in_set=1,
     )
 
     expected = pd.DataFrame(
