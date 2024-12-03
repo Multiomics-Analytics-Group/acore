@@ -18,8 +18,17 @@ from scipy import stats
 
 from acore.multiple_testing import apply_pvalue_correction
 
+TYPE_COLS_MSG = """
+columns: 'terms', 'identifiers', 'foreground',
+    'background', foreground_pop, background_pop, 'pvalue', 'padj' and 'rejected'.
+"""
 
-def run_fisher(group1, group2, alternative="two-sided"):
+
+def run_fisher(
+    group1: list[int],
+    group2: list[int],
+    alternative="two-sided",
+) -> tuple[float, float]:
     """annotated   not-annotated
     group1      a               b
     group2      c               d
@@ -66,7 +75,7 @@ def run_site_regulation_enrichment(
     regulation_data,
     annotation,
     identifier="identifier",
-    groups=["group1", "group2"],
+    groups=("group1", "group2"),
     annotation_col="annotation",
     reject_col="rejected",
     group_col="group",
@@ -78,9 +87,9 @@ def run_site_regulation_enrichment(
     This function runs a simple enrichment analysis for significantly
     regulated protein sites in a dataset.
 
-    :param regulation_data: pandas dataframe resulting from differential
+    :param regulation_data: pandas.DataFrame resulting from differential
         regulation analysis.
-    :param annotation: pandas dataframe with annotations for features
+    :param annotation: pandas.DataFrame with annotations for features
         (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
     :param str identifier: name of the column from annotation containing
         feature identifiers.
@@ -95,8 +104,8 @@ def run_site_regulation_enrichment(
     :param str method: method used to compute enrichment
         (only 'fisher' is supported currently).
     :param str regex: how to extract the annotated identifier from the site identifier
-    :return: Pandas dataframe with columns: 'terms', 'identifiers', 'foreground',
-        'background', 'pvalue', 'padj' and 'rejected'.
+    :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
+        'background', foreground_pop, background_pop, 'pvalue', 'padj' and 'rejected'.
 
     Example::
 
@@ -108,7 +117,7 @@ def run_site_regulation_enrichment(
             reject_col='rejected',
             group_col='group',
             method='fisher',
-            match="(\w+~.+)_\w\d+\-\w+"
+            match="(\\w+~.+)_\\w\\d+\\-\\w+"
         )
     """
     result = pd.DataFrame()
@@ -142,9 +151,9 @@ def run_up_down_regulation_enrichment(
     regulation_data,
     annotation,
     identifier="identifier",
-    groups=["group1", "group2"],
+    groups=("group1", "group2"),
     annotation_col="annotation",
-    reject_col="rejected",
+    # reject_col="rejected",
     group_col="group",
     method="fisher",
     correction="fdr_bh",
@@ -155,9 +164,9 @@ def run_up_down_regulation_enrichment(
     This function runs a simple enrichment analysis for significantly regulated proteins
     distinguishing between up- and down-regulated.
 
-    :param regulation_data: pandas dataframe resulting from differential regulation
+    :param regulation_data: pandas.DataFrame resulting from differential regulation
         analysis (CKG's regulation table).
-    :param annotation: pandas dataframe with annotations for features
+    :param annotation: pandas.DataFrame with annotations for features
         (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
     :param str identifier: name of the column from annotation containing feature identifiers.
     :param list groups: column names from regulation_data containing group identifiers.
@@ -171,7 +180,7 @@ def run_up_down_regulation_enrichment(
     :param str correction: method to be used for multiple-testing correction
     :param float alpha: adjusted p-value cutoff to define significance
     :param float lfc_cutoff: log fold-change cutoff to define practical significance
-    :return: Pandas dataframe with columns:'terms', 'identifiers', 'foreground',
+    :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
         'background', 'pvalue', 'padj' and 'rejected'.
 
     Example::
@@ -286,8 +295,8 @@ def run_regulation_enrichment(
     This function runs a simple enrichment analysis for significantly regulated features
     in a dataset.
 
-    :param regulation_data: pandas dataframe resulting from differential regulation analysis.
-    :param annotation: pandas dataframe with annotations for features
+    :param regulation_data: pandas.DataFrame resulting from differential regulation analysis.
+    :param annotation: pandas.DataFrame with annotations for features
         (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
     :param str identifier: name of the column from annotation containing feature identifiers.
     :param str annotation_col: name of the column from annotation containing annotation terms.
@@ -297,8 +306,8 @@ def run_regulation_enrichment(
         if feature belongs to foreground or background.
     :param str method: method used to compute enrichment (only 'fisher' is supported currently).
     :param str correction: method to be used for multiple-testing correction
-    :return: Pandas dataframe with columns: 'terms', 'identifiers', 'foreground',
-        'background', 'pvalue', 'padj' and 'rejected'.
+    :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
+        'background', 'foreground_pop', 'background_pop', 'pvalue', 'padj' and 'rejected'.
 
     Example::
 
@@ -306,12 +315,13 @@ def run_regulation_enrichment(
             regulation_data,
             annotation,
             identifier='identifier',
-            groups=['group1',
-            'group2'],
             annotation_col='annotation',
             reject_col='rejected',
             group_col='group',
             method='fisher',
+            min_detected_in_set=2,
+            correction='fdr_bh',
+            correction_alpha=0.05,
          )
     """
     # ? can we remove NA features in that column?
@@ -364,8 +374,8 @@ def run_enrichment(
     Computes enrichment of the foreground relative to a given backgroung,
     using Fisher's exact test, and corrects for multiple hypothesis testing.
 
-    :param data: pandas dataframe with annotations for dataset features
-        (columns: 'annotation', 'identifier', 'source', 'group').
+    :param data: pandas.DataFrame with annotations for dataset features
+        (columns: 'annotation', 'identifier', 'group').
     :param str foreground_id: group identifier of features that belong to the foreground.
     :param str background_id: group identifier of features that belong to the background.
     :param int foreground_pop: number of features in the foreground.
@@ -376,7 +386,7 @@ def run_enrichment(
     :param str method: method used to compute enrichment (only 'fisher' is supported currently).
     :param str correction: method to be used for multiple-testing correction.
     :param float correction_alpha: adjusted p-value cutoff to define significance.
-    :return: Pandas dataframe with annotation terms, features,
+    :return: pandas.DataFrame with columns: annotation terms, features,
         number of foregroung/background features in each term,
         p-values and corrected p-values
         (columns: 'terms', 'identifiers', 'foreground',
@@ -396,34 +406,35 @@ def run_enrichment(
             method='fisher',
          )
     """
+    if method != "fisher":
+        raise ValueError("Only Fisher's exact test is supported at the moment.")
+
     result = pd.DataFrame()
-    df = data.copy()
     terms = []
     ids = []
     pvalues = []
     fnum = []
     bnum = []
     countsdf = (
-        df.groupby([annotation_col, group_col])
+        data.groupby([annotation_col, group_col])
         .agg(["count"])[(identifier_col, "count")]
         .reset_index()
     )
     countsdf.columns = [annotation_col, group_col, "count"]
-    for annotation in (
-        countsdf[countsdf[group_col] == foreground_id][annotation_col].unique().tolist()
-    ):
+    for annotation in countsdf.loc[
+        countsdf[group_col] == foreground_id, annotation_col
+    ].unique():
         counts = countsdf[countsdf[annotation_col] == annotation]
         num_foreground = counts.loc[counts[group_col] == foreground_id, "count"].values
         num_background = counts.loc[counts[group_col] == background_id, "count"].values
-
+        # ! counts should always be of length one count? squeeze?
         if len(num_foreground) == 1:
             num_foreground = num_foreground[0]
         if len(num_background) == 1:
             num_background = num_background[0]
         else:
             num_background = 0
-        # ! what happens if this is not the case?
-        if method == "fisher" and num_foreground >= min_detected_in_set:
+        if num_foreground >= min_detected_in_set:
             _, pvalue = run_fisher(
                 [num_foreground, foreground_pop - num_foreground],
                 [num_background, background_pop - foreground_pop - num_background],
@@ -434,11 +445,11 @@ def run_enrichment(
             pvalues.append(pvalue)
             ids.append(
                 ",".join(
-                    df.loc[
-                        (df[annotation_col] == annotation)
-                        & (df[group_col] == foreground_id),
+                    data.loc[
+                        (data[annotation_col] == annotation)
+                        & (data[group_col] == foreground_id),
                         identifier_col,
-                    ].tolist()
+                    ]
                 )
             )
     if len(pvalues) > 1:
@@ -466,8 +477,8 @@ def run_enrichment(
 
 
 def run_ssgsea(
-    data,
-    annotation,
+    data: pd.DataFrame,
+    annotation: str,
     set_index: list[str],
     annotation_col: str = "an notation",
     identifier_col: str = "identifier",
@@ -483,8 +494,8 @@ def run_ssgsea(
     described in Barbie et al., 2009:
     https://www.nature.com/articles/nature08460#Sec3 (search "Single Sample" GSEA).
 
-    :param data: pandas dataframe with the quantified features (i.e. subject x proteins)
-    :param annotation: pandas dataframe with the annotation to be used in the enrichment
+    :param data: pandas.DataFrame with the quantified features (i.e. subject x proteins)
+    :param annotation: pandas.DataFrame with the annotation to be used in the enrichment
         (i.e. CKG pathway annotation file)
     :param str annotation_col: name of the column containing annotation terms.
     :param str identifier_col: name of column containing dependent variables identifiers.
@@ -556,7 +567,7 @@ def run_ssgsea(
         )
         fid = uuid.uuid4()
         file_path = os.path.join(outdir, str(fid) + ".gmt")
-        with open(file_path, "w") as out:
+        with open(file_path, "w", encoding="utf8") as out:
             for i, row in grouped_annotations.iterrows():
                 out.write(
                     row[annotation_col]
