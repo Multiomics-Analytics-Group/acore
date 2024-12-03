@@ -5,6 +5,8 @@ Most things in this module are covered in https://www.youtube.com/watch?v=2NC1QO
 by Lars Juhl Jensen.
 """
 
+from __future__ import annotations
+
 import os
 import re
 import uuid
