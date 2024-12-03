@@ -171,6 +171,18 @@ except FileNotFoundError:
 annotations
 
 # %% [markdown]
+# See how many protein groups are associated with each annotation.
+
+# %%
+_ = (
+    annotations.groupby("annotation")
+    .size()
+    .value_counts()
+    .sort_index()
+    .plot(kind="bar")
+)
+
+# %% [markdown]
 # ## Enrichment analysis
 #
 

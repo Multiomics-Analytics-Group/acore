@@ -211,7 +211,6 @@ def run_up_down_regulation_enrichment(
             df,
             annotation,
             identifier=identifier,
-            groups=groups,
             annotation_col=annotation_col,
             reject_col="up_pairwise_regulation",
             group_col=group_col,
@@ -224,7 +223,6 @@ def run_up_down_regulation_enrichment(
             df,
             annotation,
             identifier=identifier,
-            groups=groups,
             annotation_col=annotation_col,
             reject_col="down_pairwise_regulation",
             group_col=group_col,
@@ -241,7 +239,9 @@ def run_up_down_regulation_enrichment(
 
 # ! to move
 def _annotate_features(
-    features: pd.Series, in_foreground: list[str], in_background: list[str]
+    features: pd.Series,
+    in_foreground: set[str] | list[str],
+    in_background: set[str] | list[str],
 ) -> pd.Series:
     """
     Annotate features as foreground or background based on their presence in the
