@@ -24,6 +24,7 @@ import pandas as pd
 import acore
 import acore.differential_regulation
 import acore.enrichment_analysis
+from acore.io.uniprot import fetch_annotations
 
 dsp_pandas.format.set_pandas_options(max_colwidth=15)
 
@@ -105,46 +106,6 @@ diff_reg.query("rejected == True")
 #
 
 # %%
-from acore.io.uniprot import (
-    check_id_mapping_results_ready,
-    get_id_mapping_results_link,
-    get_id_mapping_results_search,
-    submit_id_mapping,
-)
-
-
-def fetch_annotations(ids: pd.Index | list) -> pd.DataFrame:
-    """Fetch annotations for UniProt IDs. Combines several calls to the API of UniProt's
-    knowledgebase (KB).
-
-    Parameters
-    ----------
-    ids : pd.Index | list
-        Iterable of UniProt IDs. Fetches annotations as speecified by the specified fields.
-    fields : str, optional
-        Fields to fetch, by default "accession,go_p,go_c. See for availble fields:
-        https://www.uniprot.org/help/return_fields
-
-    Returns
-    -------
-    pd.DataFrame
-        DataFrame with annotations of the UniProt IDs.
-    """
-    job_id = submit_id_mapping(from_db="UniProtKB_AC-ID", to_db="UniProtKB", ids=ids)
-
-    if check_id_mapping_results_ready(job_id):
-        link = get_id_mapping_results_link(job_id)
-        # add fields to the link to get more information
-        # From and Entry (accession) are the same for UniProt IDs.
-        results = get_id_mapping_results_search(
-            link + "?fields=accession,go_p,go_c,go_f&format=tsv"
-        )
-    header = results.pop(0).split("\t")
-    results = [line.split("\t") for line in results]
-    df = pd.DataFrame(results, columns=header)
-    return df
-
-
 fname_annotations = "downloaded/annotations.csv"
 fname = Path(fname_annotations)
 try:

@@ -10,6 +10,7 @@ import zlib
 from urllib.parse import parse_qs, urlencode, urlparse
 from xml.etree import ElementTree
 
+import pandas as pd
 import requests
 from requests.adapters import HTTPAdapter, Retry
 
@@ -174,6 +175,8 @@ def get_id_mapping_results_stream(url):
         query["compressed"][0].lower() == "true" if "compressed" in query else False
     )
     return decode_results(request, file_format, compressed)
+
+
 
 
 if __name__ == "__main__":
