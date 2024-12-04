@@ -86,7 +86,7 @@ def run_site_regulation_enrichment(
     regex="(\\w+~.+)_\\w\\d+\\-\\w+",  # ! add example to docstring of what kind of string this matches
     correction="fdr_bh",
 ):
-    """
+    r"""
     This function runs a simple enrichment analysis for significantly
     regulated protein sites in a dataset.
 
