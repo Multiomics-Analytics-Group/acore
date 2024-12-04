@@ -80,7 +80,7 @@ def run_site_regulation_enrichment(
     identifier="identifier",
     groups=("group1", "group2"),
     annotation_col="annotation",
-    reject_col="rejected",
+    rejected_col="rejected",
     group_col="group",
     method="fisher",
     regex="(\\w+~.+)_\\w\\d+\\-\\w+",  # ! add example to docstring of what kind of string this matches
@@ -100,7 +100,7 @@ def run_site_regulation_enrichment(
         group identifiers.
     :param str annotation_col: name of the column from annotation containing
         annotation terms.
-    :param str reject_col: name of the column from regulation_data containing
+    :param str rejected_col: name of the column from regulation_data containing
         boolean for rejected null hypothesis.
     :param str group_col: column name for new column in annotation dataframe
         determining if feature belongs to foreground or background.
@@ -117,7 +117,7 @@ def run_site_regulation_enrichment(
             identifier='identifier',
             groups=['group1', 'group2'],
             annotation_col='annotation',
-            reject_col='rejected',
+            rejected_col='rejected',
             group_col='group',
             method='fisher',
             match="(\\w+~.+)_\\w\\d+\\-\\w+"
@@ -141,7 +141,7 @@ def run_site_regulation_enrichment(
                 identifier,
                 groups,
                 annotation_col,
-                reject_col,
+                rejected_col,
                 group_col,
                 method,
                 correction,
@@ -156,7 +156,7 @@ def run_up_down_regulation_enrichment(
     identifier="identifier",
     groups=("group1", "group2"),
     annotation_col="annotation",
-    # reject_col="rejected",
+    # rejected_col="rejected",
     group_col="group",
     method="fisher",
     correction="fdr_bh",
@@ -174,7 +174,7 @@ def run_up_down_regulation_enrichment(
     :param str identifier: name of the column from annotation containing feature identifiers.
     :param list groups: column names from regulation_data containing group identifiers.
     :param str annotation_col: name of the column from annotation containing annotation terms.
-    :param str reject_col: name of the column from regulation_data containing boolean for
+    :param str rejected_col: name of the column from regulation_data containing boolean for
         rejected null hypothesis.
     :param str group_col: column name for new column in annotation dataframe determining
         if feature belongs to foreground or background.
@@ -195,7 +195,7 @@ def run_up_down_regulation_enrichment(
             groups=['group1',
             'group2'],
             annotation_col='annotation',
-            reject_col='rejected',
+            rejected_col='rejected',
             group_col='group',
             method='fisher',
             correction='fdr_bh',
@@ -226,7 +226,7 @@ def run_up_down_regulation_enrichment(
             annotation,
             identifier=identifier,
             annotation_col=annotation_col,
-            reject_col="up_pairwise_regulation",
+            rejected_col="up_pairwise_regulation",
             group_col=group_col,
             method=method,
             correction=correction,
@@ -238,7 +238,7 @@ def run_up_down_regulation_enrichment(
             annotation,
             identifier=identifier,
             annotation_col=annotation_col,
-            reject_col="down_pairwise_regulation",
+            rejected_col="down_pairwise_regulation",
             group_col=group_col,
             method=method,
             correction=correction,
@@ -287,7 +287,7 @@ def run_regulation_enrichment(
     annotation: pd.DataFrame,
     identifier: str = "identifier",
     annotation_col: str = "annotation",
-    reject_col: str = "rejected",
+    rejected_col: str = "rejected",
     group_col: str = "group",
     method: str = "fisher",
     min_detected_in_set: int = 2,
@@ -302,8 +302,9 @@ def run_regulation_enrichment(
     :param annotation: pandas.DataFrame with annotations for features
         (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
     :param str identifier: name of the column from annotation containing feature identifiers.
+        It should also be present in `regulation_data`.
     :param str annotation_col: name of the column from annotation containing annotation terms.
-    :param str reject_col: name of the column from `regulation_data` containing boolean for
+    :param str rejected_col: name of the column from `regulation_data` containing boolean for
         rejected null hypothesis.
     :param str group_col: column name for new column in annotation dataframe determining
         if feature belongs to foreground or background.
@@ -319,7 +320,7 @@ def run_regulation_enrichment(
             annotation,
             identifier='identifier',
             annotation_col='annotation',
-            reject_col='rejected',
+            rejected_col='rejected',
             group_col='group',
             method='fisher',
             min_detected_in_set=2,
@@ -328,7 +329,7 @@ def run_regulation_enrichment(
          )
     """
     # ? can we remove NA features in that column?
-    mask_rejected = regulation_data[reject_col].astype(bool)
+    mask_rejected = regulation_data[rejected_col].astype(bool)
     foreground_list = regulation_data.loc[mask_rejected, identifier].unique()
     background_list = regulation_data.loc[~mask_rejected, identifier].unique()
     foreground_pop = len(foreground_list)
