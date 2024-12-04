@@ -9,10 +9,14 @@ from statsmodels.stats import multitest
 # multitest.multitest_methods_names
 
 
-def apply_pvalue_correction(pvalues, alpha: float = 0.05, method: str = "bonferroni"):
+def apply_pvalue_correction(
+    pvalues: np.ndarray, alpha: float = 0.05, method: str = "bonferroni"
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Performs p-value correction using the specified method as in
-    statsmodels.stats.multitest.multipletests.
+    statsmodels.stats.multitest.multipletests_.
+
+    .. _statsmodels.stats.multitest.multipletests: https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html
 
     For more information visit
     https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html.
