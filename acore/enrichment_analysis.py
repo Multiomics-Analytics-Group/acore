@@ -27,7 +27,7 @@ columns: 'terms', 'identifiers', 'foreground',
 def run_fisher(
     group1: list[int],
     group2: list[int],
-    alternative="two-sided",
+    alternative: str = "two-sided",
 ) -> tuple[float, float]:
     """annotated   not-annotated
     group1      a               b
@@ -83,7 +83,7 @@ def run_site_regulation_enrichment(
     regex=r"(\w+~.+)_\w\d+\-\w+",  # ! add example to docstring of what this matches
     correction="fdr_bh",
 ):
-    """
+    r"""
     This function runs a simple enrichment analysis for significantly
     regulated protein sites in a dataset.
 
@@ -117,7 +117,7 @@ def run_site_regulation_enrichment(
             reject_col='rejected',
             group_col='group',
             method='fisher',
-            match="(\\w+~.+)_\\w\\d+\\-\\w+"
+            match="(\w+~.+)_\w\d+\-\w+"
         )
     """
     result = pd.DataFrame()
@@ -357,7 +357,7 @@ def run_regulation_enrichment(
 
 
 def run_enrichment(
-    data,
+    data: pd.DataFrame,
     foreground_id: str,
     background_id: str,
     foreground_pop: int,
@@ -390,7 +390,7 @@ def run_enrichment(
         number of foregroung/background features in each term,
         p-values and corrected p-values
         (columns: 'terms', 'identifiers', 'foreground',
-         'background', 'pvalue', 'padj' and 'rejected').
+        'background', 'pvalue', 'padj' and 'rejected').
 
     Example::
 
@@ -514,6 +514,7 @@ def run_ssgsea(
         and nes - normalized enrichment scores.
 
     Example::
+
         stproject = "P0000008"
         p = project.Project(
             stproject,
@@ -542,7 +543,6 @@ def run_ssgsea(
             scale=False,
             permutations=0
         )
-
     """
     result = {}
     df = data.copy()
