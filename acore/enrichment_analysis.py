@@ -29,15 +29,18 @@ def run_fisher(
     group2: list[int],
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
-    """annotated   not-annotated
-    group1      a               b
-    group2      c               d
-    ------------------------------------
+    """Run fisher's exact test on two groups using `scipy.stats.fisher_exact`.
 
-    group1 = [a, b]
-    group2 = [c, d]
+    Example::
 
-    odds, pvalue = stats.fisher_exact([[a, b], [c, d]])
+        # annotated   not-annotated
+        # group1      a               b
+        # group2      c               d
+
+
+        odds, pvalue = stats.fisher_exact(group1=[a, b],
+                                          group2 =[c, d]
+                        )
     """
 
     odds, pvalue = stats.fisher_exact([group1, group2], alternative)
@@ -80,10 +83,10 @@ def run_site_regulation_enrichment(
     reject_col="rejected",
     group_col="group",
     method="fisher",
-    regex=r"(\w+~.+)_\w\d+\-\w+",  # ! add example to docstring of what this matches
+    regex="(\\w+~.+)_\\w\\d+\\-\\w+",  # ! add example to docstring of what kind of string this matches
     correction="fdr_bh",
 ):
-    r"""
+    """
     This function runs a simple enrichment analysis for significantly
     regulated protein sites in a dataset.
 
@@ -97,7 +100,7 @@ def run_site_regulation_enrichment(
         group identifiers.
     :param str annotation_col: name of the column from annotation containing
         annotation terms.
-    :param str reject_col: name of the column from regulatio_data containing
+    :param str reject_col: name of the column from regulation_data containing
         boolean for rejected null hypothesis.
     :param str group_col: column name for new column in annotation dataframe
         determining if feature belongs to foreground or background.
@@ -117,7 +120,7 @@ def run_site_regulation_enrichment(
             reject_col='rejected',
             group_col='group',
             method='fisher',
-            match="(\w+~.+)_\w\d+\-\w+"
+            match="(\\w+~.+)_\\w\\d+\\-\\w+"
         )
     """
     result = pd.DataFrame()
@@ -300,7 +303,7 @@ def run_regulation_enrichment(
         (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
     :param str identifier: name of the column from annotation containing feature identifiers.
     :param str annotation_col: name of the column from annotation containing annotation terms.
-    :param str reject_col: name of the column from regulatio_data containing boolean for
+    :param str reject_col: name of the column from `regulation_data` containing boolean for
         rejected null hypothesis.
     :param str group_col: column name for new column in annotation dataframe determining
         if feature belongs to foreground or background.
@@ -487,7 +490,7 @@ def run_ssgsea(
     max_size: int = 500,
     scale: bool = False,
     permutations: int = 0,
-):
+) -> dict[str, pd.DataFrame]:
     """
     Project each sample within a data set onto a space of gene set enrichment scores using
     the single sample gene set enrichment analysis (ssGSEA) projection methodology
