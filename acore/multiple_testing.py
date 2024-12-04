@@ -20,21 +20,23 @@ def apply_pvalue_correction(pvalues, alpha: float = 0.05, method: str = "bonferr
     :param numpy.ndarray pvalues: et of p-values of the individual tests.
     :param float alpha: error rate.
     :param str method: method of p-value correction:
-        - bonferroni : one-step correction
-        - sidak : one-step correction
-        - holm-sidak : step down method using Sidak adjustments
-        - holm : step-down method using Bonferroni adjustments
-        - simes-hochberg : step-up method (independent)
-        - hommel : closed method based on Simes tests (non-negative)
-        - fdr_bh : Benjamini/Hochberg (non-negative)
-        - fdr_by : Benjamini/Yekutieli (negative)
-        - fdr_tsbh : two stage fdr correction (non-negative)
-        - fdr_tsbky : two stage fdr correction (non-negative)
+
+        - 'bonferroni' : one-step correction
+        - 'sidak' : one-step correction
+        - 'holm-sidak' : step down method using Sidak adjustments
+        - 'holm' : step-down method using Bonferroni adjustments
+        - 'simes-hochberg' : step-up method (independent)
+        - 'hommel' : closed method based on Simes tests (non-negative)
+        - 'fdr_bh' : Benjamini/Hochberg (non-negative)
+        - 'fdr_by' : Benjamini/Yekutieli (negative)
+        - 'fdr_tsbh' : two stage fdr correction (non-negative)
+        - 'fdr_tsbky' : two stage fdr correction (non-negative)
+
     :return: Tuple with two `numpy.array`s, boolen for rejecting H0 hypothesis
              and float for adjusted p-value. Can contain missing values if `pvalues`
              contain missing values.
 
-    Exmaple::
+    Example::
 
         result = apply_pvalue_correction(pvalues, alpha=0.05, method='bonferroni')
     """
@@ -58,7 +60,7 @@ def apply_pvalue_fdrcorrection(pvalues, alpha=0.05, method="indep"):
     :param str method: method of p-value correction ('indep', 'negcorr').
     :return: Tuple with two arrays, boolen for rejecting H0 hypothesis and float for adjusted p-value.
 
-    Exmaple::
+    Example::
 
         result = apply_pvalue_fdrcorrection(pvalues, alpha=0.05, method='indep')
     """
@@ -76,7 +78,7 @@ def apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method="bh"):
     :param str method: method of p-value correction ('bky', 'bh').
     :return: Tuple with two arrays, boolen for rejecting H0 hypothesis and float for adjusted p-value.
 
-    Exmaple::
+    Example::
 
         result = apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method='bh')
     """
