@@ -35,7 +35,7 @@ def get_coefficient_variation(data, drop_columns, group, columns=["name", "y"]):
     :param list columns: names to use for the variable column(s), and for the value column(s)
     :return: Pandas dataframe with columns 'name' (protein identifier), 'x' (coefficient of variation), 'y' (mean) and 'group'.
 
-    Exmaple::
+    Example::
 
         result = get_coefficient_variation(data, drop_columns=['sample', 'subject'], group='group')
     """
