@@ -16,10 +16,8 @@ def apply_pvalue_correction(
     Performs p-value correction using the specified method as in
     statsmodels.stats.multitest.multipletests_.
 
-    .. _statsmodels.stats.multitest.multipletests: https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html
-
-    For more information visit
-    https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html.
+    .. _statsmodels.stats.multitest.multipletests: \
+https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html
 
     :param numpy.ndarray pvalues: et of p-values of the individual tests.
     :param float alpha: error rate.
