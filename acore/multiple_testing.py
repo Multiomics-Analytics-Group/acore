@@ -5,37 +5,52 @@ from scipy.special import factorial
 from sklearn.utils import shuffle
 from statsmodels.stats import multitest
 
+# ? dictionary with available methods in statsmodels.stats.multitest.multipletests:
+# multitest.multitest_methods_names
 
-def apply_pvalue_correction(pvalues, alpha=0.05, method="bonferroni"):
+
+def apply_pvalue_correction(
+    pvalues: np.ndarray, alpha: float = 0.05, method: str = "bonferroni"
+) -> tuple[np.ndarray, np.ndarray]:
     """
-    Performs p-value correction using the specified method. For more information visit https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html.
+    Performs p-value correction using the specified method as in
+    statsmodels.stats.multitest.multipletests_.
+
+    .. _statsmodels.stats.multitest.multipletests: \
+https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html
 
     :param numpy.ndarray pvalues: et of p-values of the individual tests.
     :param float alpha: error rate.
     :param str method: method of p-value correction:
-        - bonferroni : one-step correction
-        - sidak : one-step correction
-        - holm-sidak : step down method using Sidak adjustments
-        - holm : step-down method using Bonferroni adjustments
-        - simes-hochberg : step-up method (independent)
-        - hommel : closed method based on Simes tests (non-negative)
-        - fdr_bh : Benjamini/Hochberg (non-negative)
-        - fdr_by : Benjamini/Yekutieli (negative)
-        - fdr_tsbh : two stage fdr correction (non-negative)
-        - fdr_tsbky : two stage fdr correction (non-negative)
-    :return: Tuple with two arrays, boolen for rejecting H0 hypothesis and float for adjusted p-value.
 
-    Exmaple::
+        - 'bonferroni' : one-step correction
+        - 'sidak' : one-step correction
+        - 'holm-sidak' : step down method using Sidak adjustments
+        - 'holm' : step-down method using Bonferroni adjustments
+        - 'simes-hochberg' : step-up method (independent)
+        - 'hommel' : closed method based on Simes tests (non-negative)
+        - 'fdr_bh' : Benjamini/Hochberg (non-negative)
+        - 'fdr_by' : Benjamini/Yekutieli (negative)
+        - 'fdr_tsbh' : two stage fdr correction (non-negative)
+        - 'fdr_tsbky' : two stage fdr correction (non-negative)
+
+    :return: Tuple with two `numpy.array`s, boolen for rejecting H0 hypothesis
+             and float for adjusted p-value. Can contain missing values if `pvalues`
+             contain missing values.
+
+    Example::
 
         result = apply_pvalue_correction(pvalues, alpha=0.05, method='bonferroni')
     """
     p = np.array(pvalues)
     mask = np.isfinite(p)
     pval_corrected = np.full(p.shape, np.nan)
-    pval_corrected[mask] = multitest.multipletests(p[mask], alpha, method)[1]
-    rejected = [p <= alpha for p in pval_corrected]
+    _rejected, _pvals_corrected, _, _ = multitest.multipletests(p[mask], alpha, method)
+    pval_corrected[mask] = _pvals_corrected
+    rejected = np.full(p.shape, np.nan)
+    rejected[mask] = _rejected
 
-    return (rejected, pval_corrected.tolist())
+    return (rejected, pval_corrected)
 
 
 def apply_pvalue_fdrcorrection(pvalues, alpha=0.05, method="indep"):
@@ -47,7 +62,7 @@ def apply_pvalue_fdrcorrection(pvalues, alpha=0.05, method="indep"):
     :param str method: method of p-value correction ('indep', 'negcorr').
     :return: Tuple with two arrays, boolen for rejecting H0 hypothesis and float for adjusted p-value.
 
-    Exmaple::
+    Example::
 
         result = apply_pvalue_fdrcorrection(pvalues, alpha=0.05, method='indep')
     """
@@ -65,7 +80,7 @@ def apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method="bh"):
     :param str method: method of p-value correction ('bky', 'bh').
     :return: Tuple with two arrays, boolen for rejecting H0 hypothesis and float for adjusted p-value.
 
-    Exmaple::
+    Example::
 
         result = apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method='bh')
     """
