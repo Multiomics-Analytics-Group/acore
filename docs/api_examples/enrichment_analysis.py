@@ -39,7 +39,7 @@ base_path: str = (
 omics: str = f"{base_path}/omics.csv"
 meta_pgs: str = f"{base_path}/meta_pgs.csv"
 meta: str = f"{base_path}/meta_patients.csv"
-N_to_sample: int = 1_000
+features_to_sample: int = 100
 
 # %% [markdown]
 # # Load processed data
@@ -69,7 +69,7 @@ df_omics = (
     .drop(idx_always_included, axis=1)
     .dropna(thresh=18, axis=1)
     .sample(
-        N_to_sample - len(idx_always_included),
+        features_to_sample - len(idx_always_included),
         axis=1,
         random_state=42,
     )
@@ -106,7 +106,7 @@ diff_reg.query("rejected == True")
 #
 
 # %%
-fname_annotations = "downloaded/annotations.csv"
+fname_annotations = f"downloaded/annotations_{features_to_sample}.csv"
 fname = Path(fname_annotations)
 try:
     annotations = pd.read_csv(fname, index_col=0)
@@ -155,5 +155,16 @@ ret = acore.enrichment_analysis.run_regulation_enrichment(
 )
 ret
 
+# %%
+res_dict = acore.enrichment_analysis.run_ssgsea(
+    data=df_omics,
+    annotation=annotations,
+    min_size=1,
+)
+print(res_dict.keys())
+res_dict["es"]
+
+# %%
+res_dict["nes"]
 
 # %%

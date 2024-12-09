@@ -483,8 +483,8 @@ def run_enrichment(
 def run_ssgsea(
     data: pd.DataFrame,
     annotation: str,
-    set_index: list[str],
-    annotation_col: str = "an notation",
+    set_index: list[str] = None,
+    annotation_col: str = "annotation",
     identifier_col: str = "identifier",
     outdir: str = "tmp",
     min_size: int = 15,
@@ -501,11 +501,11 @@ def run_ssgsea(
     :param data: pandas.DataFrame with the quantified features (i.e. subject x proteins)
     :param annotation: pandas.DataFrame with the annotation to be used in the enrichment
         (i.e. CKG pathway annotation file)
-    :param str annotation_col: name of the column containing annotation terms.
-    :param str identifier_col: name of column containing dependent variables identifiers.
     :param list set_index: column/s to be used as index. Enrichment will be calculated
         for these values (i.e ["subject"] will return subjects x pathways matrix of
         enrichment scores)
+    :param str annotation_col: name of the column containing annotation terms.
+    :param str identifier_col: name of column containing dependent variables identifiers.
     :param str out_dir: directory path where results will be stored
         (default None, tmp folder is used)
     :param int min_size: minimum number of features (i.e. proteins) in enriched terms
@@ -548,56 +548,70 @@ def run_ssgsea(
             permutations=0
         )
     """
-    result = {}
     df = data.copy()
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
     # Comine columns to create a unique name for each set (?)
     name = []
-    index = data[set_index]
-    for i, row in data[set_index].iterrows():
+    if set_index is None:
+        index = data.index.to_frame()
+        set_index = index.columns.tolist()
+    else:
+        index = data[set_index]
+        df = df.drop(set_index, axis=1)
+
+    for i, row in index.iterrows():
         name.append(
             "_".join(row[set_index].tolist())
         )  # this assumes strings as identifiers
 
     df["Name"] = name
     index.index = name
-    df = df.drop(set_index, axis=1).set_index("Name").transpose()
+    df = df.set_index("Name").transpose()
 
-    if annotation_col in annotation and identifier_col in annotation:
-        grouped_annotations = (
-            annotation.groupby(annotation_col)[identifier_col].apply(list).reset_index()
-        )
-        fid = uuid.uuid4()
-        file_path = os.path.join(outdir, str(fid) + ".gmt")
-        with open(file_path, "w", encoding="utf8") as out:
-            for i, row in grouped_annotations.iterrows():
-                out.write(
-                    row[annotation_col]
-                    + "\t"
-                    + "\t".join(list(filter(None, row[identifier_col])))
-                    + "\n"
-                )
-        enrichment = gp.ssgsea(
-            data=df,
-            gene_sets=str(file_path),
-            outdir=outdir,
-            min_size=min_size,
-            max_size=max_size,
-            scale=scale,
-            permutation_num=permutations,
-            no_plot=True,
-            processes=1,
-            seed=10,
-            format="png",
+    if not annotation_col in annotation:
+        raise ValueError(
+            f"Missing Annotation Column: {annotation_col} as specified by `annotation_col`"
         )
 
-        enrichment_es = pd.DataFrame(enrichment.resultsOnSamples).transpose()
-        enrichment_es = enrichment_es.join(index)
-        enrichment_nes = enrichment.res2d.transpose()
-        enrichment_nes = enrichment_nes.join(index)
+    if not identifier_col in annotation:
+        raise ValueError(
+            f"Missing Identifier Column: {identifier_col} as specified by `identifier_col`"
+        )
 
-        result = {"es": enrichment_es, "nes": enrichment_nes}
+    grouped_annotations = (
+        annotation.groupby(annotation_col)[identifier_col].apply(list).reset_index()
+    )
+    fid = uuid.uuid4()
+    file_path = os.path.join(outdir, str(fid) + ".gmt")
+    with open(file_path, "w", encoding="utf8") as out:
+        for i, row in grouped_annotations.iterrows():
+            out.write(
+                row[annotation_col]
+                + "\t"
+                + "\t".join(list(filter(None, row[identifier_col])))
+                + "\n"
+            )
+    enrichment = gp.ssgsea(
+        data=df,
+        gene_sets=str(file_path),
+        outdir=outdir,
+        min_size=min_size,
+        max_size=max_size,
+        scale=scale,
+        permutation_num=permutations,
+        no_plot=True,
+        processes=1,
+        seed=10,
+        format="png",
+    )
+
+    enrichment_es = pd.DataFrame(enrichment.results).transpose()  # resultsOnSamples
+    enrichment_es = enrichment_es.join(index)
+    enrichment_nes = enrichment.res2d.transpose()
+    # enrichment_nes = enrichment_nes.join(index) # ! To Fix
+
+    result = {"es": enrichment_es, "nes": enrichment_nes}
 
     return result
