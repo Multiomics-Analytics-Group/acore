@@ -155,16 +155,90 @@ ret = acore.enrichment_analysis.run_regulation_enrichment(
 )
 ret
 
+# %% [markdown]
+# ### For up- and downregulated genes separately
+
+# %% [markdown]
+# ### Site specific enrichment analysis
+
+# %% [markdown]
+# The basic example uses a modified peptide sequence to
+# demonstrate the enrichment analysis.
+# - compare groups per amino acid modified (kinases targeting certain motifs?)
+
 # %%
-res_dict = acore.enrichment_analysis.run_ssgsea(
+import re
+
+regex = "(\\w+~.+)_\\w\\d+\\-\\w+"
+identifier_ckg = "gnd~P00350_T10-WW"
+match = re.search(regex, identifier_ckg)
+match.group(1)
+
+# %%
+seq_mod = "_AAADQET(ph)DTDPEPQPVVGPDAADHRPTVM(ox)LLGGGALSR"
+regex = "\(\w\w\)"
+matches = re.findall(regex, seq_mod)
+matches
+
+# %%
+# acore.enrichment_analysis.run_up_down_regulation_enrichment(
+
+# %% [markdown]
+# ## Single sample GSEA (ssGSEA)
+# Run a gene set enrichment analysis (GSEA) for each sample,
+# see [article](https://www.nature.com/articles/nature08460#Sec3) and
+# the package [`gseapy`](https://gseapy.readthedocs.io/en/latest/run.html#gseapy.ssgsea)
+# for more details.
+
+# %%
+enrichtments = acore.enrichment_analysis.run_ssgsea(
     data=df_omics,
     annotation=annotations,
     min_size=1,
 )
-print(res_dict.keys())
-res_dict["es"]
+enrichtments
 
 # %%
-res_dict["nes"]
+enrichtments.iloc[0].to_dict()
+
+# %%
+enrichtments["NES"].plot.hist()
+
+# %% [markdown]
+# The normalised enrichment score (NES) can be used in a PCA plot to see if the samples
+# cluster according to the enrichment of the gene sets.
+
+# %%
+nes = enrichtments.set_index("Term", append=True).unstack()["NES"].convert_dtypes()
+nes
+
+# %%
+import acore.exploratory_analysis as ea
+
+pca_result, pca_annotation = ea.run_pca(
+    data=nes.join(df_meta[[group]]),
+    drop_cols=[],
+    annotation_cols=[],
+    group=group,
+    components=2,
+    dropna=False,
+)
+pca_result
+
+# %%
+# from plotly.offline import iplot
+# from vuecore import viz
+
+# args = {"factor": 1, "loadings": 10}
+# # #! pca_results has three items, but docstring requests only two -> double check
+# figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
+# iplot(figure)
+
+# %% [markdown]
+# ## Compare two distributions - KS test
+# The Kolmogorov-Smirnov test is a non-parametric test that compares two distributions.
+
+# %%
+# plot two histograms of intensity values here
 
 # %%

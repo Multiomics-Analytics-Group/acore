@@ -74,16 +74,17 @@ def run_kolmogorov_smirnov(dist1, dist2, alternative="two-sided"):
     return result
 
 
+# ! undocumented for now (find usage example)
 def run_site_regulation_enrichment(
-    regulation_data,
-    annotation,
+    regulation_data: pd.DataFrame,
+    annotation: pd.DataFrame,
     identifier="identifier",
     groups=("group1", "group2"),
     annotation_col="annotation",
     rejected_col="rejected",
     group_col="group",
     method="fisher",
-    regex="(\\w+~.+)_\\w\\d+\\-\\w+",  # ! add example to docstring of what kind of string this matches
+    regex="(\\w+~.+)_\\w\\d+\\-\\w+",
     correction="fdr_bh",
 ):
     r"""
@@ -110,6 +111,8 @@ def run_site_regulation_enrichment(
     :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
         'background', foreground_pop, background_pop, 'pvalue', 'padj' and 'rejected'.
 
+    :raises ValueError: if regulation_data is `None` or empty.
+
     Example::
 
         result = run_site_regulation_enrichment(regulation_data,
@@ -124,28 +127,35 @@ def run_site_regulation_enrichment(
         )
     """
     result = pd.DataFrame()
-    if regulation_data is not None:
-        if not regulation_data.empty:
-            new_ids = []
-            for ident in regulation_data[identifier].tolist():
-                match = re.search(regex, ident)
-                if match is not None:
-                    new_ids.append(match.group(1))
-                else:
-                    new_ids.append(ident)
-            regulation_data[identifier] = new_ids
-            regulation_data = regulation_data.drop_duplicates()
-            result = run_regulation_enrichment(
-                regulation_data,
-                annotation,
-                identifier,
-                groups,
-                annotation_col,
-                rejected_col,
-                group_col,
-                method,
-                correction,
-            )
+    if regulation_data is None or regulation_data.empty:
+        raise ValueError("regulation_data is empty")
+
+    new_ids = []
+    # find any identifiers with a PTM and save only prot+gene identifer
+    for ident in regulation_data[identifier].tolist():
+        match = re.search(regex, ident)
+        if match is not None:
+            new_ids.append(
+                match.group(1)
+            )  # removes the PTM extension of the identifierm of CKG
+        else:
+            new_ids.append(ident)
+    # so this is normalizing the identifiers to ignore the PTM extension
+    regulation_data[identifier] = new_ids  # matches are used as identifiers
+    regulation_data = (
+        regulation_data.drop_duplicates()
+    )  # depends on regulation_data if this has an effect (with floats probably not)
+    result = run_regulation_enrichment(
+        regulation_data,
+        annotation,
+        identifier,
+        groups,
+        annotation_col,
+        rejected_col,
+        group_col,
+        method,
+        correction,
+    )
 
     return result
 
@@ -491,17 +501,17 @@ def run_ssgsea(
     max_size: int = 500,
     scale: bool = False,
     permutations: int = 0,
-) -> dict[str, pd.DataFrame]:
+) -> pd.DataFrame:
     """
     Project each sample within a data set onto a space of gene set enrichment scores using
     the single sample gene set enrichment analysis (ssGSEA) projection methodology
     described in Barbie et al., 2009:
     https://www.nature.com/articles/nature08460#Sec3 (search "Single Sample" GSEA).
 
-    :param data: pandas.DataFrame with the quantified features (i.e. subject x proteins)
-    :param annotation: pandas.DataFrame with the annotation to be used in the enrichment
+    :param pd.DataFrame data: pandas.DataFrame with the quantified features (i.e. subject x proteins)
+    :param str annotation: pandas.DataFrame with the annotation to be used in the enrichment
         (i.e. CKG pathway annotation file)
-    :param list set_index: column/s to be used as index. Enrichment will be calculated
+    :param list[str] set_index: column/s to be used as index. Enrichment will be calculated
         for these values (i.e ["subject"] will return subjects x pathways matrix of
         enrichment scores)
     :param str annotation_col: name of the column containing annotation terms.
@@ -514,8 +524,9 @@ def run_ssgsea(
         (i.e. pathways)
     :param bool scale: whether or not to scale the data
     :param int permutations: number of permutations used in the ssgsea analysis
-    :return: dictionary with two dataframes: es - enrichment scores,
-        and nes - normalized enrichment scores.
+    :return: pandas.DataFrame containing unnormalized enrichment scores (`ES`) for each sample,
+        and normalized enrichment scores (`NES`) with the enriched `Term` and sample `Name`.
+    :rtype: pandas.DataFrame
 
     Example::
 
@@ -561,7 +572,7 @@ def run_ssgsea(
         index = data[set_index]
         df = df.drop(set_index, axis=1)
 
-    for i, row in index.iterrows():
+    for _, row in index.iterrows():
         name.append(
             "_".join(row[set_index].tolist())
         )  # this assumes strings as identifiers
@@ -586,7 +597,7 @@ def run_ssgsea(
     fid = uuid.uuid4()
     file_path = os.path.join(outdir, str(fid) + ".gmt")
     with open(file_path, "w", encoding="utf8") as out:
-        for i, row in grouped_annotations.iterrows():
+        for _, row in grouped_annotations.iterrows():
             out.write(
                 row[annotation_col]
                 + "\t"
@@ -606,12 +617,7 @@ def run_ssgsea(
         seed=10,
         format="png",
     )
-
-    enrichment_es = pd.DataFrame(enrichment.results).transpose()  # resultsOnSamples
-    enrichment_es = enrichment_es.join(index)
-    enrichment_nes = enrichment.res2d.transpose()
-    # enrichment_nes = enrichment_nes.join(index) # ! To Fix
-
-    result = {"es": enrichment_es, "nes": enrichment_nes}
-
+    result = pd.DataFrame(enrichment.res2d).set_index("Name")
+    # potentially return wide format in separate format
+    # result = {"es": enrichment_es, "nes": enrichment_nes}
     return result
