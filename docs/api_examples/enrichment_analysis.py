@@ -151,12 +151,21 @@ _ = (
 ret = acore.enrichment_analysis.run_regulation_enrichment(
     regulation_data=diff_reg,
     annotation=annotations,
+    min_detected_in_set=1,  # ! default is 2, so more conservative
     correction_alpha=0.01,
 )
 ret
 
 # %% [markdown]
 # ### For up- and downregulated genes separately
+
+# %%
+ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
+    regulation_data=diff_reg,
+    annotation=annotations,
+    min_detected_in_set=1,  # ! default is 2, so more conservative
+)
+ret
 
 # %% [markdown]
 # ### Site specific enrichment analysis

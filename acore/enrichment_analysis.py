@@ -161,28 +161,33 @@ def run_site_regulation_enrichment(
 
 
 def run_up_down_regulation_enrichment(
-    regulation_data,
-    annotation,
-    identifier="identifier",
-    groups=("group1", "group2"),
-    annotation_col="annotation",
-    # rejected_col="rejected",
-    group_col="group",
-    method="fisher",
-    correction="fdr_bh",
-    alpha=0.05,
-    lfc_cutoff=1,
-):
+    regulation_data: pd.DataFrame,
+    annotation: pd.DataFrame,
+    identifier: str = "identifier",
+    groups: list[str] = ("group1", "group2"),
+    annotation_col: str = "annotation",
+    # rejected_col:str="rejected",
+    group_col: str = "group",
+    method: str = "fisher",
+    min_detected_in_set: int = 2,
+    correction: str = "fdr_bh",
+    correction_alpha: float = 0.05,
+    lfc_cutoff: float = 1,
+) -> pd.DataFrame:
     """
     This function runs a simple enrichment analysis for significantly regulated proteins
     distinguishing between up- and down-regulated.
 
-    :param regulation_data: pandas.DataFrame resulting from differential regulation
+    :param pandas.DataFrame regulation_data: pandas.DataFrame resulting from differential regulation
         analysis (CKG's regulation table).
-    :param annotation: pandas.DataFrame with annotations for features
+    :param pandas.DataFrame annotation: pandas.DataFrame with annotations for features
         (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
     :param str identifier: name of the column from annotation containing feature identifiers.
-    :param list groups: column names from regulation_data containing group identifiers.
+    :param list[str] groups: column names from regulation_data containing group identifiers.
+            See `pandas.DataFrame.groupby`_ for more information.
+            
+            .. _pandas.DataFrame.groupby: https://pandas.pydata.org/pandas-docs/stable/\
+reference/api/pandas.DataFrame.groupby.html
     :param str annotation_col: name of the column from annotation containing annotation terms.
     :param str rejected_col: name of the column from regulation_data containing boolean for
         rejected null hypothesis.
@@ -213,52 +218,54 @@ def run_up_down_regulation_enrichment(
             lfc_cutoff=1,
         )
     """
-    enrichment_results = {}
+    if isinstance(groups, str):
+        groups = [groups]
+    if isinstance(groups, tuple):
+        groups = list(groups)
+    if len(groups) != 2:
+        raise ValueError("groups should be exactly two.")
+
+    ret = list()
+    # In case of multiple comparisons this is used to get all possible combinations
     for g1, g2 in regulation_data.groupby(groups).groups:
+
         df = regulation_data.groupby(groups).get_group((g1, g2))
+
+        padj_name = "padj"
         if "posthoc padj" in df:
-            df["up_pairwise_regulation"] = (df["posthoc padj"] <= alpha) & (
-                df["log2FC"] >= lfc_cutoff
-            )
-            df["down_pairwise_regulation"] = (df["posthoc padj"] <= alpha) & (
-                df["log2FC"] <= -lfc_cutoff
-            )
-        else:
-            df["up_pairwise_regulation"] = (df["padj"] <= alpha) & (
-                df["log2FC"] >= lfc_cutoff
-            )
-            df["down_pairwise_regulation"] = (df["padj"] <= alpha) & (
-                df["log2FC"] <= -lfc_cutoff
-            )
+            padj_name = "posthoc padj"
 
-        enrichment = run_regulation_enrichment(
-            df,
-            annotation,
-            identifier=identifier,
-            annotation_col=annotation_col,
-            rejected_col="up_pairwise_regulation",
-            group_col=group_col,
-            method=method,
-            correction=correction,
+        df["up_pairwise_regulation"] = (df[padj_name] <= correction_alpha) & (
+            df["log2FC"] >= lfc_cutoff
         )
-        enrichment["direction"] = "upregulated"
-        enrichment_results[g1 + "~" + g2] = enrichment
-        enrichment = run_regulation_enrichment(
-            df,
-            annotation,
-            identifier=identifier,
-            annotation_col=annotation_col,
-            rejected_col="down_pairwise_regulation",
-            group_col=group_col,
-            method=method,
-            correction=correction,
+        df["down_pairwise_regulation"] = (df[padj_name] <= correction_alpha) & (
+            df["log2FC"] <= -lfc_cutoff
         )
-        enrichment["direction"] = "downregulated"
-        enrichment_results[g1 + "~" + g2] = enrichment_results[g1 + "~" + g2].append(
-            enrichment
-        )
+        comparison_tag = g1 + "~" + g2
 
-    return enrichment_results
+        for rej_col, direction in zip(
+            ("up_pairwise_regulation", "down_pairwise_regulation"),
+            ("upregulated", "downregulated"),
+        ):
+            _enrichment = run_regulation_enrichment(
+                df,
+                annotation,
+                identifier=identifier,
+                annotation_col=annotation_col,
+                rejected_col=rej_col,
+                group_col=group_col,
+                method=method,
+                min_detected_in_set=min_detected_in_set,
+                correction=correction,
+                correction_alpha=correction_alpha,
+            )
+            _enrichment["direction"] = direction
+            _enrichment["comparison"] = comparison_tag
+            ret.append(_enrichment)
+
+    ret = pd.concat(ret)
+
+    return ret
 
 
 # ! to move
