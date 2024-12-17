@@ -62,7 +62,7 @@ df_omics.notna().sum().sort_values(ascending=True).plot()
 idx_always_included = ["Q5HYN5", "P39059", "O43432", "O43175"]
 df_omics[idx_always_included]
 
-# %%
+# %% tags=["hide-input"]
 df_omics = (
     df_omics
     # .dropna(axis=1)
@@ -99,7 +99,7 @@ diff_reg.describe(exclude=["float"])
 
 # %%
 diff_reg["rejected"] = diff_reg["rejected"].astype(bool)  # ! needs to be fixed in anova
-diff_reg.query("rejected == True")
+diff_reg.query("rejected")
 
 # %% [markdown]
 # ## Find functional annotations, here pathways
@@ -134,7 +134,7 @@ annotations
 # %% [markdown]
 # See how many protein groups are associated with each annotation.
 
-# %%
+# %% tags=["hide-input"]
 _ = (
     annotations.groupby("annotation")
     .size()
@@ -159,11 +159,43 @@ ret
 # %% [markdown]
 # ### For up- and downregulated genes separately
 
+# %% tags=["hide-input"]
+diff_reg.query("rejected")[
+    [
+        "identifier",
+        "group1",
+        "group2",
+        "pvalue",
+        "padj",
+        "rejected",
+        "log2FC",
+        "FC",
+    ]
+].sort_values("log2FC")
+
+# %% [markdown]
+# - this additionally sets a fold change cutoff
+# - and the fore and backgroud populations are changed due to the separation
+
 # %%
 ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     regulation_data=diff_reg,
     annotation=annotations,
     min_detected_in_set=1,  # ! default is 2, so more conservative
+    lfc_cutoff=1,
+)
+ret
+
+# %% [markdown]
+# here we see differences for the same set of differently regulated protein groups,
+# which can be reset using lfc_cutoff=0.
+
+# %%
+ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
+    regulation_data=diff_reg,
+    annotation=annotations,
+    min_detected_in_set=1,  # ! default is 2, so more conservative
+    lfc_cutoff=0,
 )
 ret
 

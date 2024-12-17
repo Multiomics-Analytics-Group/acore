@@ -199,7 +199,7 @@ reference/api/pandas.DataFrame.groupby.html
     :param float alpha: adjusted p-value cutoff to define significance
     :param float lfc_cutoff: log fold-change cutoff to define practical significance
     :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
-        'background', 'pvalue', 'padj' and 'rejected'.
+        'background', 'pvalue', 'padj', 'rejected', 'direction' and 'comparison'.
 
     Example::
 
@@ -223,7 +223,7 @@ reference/api/pandas.DataFrame.groupby.html
     if isinstance(groups, tuple):
         groups = list(groups)
     if len(groups) != 2:
-        raise ValueError("groups should be exactly two.")
+        raise ValueError("groups should contains exactly two columns.")
 
     ret = list()
     # In case of multiple comparisons this is used to get all possible combinations
