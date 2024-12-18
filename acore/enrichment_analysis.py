@@ -29,7 +29,10 @@ def run_fisher(
     group2: list[int],
     alternative: str = "two-sided",
 ) -> tuple[float, float]:
-    """Run fisher's exact test on two groups using `scipy.stats.fisher_exact`.
+    """Run fisher's exact test on two groups using `scipy.stats.fisher_exact`_.
+
+    .. _scipy.stats.fisher_exact: https://docs.scipy.org/doc/scipy/reference/generated/\
+scipy.stats.fisher_exact.html
 
     Example::
 
@@ -51,7 +54,11 @@ def run_fisher(
 def run_kolmogorov_smirnov(dist1, dist2, alternative="two-sided"):
     """
     Compute the Kolmogorov-Smirnov statistic on 2 samples.
-    See https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_2samp.html
+    See `scipy.stats.ks_2samp`_
+
+    .. _scipy.stats.ks_2samp: https://docs.scipy.org/doc/scipy/reference/generated/\
+scipy.stats.ks_2samp.html
+
 
     :param list dist1: sequence of 1-D ndarray (first distribution to compare)
         drawn from a continuous distribution

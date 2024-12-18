@@ -12,7 +12,7 @@
 
 
 # %% tags=["hide-output"]
-# %pip install acore
+# %pip install acore vuecore
 
 
 # %%
@@ -264,22 +264,48 @@ pca_result, pca_annotation = ea.run_pca(
     components=2,
     dropna=False,
 )
-pca_result
+resultDf, loadings, var_exp = pca_result
+resultDf
+
+# %% [markdown]
+# The loadings show how the variables are correlated with the principal components.
 
 # %%
-# from plotly.offline import iplot
-# from vuecore import viz
+loadings
 
-# args = {"factor": 1, "loadings": 10}
-# # #! pca_results has three items, but docstring requests only two -> double check
-# figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
-# iplot(figure)
+# %% [markdown]
+# We will plot both on the sample plot (samples on the first two principal components and
+# loadings of variables). We use the
+# [`vuecore` package](https://github.com/Multiomics-Analytics-Group/vuecore)
+# for this, which is also developed by the Multiomics Analytics Group.
+
+# %%
+from plotly.offline import iplot
+from vuecore import viz
+
+args = {"factor": 1, "loadings": 10}
+# #! pca_results has three items, but docstring requests only two -> double check
+figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
+iplot(figure)
 
 # %% [markdown]
 # ## Compare two distributions - KS test
 # The Kolmogorov-Smirnov test is a non-parametric test that compares two distributions.
+# - we compare the distributions of the two differently upregulated protein groups
+# This is not the best example for comparing distributions, but it shows how to use the
+# KS test.
 
 # %%
 # plot two histograms of intensity values here
+sel_pgs = ["O43175", "P39059"]
+view = df_omics[sel_pgs].sub(df_omics[sel_pgs].mean())
+view.plot.hist(bins=20, alpha=0.5)
+
+# %% [markdown]
+# Let us compare the two centered distributions using the KS test.
 
 # %%
+acore.enrichment_analysis.run_kolmogorov_smirnov(view[sel_pgs[0]], view[sel_pgs[1]])
+
+# %% [markdown]
+# The result suggests that the two distributions are from the same distribution.
