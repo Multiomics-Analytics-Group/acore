@@ -51,7 +51,7 @@ df_meta = pd.read_csv(meta, index_col=0)
 df_omics
 
 # %%
-df_omics.notna().sum().sort_values(ascending=True).plot()
+ax = df_omics.notna().sum().sort_values(ascending=True).plot()
 
 # %% [markdown]
 # Keep only features with a certain amount of non-NaN values and select 100 of these
@@ -145,19 +145,8 @@ _ = (
 
 # %% [markdown]
 # ## Enrichment analysis
-#
-
-# %%
-ret = acore.enrichment_analysis.run_regulation_enrichment(
-    regulation_data=diff_reg,
-    annotation=annotations,
-    min_detected_in_set=1,  # ! default is 2, so more conservative
-    correction_alpha=0.01,
-)
-ret
-
-# %% [markdown]
-# ### For up- and downregulated genes separately
+# Is done separately for up- and downregulated genes as it's assumed that biological
+# processes are regulated in one direction.
 
 # %% tags=["hide-input"]
 diff_reg.query("rejected")[
@@ -205,7 +194,12 @@ ret
 # %% [markdown]
 # The basic example uses a modified peptide sequence to
 # demonstrate the enrichment analysis.
-# - compare groups per amino acid modified (kinases targeting certain motifs?)
+# > TODO: The example on how to do that needs a PTM focused dataset.
+# The details of how site specific enrichment analysis is done will depend on the
+# dataset and the question at hand.
+#
+# If the identifiers contain PTMs this information is removed to match it to the annotation
+# using a regular expression (in the function). For example:
 
 # %%
 import re
@@ -216,13 +210,8 @@ match = re.search(regex, identifier_ckg)
 match.group(1)
 
 # %%
-seq_mod = "_AAADQET(ph)DTDPEPQPVVGPDAADHRPTVM(ox)LLGGGALSR"
-regex = "\(\w\w\)"
-matches = re.findall(regex, seq_mod)
-matches
-
-# %%
-# acore.enrichment_analysis.run_up_down_regulation_enrichment(
+# ToDo: Add example for site specific enrichment analysis
+# acore.enrichment_analysis.run_up_down_regulation_enrichment
 
 # %% [markdown]
 # ## Single sample GSEA (ssGSEA)
@@ -299,7 +288,7 @@ iplot(figure)
 # plot two histograms of intensity values here
 sel_pgs = ["O43175", "P39059"]
 view = df_omics[sel_pgs].sub(df_omics[sel_pgs].mean())
-view.plot.hist(bins=20, alpha=0.5)
+ax = view.plot.hist(bins=20, alpha=0.5)
 
 # %% [markdown]
 # Let us compare the two centered distributions using the KS test.

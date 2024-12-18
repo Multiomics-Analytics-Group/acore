@@ -85,14 +85,15 @@ scipy.stats.ks_2samp.html
 def run_site_regulation_enrichment(
     regulation_data: pd.DataFrame,
     annotation: pd.DataFrame,
-    identifier="identifier",
-    groups=("group1", "group2"),
-    annotation_col="annotation",
-    rejected_col="rejected",
-    group_col="group",
-    method="fisher",
-    regex="(\\w+~.+)_\\w\\d+\\-\\w+",
-    correction="fdr_bh",
+    identifier: str = "identifier",
+    groups: list[str] = ("group1", "group2"),
+    annotation_col: str = "annotation",
+    rejected_col: str = "rejected",
+    group_col: str = "group",
+    method: str = "fisher",
+    regex: str = "(\\w+~.+)_\\w\\d+\\-\\w+",
+    correction: str = "fdr_bh",
+    remove_duplicates: bool = False,
 ):
     r"""
     This function runs a simple enrichment analysis for significantly
@@ -144,14 +145,13 @@ def run_site_regulation_enrichment(
         if match is not None:
             new_ids.append(
                 match.group(1)
-            )  # removes the PTM extension of the identifierm of CKG
+            )  # removes the PTM extension of the identifier of CKG
         else:
             new_ids.append(ident)
     # so this is normalizing the identifiers to ignore the PTM extension
     regulation_data[identifier] = new_ids  # matches are used as identifiers
-    regulation_data = (
-        regulation_data.drop_duplicates()
-    )  # depends on regulation_data if this has an effect (with floats probably not)
+    if remove_duplicates:
+        regulation_data = regulation_data.drop_duplicates(subset=[identifier])
     result = run_regulation_enrichment(
         regulation_data,
         annotation,
