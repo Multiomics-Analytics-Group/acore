@@ -26,7 +26,7 @@ import acore.differential_regulation
 import acore.enrichment_analysis
 from acore.io.uniprot import fetch_annotations
 
-dsp_pandas.format.set_pandas_options(max_colwidth=15)
+dsp_pandas.format.set_pandas_options(max_colwidth=60)
 
 # %% [markdown]
 # Parameters of this notebook
@@ -113,18 +113,31 @@ try:
     print(f"Loaded annotations from {fname}")
 except FileNotFoundError:
     print(f"Fetching annotations for {df_omics.columns.size} UniProt IDs.")
-    annotations = fetch_annotations(df_omics.columns)
+    fields = "accession,go_p,go_c,go_f"
+    annotations = fetch_annotations(df_omics.columns, fields=fields)
+    # First column (`From`) is additional to specified fields
+    d_fields_to_col = {k: v for k, v in zip(fields.split(","), annotations.columns[1:])}
+
+    # expand go terms
+    to_expand = list()
+    for field in d_fields_to_col:
+        if "go_" in field:
+            col = d_fields_to_col[field]
+            annotations[col] = annotations[col].str.split(";")
+            to_expand.append(col)
+    for col in to_expand:
+        # this is a bit wastefull. Processing to stack format should be done here.
+        annotations = annotations.explode(col, ignore_index=True)
+    # process other than go term columns
     annotations = (
-        annotations.set_index("Entry")
+        annotations.set_index("From")
         .rename_axis("identifier")
-        .drop("From", axis=1)
+        # .drop("Entry", axis=1)
         .rename_axis("source", axis=1)
         .stack()
         .to_frame("annotation")
-        .replace("", pd.NA)
-        .dropna()
-        .sort_values(["source", "annotation"])
         .reset_index()
+        .drop_duplicates(ignore_index=True)
     )
     fname.parent.mkdir(exist_ok=True, parents=True)
     annotations.to_csv(fname, index=True)
@@ -170,7 +183,7 @@ diff_reg.query("rejected")[
 ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     regulation_data=diff_reg,
     annotation=annotations,
-    min_detected_in_set=1,  # ! default is 2, so more conservative
+    min_detected_in_set=2,  # ! default is 2, so more conservative
     lfc_cutoff=0.5,  # ! the default is 1
 )
 ret
@@ -184,7 +197,20 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     regulation_data=diff_reg,
     annotation=annotations,
     min_detected_in_set=1,  # ! default is 2, so more conservative
-    lfc_cutoff=0,
+    lfc_cutoff=0.1,  # ! the default is 1
+)
+ret
+
+# %% [markdown]
+# Or restricting the analysis to functional annotation for which we at least found 2
+# protein groups to be upregulated.
+
+# %%
+ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
+    regulation_data=diff_reg,
+    annotation=annotations,
+    min_detected_in_set=2,
+    lfc_cutoff=0.5,  # ! the default is 1
 )
 ret
 
