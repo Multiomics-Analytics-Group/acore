@@ -480,7 +480,7 @@ def run_enrichment(
                     ]
                 )
             )
-    if len(pvalues) > 1:
+    if len(pvalues) >= 1:
         rejected, padj = apply_pvalue_correction(
             pvalues,
             alpha=correction_alpha,
