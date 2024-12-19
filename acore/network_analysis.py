@@ -2,9 +2,10 @@ import community
 import networkx as nx
 import pandas as pd
 import snf
-import utils
 from sklearn import cluster
 from sklearn.cluster import AffinityPropagation
+
+from . import utils
 
 
 def get_network_communities(graph, args):

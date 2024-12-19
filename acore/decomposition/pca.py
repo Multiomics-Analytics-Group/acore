@@ -26,10 +26,10 @@ def run_pca(
         n_comp_max = min(df_wide.shape)
         n_comp_max = min(n_comp_max, n_components)
     pca = sklearn.decomposition.PCA(n_components=n_comp_max)
-    PCs = pca.fit_transform(df_wide)
+    pcs = pca.fit_transform(df_wide)
     cols = [
         f"principal component {i+1} ({var_explained*100:.2f} %)"
         for i, var_explained in enumerate(pca.explained_variance_ratio_)
     ]
-    PCs = pd.DataFrame(PCs, index=df_wide.index, columns=cols)
-    return PCs, pca
+    pcs = pd.DataFrame(pcs, index=df_wide.index, columns=cols)
+    return pcs, pca
