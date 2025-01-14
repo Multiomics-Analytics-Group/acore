@@ -113,7 +113,7 @@ try:
     print(f"Loaded annotations from {fname}")
 except FileNotFoundError:
     print(f"Fetching annotations for {df_omics.columns.size} UniProt IDs.")
-    fields = "accession,go_p,go_c,go_f"
+    fields = "go_p,go_c,go_f"
     annotations = fetch_annotations(df_omics.columns, fields=fields)
     # First column (`From`) is additional to specified fields
     d_fields_to_col = {k: v for k, v in zip(fields.split(","), annotations.columns[1:])}
