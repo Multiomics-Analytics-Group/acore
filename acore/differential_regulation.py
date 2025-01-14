@@ -179,7 +179,8 @@ def calculate_pairwise_ttest(
     df, column, subject="subject", group="group", correction="none", is_logged=True
 ):
     """
-    Performs pairwise t-test using pingouin, as a posthoc test, and calculates fold-changes. For more information visit https://pingouin-stats.org/generated/pingouin.pairwise_ttests.html.
+    Performs pairwise t-test using pingouin, as a posthoc test, and calculates fold-changes.
+    For more information visit https://pingouin-stats.org/generated/pingouin.pairwise_ttests.html.
 
     :param df: pandas dataframe with subject and group as rows and protein identifier as column.
     :param str column: column label containing the dependant variable
@@ -226,7 +227,7 @@ def calculate_pairwise_ttest(
         "posthoc BF10",
         "posthoc effsize",
     ]
-    posthoc = df.pairwise_ttests(
+    posthoc = df.pairwise_tests(
         dv=column,
         between=group,
         subject=subject,
@@ -373,15 +374,15 @@ def calculate_mixed_anova(
 
 
 def run_anova(
-    df,
-    alpha=0.05,
-    drop_cols=["sample", "subject"],
-    subject="subject",
-    group="group",
-    permutations=0,
-    correction="fdr_bh",
-    is_logged=True,
-    non_par=False,
+    df: pd.DataFrame,
+    alpha: float = 0.05,
+    drop_cols: list[str] = ["sample", "subject"],
+    subject: str = "subject",
+    group: str = "group",
+    permutations: int = 0,
+    correction: str = "fdr_bh",
+    is_logged: bool = True,
+    non_par: bool = False,
 ):
     """
     Performs statistical test for each protein in a dataset.
@@ -481,16 +482,16 @@ def run_anova(
 
 
 def run_ancova(
-    df,
-    covariates,
-    alpha=0.05,
-    drop_cols=["sample", "subject"],
-    subject="subject",
-    group="group",
-    permutations=0,
-    correction="fdr_bh",
-    is_logged=True,
-    non_par=False,
+    df: pd.DataFrame,
+    covariates: list[str],
+    alpha: float = 0.05,
+    drop_cols: list[str] = ["sample", "subject"],
+    subject: str = "subject",
+    group: str = "group",
+    permutations: int = 0,
+    correction: str = "fdr_bh",
+    is_logged: bool = True,
+    non_pa: bool = False,
 ):
     """
     Performs statistical test for each protein in a dataset.
@@ -554,7 +555,9 @@ def pairwise_ttest_with_covariates(df, column, group, covariates, is_logged):
     model = ols(formula, data=df).fit()
     pw = model.t_test_pairwise("C(Q('%s'))" % (group)).result_frame
     pw = pw.reset_index()
-    groups = "|".join([re.escape(s) for s in df[group].unique().tolist()])
+    groups = "|".join(
+        [re.escape(str(s)) for s in df[group].unique().tolist()]
+    )  # ! this caused issues:
     regex = r"({})\-({})".format(groups, groups)
     pw["group1"] = pw["index"].apply(lambda x: re.search(regex, x).group(2))
     pw["group2"] = pw["index"].apply(lambda x: re.search(regex, x).group(1))
