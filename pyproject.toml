@@ -2,7 +2,7 @@
 authors = [{ name = "Alberto Santos Delgado", email = "albsad@dtu.dk" },
            { name = "Henry Webel", email = "heweb@dtu.dk"}]
 name = "acore"
-version = "0.1.2"
+dynamic = ["version"]
 description = "A Python package with statistical functions to analyse multimodal molecular data"
 license = { text = "GNU General Public License v3" }
 readme = "README.rst"
@@ -68,8 +68,10 @@ Documentation = "https://analytics-core.readthedocs.io/"
 
 
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
 
 # [entrypoints]
 # console_scripts = {
