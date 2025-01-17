@@ -71,6 +71,7 @@ Documentation = "https://analytics-core.readthedocs.io/"
 requires = ["setuptools>=64", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools_scm]
 
 # [entrypoints]
 # console_scripts = {
