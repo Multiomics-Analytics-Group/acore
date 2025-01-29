@@ -21,6 +21,7 @@ dependencies = [
     "numpy",
     "pandas",
     "dsp-pandas", # has only pandas related dependencies
+    "vuecore",
     "scipy",
     "networkx",
     "biopython",
