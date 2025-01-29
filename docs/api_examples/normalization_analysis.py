@@ -35,21 +35,18 @@ import pandas as pd
 import sklearn
 import sklearn.impute
 import sklearn.preprocessing
-import umap
 from vuecore.decomposition import plot_explained_variance
 
+import acore.decomposition
 import acore.normalization
 import acore.sklearn
-from acore.decomposition import pca as acore_pca  # ! to remove
 
 
 def plot_umap(X_scaled, y, meta_column, random_state=42) -> plt.Axes:
     """Fit and plot UMAP embedding with two components with colors defined by meta_column."""
-    reducer = umap.UMAP(random_state=random_state, n_jobs=1)
-    embedding = reducer.fit_transform(X_scaled)
-    embedding = pd.DataFrame(
-        embedding, index=X_scaled.index, columns=["UMAP 1", "UMAP 2"]
-    ).join(y.astype("category"))
+    embedding = acore.decomposition.umap.run_umap(
+        X_scaled, y, random_state=random_state
+    )
     ax = embedding.plot.scatter("UMAP 1", "UMAP 2", c=meta_column, cmap="Paired")
     return ax
 
@@ -79,7 +76,7 @@ def run_and_plot_pca(
     meta_column,
     n_components=4,
 ) -> tuple[pd.DataFrame, plt.Figure]:
-    PCs, _ = acore_pca.run_pca(X_scaled, n_components=n_components)
+    PCs, _ = acore.decomposition.pca.run_pca(X_scaled, n_components=n_components)
     PCs.columns = [s.replace("principal component", "PC") for s in PCs.columns]
     PCs = PCs.join(y.astype("category"))
     up_to = min(PCs.shape[-1], n_components)
@@ -231,7 +228,7 @@ omics_imputed.shape
 # %% tags=["hide-input"]
 omics_imp_scaled = standard_normalize(omics_imputed)
 
-PCs, pca = acore_pca.run_pca(omics_imp_scaled, n_components=4)
+PCs, pca = acore.decomposition.pca.run_pca(omics_imp_scaled, n_components=4)
 ax = plot_explained_variance(pca)
 ax.locator_params(axis="x", integer=True)
 omics_imp_scaled.shape
