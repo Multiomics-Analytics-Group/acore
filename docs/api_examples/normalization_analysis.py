@@ -36,11 +36,11 @@ import sklearn
 import sklearn.impute
 import sklearn.preprocessing
 import umap
+from vuecore.decomposition import plot_explained_variance
 
 import acore.normalization
 import acore.sklearn
 from acore.decomposition import pca as acore_pca  # ! to remove
-from acore.plotting.decomposition import plot_explained_variance
 
 
 def plot_umap(X_scaled, y, meta_column, random_state=42) -> plt.Axes:
