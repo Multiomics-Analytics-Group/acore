@@ -56,14 +56,20 @@ def plot_umap(X_scaled, y, meta_column, random_state=42) -> plt.Axes:
 
 def standard_normalize(X: pd.DataFrame) -> pd.DataFrame:
     """Standard normalize data and keep indices of DataFrame."""
-    scaler = sklearn.preprocessing.StandardScaler()
-    X_scaled = acore.sklearn.transform_DataFrame(X, fct=scaler.fit_transform)
+    X_scaled = (
+        sklearn.preprocessing.StandardScaler()
+        .set_output(transform="pandas")
+        .fit_transform(X)
+    )
     return X_scaled
 
 
 def median_impute(X: pd.DataFrame) -> pd.DataFrame:
-    median_imputer = sklearn.impute.SimpleImputer(strategy="median")
-    X_imputed = acore.sklearn.transform_DataFrame(X, median_imputer.fit_transform)
+    X_imputed = (
+        sklearn.impute.SimpleImputer(strategy="median")
+        .set_output(transform="pandas")
+        .fit_transform(X)
+    )
     return X_imputed
 
 

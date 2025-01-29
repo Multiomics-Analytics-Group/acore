@@ -23,6 +23,7 @@ dependencies = [
     "dsp-pandas", # has only pandas related dependencies
     "vuecore",
     "scipy",
+    "scikit-learn>=1.2",
     "networkx",
     "biopython",
     "combat",
