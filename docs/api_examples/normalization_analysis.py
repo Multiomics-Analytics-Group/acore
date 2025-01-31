@@ -26,7 +26,6 @@
 # %pip install acore
 
 # %% tags=["hide-input"]
-import itertools
 from typing import Optional
 
 import matplotlib.pyplot as plt
@@ -35,7 +34,7 @@ import pandas as pd
 import sklearn
 import sklearn.impute
 import sklearn.preprocessing
-from vuecore.decomposition import plot_explained_variance
+import vuecore.decomposition
 
 import acore.decomposition
 import acore.normalization
@@ -73,24 +72,13 @@ def median_impute(X: pd.DataFrame) -> pd.DataFrame:
 def run_and_plot_pca(
     X_scaled,
     y,
-    meta_column,
-    n_components=4,
+    meta_column: Optional[str] = None,
+    n_components: int = 4,
 ) -> tuple[pd.DataFrame, plt.Figure]:
     PCs, _ = acore.decomposition.pca.run_pca(X_scaled, n_components=n_components)
     PCs.columns = [s.replace("principal component", "PC") for s in PCs.columns]
-    PCs = PCs.join(y.astype("category"))
-    up_to = min(PCs.shape[-1], n_components)
-    fig, axes = plt.subplots(up_to - 1, 2, figsize=(6, 8), layout="constrained")
-    for k, (pos, ax) in enumerate(
-        zip(itertools.combinations(range(up_to), 2), axes.flatten())
-    ):
-        i, j = pos
-        plot_heatmap = bool(k % 2)
-        PCs.plot.scatter(
-            i, j, c=meta_column, cmap="Paired", ax=ax, colorbar=plot_heatmap
-        )
-    _ = PCs.pop(
-        meta_column,
+    fig = vuecore.decomposition.pca_grid(
+        PCs=PCs, meta_column=y, n_components=n_components, meta_col_name=meta_column
     )
     return PCs, fig
 
@@ -218,30 +206,12 @@ assert omics_imputed.isna().sum().sum() == 0
 omics_imputed.shape
 
 # %% [markdown]
-# ## Dimensionality reduction - unnormalized data
-# on median imputed and standard normalized omics data.
-
-# %% [markdown]
-# ### Principal Components
-# Plot first 4 PCs with categorical metadata as label annotating each sample.
+# Explained variance by first four principal components in data.
 
 # %% tags=["hide-input"]
-omics_imp_scaled = standard_normalize(omics_imputed)
-
-PCs, pca = acore.decomposition.pca.run_pca(omics_imp_scaled, n_components=4)
-ax = plot_explained_variance(pca)
+PCs, pca = acore.decomposition.pca.run_pca(omics_imputed, n_components=4)
+ax = vuecore.decomposition.plot_explained_variance(pca)
 ax.locator_params(axis="x", integer=True)
-omics_imp_scaled.shape
-
-# %% tags=["hide-input"]
-pcs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL)
-
-# %% [markdown]
-# ### UMAP
-# of median imputed and normalized omics data:
-
-# %% tags=["hide-input"]
-ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
 # %% [markdown]
 # ## Normalization of samples in a dataset
