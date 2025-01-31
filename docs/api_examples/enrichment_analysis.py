@@ -176,40 +176,42 @@ diff_reg.query("rejected")[
 ].sort_values("log2FC")
 
 # %% [markdown]
-# - this additionally sets a fold change cutoff
-# - and the fore and backgroud populations are changed due to the separation
-
-# %%
-ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
-    regulation_data=diff_reg,
-    annotation=annotations,
-    min_detected_in_set=2,  # ! default is 2, so more conservative
-    lfc_cutoff=0.5,  # ! the default is 1
-)
-ret
-
-# %% [markdown]
-# here we see differences for the same set of differently regulated protein groups,
-# which can be reset using lfc_cutoff=0.
-
-# %%
-ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
-    regulation_data=diff_reg,
-    annotation=annotations,
-    min_detected_in_set=1,  # ! default is 2, so more conservative
-    lfc_cutoff=0.1,  # ! the default is 1
-)
-ret
-
-# %% [markdown]
-# Or restricting the analysis to functional annotation for which we at least found 2
-# protein groups to be upregulated.
+# Running the enrichment analysis for the up- and down regulated protein groups
+# separately with the default settings of the function, i.e. a log2 fold change cutoff
+# of 1 and at least 2 protein groups detected in the set of proteins 
+# defining the functional annotation.
 
 # %%
 ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     regulation_data=diff_reg,
     annotation=annotations,
     min_detected_in_set=2,
+    lfc_cutoff=1,
+)
+ret
+
+# %% [markdown]
+# we can decrease the cutoff for the log2 fold change to 0.5 and see that we retain
+# more annotations.
+
+# %%
+ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
+    regulation_data=diff_reg,
+    annotation=annotations,
+    min_detected_in_set=2, 
+    lfc_cutoff=0.5,  # ! the default is 1
+)
+ret
+
+# %% [markdown]
+# And even more if we do not restrict the analysis to functional annotation to at least
+# finding two proteins in a functional set.
+
+# %%
+ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
+    regulation_data=diff_reg,
+    annotation=annotations,
+    min_detected_in_set=1,
     lfc_cutoff=0.5,  # ! the default is 1
 )
 ret
@@ -305,6 +307,7 @@ iplot(figure)
 
 # %% [markdown]
 # ## Compare two distributions - KS test
+#
 # The Kolmogorov-Smirnov test is a non-parametric test that compares two distributions.
 # - we compare the distributions of the two differently upregulated protein groups
 # This is not the best example for comparing distributions, but it shows how to use the
