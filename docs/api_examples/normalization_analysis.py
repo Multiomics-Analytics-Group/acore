@@ -242,7 +242,8 @@ X = acore.normalization.combat_batch_correction(
 X
 
 # %% tags=["hide-input"]
-omics_imp_scaled = standard_normalize(omics_imp_scaled)
+omics_imp = median_impute(X)
+omics_imp_scaled = standard_normalize(omics_imp)
 PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
 ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
@@ -264,8 +265,8 @@ X = acore.normalization.normalize_data(omics, "median")
 X
 
 # %% tags=["hide-input"]
-omics_imp_scaled = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp_scaled)
+omics_imp = median_impute(X)
+omics_imp_scaled = standard_normalize(omics_imp)
 PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
 ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
@@ -286,8 +287,8 @@ X = acore.normalization.normalize_data(omics, "zscore")
 X
 
 # %% tags=["hide-input"]
-omics_imp_scaled = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp_scaled)
+omics_imp = median_impute(X)
+omics_imp_scaled = standard_normalize(omics_imp)
 PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
 ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
@@ -307,8 +308,8 @@ X = acore.normalization.normalize_data(omics, "median_polish")
 X
 
 # %% tags=["hide-input"]
-omics_imp_scaled = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp_scaled)
+omics_imp = median_impute(X)
+omics_imp_scaled = standard_normalize(omics_imp)
 PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
 ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
@@ -328,8 +329,8 @@ X = acore.normalization.normalize_data(omics, "quantile")
 X
 
 # %% tags=["hide-input"]
-omics_imp_scaled = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp_scaled)
+omics_imp = median_impute(X)
+omics_imp_scaled = standard_normalize(omics_imp)
 PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
 ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
@@ -346,8 +347,8 @@ X = acore.normalization.normalize_data(omics, "linear")
 X
 
 # %% tags=["hide-input"]
-omics_imp_scaled = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp_scaled)
+omics_imp = median_impute(X)
+omics_imp_scaled = standard_normalize(omics_imp)
 PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
 ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
