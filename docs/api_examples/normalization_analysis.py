@@ -26,7 +26,6 @@
 # %pip install acore
 
 # %% tags=["hide-input"]
-import itertools
 from typing import Optional
 
 import matplotlib.pyplot as plt
@@ -35,59 +34,51 @@ import pandas as pd
 import sklearn
 import sklearn.impute
 import sklearn.preprocessing
-import umap
+import vuecore.decomposition
 
+import acore.decomposition
 import acore.normalization
 import acore.sklearn
-from acore.decomposition import pca as acore_pca  # ! to remove
-from acore.plotting.decomposition import plot_explained_variance
 
 
 def plot_umap(X_scaled, y, meta_column, random_state=42) -> plt.Axes:
     """Fit and plot UMAP embedding with two components with colors defined by meta_column."""
-    reducer = umap.UMAP(random_state=random_state, n_jobs=1)
-    embedding = reducer.fit_transform(X_scaled)
-    embedding = pd.DataFrame(
-        embedding, index=X_scaled.index, columns=["UMAP 1", "UMAP 2"]
-    ).join(y.astype("category"))
+    embedding = acore.decomposition.umap.run_umap(
+        X_scaled, y, random_state=random_state
+    )
     ax = embedding.plot.scatter("UMAP 1", "UMAP 2", c=meta_column, cmap="Paired")
     return ax
 
 
 def standard_normalize(X: pd.DataFrame) -> pd.DataFrame:
     """Standard normalize data and keep indices of DataFrame."""
-    scaler = sklearn.preprocessing.StandardScaler()
-    X_scaled = acore.sklearn.transform_DataFrame(X, fct=scaler.fit_transform)
+    X_scaled = (
+        sklearn.preprocessing.StandardScaler()
+        .set_output(transform="pandas")
+        .fit_transform(X)
+    )
     return X_scaled
 
 
 def median_impute(X: pd.DataFrame) -> pd.DataFrame:
-    median_imputer = sklearn.impute.SimpleImputer(strategy="median")
-    X_imputed = acore.sklearn.transform_DataFrame(X, median_imputer.fit_transform)
+    X_imputed = (
+        sklearn.impute.SimpleImputer(strategy="median")
+        .set_output(transform="pandas")
+        .fit_transform(X)
+    )
     return X_imputed
 
 
 def run_and_plot_pca(
     X_scaled,
     y,
-    meta_column,
-    n_components=4,
+    meta_column: Optional[str] = None,
+    n_components: int = 4,
 ) -> tuple[pd.DataFrame, plt.Figure]:
-    PCs, _ = acore_pca.run_pca(X_scaled, n_components=n_components)
+    PCs, _ = acore.decomposition.pca.run_pca(X_scaled, n_components=n_components)
     PCs.columns = [s.replace("principal component", "PC") for s in PCs.columns]
-    PCs = PCs.join(y.astype("category"))
-    up_to = min(PCs.shape[-1], n_components)
-    fig, axes = plt.subplots(up_to - 1, 2, figsize=(6, 8), layout="constrained")
-    for k, (pos, ax) in enumerate(
-        zip(itertools.combinations(range(up_to), 2), axes.flatten())
-    ):
-        i, j = pos
-        plot_heatmap = bool(k % 2)
-        PCs.plot.scatter(
-            i, j, c=meta_column, cmap="Paired", ax=ax, colorbar=plot_heatmap
-        )
-    _ = PCs.pop(
-        meta_column,
+    fig = vuecore.decomposition.pca_grid(
+        PCs=PCs, meta_column=y, n_components=n_components, meta_col_name=meta_column
     )
     return PCs, fig
 
@@ -215,30 +206,12 @@ assert omics_imputed.isna().sum().sum() == 0
 omics_imputed.shape
 
 # %% [markdown]
-# ## Dimensionality reduction - unnormalized data
-# on median imputed and standard normalized omics data.
-
-# %% [markdown]
-# ### Principal Components
-# Plot first 4 PCs with categorical metadata as label annotating each sample.
+# Explained variance by first four principal components in data.
 
 # %% tags=["hide-input"]
-omics_imp_scaled = standard_normalize(omics_imputed)
-
-PCs, pca = acore_pca.run_pca(omics_imp_scaled, n_components=4)
-ax = plot_explained_variance(pca)
+PCs, pca = acore.decomposition.pca.run_pca(omics_imputed, n_components=4)
+ax = vuecore.decomposition.plot_explained_variance(pca)
 ax.locator_params(axis="x", integer=True)
-omics_imp_scaled.shape
-
-# %% tags=["hide-input"]
-pcs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL)
-
-# %% [markdown]
-# ### UMAP
-# of median imputed and normalized omics data:
-
-# %% tags=["hide-input"]
-ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
 # %% [markdown]
 # ## Normalization of samples in a dataset
@@ -269,7 +242,8 @@ X = acore.normalization.combat_batch_correction(
 X
 
 # %% tags=["hide-input"]
-omics_imp_scaled = standard_normalize(omics_imp_scaled)
+omics_imp = median_impute(X)
+omics_imp_scaled = standard_normalize(omics_imp)
 PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
 ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
@@ -291,8 +265,8 @@ X = acore.normalization.normalize_data(omics, "median")
 X
 
 # %% tags=["hide-input"]
-omics_imp_scaled = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp_scaled)
+omics_imp = median_impute(X)
+omics_imp_scaled = standard_normalize(omics_imp)
 PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
 ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
@@ -313,8 +287,8 @@ X = acore.normalization.normalize_data(omics, "zscore")
 X
 
 # %% tags=["hide-input"]
-omics_imp_scaled = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp_scaled)
+omics_imp = median_impute(X)
+omics_imp_scaled = standard_normalize(omics_imp)
 PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
 ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
@@ -334,8 +308,8 @@ X = acore.normalization.normalize_data(omics, "median_polish")
 X
 
 # %% tags=["hide-input"]
-omics_imp_scaled = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp_scaled)
+omics_imp = median_impute(X)
+omics_imp_scaled = standard_normalize(omics_imp)
 PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
 ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
@@ -355,8 +329,8 @@ X = acore.normalization.normalize_data(omics, "quantile")
 X
 
 # %% tags=["hide-input"]
-omics_imp_scaled = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp_scaled)
+omics_imp = median_impute(X)
+omics_imp_scaled = standard_normalize(omics_imp)
 PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
 ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 
@@ -373,8 +347,8 @@ X = acore.normalization.normalize_data(omics, "linear")
 X
 
 # %% tags=["hide-input"]
-omics_imp_scaled = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp_scaled)
+omics_imp = median_impute(X)
+omics_imp_scaled = standard_normalize(omics_imp)
 PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
 ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
 

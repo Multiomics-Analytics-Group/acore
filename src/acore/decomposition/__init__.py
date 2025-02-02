@@ -1,3 +1,3 @@
-from . import pca
+from . import pca, umap
 
-__all__ = ["pca"]
+__all__ = ["pca", "umap"]
