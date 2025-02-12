@@ -178,7 +178,7 @@ diff_reg.query("rejected")[
 # %% [markdown]
 # Running the enrichment analysis for the up- and down regulated protein groups
 # separately with the default settings of the function, i.e. a log2 fold change cutoff
-# of 1 and at least 2 protein groups detected in the set of proteins 
+# of 1 and at least 2 protein groups detected in the set of proteins
 # defining the functional annotation.
 
 # %%
@@ -297,13 +297,15 @@ loadings
 # for this, which is also developed by the Multiomics Analytics Group.
 
 # %%
-from plotly.offline import iplot
+import plotly.graph_objects as go
 from vuecore import viz
 
 args = {"factor": 1, "loadings": 10}
 # #! pca_results has three items, but docstring requests only two -> double check
 figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
-iplot(figure)
+figure = go.Figure(data=figure["data"], layout=figure['layout'])
+figure = go.FigureWidget(figure)
+figure
 
 # %% [markdown]
 # ## Compare two distributions - KS test
