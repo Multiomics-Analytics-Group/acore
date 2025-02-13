@@ -1,18 +1,3 @@
-#!/usr/bin/env python
+from setuptools import setup
 
-"""The setup script."""
-
-from setuptools import setup, find_packages
-
-setup(
-    entry_points={
-        'console_scripts': [
-            'acore=acore.cli:main',
-        ],
-    },
-    include_package_data=True,
-    keywords='acore',
-    packages=find_packages(include=['acore', 'acore.*']),
-    url='https://github.com/Multiomics-Analytics-Group/acore',
-    zip_safe=False,
-)
+setup()

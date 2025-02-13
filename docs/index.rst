@@ -16,6 +16,7 @@
 
    api_examples/exploratory_analysis
    api_examples/normalization_analysis
+   api_examples/enrichment_analysis
 
 .. toctree::
    :maxdepth: 1
