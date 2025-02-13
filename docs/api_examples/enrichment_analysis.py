@@ -12,7 +12,7 @@
 
 
 # %% tags=["hide-output"]
-# %pip install acore vuecore
+# %pip install acore vuecore anywidget
 
 
 # %%
@@ -51,7 +51,12 @@ df_meta = pd.read_csv(meta, index_col=0)
 df_omics
 
 # %%
-ax = df_omics.notna().sum().sort_values(ascending=True).plot()
+ax = (
+    df_omics.notna()
+    .sum()
+    .sort_values(ascending=True)
+    .plot(xlabel="Protein groups", ylabel="Number of non-NaN values (samples)")
+)
 
 # %% [markdown]
 # Keep only features with a certain amount of non-NaN values and select 100 of these
@@ -83,7 +88,7 @@ df_meta
 
 
 # %% [markdown]
-# ## Compute up and downregulated genes
+# # Compute up and downregulated genes
 # These will be used to find enrichments in the set of both up and downregulated genes.
 
 # %%
@@ -102,7 +107,7 @@ diff_reg["rejected"] = diff_reg["rejected"].astype(bool)  # ! needs to be fixed 
 diff_reg.query("rejected")
 
 # %% [markdown]
-# ## Find functional annotations, here pathways
+# # Find functional annotations, here pathways
 #
 
 # %%
@@ -157,7 +162,7 @@ _ = (
 )
 
 # %% [markdown]
-# ## Enrichment analysis
+# # Enrichment analysis
 # Is done separately for up- and downregulated genes as it's assumed that biological
 # processes are regulated in one direction.
 
@@ -176,34 +181,23 @@ diff_reg.query("rejected")[
 ].sort_values("log2FC")
 
 # %% [markdown]
-# - this additionally sets a fold change cutoff
-# - and the fore and backgroud populations are changed due to the separation
+# Running the enrichment analysis for the up- and down regulated protein groups
+# separately with the default settings of the function, i.e. a log2 fold change cutoff
+# of 1 and at least 2 protein groups detected in the set of proteins
+# defining the functional annotation.
 
 # %%
 ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     regulation_data=diff_reg,
     annotation=annotations,
-    min_detected_in_set=2,  # ! default is 2, so more conservative
-    lfc_cutoff=0.5,  # ! the default is 1
+    min_detected_in_set=2,
+    lfc_cutoff=1,
 )
 ret
 
 # %% [markdown]
-# here we see differences for the same set of differently regulated protein groups,
-# which can be reset using lfc_cutoff=0.
-
-# %%
-ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
-    regulation_data=diff_reg,
-    annotation=annotations,
-    min_detected_in_set=1,  # ! default is 2, so more conservative
-    lfc_cutoff=0.1,  # ! the default is 1
-)
-ret
-
-# %% [markdown]
-# Or restricting the analysis to functional annotation for which we at least found 2
-# protein groups to be upregulated.
+# we can decrease the cutoff for the log2 fold change to 0.5 and see that we retain
+# more annotations.
 
 # %%
 ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
@@ -215,7 +209,20 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
 ret
 
 # %% [markdown]
-# ### Site specific enrichment analysis
+# And even more if we do not restrict the analysis to functional annotation to at least
+# finding two proteins in a functional set.
+
+# %%
+ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
+    regulation_data=diff_reg,
+    annotation=annotations,
+    min_detected_in_set=1,
+    lfc_cutoff=0.5,  # ! the default is 1
+)
+ret
+
+# %% [markdown]
+# ## Site specific enrichment analysis
 
 # %% [markdown]
 # The basic example uses a modified peptide sequence to
@@ -240,7 +247,7 @@ match.group(1)
 # acore.enrichment_analysis.run_up_down_regulation_enrichment
 
 # %% [markdown]
-# ## Single sample GSEA (ssGSEA)
+# # Single sample GSEA (ssGSEA)
 # Run a gene set enrichment analysis (GSEA) for each sample,
 # see [article](https://www.nature.com/articles/nature08460#Sec3) and
 # the package [`gseapy`](https://gseapy.readthedocs.io/en/latest/run.html#gseapy.ssgsea)
@@ -295,16 +302,19 @@ loadings
 # for this, which is also developed by the Multiomics Analytics Group.
 
 # %%
-from plotly.offline import iplot
+import plotly.graph_objects as go
 from vuecore import viz
 
 args = {"factor": 1, "loadings": 10}
 # #! pca_results has three items, but docstring requests only two -> double check
 figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
-iplot(figure)
+figure = go.Figure(data=figure["data"], layout=figure["layout"])
+figure = go.FigureWidget(figure)
+figure
 
 # %% [markdown]
-# ## Compare two distributions - KS test
+# # Compare two distributions - KS test
+#
 # The Kolmogorov-Smirnov test is a non-parametric test that compares two distributions.
 # - we compare the distributions of the two differently upregulated protein groups
 # This is not the best example for comparing distributions, but it shows how to use the
