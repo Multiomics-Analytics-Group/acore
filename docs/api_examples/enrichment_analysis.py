@@ -12,7 +12,7 @@
 
 
 # %% tags=["hide-output"]
-# %pip install acore vuecore
+# %pip install acore vuecore anywidget
 
 
 # %%
