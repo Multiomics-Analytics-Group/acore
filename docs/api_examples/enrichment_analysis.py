@@ -51,7 +51,12 @@ df_meta = pd.read_csv(meta, index_col=0)
 df_omics
 
 # %%
-ax = df_omics.notna().sum().sort_values(ascending=True).plot()
+ax = (
+    df_omics.notna()
+    .sum()
+    .sort_values(ascending=True)
+    .plot(xlabel="Protein groups", ylabel="Number of non-NaN values (samples)")
+)
 
 # %% [markdown]
 # Keep only features with a certain amount of non-NaN values and select 100 of these
@@ -83,7 +88,7 @@ df_meta
 
 
 # %% [markdown]
-# ## Compute up and downregulated genes
+# # Compute up and downregulated genes
 # These will be used to find enrichments in the set of both up and downregulated genes.
 
 # %%
@@ -102,7 +107,7 @@ diff_reg["rejected"] = diff_reg["rejected"].astype(bool)  # ! needs to be fixed 
 diff_reg.query("rejected")
 
 # %% [markdown]
-# ## Find functional annotations, here pathways
+# # Find functional annotations, here pathways
 #
 
 # %%
@@ -157,7 +162,7 @@ _ = (
 )
 
 # %% [markdown]
-# ## Enrichment analysis
+# # Enrichment analysis
 # Is done separately for up- and downregulated genes as it's assumed that biological
 # processes are regulated in one direction.
 
@@ -198,7 +203,7 @@ ret
 ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     regulation_data=diff_reg,
     annotation=annotations,
-    min_detected_in_set=2, 
+    min_detected_in_set=2,
     lfc_cutoff=0.5,  # ! the default is 1
 )
 ret
@@ -217,7 +222,7 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
 ret
 
 # %% [markdown]
-# ### Site specific enrichment analysis
+# ## Site specific enrichment analysis
 
 # %% [markdown]
 # The basic example uses a modified peptide sequence to
@@ -242,7 +247,7 @@ match.group(1)
 # acore.enrichment_analysis.run_up_down_regulation_enrichment
 
 # %% [markdown]
-# ## Single sample GSEA (ssGSEA)
+# # Single sample GSEA (ssGSEA)
 # Run a gene set enrichment analysis (GSEA) for each sample,
 # see [article](https://www.nature.com/articles/nature08460#Sec3) and
 # the package [`gseapy`](https://gseapy.readthedocs.io/en/latest/run.html#gseapy.ssgsea)
@@ -303,12 +308,12 @@ from vuecore import viz
 args = {"factor": 1, "loadings": 10}
 # #! pca_results has three items, but docstring requests only two -> double check
 figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
-figure = go.Figure(data=figure["data"], layout=figure['layout'])
+figure = go.Figure(data=figure["data"], layout=figure["layout"])
 figure = go.FigureWidget(figure)
 figure
 
 # %% [markdown]
-# ## Compare two distributions - KS test
+# # Compare two distributions - KS test
 #
 # The Kolmogorov-Smirnov test is a non-parametric test that compares two distributions.
 # - we compare the distributions of the two differently upregulated protein groups
