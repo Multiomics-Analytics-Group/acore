@@ -17,7 +17,7 @@
 # This notebook shows how `acore` can be used to download data from
 # the Proteomics Identifications Database - PRIDE -
 # ([ebi.ac.uk/pride/](https://www.ebi.ac.uk/pride/))
-# and parse the data to be used in the analytics core.
+# and parse the data to be used in the analytics core
 # and quickly formated to start analyzing them with the functionality in the analytics core.
 #
 # > based on CKG recipe: [Download PRIDE Data](https://ckg.readthedocs.io/en/latest/notebooks/recipes/Download_PRIDE_data.html)
@@ -36,7 +36,7 @@ import acore.io
 # %% [markdown]
 # ## Parameters
 # Specify the PRIDE identifier and file to be downloaded
-# - and where to store intermediate files.
+# and where to store intermediate files.
 
 # %% tags=["parameters"]
 pxd_id: str = "PXD008541"  # PRIDE identifier
