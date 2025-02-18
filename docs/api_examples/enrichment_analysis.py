@@ -310,7 +310,13 @@ args = {"factor": 1, "loadings": 10}
 figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
 figure = go.Figure(data=figure["data"], layout=figure["layout"])
 # figure = go.FigureWidget(figure)
-figure
+figure.show()
+
+# %%
+import plotly.express as px
+
+fig = px.bar(x=["a", "b", "c"], y=[1, 3, 2])
+fig.show()
 
 # %% [markdown]
 # # Compare two distributions - KS test
