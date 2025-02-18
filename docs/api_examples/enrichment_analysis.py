@@ -12,7 +12,7 @@
 
 
 # %% tags=["hide-output"]
-# %pip install acore vuecore anywidget plotly<6
+# %pip install acore vuecore anywidget 'plotly<6'
 
 
 # %%
