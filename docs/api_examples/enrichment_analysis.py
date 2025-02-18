@@ -1,19 +1,20 @@
 # %% [markdown]
 # # Enrichment analysis
+# requires
+# - some cluster of proteins/genes (e.g. up- and downregulated proteins/genes)
+# - functional annotations, i.e. a category summarizing a set of proteins/genes.
 #
-# - we need some groups of genes to compute clusters
-# - we need functional annotations, i.e. a category summarizing a set of genes.
-# -
 # You can start with watching Lars Juhl Jensen's brief introduction to enrichment analysis
 # on [youtube](https://www.youtube.com/watch?v=2NC1QOXmc5o).
 #
-# Use example data for ovarian cancer
-# ([PXD010372](https://github.com/Multiomics-Analytics-Group/acore/tree/main/example_data/PXD010372))
+# Here we use as example data from an ovarian cancer dataset:
+# [PXD010372](https://github.com/Multiomics-Analytics-Group/acore/tree/main/example_data/PXD010372)
+#
+# First make sure you have the required packages installed:
 
 
 # %% tags=["hide-output"]
 # %pip install acore vuecore 'plotly<6'
-
 
 # %%
 from pathlib import Path
@@ -43,6 +44,7 @@ features_to_sample: int = 100
 
 # %% [markdown]
 # # Load processed data
+# from our repository. See details on obtaining the data under the example data section.
 
 # %%
 df_omics = pd.read_csv(omics, index_col=0)
@@ -60,12 +62,11 @@ ax = (
 
 # %% [markdown]
 # Keep only features with a certain amount of non-NaN values and select 100 of these
-# for illustration. Add the ones which were differently regulated in the ANOVA using all
+# for illustration. Add always four which were differently regulated in the ANOVA using all
 # the protein groups.
 
 # %%
 idx_always_included = ["Q5HYN5", "P39059", "O43432", "O43175"]
-df_omics[idx_always_included]
 
 # %% tags=["hide-input"]
 df_omics = (
@@ -82,13 +83,16 @@ df_omics = (
 )
 df_omics
 
+# %% [markdown]
+# And we have the following patient metadata, from which we will use the `Status` column as
+# our dependent variable and the `PlatinumValue` as a covariate.
 
 # %%
 df_meta
 
 
 # %% [markdown]
-# # Compute up and downregulated genes
+# # ANCOVA: Compute up and downregulated genes
 # These will be used to find enrichments in the set of both up and downregulated genes.
 
 # %%
@@ -107,8 +111,8 @@ diff_reg["rejected"] = diff_reg["rejected"].astype(bool)  # ! needs to be fixed 
 diff_reg.query("rejected")
 
 # %% [markdown]
-# # Find functional annotations, here pathways
-#
+# # Download functional annotations, here pathways, for the protein groups
+# in our selection of the dataset.
 
 # %%
 fname_annotations = f"downloaded/annotations_{features_to_sample}.csv"
@@ -150,7 +154,8 @@ except FileNotFoundError:
 annotations
 
 # %% [markdown]
-# See how many protein groups are associated with each annotation.
+# See how many protein groups are associated with each annotation. We observe that most
+# functional annotations are associated only to a single protein group in our dataset.
 
 # %% tags=["hide-input"]
 _ = (
@@ -209,8 +214,8 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
 ret
 
 # %% [markdown]
-# And even more if we do not restrict the analysis to functional annotation to at least
-# finding two proteins in a functional set.
+# And even more if we do not restrict the analysis of finding at least two proteins
+# of a functional set in our data set (i.e. we only need to find one match from the set).
 
 # %%
 ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
@@ -265,7 +270,7 @@ enrichtments
 enrichtments.iloc[0].to_dict()
 
 # %%
-enrichtments["NES"].plot.hist()
+ax = enrichtments["NES"].plot.hist()
 
 # %% [markdown]
 # The normalised enrichment score (NES) can be used in a PCA plot to see if the samples
