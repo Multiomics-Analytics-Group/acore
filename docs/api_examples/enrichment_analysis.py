@@ -309,7 +309,7 @@ args = {"factor": 1, "loadings": 10}
 # #! pca_results has three items, but docstring requests only two -> double check
 figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
 figure = go.Figure(data=figure["data"], layout=figure["layout"])
-figure = go.FigureWidget(figure)
+# figure = go.FigureWidget(figure)
 figure
 
 # %% [markdown]
