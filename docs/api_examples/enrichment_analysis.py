@@ -25,7 +25,6 @@ import pandas as pd
 import acore
 import acore.differential_regulation
 import acore.enrichment_analysis
-from acore.io.uniprot import fetch_annotations
 
 dsp_pandas.format.set_pandas_options(max_colwidth=60)
 
@@ -116,6 +115,8 @@ diff_reg.query("rejected")
 # in our selection of the dataset.
 
 # %%
+from acore.io.uniprot import fetch_annotations, process_annotations
+
 fname_annotations = f"downloaded/annotations_{features_to_sample}.csv"
 fname = Path(fname_annotations)
 try:
@@ -123,32 +124,10 @@ try:
     print(f"Loaded annotations from {fname}")
 except FileNotFoundError:
     print(f"Fetching annotations for {df_omics.columns.size} UniProt IDs.")
-    fields = "go_p,go_c,go_f"
-    annotations = fetch_annotations(df_omics.columns, fields=fields)
-    # First column (`From`) is additional to specified fields
-    d_fields_to_col = {k: v for k, v in zip(fields.split(","), annotations.columns[1:])}
-
-    # expand go terms
-    to_expand = list()
-    for field in d_fields_to_col:
-        if "go_" in field:
-            col = d_fields_to_col[field]
-            annotations[col] = annotations[col].str.split(";")
-            to_expand.append(col)
-    for col in to_expand:
-        # this is a bit wastefull. Processing to stack format should be done here.
-        annotations = annotations.explode(col, ignore_index=True)
-    # process other than go term columns
-    annotations = (
-        annotations.set_index("From")
-        .rename_axis("identifier")
-        # .drop("Entry", axis=1)
-        .rename_axis("source", axis=1)
-        .stack()
-        .to_frame("annotation")
-        .reset_index()
-        .drop_duplicates(ignore_index=True)
-    )
+    FIELDS = "go_p,go_c,go_f"
+    annotations = fetch_annotations(df_omics.columns, fields=FIELDS)
+    annotations = process_annotations(annotations, fields=FIELDS)
+    # cache the annotations
     fname.parent.mkdir(exist_ok=True, parents=True)
     annotations.to_csv(fname, index=True)
 
