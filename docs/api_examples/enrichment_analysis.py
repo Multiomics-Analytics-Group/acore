@@ -44,8 +44,8 @@ features_to_sample: int = 100
 
 # %% [markdown]
 # # Load processed data
-# from our repository. See details on obtaining the data under the example data section.
-# [nb-ref](nb_ref_ovarian_data)
+# from our repository. See details on obtaining the data under the example data section on
+# [this page](nb_ref_ovarian_data)
 
 # %%
 df_omics = pd.read_csv(omics, index_col=0)
