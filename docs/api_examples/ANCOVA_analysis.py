@@ -39,7 +39,7 @@ BASE = (
     "https://raw.githubusercontent.com/RasmussenLab/njab/"
     "HEAD/docs/tutorial/data/alzheimer/"
 )
-CLINIC: str = "clinic_ml.csv"  # clincial data
+CLINIC_ML: str = "clinic_ml.csv"  # clincial data
 OMICS: str = "proteome.csv"  # omics data
 freq_cutoff: float = (
     0.7  # at least x percent of samples must have a value for a feature (here: protein group)
@@ -50,7 +50,7 @@ freq_cutoff: float = (
 # Clinical data:
 
 # %% tags=["hide-input"]
-clinic = pd.read_csv(f"{BASE}/{CLINIC}", index_col=0).convert_dtypes()
+clinic = pd.read_csv(f"{BASE}/{CLINIC_ML}", index_col=0).convert_dtypes()
 omics = pd.read_csv(f"{BASE}/{OMICS}", index_col=0)
 clinic
 
@@ -82,6 +82,14 @@ pg_map = {k: k.split(";")[0] for k in omics.columns}
 omics = omics.rename(columns=pg_map)
 # log2 transform raw intensity data:
 omics = np.log2(omics + 1)
+omics
+
+# %% [markdown]
+# For easier inspection we just sample 100 protein groups. Remove this step in a
+# real analysis.
+
+# %%
+omics = omics.sample(100, axis=1, random_state=42)
 omics
 
 # %% [markdown]
@@ -253,3 +261,65 @@ pd.crosstab(
 # %% [markdown]
 # The ANOVA and ANCOVA results are not identical. Control for relevant covariates
 # as they can confound the results. Here we used age and biological sex.
+
+# %% [markdown]
+# # With three and more groups
+# Acore make each combinatorial comparison between groups in the group column.
+#
+
+# %%
+import math
+
+math.comb(4, 2)
+
+# %%
+CLINIC: str = "meta.csv"  # clincial data
+meta = (
+    pd.read_csv(f"{BASE}/{CLINIC}", index_col=0)
+    .convert_dtypes()
+    .rename(
+        {
+            "_collection site": "site",
+            "_age at CSF collection": "age",
+            "_gender": "gender",
+        },
+        axis=1,
+    )
+)[["site", "age", "gender"]].astype(
+    {
+        "gender": "category",
+        "site": "category",
+    }
+)
+meta
+
+# %% [markdown]
+# Sample five protein groups (for easier inspection) and combine with metadata.
+
+# %%
+omics_and_clinic = omics.sample(5, axis=1, random_state=42).join(meta)
+omics_and_clinic
+
+# %%
+anova = (
+    ad.run_anova(
+        omics_and_clinic,  # .reset_index(),
+        subject="Sample ID",
+        drop_cols=["age", "gender"],
+        group="site",
+    ).set_index(["identifier", "group1", "group2"])
+    # .sort_values(by="padj")
+)
+anova
+
+# %% [markdown]
+# Test results
+
+# %% tags=["hide-input"]
+regex_filter = "pval|padj|reject|stat|FC"
+view = anova.filter(regex=regex_filter)
+viewed_cols.extend(view.columns)
+view
+
+# %% [markdown]
+# Done.
