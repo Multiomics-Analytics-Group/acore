@@ -404,6 +404,7 @@ def run_anova(
     """
     res = pd.DataFrame()
     if subject is not None and acore.utils.check_is_paired(df, subject, group):
+        paired = True
         groups = df[group].unique()
         drop_cols = [d for d in drop_cols if d != subject]
         if len(groups) == 2:
@@ -415,7 +416,7 @@ def run_anova(
                 drop_cols=drop_cols,
                 subject=subject,
                 group=group,
-                paired=True,
+                paired=paired,
                 correction=correction,
                 permutations=permutations,
                 is_logged=is_logged,
@@ -432,6 +433,7 @@ def run_anova(
                 is_logged=is_logged,
             )
     elif len(df[group].unique()) == 2:
+        paired = False
         groups = df[group].unique()
         drop_cols = [d for d in drop_cols if d != subject]
         res = run_ttest(
@@ -442,7 +444,7 @@ def run_anova(
             drop_cols=drop_cols,
             subject=subject,
             group=group,
-            paired=False,
+            paired=paired,
             correction=correction,
             permutations=permutations,
             is_logged=is_logged,
