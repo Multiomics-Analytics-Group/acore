@@ -27,7 +27,7 @@ dependencies = [
     "networkx",
     "biopython",
     "combat",
-    "gseapy",
+    "gseapy!=1.1.5",
     "kmapper",
     "lifelines",
     "pingouin",
