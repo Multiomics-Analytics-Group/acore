@@ -191,6 +191,8 @@ ancova
 # %% [markdown]
 # The first columns contain group averages for each group for the specific
 # protein group
+
+# %%
 # ancova.iloc[:, :6]
 
 # %% [markdown]
@@ -217,6 +219,22 @@ anova = (
     ad.run_anova(
         omics_and_clinic.reset_index(),
         subject="Sample ID",
+        drop_cols=covariates,
+        group="AD",
+    )
+    .set_index("identifier")
+    .sort_values(by="padj")
+)
+anova
+
+# %% [markdown]
+# Set subject to None
+
+# %%
+anova = (
+    ad.run_anova(
+        omics_and_clinic,
+        subject=None,
         drop_cols=covariates,
         group="AD",
     )
@@ -265,12 +283,6 @@ pd.crosstab(
 # %% [markdown]
 # # With three and more groups
 # Acore make each combinatorial comparison between groups in the group column.
-#
-
-# %%
-import math
-
-math.comb(4, 2)
 
 # %%
 CLINIC: str = "meta.csv"  # clincial data
@@ -311,6 +323,38 @@ anova = (
     # .sort_values(by="padj")
 )
 anova
+
+# %% [markdown]
+# pairwise t-test results:
+
+# %%
+cols_pairwise_ttest = [
+    # "group1",
+    # "group2",
+    "mean(group1)",
+    "std(group1)",
+    "mean(group2)",
+    "std(group2)",
+    "posthoc Paired",
+    "posthoc Parametric",
+    "posthoc T-Statistics",
+    "posthoc dof",
+    "posthoc tail",
+    "posthoc pvalue",
+    "posthoc BF10",
+    "posthoc effsize",
+    # "identifier",
+    "log2FC",
+    "FC",
+    "efftype",
+]
+anova[cols_pairwise_ttest]
+
+# %% [markdown]
+# ANOVA results
+
+# %%
+anova.drop(columns=cols_pairwise_ttest)
 
 # %% [markdown]
 # Test results
