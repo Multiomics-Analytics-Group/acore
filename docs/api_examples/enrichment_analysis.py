@@ -97,7 +97,6 @@ df_meta
 
 # %%
 group = "Status"
-covariates = ["PlatinumValue"]
 diff_reg = acore.differential_regulation.run_anova(
     df_omics.join(df_meta[[group]]),
     drop_cols=[],
