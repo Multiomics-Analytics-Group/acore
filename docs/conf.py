@@ -103,6 +103,7 @@ myst_enable_extensions = ["dollarmath", "amsmath"]
 # https://myst-nb.readthedocs.io/en/latest/render/interactive.html#plotly
 html_js_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js",
+    "https://cdn.plot.ly/plotly-3.0.0.min.js",
 ]
 
 # https://myst-nb.readthedocs.io/en/latest/configuration.html

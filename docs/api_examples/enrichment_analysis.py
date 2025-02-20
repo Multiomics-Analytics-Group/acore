@@ -14,7 +14,7 @@
 
 
 # %% tags=["hide-output"]
-# %pip install acore vuecore 'plotly<6'
+# %pip install acore vuecore
 
 # %%
 from pathlib import Path
