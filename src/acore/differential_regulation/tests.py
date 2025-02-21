@@ -72,7 +72,9 @@ def calculate_ttest(
 ):
     """
     Calculates the t-test for the means of independent samples belonging to two different
-    groups. For more information visit
+    groups using scipy.stats.ttest_ind_.
+    
+    .. _scipy.stats.ttest_ind: \
     https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html.
 
     :param df: pandas dataframe with groups and subjects as rows and protein identifier
@@ -132,7 +134,7 @@ def calculate_thsd(df, column, group="group", alpha=0.05, is_logged=True):
     Pairwise Tukey-HSD posthoc test using pingouin.pairwise_tukey_.
 
     .. _pingouin.pairwise_tukey: \
-    https://pingouin-stats.org/generated/pingouin.pairwise_tukey.html
+    https://pingouin-stats.org/build/html/generated/pingouin.pairwise_tukey.html
 
     :param df: pandas dataframe with group and protein identifier as columns
     :param str column: column containing the protein identifier
@@ -171,7 +173,7 @@ def calculate_pairwise_ttest(
     and calculates fold-changes using pingouin.pairwise_ttests_.
     
     .. _pingouin.pairwise_ttests: \
-    https://pingouin-stats.org/generated/pingouin.pairwise_ttests.html.
+    https://pingouin-stats.org/build/html/generated/pingouin.pairwise_ttests.html.
 
     :param df: pandas dataframe with subject and group as rows and protein identifier as column.
     :param str column: column label containing the dependant variable
