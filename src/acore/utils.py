@@ -19,6 +19,7 @@ def convertToEdgeList(data, cols):
     return edge_list
 
 
+# TODO move to dsp_pandas
 def check_is_paired(df, subject, group):
     """
     Check if samples are paired.
