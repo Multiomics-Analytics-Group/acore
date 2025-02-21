@@ -103,35 +103,10 @@ def run_anova(
     res = pd.DataFrame()
     if subject is not None and acore.utils.check_is_paired(df, subject, group):
         paired = True
-        groups = df[group].unique()
-        drop_cols = [d for d in drop_cols if d != subject]
-        if len(groups) == 2:
-            res = run_ttest(
-                df,
-                groups[0],
-                groups[1],
-                alpha=alpha,
-                drop_cols=drop_cols,
-                subject=subject,
-                group=group,
-                paired=paired,
-                correction=correction,
-                permutations=permutations,
-                is_logged=is_logged,
-                non_par=non_par,
-            )
-        elif len(groups) > 2:
-            res = run_repeated_measurements_anova(
-                df,
-                alpha=alpha,
-                drop_cols=drop_cols,
-                subject=subject,
-                within=group,
-                permutations=0,
-                is_logged=is_logged,
-            )
-    elif len(df[group].unique()) == 2:
+    else:
         paired = False
+
+    if len(df[group].unique()) == 2:
         groups = df[group].unique()
         drop_cols = [d for d in drop_cols if d != subject]
         res = run_ttest(
@@ -149,34 +124,47 @@ def run_anova(
             non_par=non_par,
         )
     elif len(df[group].unique()) > 2:
-        df = df.drop(drop_cols, axis=1)
-        aov_results = []
-        pairwise_results = []
-        for col in df.columns.drop(group).tolist():
-            aov = calculate_anova(df[[group, col]], column=col, group=group)
-            aov_results.append(aov)
-            pairwise_result = calculate_pairwise_ttest(
-                df[[group, col]],
-                column=col,
+        if paired:
+            res = run_repeated_measurements_anova(
+                df,
+                alpha=alpha,
+                drop_cols=drop_cols,
                 subject=subject,
-                group=group,
+                within=group,
+                permutations=0,
                 is_logged=is_logged,
             )
-            pairwise_cols = pairwise_result.columns
-            pairwise_results.extend(pairwise_result.values.tolist())
-        df = df.set_index([group])
-        res = format_anova_table(
-            df,
-            aov_results,
-            pairwise_results,
-            pairwise_cols,
-            group,
-            permutations,
-            alpha,
-            correction,
-        )
-        res["Method"] = "One-way anova"
-        res = correct_pairwise_ttest(res, alpha, correction)
+        else:
+            df = df.drop(drop_cols, axis=1)
+            aov_results = []
+            pairwise_results = []
+            for col in df.columns.drop(group).tolist():
+                aov = calculate_anova(df[[group, col]], column=col, group=group)
+                aov_results.append(aov)
+                pairwise_result = calculate_pairwise_ttest(
+                    df[[group, col]],
+                    column=col,
+                    subject=subject,
+                    group=group,
+                    is_logged=is_logged,
+                )
+                pairwise_cols = pairwise_result.columns
+                pairwise_results.extend(pairwise_result.values.tolist())
+            df = df.set_index([group])
+            res = format_anova_table(
+                df,
+                aov_results,
+                pairwise_results,
+                pairwise_cols,
+                group,
+                permutations,
+                alpha,
+                correction,
+            )
+            res["Method"] = "One-way anova"
+            res = correct_pairwise_ttest(res, alpha, correction)
+    else:
+        raise ValueError("Number of groups must be greater than 1")
 
     return res
 
@@ -550,7 +538,7 @@ def run_two_way_anova(
                 )
     """
     data = df.copy()
-    factorA, factorB = group
+    factor_a, factor_b = group
     data = data.set_index([subject] + group)
     data = data.drop(drop_cols, axis=1)
     data.columns = data.columns.str.replace(r"-", "_")
@@ -559,7 +547,7 @@ def run_two_way_anova(
     residuals = {}
     for col in data.columns:
         model = ols(
-            "{} ~ C({})*C({})".format(col, factorA, factorB),
+            f"{col} ~ C({factor_a})*C({factor_b})",
             data[col].reset_index().sort_values(group, ascending=[True, False]),
         ).fit()
         aov_table = sm.stats.anova_lm(model, typ=2)
