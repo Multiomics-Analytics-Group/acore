@@ -13,7 +13,7 @@ from acore.multiple_testing import (
     get_max_permutations,
 )
 
-from .tests import (
+from .tests import (  # calculate_thsd, complement_posthoc,
     calc_means_between_groups,
     calc_ttest,
     calculate_ancova,
@@ -21,9 +21,7 @@ from .tests import (
     calculate_mixed_anova,
     calculate_pairwise_ttest,
     calculate_repeated_measures_anova,
-    calculate_THSD,
     calculate_ttest,
-    complement_posthoc,
     eta_squared,
     format_anova_table,
     omega_squared,
@@ -73,21 +71,34 @@ def run_anova(
 ):
     """
     Performs statistical test for each protein in a dataset.
-    Checks what type of data is the input (paired, unpaired or repeated measurements) and performs posthoc tests for multiclass data.
-    Multiple hypothesis correction uses permutation-based if permutations>0 and Benjamini/Hochberg if permutations=0.
+    Checks what type of data is the input (paired, unpaired or repeated measurements) and
+    performs posthoc tests for multiclass data.
+    Multiple hypothesis correction uses permutation-based
+    if permutations>0 and Benjamini/Hochberg if permutations=0.
 
-    :param df: pandas dataframe with samples as rows and protein identifiers as columns (with additional columns 'group', 'sample' and 'subject').
+    :param df: pandas dataframe with samples as rows and protein identifiers as columns
+               (with additional columns 'group', 'sample' and 'subject').
     :param str subject: column with subject identifiers
     :param str group: column with group identifiers
     :param list drop_cols: column labels to be dropped from the dataframe
     :param float alpha: error rate for multiple hypothesis correction
     :param int permutations: number of permutations used to estimate false discovery rates.
-    :param bool non_par: if True, normality and variance equality assumptions are checked and non-parametric test Mann Whitney U test if not passed
-    :return: Pandas dataframe with columns 'identifier', 'group1', 'group2', 'mean(group1)', 'mean(group2)', 'Log2FC', 'std_error', 'tail', 't-statistics', 'posthoc pvalue', 'effsize', 'efftype', 'FC', 'rejected', 'F-statistics', 'p-value', 'correction', '-log10 p-value', and 'method'.
+    :param bool non_par: if True, normality and variance equality assumptions are checked
+                         and non-parametric test Mann Whitney U test if not passed
+    :return: Pandas dataframe with columns 'identifier', 'group1', 'group2',
+        'mean(group1)', 'mean(group2)', 'Log2FC', 'std_error', 'tail', 't-statistics',
+        'posthoc pvalue', 'effsize', 'efftype', 'FC', 'rejected', 'F-statistics', 'p-value',
+        'correction', '-log10 p-value', and 'method'.
 
     Example::
 
-        result = run_anova(df, alpha=0.05, drop_cols=["sample",'subject'], subject='subject', group='group', permutations=50)
+        result = run_anova(df,
+                           alpha=0.05,
+                           drop_cols=["sample",'subject'],
+                           subject='subject',
+                           group='group',
+                           permutations=50
+                )
     """
     res = pd.DataFrame()
     if subject is not None and acore.utils.check_is_paired(df, subject, group):
@@ -180,26 +191,40 @@ def run_ancova(
     permutations: int = 0,
     correction: str = "fdr_bh",
     is_logged: bool = True,
-    non_pa: bool = False,
+    non_par: bool = False,
 ):
     """
     Performs statistical test for each protein in a dataset.
-    Checks what type of data is the input (paired, unpaired or repeated measurements) and performs posthoc tests for multiclass data.
-    Multiple hypothesis correction uses permutation-based if permutations>0 and Benjamini/Hochberg if permutations=0.
+    Checks what type of data is the input (paired, unpaired or repeated measurements)
+    and performs posthoc tests for multiclass data.
+    Multiple hypothesis correction uses permutation-based
+    if permutations>0 and Benjamini/Hochberg if permutations=0.
 
-    :param df: pandas dataframe with samples as rows and protein identifiers and covariates as columns (with additional columns 'group', 'sample' and 'subject').
+    :param df: pandas dataframe with samples as rows and protein identifiers and
+               covariates as columns (with additional columns 'group', 'sample' and 'subject').
     :param list covariates: list of covariates to include in the model (column in df)
     :param str subject: column with subject identifiers
     :param str group: column with group identifiers
     :param list drop_cols: column labels to be dropped from the dataframe
     :param float alpha: error rate for multiple hypothesis correction
     :param int permutations: number of permutations used to estimate false discovery rates.
-    :param bool non_par: if True, normality and variance equality assumptions are checked and non-parametric test Mann Whitney U test if not passed
-    :return: Pandas dataframe with columns 'identifier', 'group1', 'group2', 'mean(group1)', 'mean(group2)', 'Log2FC', 'std_error', 'tail', 't-statistics', 'posthoc pvalue', 'effsize', 'efftype', 'FC', 'rejected', 'F-statistics', 'p-value', 'correction', '-log10 p-value', and 'method'.
+    :param bool non_par: if True, normality and variance equality assumptions are checked
+                         and non-parametric test Mann Whitney U test if not passed
+    :return: Pandas dataframe with columns 'identifier', 'group1', 'group2',
+        'mean(group1)', 'mean(group2)', 'Log2FC', 'std_error', 'tail', 't-statistics',
+        'posthoc pvalue', 'effsize', 'efftype', 'FC', 'rejected', 'F-statistics', 'p-value',
+        'correction', '-log10 p-value', and 'method'.
 
     Example::
 
-        result = run_ancova(df, covariates=['age'], alpha=0.05, drop_cols=["sample",'subject'], subject='subject', group='group', permutations=50)
+        result = run_ancova(df,
+                            covariates=['age'],
+                            alpha=0.05,
+                            drop_cols=["sample",'subject'],
+                            subject='subject',
+                            group='group',
+                            permutations=50
+                )
     """
     df = df.drop(drop_cols, axis=1)
     for cova in covariates:
@@ -250,7 +275,8 @@ def run_repeated_measurements_anova(
     """
     Performs repeated measurements anova and pairwise posthoc tests for each protein in dataframe.
 
-    :param df: pandas dataframe with samples as rows and protein identifiers as columns (with additional columns 'group', 'sample' and 'subject').
+    :param df: pandas dataframe with samples as rows and protein identifiers as columns
+               (with additional columns 'group', 'sample' and 'subject').
     :param str subject: column with subject identifiers
     :param str within: column with within factor identifiers
     :param list drop_cols: column labels to be dropped from the dataframe
@@ -260,7 +286,13 @@ def run_repeated_measurements_anova(
 
     Example::
 
-        result = run_repeated_measurements_anova(df, alpha=0.05, drop_cols=['sample'], subject='subject', within='group', permutations=50)
+        result = run_repeated_measurements_anova(df,
+                                                 alpha=0.05,
+                                                 drop_cols=['sample'],
+                                                 subject='subject',
+                                                 within='group',
+                                                 permutations=50
+                )
     """
     df = df.drop(drop_cols, axis=1).dropna(axis=1)
     aov_results = []
@@ -309,13 +341,19 @@ def run_mixed_anova(
     correction="fdr_bh",
 ):
     """
-    In statistics, a mixed-design analysis of variance model, also known as a split-plot ANOVA, is used to test
-    for differences between two or more independent groups whilst subjecting participants to repeated measures.
-    Thus, in a mixed-design ANOVA model, one factor (a fixed effects factor) is a between-subjects variable and the other
-    (a random effects factor) is a within-subjects variable. Thus, overall, the model is a type of mixed-effects model.
-    [source:https://en.wikipedia.org/wiki/Mixed-design_analysis_of_variance]
+    In statistics, a mixed-design analysis of variance model, also known as a split-plot
+    ANOVA, is used to test
+    for differences between two or more independent groups whilst subjecting participants
+    to repeated measures.
+    Thus, in a mixed-design ANOVA model, one factor (a fixed effects factor) is a
+    between-subjects variable and the other
+    (a random effects factor) is a within-subjects variable. Thus, overall, the model is a
+    type of mixed-effects model (source_)
 
-    :param df: pandas dataframe with samples as rows and protein identifiers as columns (with additional columns 'group', 'sample' and 'subject').
+    .. _source: https://en.wikipedia.org/wiki/Mixed-design_analysis_of_variance
+
+    :param df: pandas dataframe with samples as rows and protein identifiers as columns
+               (with additional columns 'group', 'sample' and 'subject').
     :param str subject: column with subject identifiers
     :param str within: column with within factor identifiers
     :param str between: column with between factor identifiers
@@ -326,7 +364,14 @@ def run_mixed_anova(
 
     Example::
 
-        result = run_mixed_anova(df, alpha=0.05, drop_cols=['sample'], subject='subject', within='group', between='group2', permutations=50)
+        result = run_mixed_anova(df,
+                                 alpha=0.05,
+                                 drop_cols=['sample'],
+                                 subject='subject',
+                                 within='group',
+                                 between='group2',
+                                 permutations=50
+                )
     """
     df = df.drop(drop_cols, axis=1).dropna(axis=1)
     aov_results = []
@@ -370,9 +415,12 @@ def run_ttest(
     non_par=False,
 ):
     """
-    Runs t-test (paired/unpaired) for each protein in dataset and performs permutation-based (if permutations>0) or Benjamini/Hochberg (if permutations=0) multiple hypothesis correction.
+    Runs t-test (paired/unpaired) for each protein in dataset and performs
+    permutation-based (if permutations>0) or Benjamini/Hochberg (if permutations=0)
+    multiple hypothesis correction.
 
-    :param df: pandas dataframe with samples as rows and protein identifiers as columns (with additional columns 'group', 'sample' and 'subject').
+    :param df: pandas dataframe with samples as rows and protein identifiers as columns
+               (with additional columns 'group', 'sample' and 'subject').
     :param str condition1: first of two conditions of the independent variable
     :param str condition2: second of two conditions of the independent variable
     :param str subject: column with subject identifiers
@@ -383,12 +431,25 @@ def run_ttest(
     :param float alpha: error rate for multiple hypothesis correction
     :param int permutations: number of permutations used to estimate false discovery rates.
     :param bool is_logged: data is log-transformed
-    :param bool non_par: if True, normality and variance equality assumptions are checked and non-parametric test Mann Whitney U test if not passed
-    :return: Pandas dataframe with columns 'identifier', 'group1', 'group2', 'mean(group1)', 'mean(group2)', 'std(group1)', 'std(group2)', 'Log2FC', 'FC', 'rejected', 'T-statistics', 'p-value', 'correction', '-log10 p-value', and 'method'.
+    :param bool non_par: if True, normality and variance equality assumptions are checked
+                         and non-parametric test Mann Whitney U test if not passed
+    :return: Pandas dataframe with columns 'identifier', 'group1', 'group2',
+        'mean(group1)', 'mean(group2)', 'std(group1)', 'std(group2)', 'Log2FC', 'FC',
+        'rejected', 'T-statistics', 'p-value', 'correction', '-log10 p-value', and 'method'.
 
     Example::
 
-        result = run_ttest(df, condition1='group1', condition2='group2', alpha = 0.05, drop_cols=['sample'], subject='subject', group='group', paired=False, correction='fdr_bh', permutations=50)
+        result = run_ttest(df,
+                           condition1='group1',
+                           condition2='group2',
+                           alpha = 0.05,
+                           drop_cols=['sample'],
+                           subject='subject',
+                           group='group',
+                           paired=False,
+                           correction='fdr_bh',
+                           permutations=50
+                )
     """
     columns = [
         "T-statistics",
@@ -438,7 +499,7 @@ def run_ttest(
                 permutations=permutations,
             )
             scores = scores.join(count)
-            scores["correction"] = "permutation FDR ({} perm)".format(permutations)
+            scores["correction"] = f"permutation FDR ({permutations} perm)"
             corrected = True
 
     if not corrected:
@@ -473,7 +534,8 @@ def run_two_way_anova(
     """
     Run a 2-way ANOVA when data['secondary_group'] is not empty
 
-    :param df: processed pandas dataframe with samples as rows, and proteins and groups as columns.
+    :param df: processed pandas dataframe with samples as rows,
+               and proteins and groups as columns.
     :param list drop_cols: column names to drop from dataframe
     :param str subject: column name containing subject identifiers.
     :param list group: column names corresponding to independent variable groups
@@ -481,7 +543,11 @@ def run_two_way_anova(
 
     Example::
 
-        result = run_two_way_anova(data, drop_cols=['sample'], subject='subject', group=['group', 'secondary_group'])
+        result = run_two_way_anova(data,
+                                   drop_cols=['sample'],
+                                   subject='subject',
+                                   group=['group', 'secondary_group']
+                )
     """
     data = df.copy()
     factorA, factorB = group

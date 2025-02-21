@@ -55,6 +55,7 @@ def calc_ttest(
     )
     return ret
 
+
 # end njab.stats.groups_comparision.py
 
 
@@ -126,10 +127,12 @@ def calculate_ttest(
     return (t, pvalue, mean1, mean2, std1, std2, fc, test)
 
 
-def calculate_THSD(df, column, group="group", alpha=0.05, is_logged=True):
+def calculate_thsd(df, column, group="group", alpha=0.05, is_logged=True):
     """
-    Pairwise Tukey-HSD posthoc test using pingouin stats.
-    For more information visit https://pingouin-stats.org/generated/pingouin.pairwise_tukey.html
+    Pairwise Tukey-HSD posthoc test using pingouin.pairwise_tukey_.
+
+    .. _pingouin.pairwise_tukey: \
+    https://pingouin-stats.org/generated/pingouin.pairwise_tukey.html
 
     :param df: pandas dataframe with group and protein identifier as columns
     :param str column: column containing the protein identifier
@@ -139,7 +142,7 @@ def calculate_THSD(df, column, group="group", alpha=0.05, is_logged=True):
 
     Example::
 
-        result = calculate_THSD(df, column='HBG2~P69892', group='group', alpha=0.05)
+        result = calculate_thsd(df, column='HBG2~P69892', group='group', alpha=0.05)
     """
     posthoc = None
     posthoc = pg.pairwise_tukey(data=df, dv=column, between=group)
@@ -164,19 +167,28 @@ def calculate_pairwise_ttest(
     df, column, subject="subject", group="group", correction="none", is_logged=True
 ):
     """
-    Performs pairwise t-test using pingouin, as a posthoc test, and calculates fold-changes.
-    For more information visit https://pingouin-stats.org/generated/pingouin.pairwise_ttests.html.
+    Performs pairwise t-test using pingouin, as a posthoc test,
+    and calculates fold-changes using pingouin.pairwise_ttests_.
+    
+    .. _pingouin.pairwise_ttests: \
+    https://pingouin-stats.org/generated/pingouin.pairwise_ttests.html.
 
     :param df: pandas dataframe with subject and group as rows and protein identifier as column.
     :param str column: column label containing the dependant variable
     :param str subject: column label containing subject identifiers
     :param str group: column label containing the between factor
     :param str correction: method used for testing and adjustment of p-values.
-    :return: Pandas dataframe with means, standard deviations, test-statistics, degrees of freedom and effect size columns.
+    :return: Pandas dataframe with means, standard deviations, test-statistics, 
+             degrees of freedom and effect size columns.
 
     Example::
 
-        result = calculate_pairwise_ttest(df, 'protein a', subject='subject', group='group', correction='none')
+        result = calculate_pairwise_ttest(df,
+                                          'protein a',
+                                          subject='subject',
+                                          group='group',
+                                          correction='none'
+                )
     """
 
     posthoc_columns = [
@@ -232,7 +244,8 @@ def complement_posthoc(posthoc, identifier, is_logged):
     """
     Calculates fold-changes after posthoc test.
 
-    :param posthoc: pandas dataframe from posthoc test. Should have at least columns 'mean(group1)' and 'mean(group2)'.
+    :param posthoc: pandas dataframe from posthoc test. Should have at least columns
+                    'mean(group1)' and 'mean(group2)'.
     :param str identifier: feature identifier.
     :return: Pandas dataframe with additional columns 'identifier', 'log2FC' and 'FC'.
     """
@@ -256,9 +269,8 @@ def calculate_anova(df, column, group="group"):
     :return: Tuple with t-statistics and p-value.
     """
     aov_result = pg.anova(data=df, dv=column, between=group)
-    df1, df2, t, pvalue = aov_result[["ddof1", "ddof2", "F", "p-unc"]].values.tolist()[
-        0
-    ]
+    sel_cols = ["ddof1", "ddof2", "F", "p-unc"]
+    df1, df2, t, pvalue = aov_result[sel_cols].values.tolist()[0]
 
     return (column, df1, df2, t, pvalue)
 
@@ -287,7 +299,8 @@ def calculate_repeated_measures_anova(df, column, subject="subject", within="gro
     """
     One-way and two-way repeated measures ANOVA using pingouin stats.
 
-    :param df: pandas dataframe with samples as rows and protein identifier as column. Data must be in long-format for two-way repeated measures.
+    :param df: pandas dataframe with samples as rows and protein identifier as column.
+               Data must be in long-format for two-way repeated measures.
     :param str column: column label containing the dependant variable
     :param str subject: column label containing subject identifiers
     :param str within: column label containing the within factor
@@ -295,7 +308,11 @@ def calculate_repeated_measures_anova(df, column, subject="subject", within="gro
 
     Example::
 
-        result = calculate_repeated_measures_anova(df, 'protein a', subject='subject', within='group')
+        result = calculate_repeated_measures_anova(df,
+                                                  'protein a',
+                                                  subject='subject',
+                                                  within='group'
+                )
     """
     df1 = np.nan
     df2 = np.nan
@@ -314,8 +331,8 @@ def calculate_repeated_measures_anova(df, column, subject="subject", within="gro
         df1, df2 = aov_result["DF"]
     except Exception as e:
         print(
-            "Repeated measurements Anova for column: {} could not be calculated."
-            " Error {}".format(column, e)
+            f"Repeated measurements Anova for column: {column} could not be calculated."
+            f" Error {e}"
         )
 
     return (column, df1, df2, t, pvalue)
@@ -327,7 +344,8 @@ def calculate_mixed_anova(
     """
     One-way and two-way repeated measures ANOVA using pingouin stats.
 
-    :param df: pandas dataframe with samples as rows and protein identifier as column. Data must be in long-format for two-way repeated measures.
+    :param df: pandas dataframe with samples as rows and protein identifier as column.
+               Data must be in long-format for two-way repeated measures.
     :param str column: column label containing the dependant variable
     :param str subject: column label containing subject identifiers
     :param str within: column label containing the within factor
@@ -336,7 +354,12 @@ def calculate_mixed_anova(
 
     Example::
 
-        result = calculate_mixed_anova(df, 'protein a', subject='subject', within='group', between='group2')
+        result = calculate_mixed_anova(df,
+                                       'protein a',
+                                       subject='subject',
+                                       within='group',
+                                       between='group2'
+                )
     """
     try:
         aov_result = pg.mixed_anova(
@@ -349,26 +372,23 @@ def calculate_mixed_anova(
         )
         aov_result["identifier"] = column
     except Exception as e:
-        print(
-            "Mixed Anova for column: {} could not be calculated. Error {}".format(
-                column, e
-            )
-        )
+        print(f"Mixed Anova for column: {column} could not be calculated. Error {e}")
 
     return aov_result[["identifier", "DF1", "DF2", "F", "p-unc", "Source"]]
 
 
 def pairwise_ttest_with_covariates(df, column, group, covariates, is_logged):
-    formula = "Q('%s') ~ C(Q('%s'))" % (column, group)
+    """Pairwise t-test with covariates using statsmodels."""
+    formula = f"Q('{column}') ~ C(Q('{group}'))"
     for c in covariates:
-        formula += " + Q('%s')" % (c)
+        formula += f" + Q('{c}')"
     model = ols(formula, data=df).fit()
-    pw = model.t_test_pairwise("C(Q('%s'))" % (group)).result_frame
+    pw = model.t_test_pairwise(f"C(Q('{group}'))").result_frame
     pw = pw.reset_index()
     groups = "|".join(
         [re.escape(str(s)) for s in df[group].unique().tolist()]
     )  # ! this caused issues:
-    regex = r"({})\-({})".format(groups, groups)
+    regex = rf"({groups})\-({groups})"
     pw["group1"] = pw["index"].apply(lambda x: re.search(regex, x).group(2))
     pw["group2"] = pw["index"].apply(lambda x: re.search(regex, x).group(1))
 
@@ -413,11 +433,14 @@ def format_anova_table(
     correction,
 ):
     """
-    Performs p-value correction (permutation-based and FDR) and converts pandas dataframe into final format.
+    Performs p-value correction (permutation-based and FDR) and converts pandas dataframe
+    into final format.
 
-    :param df: pandas dataframe with samples as rows and protein identifiers as columns (with additional columns 'group', 'sample' and 'subject').
+    :param df: pandas dataframe with samples as rows and protein identifiers as columns
+               (with additional columns 'group', 'sample' and 'subject').
     :param list[tuple] aov_results: list of tuples with anova results (one tuple per feature).
-    :param list[dataframes] pairwise_results: list of pandas dataframes with posthoc tests results
+    :param list[dataframes] pairwise_results: list of pandas dataframes with
+                                              posthoc tests results
     :param str group: column with group identifiers
     :param float alpha: error rate for multiple hypothesis correction
     :param int permutations: number of permutations used to estimate false discovery rates
@@ -442,7 +465,7 @@ def format_anova_table(
                 permutations=permutations,
             )
             scores = scores.join(count)
-            scores["correction"] = "permutation FDR ({} perm)".format(permutations)
+            scores["correction"] = f"permutation FDR ({permutations} perm)"
             corrected = True
 
     if not corrected:
@@ -477,7 +500,8 @@ def calculate_pvalue_from_tstats(tstat, dfn):
     Calculate two-tailed p-values from T- or F-statistics.
 
     tstat: T/F distribution
-    dfn: degrees of freedrom *n* (values) per protein (keys), i.e. number of obervations - number of groups (dict)
+    dfn: degrees of freedrom *n* (values) per protein (keys),
+         i.e. number of obervations - number of groups (dict)
     """
     pval = scipy.stats.t.sf(np.abs(tstat), dfn) * 2
 
