@@ -1,19 +1,20 @@
 # %% [markdown]
 # # Enrichment analysis
+# requires
+# - some cluster of proteins/genes (e.g. up- and downregulated proteins/genes)
+# - functional annotations, i.e. a category summarizing a set of proteins/genes.
 #
-# - we need some groups of genes to compute clusters
-# - we need functional annotations, i.e. a category summarizing a set of genes.
-# -
 # You can start with watching Lars Juhl Jensen's brief introduction to enrichment analysis
 # on [youtube](https://www.youtube.com/watch?v=2NC1QOXmc5o).
 #
-# Use example data for ovarian cancer
-# ([PXD010372](https://github.com/Multiomics-Analytics-Group/acore/tree/main/example_data/PXD010372))
+# Here we use as example data from an ovarian cancer dataset:
+# [PXD010372](https://github.com/Multiomics-Analytics-Group/acore/tree/main/example_data/PXD010372)
+#
+# First make sure you have the required packages installed:
 
 
 # %% tags=["hide-output"]
-# %pip install acore vuecore
-
+# %pip install acore vuecore 'plotly<6'
 
 # %%
 from pathlib import Path
@@ -24,7 +25,6 @@ import pandas as pd
 import acore
 import acore.differential_regulation
 import acore.enrichment_analysis
-from acore.io.uniprot import fetch_annotations
 
 dsp_pandas.format.set_pandas_options(max_colwidth=60)
 
@@ -43,6 +43,8 @@ features_to_sample: int = 100
 
 # %% [markdown]
 # # Load processed data
+# from our repository. See details on obtaining the data under the example data section on
+# [this page](nb_ref_ovarian_data)
 
 # %%
 df_omics = pd.read_csv(omics, index_col=0)
@@ -51,16 +53,20 @@ df_meta = pd.read_csv(meta, index_col=0)
 df_omics
 
 # %%
-ax = df_omics.notna().sum().sort_values(ascending=True).plot()
+ax = (
+    df_omics.notna()
+    .sum()
+    .sort_values(ascending=True)
+    .plot(xlabel="Protein groups", ylabel="Number of non-NaN values (samples)")
+)
 
 # %% [markdown]
 # Keep only features with a certain amount of non-NaN values and select 100 of these
-# for illustration. Add the ones which were differently regulated in the ANOVA using all
+# for illustration. Add always four which were differently regulated in the ANOVA using all
 # the protein groups.
 
 # %%
 idx_always_included = ["Q5HYN5", "P39059", "O43432", "O43175"]
-df_omics[idx_always_included]
 
 # %% tags=["hide-input"]
 df_omics = (
@@ -77,18 +83,20 @@ df_omics = (
 )
 df_omics
 
+# %% [markdown]
+# And we have the following patient metadata, from which we will use the `Status` column as
+# our dependent variable and the `PlatinumValue` as a covariate.
 
 # %%
 df_meta
 
 
 # %% [markdown]
-# ## Compute up and downregulated genes
+# # ANOVA: Compute up and downregulated genes
 # These will be used to find enrichments in the set of both up and downregulated genes.
 
 # %%
 group = "Status"
-covariates = ["PlatinumValue"]
 diff_reg = acore.differential_regulation.run_anova(
     df_omics.join(df_meta[[group]]),
     drop_cols=[],
@@ -102,10 +110,12 @@ diff_reg["rejected"] = diff_reg["rejected"].astype(bool)  # ! needs to be fixed 
 diff_reg.query("rejected")
 
 # %% [markdown]
-# ## Find functional annotations, here pathways
-#
+# # Download functional annotations, here pathways, for the protein groups
+# in our selection of the dataset.
 
 # %%
+from acore.io.uniprot import fetch_annotations, process_annotations
+
 fname_annotations = f"downloaded/annotations_{features_to_sample}.csv"
 fname = Path(fname_annotations)
 try:
@@ -113,51 +123,37 @@ try:
     print(f"Loaded annotations from {fname}")
 except FileNotFoundError:
     print(f"Fetching annotations for {df_omics.columns.size} UniProt IDs.")
-    fields = "go_p,go_c,go_f"
-    annotations = fetch_annotations(df_omics.columns, fields=fields)
-    # First column (`From`) is additional to specified fields
-    d_fields_to_col = {k: v for k, v in zip(fields.split(","), annotations.columns[1:])}
-
-    # expand go terms
-    to_expand = list()
-    for field in d_fields_to_col:
-        if "go_" in field:
-            col = d_fields_to_col[field]
-            annotations[col] = annotations[col].str.split(";")
-            to_expand.append(col)
-    for col in to_expand:
-        # this is a bit wastefull. Processing to stack format should be done here.
-        annotations = annotations.explode(col, ignore_index=True)
-    # process other than go term columns
-    annotations = (
-        annotations.set_index("From")
-        .rename_axis("identifier")
-        # .drop("Entry", axis=1)
-        .rename_axis("source", axis=1)
-        .stack()
-        .to_frame("annotation")
-        .reset_index()
-        .drop_duplicates(ignore_index=True)
-    )
+    FIELDS = "go_p,go_c,go_f"
+    annotations = fetch_annotations(df_omics.columns, fields=FIELDS)
+    annotations = process_annotations(annotations, fields=FIELDS)
+    # cache the annotations
     fname.parent.mkdir(exist_ok=True, parents=True)
     annotations.to_csv(fname, index=True)
 
 annotations
 
 # %% [markdown]
-# See how many protein groups are associated with each annotation.
+# See how many protein groups are associated with each annotation. We observe that most
+# functional annotations are associated only to a single protein group in our dataset.
 
 # %% tags=["hide-input"]
-_ = (
-    annotations.groupby("annotation")
-    .size()
-    .value_counts()
-    .sort_index()
-    .plot(kind="bar")
+s_count_pg_per_annotation = (
+    annotations.groupby("annotation").size().value_counts().sort_index()
 )
+_ = s_count_pg_per_annotation.plot(
+    kind="bar",
+    xlabel="Number of protein groups associated with annotation",
+    ylabel="Number of annotations",
+)
+s_count_pg_per_annotation.to_frame("number of annotations").rename_axis(
+    "N protein groups"
+).T
+
+# %%
+annotations.groupby("annotation").size().value_counts(ascending=False)
 
 # %% [markdown]
-# ## Enrichment analysis
+# # Enrichment analysis
 # Is done separately for up- and downregulated genes as it's assumed that biological
 # processes are regulated in one direction.
 
@@ -176,34 +172,23 @@ diff_reg.query("rejected")[
 ].sort_values("log2FC")
 
 # %% [markdown]
-# - this additionally sets a fold change cutoff
-# - and the fore and backgroud populations are changed due to the separation
+# Running the enrichment analysis for the up- and down regulated protein groups
+# separately with the default settings of the function, i.e. a log2 fold change cutoff
+# of 1 and at least 2 protein groups detected in the set of proteins
+# defining the functional annotation.
 
 # %%
 ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     regulation_data=diff_reg,
     annotation=annotations,
-    min_detected_in_set=2,  # ! default is 2, so more conservative
-    lfc_cutoff=0.5,  # ! the default is 1
+    min_detected_in_set=2,
+    lfc_cutoff=1,
 )
 ret
 
 # %% [markdown]
-# here we see differences for the same set of differently regulated protein groups,
-# which can be reset using lfc_cutoff=0.
-
-# %%
-ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
-    regulation_data=diff_reg,
-    annotation=annotations,
-    min_detected_in_set=1,  # ! default is 2, so more conservative
-    lfc_cutoff=0.1,  # ! the default is 1
-)
-ret
-
-# %% [markdown]
-# Or restricting the analysis to functional annotation for which we at least found 2
-# protein groups to be upregulated.
+# we can decrease the cutoff for the log2 fold change to 0.5 and see that we retain
+# more annotations.
 
 # %%
 ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
@@ -215,7 +200,20 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
 ret
 
 # %% [markdown]
-# ### Site specific enrichment analysis
+# And even more if we do not restrict the analysis of finding at least two proteins
+# of a functional set in our data set (i.e. we only need to find one match from the set).
+
+# %%
+ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
+    regulation_data=diff_reg,
+    annotation=annotations,
+    min_detected_in_set=1,
+    lfc_cutoff=0.5,  # ! the default is 1
+)
+ret
+
+# %% [markdown]
+# ## Site specific enrichment analysis
 
 # %% [markdown]
 # The basic example uses a modified peptide sequence to
@@ -240,7 +238,7 @@ match.group(1)
 # acore.enrichment_analysis.run_up_down_regulation_enrichment
 
 # %% [markdown]
-# ## Single sample GSEA (ssGSEA)
+# # Single sample GSEA (ssGSEA)
 # Run a gene set enrichment analysis (GSEA) for each sample,
 # see [article](https://www.nature.com/articles/nature08460#Sec3) and
 # the package [`gseapy`](https://gseapy.readthedocs.io/en/latest/run.html#gseapy.ssgsea)
@@ -258,7 +256,7 @@ enrichtments
 enrichtments.iloc[0].to_dict()
 
 # %%
-enrichtments["NES"].plot.hist()
+ax = enrichtments["NES"].plot.hist()
 
 # %% [markdown]
 # The normalised enrichment score (NES) can be used in a PCA plot to see if the samples
@@ -295,16 +293,18 @@ loadings
 # for this, which is also developed by the Multiomics Analytics Group.
 
 # %%
-from plotly.offline import iplot
+import plotly.graph_objects as go
 from vuecore import viz
 
-args = {"factor": 1, "loadings": 10}
+args = {"factor": 2, "loadings": 1}  # increase number of loadings or scaling factor
 # #! pca_results has three items, but docstring requests only two -> double check
 figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
-iplot(figure)
+figure = go.Figure(data=figure["data"], layout=figure["layout"])
+figure.show()
 
 # %% [markdown]
-# ## Compare two distributions - KS test
+# # Compare two distributions - KS test
+#
 # The Kolmogorov-Smirnov test is a non-parametric test that compares two distributions.
 # - we compare the distributions of the two differently upregulated protein groups
 # This is not the best example for comparing distributions, but it shows how to use the
