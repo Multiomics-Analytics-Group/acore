@@ -92,7 +92,7 @@ df_meta
 
 
 # %% [markdown]
-# # ANCOVA: Compute up and downregulated genes
+# # ANOVA: Compute up and downregulated genes
 # These will be used to find enrichments in the set of both up and downregulated genes.
 
 # %%
@@ -137,13 +137,20 @@ annotations
 # functional annotations are associated only to a single protein group in our dataset.
 
 # %% tags=["hide-input"]
-_ = (
-    annotations.groupby("annotation")
-    .size()
-    .value_counts()
-    .sort_index()
-    .plot(kind="bar")
+s_count_pg_per_annotation = (
+    annotations.groupby("annotation").size().value_counts().sort_index()
 )
+_ = s_count_pg_per_annotation.plot(
+    kind="bar",
+    xlabel="Number of protein groups associated with annotation",
+    ylabel="Number of annotations",
+)
+s_count_pg_per_annotation.to_frame("number of annotations").rename_axis(
+    "N protein groups"
+).T
+
+# %%
+annotations.groupby("annotation").size().value_counts(ascending=False)
 
 # %% [markdown]
 # # Enrichment analysis
@@ -289,7 +296,7 @@ loadings
 import plotly.graph_objects as go
 from vuecore import viz
 
-args = {"factor": 1, "loadings": 10}
+args = {"factor": 2, "loadings": 1}  # increase number of loadings or scaling factor
 # #! pca_results has three items, but docstring requests only two -> double check
 figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
 figure = go.Figure(data=figure["data"], layout=figure["layout"])
