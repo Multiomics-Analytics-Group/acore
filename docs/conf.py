@@ -113,6 +113,8 @@ html_js_files = [
 nb_execution_raise_on_error = True
 # Rendering
 nb_merge_streams = True
+# maximum execution time per cell in seconds
+nb_execution_timeout = 120
 
 # https://myst-nb.readthedocs.io/en/latest/authoring/custom-formats.html#write-custom-formats
 # nb_custom_formats = {".py": ["jupytext.reads", {"fmt": "py:percent"}]}

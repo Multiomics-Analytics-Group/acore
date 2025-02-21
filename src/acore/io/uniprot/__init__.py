@@ -46,3 +46,47 @@ def fetch_annotations(
     results = [line.split("\t") for line in results]
     df = pd.DataFrame(results, columns=header)
     return df
+
+
+def process_annotations(annotations: pd.DataFrame, fields: str) -> pd.DataFrame:
+    """Process annotations fetched from UniProt API.
+
+    Parameters
+    ----------
+    annotations : pd.DataFrame
+        DataFrame with annotations fetched from UniProt API.
+    fields : str
+        Fields that were fetched from the API. Comma-separated string. Fields
+        needs to match number of columns in annotations.
+
+    Returns
+    -------
+    pd.DataFrame
+        Processed DataFrame with annotations in long-format.
+    """
+    d_fields_to_col = {
+        k: v for k, v in zip(fields.split(","), annotations.columns[1:], strict=True)
+    }
+
+    # expand go terms
+    to_expand = list()
+    for field in d_fields_to_col:
+        if "go_" in field:
+            col = d_fields_to_col[field]
+            annotations[col] = annotations[col].str.split(";")
+            to_expand.append(col)
+    for col in to_expand:
+        # this is a bit wastefull. Processing to stack format should be done here.
+        annotations = annotations.explode(col, ignore_index=True)
+    # process other than go term columns
+    annotations = (
+        annotations.set_index("From")
+        .rename_axis("identifier")
+        # .drop("Entry", axis=1)
+        .rename_axis("source", axis=1)
+        .stack()
+        .to_frame("annotation")
+        .reset_index()
+        .drop_duplicates(ignore_index=True)
+    )
+    return annotations
