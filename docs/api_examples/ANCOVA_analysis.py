@@ -46,7 +46,7 @@ freq_cutoff: float = (
 )
 
 # %% [markdown]
-# ## Load data.
+# # Data for recipe
 # Clinical data:
 
 # %% tags=["hide-input"]
@@ -108,7 +108,7 @@ omics_and_clinic
 
 
 # %% [markdown]
-# ### Checking missing data
+# ## Checking missing data
 # ... between two AD groups (after previous filtering)
 
 # %% tags=["hide-input"]
@@ -122,7 +122,9 @@ data_completeness
 # in non-Alzheimer disease group
 
 # %% tags=["hide-input"]
-data_completeness.T.sort_values(0).plot(style=".", ylim=(0, 1.05), alpha=0.5, rot=45)
+ax = data_completeness.T.sort_values(0).plot(
+    style=".", ylim=(0, 1.05), alpha=0.5, rot=45
+)
 
 # %% [markdown]
 # Plot 20 protein groups with biggest difference in missing values between groups
@@ -150,7 +152,7 @@ _ = ax.set_xticklabels(
 )
 
 # %% [markdown]
-# ## Running ANCOVA analysis
+# # ANCOVA analysis for two groups
 # Use combined dataset for ANCOVA analysis.
 
 # %% tags=["hide-input"]
@@ -193,7 +195,7 @@ ancova
 # protein group
 
 # %%
-# ancova.iloc[:, :6]
+ancova.iloc[:, :6]
 
 # %% [markdown]
 # The others contain the test results (based on a linear model) for each protein group
@@ -210,7 +212,7 @@ ancova.filter(regex=regex_filter)
 ancova.iloc[:, 6:].filter(regex=f"^(?!.*({regex_filter})).*$")
 
 # %% [markdown]
-# ## ANOVA analysis
+# # ANOVA analysis for two groups
 # not controlling for covariates
 # > To check: pvalues for proteins with missing mean values? some merging issue?
 
@@ -267,7 +269,7 @@ view
 anova.drop(columns=viewed_cols)
 
 # %% [markdown]
-# ## Comparing ANOVA and ANCOVA results
+# # Comparing ANOVA and ANCOVA results for two groups
 # Cross tabulated results after FDR correction for both ANOVA and ANCOVA
 
 # %% tags=["hide-input"]
