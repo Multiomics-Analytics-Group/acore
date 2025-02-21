@@ -21,8 +21,6 @@
 # %pip install acore
 
 # %% tags=["hide-input"]
-from pathlib import Path
-
 import dsp_pandas
 import numpy as np
 import pandas as pd
