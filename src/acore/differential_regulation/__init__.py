@@ -68,7 +68,7 @@ def run_anova(
     correction: str = "fdr_bh",
     is_logged: bool = True,
     non_par: bool = False,
-):
+) -> pd.DataFrame:
     """
     Performs statistical test for each protein in a dataset.
     Checks what type of data is the input (paired, unpaired or repeated measurements) and
@@ -76,13 +76,16 @@ def run_anova(
     Multiple hypothesis correction uses permutation-based
     if permutations>0 and Benjamini/Hochberg if permutations=0.
 
-    :param df: pandas dataframe with samples as rows and protein identifiers as columns
+    :param pd.DataFrame df: pandas dataframe with samples as rows and protein identifiers as columns
                (with additional columns 'group', 'sample' and 'subject').
+    :param float alpha: error rate for multiple hypothesis correction
+    :param list drop_cols: column labels to be dropped from the dataframe
     :param str subject: column with subject identifiers
     :param str group: column with group identifiers
-    :param list drop_cols: column labels to be dropped from the dataframe
-    :param float alpha: error rate for multiple hypothesis correction
     :param int permutations: number of permutations used to estimate false discovery rates.
+    :param str correction: method of pvalue correction see apply_pvalue_correction for methods,
+                            use methods available in acore.multiple_testing
+    :param bool is_logged: whether data is log-transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
     :return: Pandas dataframe with columns 'identifier', 'group1', 'group2',
@@ -180,7 +183,7 @@ def run_ancova(
     correction: str = "fdr_bh",
     is_logged: bool = True,
     non_par: bool = False,
-):
+) -> pd.DataFrame:
     """
     Performs statistical test for each protein in a dataset.
     Checks what type of data is the input (paired, unpaired or repeated measurements)
@@ -188,17 +191,20 @@ def run_ancova(
     Multiple hypothesis correction uses permutation-based
     if permutations>0 and Benjamini/Hochberg if permutations=0.
 
-    :param df: pandas dataframe with samples as rows and protein identifiers and
+    :param pd.DataFrame df: Pandas DataFrame with samples as rows and protein identifiers and
                covariates as columns (with additional columns 'group', 'sample' and 'subject').
     :param list covariates: list of covariates to include in the model (column in df)
+    :param float alpha: error rate for multiple hypothesis correction
+    :param list drop_cols: column labels to be dropped from the DataFrame
     :param str subject: column with subject identifiers
     :param str group: column with group identifiers
-    :param list drop_cols: column labels to be dropped from the dataframe
-    :param float alpha: error rate for multiple hypothesis correction
     :param int permutations: number of permutations used to estimate false discovery rates.
+    :param str correction: method of pvalue correction see apply_pvalue_correction for methods,
+                           use methods available in acore.multiple_testing
+    :param bool is_logged: whether data is log-transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
-    :return: Pandas dataframe with columns 'identifier', 'group1', 'group2',
+    :return: Pandas DataFrame with columns 'identifier', 'group1', 'group2',
         'mean(group1)', 'mean(group2)', 'Log2FC', 'std_error', 'tail', 't-statistics',
         'posthoc pvalue', 'effsize', 'efftype', 'FC', 'rejected', 'F-statistics', 'p-value',
         'correction', '-log10 p-value', and 'method'.
@@ -259,18 +265,21 @@ def run_repeated_measurements_anova(
     permutations=50,
     correction="fdr_bh",
     is_logged=True,
-):
+) -> pd.DataFrame:
     """
     Performs repeated measurements anova and pairwise posthoc tests for each protein in dataframe.
 
-    :param df: pandas dataframe with samples as rows and protein identifiers as columns
+    :param pd.DataFrame df: Pandas DataFrame with samples as rows and protein identifiers as columns
                (with additional columns 'group', 'sample' and 'subject').
+    :param float alpha: error rate for multiple hypothesis correction
+    :param list drop_cols: column labels to be dropped from the DataFrame
     :param str subject: column with subject identifiers
     :param str within: column with within factor identifiers
-    :param list drop_cols: column labels to be dropped from the dataframe
-    :param float alpha: error rate for multiple hypothesis correction
     :param int permutations: number of permutations used to estimate false discovery rates
-    :return: Pandas dataframe
+    :param str correction: method of pvalue correction see apply_pvalue_correction for methods,
+                           use methods available in acore.multiple_testing
+    :param bool is_logged: whether data is log-transformed
+    :return: Pandas DataFrame
 
     Example::
 
@@ -340,15 +349,17 @@ def run_mixed_anova(
 
     .. _source: https://en.wikipedia.org/wiki/Mixed-design_analysis_of_variance
 
-    :param df: pandas dataframe with samples as rows and protein identifiers as columns
+    :param pd.DataFrame df: Pandas DataFrame with samples as rows and protein identifiers as columns
                (with additional columns 'group', 'sample' and 'subject').
+    :param float alpha: error rate for multiple hypothesis correction
+    :param list drop_cols: column labels to be dropped from the DataFrame
     :param str subject: column with subject identifiers
     :param str within: column with within factor identifiers
     :param str between: column with between factor identifiers
-    :param list drop_cols: column labels to be dropped from the dataframe
-    :param float alpha: error rate for multiple hypothesis correction
-    :param int permutations: number of permutations used to estimate false discovery rates
-    :return: Pandas dataframe
+    :param str correction: method of pvalue correction see apply_pvalue_correction for methods,
+                           use methods available in acore.multiple_testing
+    :return: Pandas DataFrame
+    :rtype: pd.DataFrame
 
     Example::
 
@@ -358,7 +369,6 @@ def run_mixed_anova(
                                  subject='subject',
                                  within='group',
                                  between='group2',
-                                 permutations=50
                 )
     """
     df = df.drop(drop_cols, axis=1).dropna(axis=1)
@@ -407,21 +417,21 @@ def run_ttest(
     permutation-based (if permutations>0) or Benjamini/Hochberg (if permutations=0)
     multiple hypothesis correction.
 
-    :param df: pandas dataframe with samples as rows and protein identifiers as columns
+    :param pd.DataFrame df: Pandas DataFrame with samples as rows and protein identifiers as columns
                (with additional columns 'group', 'sample' and 'subject').
     :param str condition1: first of two conditions of the independent variable
     :param str condition2: second of two conditions of the independent variable
+    :param float alpha: error rate for multiple hypothesis correction
+    :param list drop_cols: column labels to be dropped from the DataFrame
     :param str subject: column with subject identifiers
     :param str group: column with group identifiers (independent variable)
-    :param list drop_cols: column labels to be dropped from the dataframe
     :param bool paired: paired or unpaired samples
     :param str correction: method of pvalue correction see apply_pvalue_correction for methods
-    :param float alpha: error rate for multiple hypothesis correction
     :param int permutations: number of permutations used to estimate false discovery rates.
     :param bool is_logged: data is log-transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
-    :return: Pandas dataframe with columns 'identifier', 'group1', 'group2',
+    :return: Pandas DataFrame with columns 'identifier', 'group1', 'group2',
         'mean(group1)', 'mean(group2)', 'std(group1)', 'std(group2)', 'Log2FC', 'FC',
         'rejected', 'T-statistics', 'p-value', 'correction', '-log10 p-value', and 'method'.
 
@@ -517,17 +527,20 @@ def run_ttest(
 
 
 def run_two_way_anova(
-    df, drop_cols=["sample"], subject="subject", group=["group", "secondary_group"]
+    df,
+    drop_cols=["sample"],
+    subject="subject",
+    group=["group", "secondary_group"],
 ):
     """
     Run a 2-way ANOVA when data['secondary_group'] is not empty
 
-    :param df: processed pandas dataframe with samples as rows,
+    :param pd.DataFrame df: processed pandas DataFrame with samples as rows,
                and proteins and groups as columns.
-    :param list drop_cols: column names to drop from dataframe
+    :param list drop_cols: column names to drop from DataFrame
     :param str subject: column name containing subject identifiers.
     :param list group: column names corresponding to independent variable groups
-    :return: Two dataframes, anova results and residuals.
+    :return: Two DataFrames, anova results and residuals.
 
     Example::
 
