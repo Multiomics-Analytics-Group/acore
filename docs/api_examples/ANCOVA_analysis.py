@@ -37,7 +37,7 @@ BASE = (
     "https://raw.githubusercontent.com/RasmussenLab/njab/"
     "HEAD/docs/tutorial/data/alzheimer/"
 )
-CLINIC_ML: str = "clinic_ml.csv"  # clincial data
+CLINIC_ML: str = "clinic_ml.csv"  # clinical data
 OMICS: str = "proteome.csv"  # omics data
 freq_cutoff: float = (
     0.7  # at least x percent of samples must have a value for a feature (here: protein group)
