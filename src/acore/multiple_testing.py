@@ -203,23 +203,24 @@ def get_max_permutations(df, group="group"):
 
 
 def correct_pairwise_ttest(df, alpha, correction="fdr_bh"):
-    posthoc_df = pd.DataFrame()
-    if "group1" in df and "group2" in df and "posthoc pvalue" in df:
-        for comparison in df.groupby(["group1", "group2"]).groups:
-            index = df.groupby(["group1", "group2"]).groups.get(comparison)
-            posthoc_pvalues = df.loc[index, "posthoc pvalue"].tolist()
-            _, posthoc_padj = apply_pvalue_correction(
-                posthoc_pvalues, alpha=alpha, method=correction
-            )
-            if posthoc_df.empty:
-                posthoc_df = pd.DataFrame(
-                    {"index": index, "posthoc padj": posthoc_padj}
-                )
-            else:
-                posthoc_df = posthoc_df.append(
-                    pd.DataFrame({"index": index, "posthoc padj": posthoc_padj})
-                )
-        posthoc_df = posthoc_df.set_index("index")
-        df = df.join(posthoc_df)
+    posthoc_df = list()
+
+    required_col = ["group1", "group2", "posthoc pvalue"]
+    for _col in required_col:
+        if not _col in df:
+            raise KeyError(f"Did not find '{_col}' in columns of data.")
+
+    for comparison in df.groupby(["group1", "group2"]).groups:
+        index = df.groupby(["group1", "group2"]).groups.get(comparison)
+        posthoc_pvalues = df.loc[index, "posthoc pvalue"].tolist()
+        _, posthoc_padj = apply_pvalue_correction(
+            posthoc_pvalues, alpha=alpha, method=correction
+        )
+
+        _posthoc_df = pd.DataFrame({"index": index, "posthoc padj": posthoc_padj})
+        posthoc_df.append(_posthoc_df)
+    posthoc_df = pd.concat(posthoc_df)
+    posthoc_df = posthoc_df.set_index("index")
+    df = df.join(posthoc_df)
 
     return df
