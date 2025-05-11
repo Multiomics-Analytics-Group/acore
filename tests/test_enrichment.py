@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+import pytest
 from scipy import stats
 
 import acore.enrichment_analysis as ea
@@ -96,5 +97,83 @@ def test_run_regulation_enrichment():
     assert expected.equals(actual)
 
 
+def test_run_regulation_enrichment_with_duplicates():
+    """Integration test for run_regulation_enrichment. Indirectly tests
+    run_enrichment from enrichment_analysis module.
+
+    should throw an error if unique identifier is enforced.
+    """
+    annotation = {
+        "annotation": [
+            "path1",
+            "path1",
+            "path1",
+            "path2",
+            "path2",  # e.g. protein 5 has two peptides associated
+            "path2",  # e.g. protein 5 has two peptides associated
+            "path3",
+            "path3",
+        ],
+        "identifier": [
+            "protein1",
+            "protein2",
+            "protein3",
+            "protein1",
+            "protein5",  # duplicated pep for protein identifier
+            "protein5",  # duplicated pep for protein identifier
+            "protein6",
+            "protein9",
+        ],
+        "source": ["GO", "GO", "GO", "GO_P", "GO_P", "GO_P", "GO_P", "GO_P"],
+    }
+    annotation = pd.DataFrame(annotation)
+    regulation_res = {
+        "identifier": [
+            "protein1",
+            "protein2",
+            "protein3",
+            "protein4",
+            "protein5",
+            "protein5",
+            "protein6",
+        ],
+        "rejected": [True, True, False, False, True, True, True],
+    }
+    regulation_res = pd.DataFrame(regulation_res)
+
+    with pytest.raises(ValueError):
+        _ = ea.run_regulation_enrichment(
+            regulation_data=regulation_res,
+            annotation=annotation,
+            min_detected_in_set=1,
+            enforce_unique_identifier=True,
+        )
+
+    actual = ea.run_regulation_enrichment(
+        regulation_data=regulation_res,
+        annotation=annotation,
+        min_detected_in_set=1,
+    )
+
+    expected = pd.DataFrame(
+        {
+            "terms": ["path1", "path2", "path3"],
+            "identifiers": [
+                "protein1,protein2",
+                "protein1,protein5,protein5",  # ! to fix
+                "protein6",
+            ],
+            "foreground": [2, 3, 1],
+            "background": [1, 0, 0],
+            "foreground_pop": [5, 5, 5],
+            "background_pop": [7, 7, 7],
+            "pvalue": [1.0, 0.4285714285714286, 1.0],
+            "padj": [1.0, 1.0, 1.0],
+            "rejected": [False, False, False],
+        }
+    )
+    assert expected.equals(actual)
+
+
 if __name__ == "__main__":
-    unittest.main()
+unittest.main()

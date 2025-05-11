@@ -324,6 +324,7 @@ def run_regulation_enrichment(
     min_detected_in_set: int = 2,
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
+    enforce_unique_identifier: bool = False,
 ) -> pd.DataFrame:
     """
     This function runs a simple enrichment analysis for significantly regulated features
@@ -341,6 +342,7 @@ def run_regulation_enrichment(
         if feature belongs to foreground or background.
     :param str method: method used to compute enrichment (only 'fisher' is supported currently).
     :param str correction: method to be used for multiple-testing correction
+    :param bool enforce_unique_identifier: if True, will check if the identifier column is unique.
     :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
         'background', 'foreground_pop', 'background_pop', 'pvalue', 'padj' and 'rejected'.
 
@@ -365,12 +367,23 @@ def run_regulation_enrichment(
     mask_rejected = regulation_data[rejected_col].astype(bool)
     foreground_list = regulation_data.loc[
         mask_rejected, identifier
-    ]  # .unique()  # ! unique?
+    ]  # .unique() ?
     background_list = regulation_data.loc[
         ~mask_rejected, identifier
-    ]  # .unique()  # ! unique?
+    ]  # .unique() ?
+    if enforce_unique_identifier:
+        if not foreground_list.is_unique:
+            raise ValueError(
+                f"Column '{identifier}' in regulation_data contains duplicated values."
+                "for the features in the foreground."
+            )
+        if not background_list.is_unique:
+            raise ValueError(
+                f"Column '{identifier}' in regulation_data contains duplicated values."
+                "for the features in the background."
+            )
     foreground_pop = len(foreground_list)
-    background_pop = len(regulation_data[identifier])  # .unique())  # ! unique?
+    background_pop = len(regulation_data[identifier])  # .unique()) ?
     # needs to allow for missing annotations
     annotation[group_col] = _annotate_features(
         features=annotation[identifier],
