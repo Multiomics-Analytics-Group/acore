@@ -181,6 +181,7 @@ diff_reg.query("rejected")[
 ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     regulation_data=diff_reg,
     annotation=annotations,
+    pval_col="padj",
     min_detected_in_set=2,
     lfc_cutoff=1,
 )
@@ -194,6 +195,7 @@ ret
 ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     regulation_data=diff_reg,
     annotation=annotations,
+    pval_col="padj",
     min_detected_in_set=2,
     lfc_cutoff=0.5,  # ! the default is 1
 )
@@ -207,6 +209,7 @@ ret
 ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     regulation_data=diff_reg,
     annotation=annotations,
+    pval_col="padj",
     min_detected_in_set=1,
     lfc_cutoff=0.5,  # ! the default is 1
 )
@@ -235,7 +238,6 @@ match.group(1)
 
 # %%
 # ToDo: Add example for site specific enrichment analysis
-# acore.enrichment_analysis.run_up_down_regulation_enrichment
 
 # %% [markdown]
 # # Single sample GSEA (ssGSEA)

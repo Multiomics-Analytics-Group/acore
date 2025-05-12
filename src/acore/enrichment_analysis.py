@@ -1,4 +1,4 @@
-"""Enrichment Analysis Module. Contains different functions to perform enrichment 
+"""Enrichment Analysis Module. Contains different functions to perform enrichment
 analysis.
 
 Most things in this module are covered in https://www.youtube.com/watch?v=2NC1QOXmc5o
@@ -7,6 +7,7 @@ by Lars Juhl Jensen.
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 import uuid
@@ -17,6 +18,8 @@ import pandas as pd
 from scipy import stats
 
 from acore.multiple_testing import apply_pvalue_correction
+
+logger = logging.getLogger(__name__)
 
 TYPE_COLS_MSG = """
 columns: 'terms', 'identifiers', 'foreground',
@@ -153,15 +156,14 @@ def run_site_regulation_enrichment(
     if remove_duplicates:
         regulation_data = regulation_data.drop_duplicates(subset=[identifier])
     result = run_regulation_enrichment(
-        regulation_data,
-        annotation,
-        identifier,
-        groups,
-        annotation_col,
-        rejected_col,
-        group_col,
-        method,
-        correction,
+        regulation_data=regulation_data,
+        annotation=annotation,
+        identifier=identifier,
+        group_col=groups,
+        annotation_col=annotation_col,
+        rejected_col=rejected_col,
+        method=method,
+        correction=correction,
     )
 
     return result
@@ -173,8 +175,10 @@ def run_up_down_regulation_enrichment(
     identifier: str = "identifier",
     groups: list[str] = ("group1", "group2"),
     annotation_col: str = "annotation",
-    # rejected_col:str="rejected",
+    # rejected_col: str = "rejected", # could be passed
+    pval_col: str = "pval",
     group_col: str = "group",
+    log2fc_col: str = "log2FC",
     method: str = "fisher",
     min_detected_in_set: int = 2,
     correction: str = "fdr_bh",
@@ -238,17 +242,20 @@ reference/api/pandas.DataFrame.groupby.html
 
         df = regulation_data.groupby(groups).get_group((g1, g2))
 
-        padj_name = "padj"
-        if "posthoc padj" in df:
-            padj_name = "posthoc padj"
-
-        df["up_pairwise_regulation"] = (df[padj_name] <= correction_alpha) & (
-            df["log2FC"] >= lfc_cutoff
+        df["up_pairwise_regulation"] = (df[pval_col] <= correction_alpha) & (
+            df[log2fc_col] >= lfc_cutoff
         )
-        df["down_pairwise_regulation"] = (df[padj_name] <= correction_alpha) & (
-            df["log2FC"] <= -lfc_cutoff
+        df["down_pairwise_regulation"] = (df[pval_col] <= correction_alpha) & (
+            df[log2fc_col] <= -lfc_cutoff
         )
         comparison_tag = g1 + "~" + g2
+
+        if not regulation_data[identifier].is_unique:
+            logger.warning(
+                "Column '%s' in regulation_data contains duplicated values for comparison %s.",
+                identifier,
+                comparison_tag,
+            )
 
         for rej_col, direction in zip(
             ("up_pairwise_regulation", "down_pairwise_regulation"),
@@ -317,6 +324,7 @@ def run_regulation_enrichment(
     min_detected_in_set: int = 2,
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
+    enforce_unique_identifier: bool = False,
 ) -> pd.DataFrame:
     """
     This function runs a simple enrichment analysis for significantly regulated features
@@ -334,6 +342,7 @@ def run_regulation_enrichment(
         if feature belongs to foreground or background.
     :param str method: method used to compute enrichment (only 'fisher' is supported currently).
     :param str correction: method to be used for multiple-testing correction
+    :param bool enforce_unique_identifier: if True, will check if the identifier column is unique.
     :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
         'background', 'foreground_pop', 'background_pop', 'pvalue', 'padj' and 'rejected'.
 
@@ -353,11 +362,28 @@ def run_regulation_enrichment(
          )
     """
     # ? can we remove NA features in that column?
+    if regulation_data[rejected_col].isna().any():
+        raise ValueError(f"Rejected column '{rejected_col}' contains missing values. ")
     mask_rejected = regulation_data[rejected_col].astype(bool)
-    foreground_list = regulation_data.loc[mask_rejected, identifier].unique()
-    background_list = regulation_data.loc[~mask_rejected, identifier].unique()
+    foreground_list = regulation_data.loc[
+        mask_rejected, identifier
+    ]  # .unique() ?
+    background_list = regulation_data.loc[
+        ~mask_rejected, identifier
+    ]  # .unique() ?
+    if enforce_unique_identifier:
+        if not foreground_list.is_unique:
+            raise ValueError(
+                f"Column '{identifier}' in regulation_data contains duplicated values."
+                "for the features in the foreground."
+            )
+        if not background_list.is_unique:
+            raise ValueError(
+                f"Column '{identifier}' in regulation_data contains duplicated values."
+                "for the features in the background."
+            )
     foreground_pop = len(foreground_list)
-    background_pop = len(regulation_data[identifier].unique())
+    background_pop = len(regulation_data[identifier])  # .unique()) ?
     # needs to allow for missing annotations
     annotation[group_col] = _annotate_features(
         features=annotation[identifier],
@@ -493,7 +519,7 @@ def run_enrichment(
                 "foreground": fnum,
                 "background": bnum,
                 "foreground_pop": foreground_pop,
-                "background_pop": background_pop,
+                "background_pop": background_pop,  # total of all included features
                 "pvalue": pvalues,
                 "padj": padj,
                 "rejected": rejected.astype(bool),
