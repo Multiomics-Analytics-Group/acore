@@ -176,4 +176,4 @@ def test_run_regulation_enrichment_with_duplicates():
 
 
 if __name__ == "__main__":
-unittest.main()
+    unittest.main()
