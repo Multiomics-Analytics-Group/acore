@@ -21,6 +21,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_new_tab_link",
     "myst_nb",
+    "sphinx_copybutton",
 ]
 
 
@@ -139,8 +140,10 @@ intersphinx_mapping = {
 # https://github.com/executablebooks/MyST-NB/blob/master/docs/conf.py
 # html_title = ""
 html_theme = "sphinx_book_theme"
-# html_logo = "logo/analytics_512px.png"
-html_favicon = "logo/analytics_64px.png"
+# static path to be change by its link after merging into the main branch: 
+# https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/main/docs/images/acore_logo.svg
+html_logo = "images/acore_logo.svg"
+html_favicon = "images/acore_logo.svg"
 html_theme_options = {
     "github_url": "https://github.com/Multiomics-Analytics-Group/acore/",
     "repository_url": "https://github.com/Multiomics-Analytics-Group/acore/",
