@@ -60,6 +60,28 @@ def test__annotate_features():
     pd.testing.assert_series_equal(expected, actual)
 
 
+def test__annotate_features_with_duplicates():
+    """for example if multiple peptides are associated with the same protein."""
+    expected = pd.Series(
+        [
+            "foreground",
+            "foreground",
+            "background",
+            "background",
+            "foreground",
+            "background",
+            "background",
+            np.nan,
+        ]
+    )
+
+    features = pd.Series(["G1", "G2", "G3", "G3", "G4", "G5", "G6", "G9"])
+    in_foreground = ["G1", "G2", "G4"]
+    in_background = ["G3", "G5", "G6"]
+    actual = ea._annotate_features(features, in_foreground, in_background)
+    pd.testing.assert_series_equal(expected, actual)
+
+
 def test_run_regulation_enrichment():
     """Integration test for run_regulation_enrichment. Indirectly tests
     run_enrichment from enrichment_analysis module."""
@@ -92,6 +114,87 @@ def test_run_regulation_enrichment():
             "pvalue": [1.0, 0.4666666666666667, 1.0],
             "padj": [1.0, 1.0, 1.0],
             "rejected": [False, False, False],
+        }
+    )
+    assert expected.equals(actual)
+
+
+def test_run_regulation_enrichment_pep():
+    """Integration test for run_regulation_enrichment on peptides level data.
+    Indirectly tests run_enrichment from enrichment_analysis module."""
+    annotation = {
+        # annotations from UNIPROT on protein level have to be exploded to peptides
+        # e.g. by matching the gene identifiers to the differential analysis
+        "annotation": [
+            "path1",
+            "path1",
+            "path1",
+            "path1",
+            "path2",
+            "path2",
+            "path3",
+            "path3",
+        ],
+        "identifier": [
+            "gene1_pep1",
+            "gene2_pep1",
+            "gene2_pep2",
+            "gene3_pep1",
+            "gene1_pep3",
+            "gene5_pep1",
+            "gene6_pep1",
+            "gene9_pep1",
+        ],
+        "gene": [
+            "gene1",
+            "gene2",
+            "gene2",  # duplicated for pathway 1
+            "gene3",
+            "gene1",
+            "gene5",
+            "gene6",
+            "gene9",
+        ],
+        "source": ["GO", "GO", "GO", "GO", "GO_P", "GO_P", "GO_P", "GO_P"],
+    }
+    annotation = pd.DataFrame(annotation)
+    regulation_res = {
+        # one peptide in forground, one in background for gene2
+        "identifier": [
+            "gene1_pep1",
+            "gene2_pep1",
+            "gene2_pep2",
+            "gene3_pep1",
+            "gene1_pep3",
+            "gene5_pep1",
+            "gene6_pep1",
+            "gene9_pep1",
+        ],
+        "rejected": [True, True, False, True, False, False, True, True],
+    }
+    regulation_res = pd.DataFrame(regulation_res)
+
+    actual = ea.run_regulation_enrichment(
+        regulation_data=regulation_res,
+        annotation=annotation,
+        min_detected_in_set=1,
+    ).reset_index(drop=True)
+
+    expected = pd.DataFrame(
+        {
+            "terms": ["path3", "path1"],  # path2 has no peptides in foreground
+            "identifiers": [
+                # forground peptides concatenated by comma
+                "gene6_pep1,gene9_pep1",
+                "gene1_pep1,gene2_pep1,gene3_pep1",
+            ],
+            "foreground": [2, 3],
+            "background": [0, 1],
+            "foreground_pop": [5, 5],
+            "background_pop": [8, 8],
+            "pvalue": [0.4642857142857143, 1.0],
+            "padj": [0.9285714285714286, 1.0],
+            "rejected": [False, False],
         }
     )
     assert expected.equals(actual)
@@ -146,34 +249,4 @@ def test_run_regulation_enrichment_with_duplicates():
             regulation_data=regulation_res,
             annotation=annotation,
             min_detected_in_set=1,
-            enforce_unique_identifier=True,
         )
-
-    actual = ea.run_regulation_enrichment(
-        regulation_data=regulation_res,
-        annotation=annotation,
-        min_detected_in_set=1,
-    )
-
-    expected = pd.DataFrame(
-        {
-            "terms": ["path1", "path2", "path3"],
-            "identifiers": [
-                "protein1,protein2",
-                "protein1,protein5,protein5",  # ! to fix
-                "protein6",
-            ],
-            "foreground": [2, 3, 1],
-            "background": [1, 0, 0],
-            "foreground_pop": [5, 5, 5],
-            "background_pop": [7, 7, 7],
-            "pvalue": [1.0, 0.4285714285714286, 1.0],
-            "padj": [1.0, 1.0, 1.0],
-            "rejected": [False, False, False],
-        }
-    )
-    assert expected.equals(actual)
-
-
-if __name__ == "__main__":
-    unittest.main()

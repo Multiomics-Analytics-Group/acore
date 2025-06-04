@@ -324,7 +324,6 @@ def run_regulation_enrichment(
     min_detected_in_set: int = 2,
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
-    enforce_unique_identifier: bool = False,
 ) -> pd.DataFrame:
     """
     This function runs a simple enrichment analysis for significantly regulated features
@@ -334,7 +333,9 @@ def run_regulation_enrichment(
     :param annotation: pandas.DataFrame with annotations for features
         (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
     :param str identifier: name of the column from annotation containing feature identifiers.
-        It should also be present in `regulation_data`.
+        It should be present both in `regulation_data` and `annotation`. In `regulation_data`
+        it should be unique, while in `annotation` it can contain duplicates as one
+        identifier can be part of multiple pathways.
     :param str annotation_col: name of the column from annotation containing annotation terms.
     :param str rejected_col: name of the column from `regulation_data` containing boolean for
         rejected null hypothesis.
@@ -342,7 +343,6 @@ def run_regulation_enrichment(
         if feature belongs to foreground or background.
     :param str method: method used to compute enrichment (only 'fisher' is supported currently).
     :param str correction: method to be used for multiple-testing correction
-    :param bool enforce_unique_identifier: if True, will check if the identifier column is unique.
     :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
         'background', 'foreground_pop', 'background_pop', 'pvalue', 'padj' and 'rejected'.
 
@@ -363,28 +363,17 @@ def run_regulation_enrichment(
     """
     # ? can we remove NA features in that column?
     if regulation_data[rejected_col].isna().any():
-        raise ValueError(f"Rejected column '{rejected_col}' contains missing values. ")
+        raise ValueError(f"Rejected column '{rejected_col}' contains missing values.")
     mask_rejected = regulation_data[rejected_col].astype(bool)
-    foreground_list = regulation_data.loc[
-        mask_rejected, identifier
-    ]  # .unique() ?
-    background_list = regulation_data.loc[
-        ~mask_rejected, identifier
-    ]  # .unique() ?
-    if enforce_unique_identifier:
-        if not foreground_list.is_unique:
-            raise ValueError(
-                f"Column '{identifier}' in regulation_data contains duplicated values."
-                "for the features in the foreground."
-            )
-        if not background_list.is_unique:
-            raise ValueError(
-                f"Column '{identifier}' in regulation_data contains duplicated values."
-                "for the features in the background."
-            )
+    if not regulation_data[identifier].is_unique:
+        raise ValueError(f"Column '{identifier}' in regulation_data has to be unique.")
+    foreground_list = regulation_data.loc[mask_rejected, identifier]
+    background_list = regulation_data.loc[~mask_rejected, identifier]
     foreground_pop = len(foreground_list)
-    background_pop = len(regulation_data[identifier])  # .unique()) ?
+    background_pop = len(regulation_data[identifier])
     # needs to allow for missing annotations
+    # ! this step needs unique identifiers in the regulation_data
+    # group_col contains either 'foreground', 'background' or NA
     annotation[group_col] = _annotate_features(
         features=annotation[identifier],
         in_foreground=foreground_list,
