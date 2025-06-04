@@ -423,17 +423,20 @@ def run_enrichment(
     :param str background_id: group identifier of features that belong to the background.
     :param int foreground_pop: number of features in the foreground.
     :param int background_pop: number of features in the background.
+    :param int min_detected_in_set: minimum number of features in the foreground
     :param str annotation_col: name of the column containing annotation terms.
-    :param str group_col: name of column containing the group identifiers.
+    :param str group_col: name of column containing the group identifiers,
+                          e.g. specifying belonging to 'foreground' or 'background'.
     :param str identifier_col: name of column containing dependent variables identifiers.
     :param str method: method used to compute enrichment (only 'fisher' is supported currently).
     :param str correction: method to be used for multiple-testing correction.
     :param float correction_alpha: adjusted p-value cutoff to define significance.
     :return: pandas.DataFrame with columns: annotation terms, features,
-        number of foregroung/background features in each term,
+        number of foreground/background features in each term,
         p-values and corrected p-values
-        (columns: 'terms', 'identifiers', 'foreground',
-        'background', 'pvalue', 'padj' and 'rejected').
+        Columns are: 'terms', 'identifiers',
+        'foreground', 'background', 'foreground_pop', 'background_pop',
+        'pvalue', 'padj' and 'rejected'.
 
     Example::
 
@@ -452,7 +455,6 @@ def run_enrichment(
     if method != "fisher":
         raise ValueError("Only Fisher's exact test is supported at the moment.")
 
-    result = pd.DataFrame()
     terms = []
     ids = []
     pvalues = []
@@ -464,19 +466,21 @@ def run_enrichment(
         .reset_index()
     )
     countsdf.columns = [annotation_col, group_col, "count"]
-    for annotation in countsdf.loc[
-        countsdf[group_col] == foreground_id, annotation_col
-    ].unique():
+    mask_in_foreground = countsdf[group_col] == foreground_id
+    terms_in_foreground = countsdf.loc[mask_in_foreground, annotation_col].unique()
+    for annotation in terms_in_foreground:
         counts = countsdf[countsdf[annotation_col] == annotation]
-        num_foreground = counts.loc[counts[group_col] == foreground_id, "count"].values
-        num_background = counts.loc[counts[group_col] == background_id, "count"].values
-        # ! counts should always be of length one count? squeeze?
-        if len(num_foreground) == 1:
-            num_foreground = num_foreground[0]
-        if len(num_background) == 1:
-            num_background = num_background[0]
-        else:
+        num_foreground = int(
+            counts.loc[counts[group_col] == foreground_id, "count"].squeeze()
+        )
+        num_background = 0  # initialize to 0 in case all features are foreground
+        num_background = counts.loc[
+            counts[group_col] == background_id, "count"
+        ].squeeze()
+        if isinstance(num_background, pd.Series) and num_background.empty:
+            # if no value is found in counts, an empty series is returned
             num_background = 0
+
         if num_foreground >= min_detected_in_set:
             _, pvalue = run_fisher(
                 [num_foreground, foreground_pop - num_foreground],
@@ -507,14 +511,21 @@ def run_enrichment(
                 "identifiers": ids,
                 "foreground": fnum,
                 "background": bnum,
-                "foreground_pop": foreground_pop,
-                "background_pop": background_pop,  # total of all included features
+                "foreground_pop": foreground_pop,  # total of all features in foreground, constant
+                "background_pop": background_pop,  # total of all included features, constant
                 "pvalue": pvalues,
                 "padj": padj,
                 "rejected": rejected.astype(bool),
             }
         )
         result = result.sort_values(by="padj", ascending=True)
+    else:
+        logger.warning(
+            "No significant enrichment found with the given parameters. "
+            "Returning an empty DataFrame."
+        )
+        # ToDo: Should we return an empty DataFrame with the expected columns?
+        result = pd.DataFrame()
 
     return result
 
