@@ -248,7 +248,7 @@ reference/api/pandas.DataFrame.groupby.html
         df["down_pairwise_regulation"] = (df[pval_col] <= correction_alpha) & (
             df[log2fc_col] <= -lfc_cutoff
         )
-        comparison_tag = g1 + "~" + g2
+        comparison_tag = str(g1) + "~" + str(g2)
 
         if not regulation_data[identifier].is_unique:
             logger.warning(
