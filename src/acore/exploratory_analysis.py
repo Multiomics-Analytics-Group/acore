@@ -288,7 +288,7 @@ def run_tsne(
             n_components=components,
             verbose=0,
             perplexity=perplexity,
-            n_iter=n_iter,
+            max_iter=n_iter,
             init=init,
         )
         X = tsne.fit_transform(X)
