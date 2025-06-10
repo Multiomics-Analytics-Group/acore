@@ -229,7 +229,7 @@ def run_tsne(
     annotation_cols=["sample"],
     components=2,
     perplexity=40,
-    n_iter=1000,
+    max_iter=1000,
     init="pca",
     dropna=True,
 ):
@@ -248,7 +248,7 @@ def run_tsne(
     :param int perplexity: related to the number of nearest neighbors that is used
                            in other manifold learning algorithms.
                            Consider selecting a value between 5 and 50.
-    :param int n_iter: maximum number of iterations for the optimization (at least 250).
+    :param int max_iter: maximum number of iterations for the optimization (at least 250).
     :param str init: initialization of embedding ('random', 'pca' or
                      numpy array of shape n_samples x n_components).
     :param bool dropna: if True removes all columns with any missing values.
@@ -263,7 +263,7 @@ def run_tsne(
                           group='group',
                           components=2,
                           perplexity=40,
-                          n_iter=1000,
+                          max_iter=1000,
                           init='pca',
                           dropna=True
                         )
@@ -288,7 +288,7 @@ def run_tsne(
             n_components=components,
             verbose=0,
             perplexity=perplexity,
-            max_iter=n_iter,
+            max_iter=max_iter,
             init=init,
         )
         X = tsne.fit_transform(X)
