@@ -1,0 +1,17 @@
+identifier,source,annotation
+prot1,Gene Ontology (biological process),pathway1
+prot1,Gene Ontology (cellular component),pathway2
+prot1,Catalytic activity,pathway3
+prot1,Gene Ontology (biological process),pathway4
+prot1,Gene Ontology (biological process),pathway5
+prot2,Gene Ontology (biological process),pathway6
+prot2,Gene Ontology (cellular component),pathway7
+prot2,Catalytic activity,pathway8
+prot2,Gene Ontology (biological process),pathway9
+prot2,Gene Ontology (biological process),pathway10
+prot3,Gene Ontology (biological process),pathway8
+prot3,Gene Ontology (cellular component),pathway12
+prot3,pH dependence,pathway13
+prot3,Activity regulation,pathway14
+prot3,Catalytic activity,pathway15
+prot3,Gene Ontology (biological process),pathway1
