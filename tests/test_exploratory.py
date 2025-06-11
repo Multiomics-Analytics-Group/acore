@@ -125,7 +125,7 @@ class TestDimensionalityReduction(unittest.TestCase):
             group="group",
             components=components,
             perplexity=3,
-            n_iter=1000,
+            max_iter=1000,
             init="pca",
             dropna=True,
         )
