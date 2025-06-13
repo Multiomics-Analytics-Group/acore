@@ -1,4 +1,4 @@
-"""Uniprot API user functions for fetching annotations for UniProt IDs and providing 
+"""Uniprot API user functions for fetching annotations for UniProt IDs and providing
 the results as a pandas.DataFrame."""
 
 import pandas as pd
@@ -88,5 +88,7 @@ def process_annotations(annotations: pd.DataFrame, fields: str) -> pd.DataFrame:
         .to_frame("annotation")
         .reset_index()
         .drop_duplicates(ignore_index=True)
+        .replace("", pd.NA)
+        .dropna()
     )
     return annotations
