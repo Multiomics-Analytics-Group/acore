@@ -50,7 +50,7 @@ def group_data_based_on_marker(df, marker, index_col, how, value):
                     labels.extend([str(marker) + "-"] * (num_values - value))
                 else:
                     print(
-                        "Invalid value provided. Exceeded maximun number of samples {}".format(
+                        "Invalid value provided. Exceeded maximum number of samples {}".format(
                             num_values
                         )
                     )
