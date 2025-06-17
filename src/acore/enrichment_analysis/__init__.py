@@ -13,10 +13,13 @@ import re
 import uuid
 
 import gseapy as gp
-import numpy as np
 import pandas as pd
-from scipy import stats
 
+from acore.enrichment_analysis.annotate import annotate_features
+from acore.enrichment_analysis.statistical_tests.fisher import run_fisher
+from acore.enrichment_analysis.statistical_tests.kolmogorov_smirnov import (
+    run_kolmogorov_smirnov,
+)
 from acore.multiple_testing import apply_pvalue_correction
 
 logger = logging.getLogger(__name__)
@@ -26,62 +29,12 @@ columns: 'terms', 'identifiers', 'foreground',
     'background', foreground_pop, background_pop, 'pvalue', 'padj' and 'rejected'.
 """
 
-
-def run_fisher(
-    group1: list[int],
-    group2: list[int],
-    alternative: str = "two-sided",
-) -> tuple[float, float]:
-    """Run fisher's exact test on two groups using `scipy.stats.fisher_exact`_.
-
-    .. _scipy.stats.fisher_exact: https://docs.scipy.org/doc/scipy/reference/generated/\
-scipy.stats.fisher_exact.html
-
-    Example::
-
-        # annotated   not-annotated
-        # group1      a               b
-        # group2      c               d
-
-
-        odds, pvalue = stats.fisher_exact(group1=[a, b],
-                                          group2 =[c, d]
-                        )
-    """
-
-    odds, pvalue = stats.fisher_exact([group1, group2], alternative)
-
-    return (odds, pvalue)
-
-
-def run_kolmogorov_smirnov(dist1, dist2, alternative="two-sided"):
-    """
-    Compute the Kolmogorov-Smirnov statistic on 2 samples.
-    See `scipy.stats.ks_2samp`_
-
-    .. _scipy.stats.ks_2samp: https://docs.scipy.org/doc/scipy/reference/generated/\
-scipy.stats.ks_2samp.html
-
-
-    :param list dist1: sequence of 1-D ndarray (first distribution to compare)
-        drawn from a continuous distribution
-    :param list dist2: sequence of 1-D ndarray (second distribution to compare)
-        drawn from a continuous distribution
-    :param str alternative: defines the alternative hypothesis (default is ‘two-sided’):
-        * **'two-sided'**
-        * **'less'**
-        * **'greater'**
-    :return: statistic float and KS statistic pvalue float Two-tailed p-value.
-
-    Example::
-
-        result = run_kolmogorov_smirnov(dist1, dist2, alternative='two-sided')
-
-    """
-
-    result = stats.ks_2samp(dist1, dist2, alternative=alternative, mode="auto")
-
-    return result
+__all__ = [
+    "run_site_regulation_enrichment",
+    "run_up_down_regulation_enrichment",
+    "run_fisher",
+    "run_kolmogorov_smirnov",
+]
 
 
 # ! undocumented for now (find usage example)
@@ -282,37 +235,6 @@ reference/api/pandas.DataFrame.groupby.html
     return ret
 
 
-# ! to move
-def _annotate_features(
-    features: pd.Series,
-    in_foreground: set[str] | list[str],
-    in_background: set[str] | list[str],
-) -> pd.Series:
-    """
-    Annotate features as foreground or background based on their presence in the
-    foreground and background lists.
-
-    :param features: pandas.Series with features and their annotations.
-    :param in_foreground: list of features identifiers in the foreground.
-    :type in_foreground: set or list-like
-    :param in_background: list of features identifiers in the background.
-    :type in_background: set or list-like
-    :return: pandas.Series containing 'foreground' or 'background'.
-             missing values are preserved.
-
-    Example::
-
-        result = _annotate_features(features, in_foreground, in_background)
-    """
-    in_either_or = features.isin(in_foreground) | features.isin(in_background)
-    res = (
-        features.where(in_either_or, np.nan)
-        .mask(features.isin(in_foreground), "foreground")
-        .mask(features.isin(in_background), "background")
-    )
-    return res
-
-
 def run_regulation_enrichment(
     regulation_data: pd.DataFrame,
     annotation: pd.DataFrame,
@@ -374,7 +296,7 @@ def run_regulation_enrichment(
     # needs to allow for missing annotations
     # ! this step needs unique identifiers in the regulation_data
     # group_col contains either 'foreground', 'background' or NA
-    annotation[group_col] = _annotate_features(
+    annotation[group_col] = annotate_features(
         features=annotation[identifier],
         in_foreground=foreground_list,
         in_background=background_list,
@@ -428,7 +350,8 @@ def run_enrichment(
     :param str group_col: name of column containing the group identifiers,
                           e.g. specifying belonging to 'foreground' or 'background'.
     :param str identifier_col: name of column containing dependent variables identifiers.
-    :param str method: method used to compute enrichment (only 'fisher' is supported currently).
+    :param str method: method used to compute enrichment
+                       (only 'fisher' is supported currently).
     :param str correction: method to be used for multiple-testing correction.
     :param float correction_alpha: adjusted p-value cutoff to define significance.
     :return: pandas.DataFrame with columns: annotation terms, features,
@@ -511,8 +434,8 @@ def run_enrichment(
                 "identifiers": ids,
                 "foreground": fnum,
                 "background": bnum,
-                "foreground_pop": foreground_pop,  # total of all features in foreground, constant
-                "background_pop": background_pop,  # total of all included features, constant
+                "foreground_pop": foreground_pop,  # no. of foreground features, constant
+                "background_pop": background_pop,  # no. of included features, constant
                 "pvalue": pvalues,
                 "padj": padj,
                 "rejected": rejected.astype(bool),
@@ -548,12 +471,13 @@ def run_ssgsea(
     described in Barbie et al., 2009:
     https://www.nature.com/articles/nature08460#Sec3 (search "Single Sample" GSEA).
 
-    :param pd.DataFrame data: pandas.DataFrame with the quantified features (i.e. subject x proteins)
-    :param str annotation: pandas.DataFrame with the annotation to be used in the enrichment
-        (i.e. CKG pathway annotation file)
-    :param list[str] set_index: column/s to be used as index. Enrichment will be calculated
-        for these values (i.e ["subject"] will return subjects x pathways matrix of
-        enrichment scores)
+    :param pd.DataFrame data: pandas.DataFrame with the quantified features
+                              (i.e. subject x proteins)
+    :param str annotation: pandas.DataFrame with the annotation to be used in the
+                            enrichment (i.e. CKG pathway annotation file)
+    :param list[str] set_index: column/s to be used as index. Enrichment will be
+        calculated for these values (i.e ["subject"] will return subjects x pathways
+        matrix of enrichment scores)
     :param str annotation_col: name of the column containing annotation terms.
     :param str identifier_col: name of column containing dependent variables identifiers.
     :param str out_dir: directory path where results will be stored
@@ -564,8 +488,9 @@ def run_ssgsea(
         (i.e. pathways)
     :param bool scale: whether or not to scale the data
     :param int permutations: number of permutations used in the ssgsea analysis
-    :return: pandas.DataFrame containing unnormalized enrichment scores (`ES`) for each sample,
-        and normalized enrichment scores (`NES`) with the enriched `Term` and sample `Name`.
+    :return: pandas.DataFrame containing unnormalized enrichment scores (`ES`)
+             for each sample, and normalized enrichment scores (`NES`)
+             with the enriched `Term` and sample `Name`.
     :rtype: pandas.DataFrame
 
     Example::
@@ -623,12 +548,14 @@ def run_ssgsea(
 
     if not annotation_col in annotation:
         raise ValueError(
-            f"Missing Annotation Column: {annotation_col} as specified by `annotation_col`"
+            f"Missing Annotation Column: {annotation_col}"
+            " as specified by `annotation_col`"
         )
 
     if not identifier_col in annotation:
         raise ValueError(
-            f"Missing Identifier Column: {identifier_col} as specified by `identifier_col`"
+            f"Missing Identifier Column: {identifier_col}"
+            " as specified by `identifier_col`"
         )
 
     grouped_annotations = (
