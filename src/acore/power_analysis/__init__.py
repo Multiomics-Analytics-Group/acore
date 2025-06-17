@@ -2,8 +2,9 @@ import itertools
 
 import numpy as np
 import pandas as pd
-import utils
 from statsmodels.stats.power import FTestAnovaPower
+
+from acore import utils
 
 
 def power_analysis(

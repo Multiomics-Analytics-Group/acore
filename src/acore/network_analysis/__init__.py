@@ -5,7 +5,7 @@ import snf
 from sklearn import cluster
 from sklearn.cluster import AffinityPropagation
 
-from . import utils
+from acore import utils
 
 
 def get_network_communities(graph, args):
