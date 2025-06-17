@@ -3,3 +3,29 @@
 Documentation of DataFrame Models API:
 https://pandera.readthedocs.io/en/stable/dataframe_models.html
 """
+
+import pandas as pd
+
+
+# ? could be moved to dsp_pandas
+def check_numeric_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    """Check if the DataFrame contains only numeric data.
+    returns the DataFrame again if it is valid (allowing chaining).
+    """
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("Input must be a pandas DataFrame.")
+    non_numeric_cols = df.select_dtypes(exclude="number").columns
+    if not non_numeric_cols.empty:
+        raise ValueError(
+            f"DataFrame contains non-numeric columns: {non_numeric_cols.tolist()}"
+        )
+    return df
+
+
+def select_numeric_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Select only numeric columns from the DataFrame."""
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("Input must be a pandas DataFrame.")
+    ret = df.select_dtypes(include="number")
+
+    return ret
