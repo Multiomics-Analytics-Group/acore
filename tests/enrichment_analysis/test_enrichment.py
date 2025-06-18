@@ -40,7 +40,7 @@ class TestRunKolmogorovSmirnov(unittest.TestCase):
         self.assertEqual(result[1], expected_result.pvalue)
 
 
-def test__annotate_features():
+def test_annotate_features():
     expected = pd.Series(
         [
             "foreground",
@@ -56,11 +56,11 @@ def test__annotate_features():
     features = pd.Series(["G1", "G2", "G3", "G4", "G5", "G6", "G9"])
     in_foreground = ["G1", "G2", "G4"]
     in_background = ["G3", "G5", "G6"]
-    actual = ea._annotate_features(features, in_foreground, in_background)
+    actual = ea.annotate_features(features, in_foreground, in_background)
     pd.testing.assert_series_equal(expected, actual)
 
 
-def test__annotate_features_with_duplicates():
+def test_annotate_features_with_duplicates():
     """for example if multiple peptides are associated with the same protein."""
     expected = pd.Series(
         [
@@ -78,7 +78,7 @@ def test__annotate_features_with_duplicates():
     features = pd.Series(["G1", "G2", "G3", "G3", "G4", "G5", "G6", "G9"])
     in_foreground = ["G1", "G2", "G4"]
     in_background = ["G3", "G5", "G6"]
-    actual = ea._annotate_features(features, in_foreground, in_background)
+    actual = ea.annotate_features(features, in_foreground, in_background)
     pd.testing.assert_series_equal(expected, actual)
 
 
