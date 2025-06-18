@@ -1,5 +1,7 @@
 """Run fisher's exact test on two groups using `scipy.stats.fisher_exact`_."""
 
+from __future__ import annotations
+
 from scipy import stats
 
 

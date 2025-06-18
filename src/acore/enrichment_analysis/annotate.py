@@ -1,5 +1,7 @@
 """Put unique features into foreground, background or assign nan."""
 
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
 

@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 from scipy import stats
 
 
-def run_kolmogorov_smirnov(dist1, dist2, alternative="two-sided"):
+def run_kolmogorov_smirnov(
+    dist1: list[float], dist2: list[float], alternative: str = "two-sided"
+) -> tuple[float, float]:
     """
     Compute the Kolmogorov-Smirnov statistic on 2 samples.
     See `scipy.stats.ks_2samp`_
