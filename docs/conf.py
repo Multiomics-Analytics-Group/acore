@@ -142,8 +142,8 @@ intersphinx_mapping = {
 html_theme = "sphinx_book_theme"
 # static path to be change by its link after merging into the main branch: 
 # https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/main/docs/images/acore_logo.svg
-html_logo = "images/acore_logo.svg"
-html_favicon = "images/acore_logo.svg"
+html_logo = "images/logo/acore_logo.svg"
+html_favicon = "images/logo/acore_logo_small.svg"
 html_theme_options = {
     "github_url": "https://github.com/Multiomics-Analytics-Group/acore/",
     "repository_url": "https://github.com/Multiomics-Analytics-Group/acore/",
