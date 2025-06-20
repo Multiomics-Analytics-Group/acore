@@ -1,5 +1,6 @@
-![ACore Logo](https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/add_logo_favicon/docs/images/logo/acore_logo.svg)
-
+.. image:: https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/add_logo_favicon/docs/images/logo/acore_logo.svg
+   :width: 400
+   :alt: ACore Logo
 ==============
 Analytics Core
 ==============
