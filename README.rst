@@ -1,5 +1,4 @@
-.. static path to be change by its link after merging into the main branch: https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/main/docs/images/acore_logo.svg
-![ACore Logo](./docs/images/acore_logo.svg)
+![ACore Logo](https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/add_logo_favicon/docs/images/logo/acore_logo.svg)
 
 ==============
 Analytics Core
