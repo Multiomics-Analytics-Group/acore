@@ -140,8 +140,8 @@ intersphinx_mapping = {
 # https://github.com/executablebooks/MyST-NB/blob/master/docs/conf.py
 # html_title = ""
 html_theme = "sphinx_book_theme"
-html_logo = "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/add_logo_favicon/docs/images/logo/acore_logo.svg"
-html_favicon = "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/add_logo_favicon/docs/images/logo/acore_logo_small.svg"
+html_logo = "images/logo/acore_logo.svg"
+html_favicon = "images/logo/acore_logo_small.svg"
 html_theme_options = {
     "github_url": "https://github.com/Multiomics-Analytics-Group/acore/",
     "repository_url": "https://github.com/Multiomics-Analytics-Group/acore/",
