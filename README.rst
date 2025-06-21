@@ -1,3 +1,6 @@
+.. image:: https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/HEAD/docs/images/logo/acore_logo.svg
+   :width: 400
+   :alt: ACore Logo
 ==============
 Analytics Core
 ==============
@@ -40,9 +43,6 @@ Analytics Core
     :target: https://pypi.org/project/acore
 
 .. end-badges
-
-
-
 
 A Python package with statistical functions to analyse multimodal molecular data
 

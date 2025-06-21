@@ -3,6 +3,10 @@
    :start-line: 0
    :end-line: 66
 
+.. only supported in myst markdown for include...
+.. :relative-docs: docs
+.. :relative-images:
+
 .. toctree::
    :maxdepth: 1
    :hidden:
