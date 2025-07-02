@@ -241,9 +241,55 @@ match.group(1)
 
 # %% [markdown]
 # # Single sample GSEA (ssGSEA)
-# Run a gene set enrichment analysis (GSEA) for each sample,
-# see [article](https://www.nature.com/articles/nature08460#Sec3) and
-# the package [`gseapy`](https://gseapy.readthedocs.io/en/latest/run.html#gseapy.ssgsea)
+# Run a gene set enrichment analysis (GSEA) for each sample. The ssGSEA is a method that
+# the proteins (genes) are ordered for each sample and the ranking of proteins (genes)
+# associated to a
+# functional annotation (pathway, GO term, etc.) is used to compute an enrichment score
+# for that sample for that functional annotation.
+#
+#
+# <details>
+#   <summary>Method description accoring to Barbie et. al. (2009)</summary>
+#
+#   > Note: The call functional annotation "signature" in the original article.
+#
+#   "This was accomplished by a ‘single sample’ extension of GSEA that allows one to
+#   define an enrichment score that represents the degree of absolute enrichment of a
+#   gene set in each sample within a given data set. The gene expression values for a
+#   given sample were rank-normalized, and an enrichment score was produced using the
+#   Empirical Cumulative Distribution Functions (ECDF) of the genes in the signature and
+#   the remaining genes. This procedure is similar to GSEA but the list is ranked by
+#   absolute expression (in one sample). The enrichment score is obtained by an
+#   integration of the difference between the ECDF. For a given signature $G$ of size $NG$
+#   and single sample $S$, of the data set of $N$ genes, the genes are replaced by their
+#   ranks according the their absolute expression from high to low: . An enrichment
+#   score $ES(G,S)$ is obtained by a sum (integration) of the difference between a
+#   weighted ECDF of the genes in the signature  and the ECDF of the remaining genes
+#   $P_{N_G}$:
+#   $$ ES(G,S) = \sum_{i=1}^{N} \left| P_{N_G}^{w}(G,S,i) - P_{N_G}(G,S,i) \right| $$
+#   where
+#   $$P_{N_G}^{w}(G,S,i)= \sum_{r_j \in G, j \leq i}
+#     \frac{|r_j|^\alpha}{\sum_{r_j \in G} |r_j|^\alpha}$$
+#   and
+#   $$P_{N_G}(G,S,i)= \sum_{r_j \notin G, j \leq i} \frac{1}{N - N_G}$$
+#
+#   This calculation is repeated for each signature and each sample in the data set.
+#   Note that the exponent of this quantity ($α$) is set to 1/4, and adds a modest weight
+#   to the rank. In the regular GSEA a similar enrichment score is used, but the weight
+#   is typically set to 1. Also, instead of the sum over i, the enrichment score is
+#   computed according to the largest difference. This quantity is slightly more robust
+#   and more sensitive to differences in the tails of the distributions than the
+#   Kolmogorov–Smirnov statistic. It is particularly well suited to represent the
+#   activation score of gene sets on the basis of a relatively small subset of the genes
+#   attaining high expression values." (Barbie et al., 2009)
+#
+#  </details>
+#
+#
+# See the above details from the
+# [article](https://www.nature.com/articles/nature08460#Sec3) and
+# the package
+# [`gseapy`](https://gseapy.readthedocs.io/en/latest/run.html#gseapy.ssgsea)
 # for more details.
 
 # %%
