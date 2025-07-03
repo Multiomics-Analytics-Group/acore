@@ -269,7 +269,9 @@ match.group(1)
 #   weighted ECDF of the genes in the signature $P_{G}^w$ and the ECDF of
 #   the remaining genes $P_{NG}$:
 #
-#   $$A=1$$
+#   $$
+#   A=1
+#   $$
 #
 #   This calculation is repeated for each signature and each sample in the data set.
 #   Note that the exponent of this quantity ($α$) is set to 1/4, and adds a modest weight
