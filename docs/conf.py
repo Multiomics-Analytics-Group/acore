@@ -6,18 +6,18 @@ import acore
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.autosectionlabel",
+    # "sphinx.ext.autosectionlabel",
     "sphinx.ext.autodoc",
     "sphinx.ext.autodoc.typehints",
     "sphinx.ext.napoleon",
-    "sphinx.ext.doctest",
+    # "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.todo",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.coverage",
-    "sphinx.ext.imgmath",
-    "sphinx.ext.ifconfig",
+    # "sphinx.ext.autosummary",
+    # "sphinx.ext.todo",
+    # "sphinx.ext.mathjax",
+    # "sphinx.ext.coverage",
+    # "sphinx.ext.imgmath",
+    # "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
     "sphinx_new_tab_link",
     "myst_nb",
@@ -25,9 +25,9 @@ extensions = [
 ]
 
 myst_enable_extensions = [
-    "strikethrough",
+    # "strikethrough",
     "dollarmath",
-    "amsmath",
+    # "amsmath",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
