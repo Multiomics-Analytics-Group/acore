@@ -101,7 +101,7 @@ todo_include_todos = False
 # -- General configuration ---------------------------------------------------
 
 #  https://myst-nb.readthedocs.io/en/latest/computation/execute.html
-nb_execution_mode = "off"
+nb_execution_mode = "auto"
 nb_execution_timeout = (
     90  # increase limit of default 30 seconds max execution time per cell
 )
