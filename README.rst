@@ -1,6 +1,7 @@
 .. image:: https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/HEAD/docs/images/logo/acore_logo.svg
    :width: 400
    :alt: ACore Logo
+
 ==============
 Analytics Core
 ==============
