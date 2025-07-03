@@ -269,12 +269,12 @@ match.group(1)
 #   weighted ECDF of the genes in the signature $P_{G}^w$ and the ECDF of
 #   the remaining genes $P_{NG}$:
 #
-#   $ES(G,S) = \sum_{i=1}^{N} \left| P_{N_G}^{w}(G,S,i) - P_{N_G}(G,S,i) \right|$
+#   $ES(G,S) = \sum_{i=1}^{N} \left| P_{G}^{w}(G,S,i) - P_{N_G}(G,S,i) \right|$
 #
 #   where
 #
-#   $P_{N_G}^{w}(G,S,i)= \sum_{r_j \in G, j \leq i}
-#   \frac{|r_j|^\alpha}{\sum_{r_j \in G} |r_j|^\alpha}$
+#   $P_{G}^{w}(G,S,i)= \sum_{r_j \in G, j \leq i}
+#   \frac{|r_j|^\alpha}{\sum_{r_{j \in G}} |r_j|^\alpha}$
 #   and
 #   $P_{N_G}(G,S,i)= \sum_{r_j \notin G, j \leq i} \frac{1}{N - N_G}$
 #
