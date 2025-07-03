@@ -253,37 +253,6 @@ match.group(1)
 #
 #   > Note: The call functional annotation "signature" in the original article.
 #
-#   "This was accomplished by a 'single sample' extension of GSEA that allows one to
-#   define an enrichment score that represents the degree of absolute enrichment of a
-#   gene set in each sample within a given data set. The gene expression values for a
-#   given sample were rank-normalized, and an enrichment score was produced using the
-#   Empirical Cumulative Distribution Functions (ECDF) of the genes in the signature and
-#   the remaining genes. This procedure is similar to GSEA but the list is ranked by
-#   absolute expression (in one sample). The enrichment score is obtained by an
-#   integration of the difference between the ECDF. For a given signature $G$ of size $N_G$
-#   and single sample $S$, of the data set of $N$ genes, the genes are replaced by their
-#   ranks according the their absolute expression: $L=\{r_1, r_2, \ldots, r_N\}$.
-#   The list is then ordered from the highest rank $N$ to the lowest $1$.
-#   An enrichment
-#   score $ES(G,S)$ is obtained by a sum (integration) of the difference between a
-#   weighted ECDF of the genes in the signature $P_{G}^w$ and the ECDF of
-#   the remaining genes $P_{NG}$:
-#   $$ ES(G,S) = \sum_{i=1}^{N} \left| P_{N_G}^{w}(G,S,i) - P_{N_G}(G,S,i) \right| $$
-#   where
-#   $$P_{N_G}^{w}(G,S,i)= \sum_{r_j \in G, j \leq i}
-#     \frac{|r_j|^\alpha}{\sum_{r_j \in G} |r_j|^\alpha}$$
-#   and
-#   $$P_{N_G}(G,S,i)= \sum_{r_j \notin G, j \leq i} \frac{1}{N - N_G}$$
-#
-#   This calculation is repeated for each signature and each sample in the data set.
-#   Note that the exponent of this quantity ($α$) is set to 1/4, and adds a modest weight
-#   to the rank. In the regular GSEA a similar enrichment score is used, but the weight
-#   is typically set to 1. Also, instead of the sum over $i$, the enrichment score is
-#   computed according to the largest difference. This quantity is slightly more robust
-#   and more sensitive to differences in the tails of the distributions than the
-#   Kolmogorov–Smirnov statistic. It is particularly well suited to represent the
-#   activation score of gene sets on the basis of a relatively small subset of the genes
-#   attaining high expression values." (Barbie et al., 2009)
 #
 # </details>
 #
