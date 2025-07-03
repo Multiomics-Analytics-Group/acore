@@ -268,7 +268,9 @@ match.group(1)
 #   score $ES(G,S)$ is obtained by a sum (integration) of the difference between a
 #   weighted ECDF of the genes in the signature $P_{G}^w$ and the ECDF of
 #   the remaining genes $P_{NG}$:
+#
 #   $$A=1$$
+#
 #   This calculation is repeated for each signature and each sample in the data set.
 #   Note that the exponent of this quantity ($α$) is set to 1/4, and adds a modest weight
 #   to the rank. In the regular GSEA a similar enrichment score is used, but the weight
