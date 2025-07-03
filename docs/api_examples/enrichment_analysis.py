@@ -264,6 +264,20 @@ match.group(1)
 #   and single sample $S$, of the data set of $N$ genes, the genes are replaced by their
 #   ranks according the their absolute expression: $L=\{r_1, r_2, \ldots, r_N\}$.
 #   The list is then ordered from the highest rank $N$ to the lowest $1$.
+#   An enrichment
+#   score $ES(G,S)$ is obtained by a sum (integration) of the difference between a
+#   weighted ECDF of the genes in the signature $P_{G}^w$ and the ECDF of
+#   the remaining genes $P_{NG}$:
+#   $$A=1$$
+#   This calculation is repeated for each signature and each sample in the data set.
+#   Note that the exponent of this quantity ($α$) is set to 1/4, and adds a modest weight
+#   to the rank. In the regular GSEA a similar enrichment score is used, but the weight
+#   is typically set to 1. Also, instead of the sum over $i$, the enrichment score is
+#   computed according to the largest difference. This quantity is slightly more robust
+#   and more sensitive to differences in the tails of the distributions than the
+#   Kolmogorov–Smirnov statistic. It is particularly well suited to represent the
+#   activation score of gene sets on the basis of a relatively small subset of the genes
+#   attaining high expression values." (Barbie et al., 2009)
 #
 # </details>
 #
