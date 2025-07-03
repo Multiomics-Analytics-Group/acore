@@ -253,6 +253,17 @@ match.group(1)
 #
 #   > Note: The call functional annotation "signature" in the original article.
 #
+#   "This was accomplished by a 'single sample' extension of GSEA that allows one to
+#   define an enrichment score that represents the degree of absolute enrichment of a
+#   gene set in each sample within a given data set. The gene expression values for a
+#   given sample were rank-normalized, and an enrichment score was produced using the
+#   Empirical Cumulative Distribution Functions (ECDF) of the genes in the signature and
+#   the remaining genes. This procedure is similar to GSEA but the list is ranked by
+#   absolute expression (in one sample). The enrichment score is obtained by an
+#   integration of the difference between the ECDF. For a given signature $G$ of size $N_G$
+#   and single sample $S$, of the data set of $N$ genes, the genes are replaced by their
+#   ranks according the their absolute expression: $L=\{r_1, r_2, \ldots, r_N\}$.
+#   The list is then ordered from the highest rank $N$ to the lowest $1$.
 #
 # </details>
 #
