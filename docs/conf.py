@@ -85,6 +85,7 @@ exclude_patterns = [
     ".DS_Store",
     "jupyter_execute",
     "conf.py",
+    "fetch_files.py",
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.
@@ -255,5 +256,16 @@ if os.environ.get("READTHEDOCS") == "True":
             ]
         )
 
+    def download_notebooks():
+        from fetch_files import download_notebook
+
+        # Download the notebook file
+        download_notebook(
+            repo_url_base="https://github.com/biosustain/dsp_course_proteomics_intro",
+            file_path_in_repo="2_data_analysis.ipynb",
+            output_path="downloaded/PXD040621_analysis.ipynb",
+        )
+
     def setup(app):
         app.connect("builder-inited", run_apidoc)
+        app.connect("builder-inited", download_notebooks)

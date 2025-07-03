@@ -25,6 +25,13 @@
 
 .. toctree::
    :maxdepth: 1
+   :caption: Reanalysis
+   :hidden:
+
+   PXD040621 <downloaded/PXD040621_analysis>
+
+.. toctree::
+   :maxdepth: 1
    :caption: Example dataset (preprocessing)
    :hidden:
 
