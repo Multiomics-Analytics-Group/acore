@@ -256,7 +256,7 @@ if os.environ.get("READTHEDOCS") == "True":
             ]
         )
 
-    def download_notebooks():
+    def download_notebooks(_):
         from fetch_files import download_notebook
 
         # Download the notebook file
