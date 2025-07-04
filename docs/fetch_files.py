@@ -1,3 +1,4 @@
+import json
 import re
 from pathlib import Path, PosixPath
 from typing import Optional
@@ -137,6 +138,21 @@ def download_notebook(
     print(f"Downloading notebook from: {url}")
 
     assert download_file(url, output_path)  # prints success message
+
+    with open(output_path, "r", encoding="utf-8") as f:
+        notebook = json.load(f)
+
+    url_webinterface = PosixPath(repo_url_base) / "blob/HEAD" / file_path_in_repo
+    url_webinterface = str(url_webinterface)
+    url_webinterface = url_webinterface.replace(
+        "https:/github.com", "https://github.com"
+    )
+    notebook["cells"][0]["source"].insert(
+        1, f"> Source of notebook: [link]({url_webinterface})\n"
+    )
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(notebook, f, indent=2)
 
 
 if __name__ == "__main__":
