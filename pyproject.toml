@@ -18,12 +18,12 @@ classifiers = [
 ]
 
 dependencies = [
-    "numpy",
+    "numpy<2.1.0", # as in inmoose... 
     "pandas",
     "dsp-pandas", # has only pandas related dependencies
     "vuecore",
     "scipy",
-    "scikit-learn>=1.2",
+    "scikit-learn>=1.5",
     "networkx",
     "biopython",
     "combat",
@@ -49,6 +49,7 @@ docs = [
   "ipywidgets",
   "sphinx-new-tab-link!=0.2.2",
   "jupytext",
+  "sphinx-copybutton",
 ]
 dev = [
   "black",

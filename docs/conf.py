@@ -21,6 +21,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_new_tab_link",
     "myst_nb",
+    "sphinx_copybutton",
 ]
 
 
@@ -96,6 +97,9 @@ todo_include_todos = False
 
 #  https://myst-nb.readthedocs.io/en/latest/computation/execute.html
 nb_execution_mode = "auto"
+nb_execution_timeout = (
+    90  # increase limit of default 30 seconds max execution time per cell
+)
 
 myst_enable_extensions = ["dollarmath", "amsmath"]
 
@@ -137,8 +141,8 @@ intersphinx_mapping = {
 # https://github.com/executablebooks/MyST-NB/blob/master/docs/conf.py
 # html_title = ""
 html_theme = "sphinx_book_theme"
-# html_logo = "_static/logo-wide.svg"
-# html_favicon = "_static/logo-square.svg"
+html_logo = "images/logo/acore_logo.svg"
+html_favicon = "images/logo/acore_logo_small.svg"
 html_theme_options = {
     "github_url": "https://github.com/Multiomics-Analytics-Group/acore/",
     "repository_url": "https://github.com/Multiomics-Analytics-Group/acore/",
