@@ -5,10 +5,6 @@ from typing import Optional
 
 import requests
 
-OUTPUT_URL = (
-    "https://github.com/bigbio/quantms/raw/refs/heads/README_links/docs/output.md"
-)
-
 
 def download_file(url: str, save_path: Path, timeout: int = 20):
     """
@@ -92,12 +88,14 @@ def download_and_patch_output(
     url = url.replace("https:/github.com", "https://github.com")
     print(f"Downloading file from: {url}")
 
-    assert download_file(url, output_path)  # prints success message
+    if not download_file(url, output_path):  # prints success message
+        raise RuntimeError(f"Failed to download file from {url}")
 
     with open(output_path, "r", encoding="utf-8") as f:
         content = f.readlines()
 
-    assert len(content) > 0, "Downloaded file is empty"
+    if len(content) == 0:
+        raise ValueError("Downloaded file is empty")
 
     # Add hint of the origin of the file
     origin_msg = f"> file downloaded from [source]({url})"
