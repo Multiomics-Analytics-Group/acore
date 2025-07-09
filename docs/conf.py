@@ -6,24 +6,29 @@ import acore
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.autosectionlabel",
+    # "sphinx.ext.autosectionlabel",
     "sphinx.ext.autodoc",
     "sphinx.ext.autodoc.typehints",
     "sphinx.ext.napoleon",
-    "sphinx.ext.doctest",
+    # "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.todo",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.coverage",
-    "sphinx.ext.imgmath",
-    "sphinx.ext.ifconfig",
+    # "sphinx.ext.autosummary",
+    # "sphinx.ext.todo",
+    # "sphinx.ext.mathjax",
+    # "sphinx.ext.coverage",
+    # "sphinx.ext.imgmath",
+    # "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
     "sphinx_new_tab_link",
     "myst_nb",
     "sphinx_copybutton",
 ]
 
+myst_enable_extensions = [
+    # "strikethrough",
+    "dollarmath",
+    # "amsmath",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -85,6 +90,7 @@ exclude_patterns = [
     ".DS_Store",
     "jupyter_execute",
     "conf.py",
+    "fetch_files.py",
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.
@@ -256,5 +262,16 @@ if os.environ.get("READTHEDOCS") == "True":
             ]
         )
 
+    def download_notebooks(_):
+        from fetch_files import download_notebook
+
+        # Download the notebook file
+        download_notebook(
+            repo_url_base="https://github.com/biosustain/dsp_course_proteomics_intro",
+            file_path_in_repo="2_data_analysis.ipynb",
+            output_path="downloaded/PXD040621_analysis.ipynb",
+        )
+
     def setup(app):
         app.connect("builder-inited", run_apidoc)
+        app.connect("builder-inited", download_notebooks)
