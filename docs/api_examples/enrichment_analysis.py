@@ -21,10 +21,14 @@ from pathlib import Path
 
 import dsp_pandas
 import pandas as pd
+import plotly.io as pio
 
 import acore
 import acore.differential_regulation
 import acore.enrichment_analysis
+
+print(pio.renderers)
+pio.renderers.default = "browser"
 
 dsp_pandas.format.set_pandas_options(max_colwidth=60)
 
