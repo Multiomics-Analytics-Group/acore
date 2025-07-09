@@ -166,7 +166,7 @@ pgs
 # get the original CKG format.
 
 # %%
-pgs = pgs.stack([0, 1]).to_frame("intensity")
+pgs = pgs.stack([0, 1], future_stack=True).to_frame("intensity")
 pgs
 
 # %% [markdown]
