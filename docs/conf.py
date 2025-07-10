@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import acore
 
@@ -112,7 +113,9 @@ myst_enable_extensions = ["dollarmath", "amsmath"]
 # Plolty support through require javascript library
 # https://myst-nb.readthedocs.io/en/latest/render/interactive.html#plotly
 html_js_files = [
-    "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"
+    # "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js",
+    # https://plotly.com/javascript/getting-started/
+    "https://cdn.plot.ly/plotly-3.0.1.min.js",
 ]
 
 # https://myst-nb.readthedocs.io/en/latest/configuration.html
@@ -239,7 +242,11 @@ texinfo_documents = [
 # https://github.com/readthedocs/readthedocs.org/issues/1139
 
 if os.environ.get("READTHEDOCS") == "True":
-    from pathlib import Path
+    # Set the Plotly renderer to notebook for ReadTheDocs (visualize plotly figures
+    # in the documentation) - needed for plotly6
+    # Plotly normally decides itself fine which renderer to use, so keep it to RTD
+    # see https://plotly.com/python/renderers/#setting-the-default-renderer
+    os.environ["PLOTLY_RENDERER"] = "notebook"
 
     PROJECT_ROOT = Path(__file__).parent.parent
     PACKAGE_ROOT = PROJECT_ROOT / "src" / "acore"

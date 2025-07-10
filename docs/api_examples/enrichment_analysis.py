@@ -14,13 +14,14 @@
 
 
 # %% tags=["hide-output"]
-# %pip install acore vuecore 'plotly<6'
+# %pip install acore vuecore
 
 # %%
 from pathlib import Path
 
 import dsp_pandas
 import pandas as pd
+import plotly.io as pio
 
 import acore
 import acore.differential_regulation
@@ -353,7 +354,7 @@ args = {"factor": 2, "loadings": 1}  # increase number of loadings or scaling fa
 # #! pca_results has three items, but docstring requests only two -> double check
 figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
 figure = go.Figure(data=figure["data"], layout=figure["layout"])
-figure.show()
+figure
 
 # %% [markdown]
 # # Compare two distributions - KS test
