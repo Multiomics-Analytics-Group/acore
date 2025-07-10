@@ -27,9 +27,6 @@ import acore
 import acore.differential_regulation
 import acore.enrichment_analysis
 
-print(pio.renderers)
-pio.renderers.default = "notebook"
-
 dsp_pandas.format.set_pandas_options(max_colwidth=60)
 
 # %% [markdown]
