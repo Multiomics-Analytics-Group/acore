@@ -234,6 +234,9 @@ reference/api/pandas.DataFrame.groupby.html
 
     ret = pd.concat(ret)
 
+    if not ret.empty:
+        ret["rejected"] = ret["rejected"].astype(bool)
+
     return ret
 
 
@@ -318,8 +321,7 @@ def run_regulation_enrichment(
         correction=correction,
         min_detected_in_set=min_detected_in_set,
         correction_alpha=correction_alpha,
-    )
-
+    ).convert_dtypes(convert_boolean=False)
     return result
 
 
