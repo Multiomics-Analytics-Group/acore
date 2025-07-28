@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import acore
 
@@ -6,23 +7,29 @@ import acore
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.autosectionlabel",
+    # "sphinx.ext.autosectionlabel",
     "sphinx.ext.autodoc",
     "sphinx.ext.autodoc.typehints",
     "sphinx.ext.napoleon",
-    "sphinx.ext.doctest",
+    # "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.todo",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.coverage",
-    "sphinx.ext.imgmath",
-    "sphinx.ext.ifconfig",
+    # "sphinx.ext.autosummary",
+    # "sphinx.ext.todo",
+    # "sphinx.ext.mathjax",
+    # "sphinx.ext.coverage",
+    # "sphinx.ext.imgmath",
+    # "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
     "sphinx_new_tab_link",
     "myst_nb",
+    "sphinx_copybutton",
 ]
 
+myst_enable_extensions = [
+    # "strikethrough",
+    "dollarmath",
+    # "amsmath",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -84,6 +91,7 @@ exclude_patterns = [
     ".DS_Store",
     "jupyter_execute",
     "conf.py",
+    "fetch_files.py",
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.
@@ -105,7 +113,9 @@ myst_enable_extensions = ["dollarmath", "amsmath"]
 # Plolty support through require javascript library
 # https://myst-nb.readthedocs.io/en/latest/render/interactive.html#plotly
 html_js_files = [
-    "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"
+    # "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js",
+    # https://plotly.com/javascript/getting-started/
+    "https://cdn.plot.ly/plotly-3.0.1.min.js",
 ]
 
 # https://myst-nb.readthedocs.io/en/latest/configuration.html
@@ -139,8 +149,8 @@ intersphinx_mapping = {
 # https://github.com/executablebooks/MyST-NB/blob/master/docs/conf.py
 # html_title = ""
 html_theme = "sphinx_book_theme"
-# html_logo = "_static/logo-wide.svg"
-# html_favicon = "_static/logo-square.svg"
+html_logo = "images/logo/acore_logo.svg"
+html_favicon = "images/logo/acore_logo_small.svg"
 html_theme_options = {
     "github_url": "https://github.com/Multiomics-Analytics-Group/acore/",
     "repository_url": "https://github.com/Multiomics-Analytics-Group/acore/",
@@ -232,7 +242,11 @@ texinfo_documents = [
 # https://github.com/readthedocs/readthedocs.org/issues/1139
 
 if os.environ.get("READTHEDOCS") == "True":
-    from pathlib import Path
+    # Set the Plotly renderer to notebook for ReadTheDocs (visualize plotly figures
+    # in the documentation) - needed for plotly6
+    # Plotly normally decides itself fine which renderer to use, so keep it to RTD
+    # see https://plotly.com/python/renderers/#setting-the-default-renderer
+    os.environ["PLOTLY_RENDERER"] = "notebook"
 
     PROJECT_ROOT = Path(__file__).parent.parent
     PACKAGE_ROOT = PROJECT_ROOT / "src" / "acore"
@@ -254,5 +268,16 @@ if os.environ.get("READTHEDOCS") == "True":
             ]
         )
 
+    def download_notebooks(_):
+        from fetch_files import download_notebook
+
+        # Download the notebook file
+        download_notebook(
+            repo_url_base="https://github.com/biosustain/dsp_course_proteomics_intro",
+            file_path_in_repo="2_data_analysis.ipynb",
+            output_path="downloaded/PXD040621_analysis.ipynb",
+        )
+
     def setup(app):
         app.connect("builder-inited", run_apidoc)
+        app.connect("builder-inited", download_notebooks)

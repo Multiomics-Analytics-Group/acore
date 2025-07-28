@@ -3,6 +3,10 @@
    :start-line: 0
    :end-line: 66
 
+.. only supported in myst markdown for include...
+.. :relative-docs: docs
+.. :relative-images:
+
 .. toctree::
    :maxdepth: 1
    :hidden:
@@ -18,6 +22,13 @@
    api_examples/normalization_analysis
    api_examples/ANCOVA_analysis
    api_examples/enrichment_analysis
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Reanalysis
+   :hidden:
+
+   PXD040621 <downloaded/PXD040621_analysis>
 
 .. toctree::
    :maxdepth: 1
