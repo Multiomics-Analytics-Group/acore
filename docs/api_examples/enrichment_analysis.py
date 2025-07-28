@@ -26,6 +26,7 @@ import plotly.io as pio
 import acore
 import acore.differential_regulation
 import acore.enrichment_analysis
+from acore.types.enrichment_analysis import EnrichmentAnalysisSchema
 
 dsp_pandas.format.set_pandas_options(max_colwidth=60)
 
@@ -186,7 +187,7 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     min_detected_in_set=2,
     lfc_cutoff=1,
 )
-ret
+EnrichmentAnalysisSchema.validate(ret)
 
 # %% [markdown]
 # we can decrease the cutoff for the log2 fold change to 0.5 and see that we retain
@@ -200,7 +201,7 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     min_detected_in_set=2,
     lfc_cutoff=0.5,  # ! the default is 1
 )
-ret
+EnrichmentAnalysisSchema.validate(ret)
 
 # %% [markdown]
 # And even more if we do not restrict the analysis of finding at least two proteins
@@ -214,7 +215,8 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     min_detected_in_set=1,
     lfc_cutoff=0.5,  # ! the default is 1
 )
-ret
+EnrichmentAnalysisSchema.validate(ret)
+
 
 # %% [markdown]
 # ## Site specific enrichment analysis

@@ -14,6 +14,7 @@ import uuid
 
 import gseapy as gp
 import pandas as pd
+from pandera.typing.pandas import DataFrame
 
 from acore.enrichment_analysis.annotate import annotate_features
 from acore.enrichment_analysis.statistical_tests.fisher import run_fisher
@@ -21,6 +22,7 @@ from acore.enrichment_analysis.statistical_tests.kolmogorov_smirnov import (
     run_kolmogorov_smirnov,
 )
 from acore.multiple_testing import apply_pvalue_correction
+from acore.types.enrichment_analysis import EnrichmentAnalysisSchema
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +52,7 @@ def run_site_regulation_enrichment(
     regex: str = "(\\w+~.+)_\\w\\d+\\-\\w+",
     correction: str = "fdr_bh",
     remove_duplicates: bool = False,
-):
+) -> DataFrame[EnrichmentAnalysisSchema]:
     r"""
     This function runs a simple enrichment analysis for significantly
     regulated protein sites in a dataset.
@@ -137,7 +139,7 @@ def run_up_down_regulation_enrichment(
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
     lfc_cutoff: float = 1,
-) -> pd.DataFrame:
+) -> DataFrame[EnrichmentAnalysisSchema]:
     """
     This function runs a simple enrichment analysis for significantly regulated proteins
     distinguishing between up- and down-regulated.
@@ -246,7 +248,7 @@ def run_regulation_enrichment(
     min_detected_in_set: int = 2,
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
-) -> pd.DataFrame:
+) -> DataFrame[EnrichmentAnalysisSchema]:
     """
     This function runs a simple enrichment analysis for significantly regulated features
     in a dataset.
@@ -334,7 +336,7 @@ def run_enrichment(
     method: str = "fisher",
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
-) -> pd.DataFrame:
+) -> DataFrame[EnrichmentAnalysisSchema]:
     """
     Computes enrichment of the foreground relative to a given backgroung,
     using Fisher's exact test, and corrects for multiple hypothesis testing.
