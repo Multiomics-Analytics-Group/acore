@@ -72,7 +72,8 @@ def test_run_regulation_enrichment():
             "padj": [1.0, 1.0, 1.0],
             "rejected": [False, False, False],
         }
-    )
+    ).convert_dtypes(convert_boolean=False)
+
     assert expected.equals(actual)
 
 
@@ -153,7 +154,7 @@ def test_run_regulation_enrichment_pep():
             "padj": [0.9285714285714286, 1.0],
             "rejected": [False, False],
         }
-    )
+    ).convert_dtypes(convert_boolean=False)
     assert expected.equals(actual)
 
 
