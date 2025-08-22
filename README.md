@@ -4,12 +4,12 @@
    ACore is Python package with statistical functions to analyse multimodal molecular data
 </p>
 
-| Information           | Links                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| :-------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Information           | Links                                                                                                                                                                                                                                                                                                                                                       |
+| :-------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Package**           | [![PyPI Latest Release](https://img.shields.io/pypi/v/acore.svg)][acore-pypi] [![Supported versions](https://img.shields.io/pypi/pyversions/acore.svg)][acore-pypi] [![Supported implementations](https://img.shields.io/pypi/implementation/acore.svg)][acore-pypi] [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)][gpl-license] |
-| **Documentation**     | [![View - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=flat)][acore-docs] [![made-with-sphinx-doc](https://img.shields.io/badge/Made%20with-Sphinx-1f425f.svg)](https://www.sphinx-doc.org/) ![Docs](https://readthedocs.org/projects/analytics-core/badge/?style=flat) [![CC BY 4.0][cc-by-shield]][acore-license]|
-| **Build**             | [![CI](https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/tox-gha.yml/badge.svg)][ci-gh-action]|                                                                                     
-| **Discuss on GitHub** | [![GitHub issues](https://img.shields.io/github/issues/Multiomics-Analytics-Group/acore)][issues] [![GitHub pull requests](https://img.shields.io/github/issues-pr/Multiomics-Analytics-Group/acore)][pulls]|
+| **Documentation**     | [![View - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=flat)][acore-docs] [![made-with-sphinx-doc](https://img.shields.io/badge/Made%20with-Sphinx-1f425f.svg)](https://www.sphinx-doc.org/) ![Docs](https://readthedocs.org/projects/analytics-core/badge/?style=flat) [![CC BY 4.0][cc-by-shield]][acore-license]            |
+| **Build**             | [![CI](https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/tox-gha.yml/badge.svg)][ci-gh-action]                                                                                                                                                                                                                                          |
+| **Discuss on GitHub** | [![GitHub issues](https://img.shields.io/github/issues/Multiomics-Analytics-Group/acore)][issues] [![GitHub pull requests](https://img.shields.io/github/issues-pr/Multiomics-Analytics-Group/acore)][pulls]                                                                                                                                                |
 
 ## Table of contents:
 
@@ -50,7 +50,7 @@ pip install -e .
 To run all tests, you can use the following command:
 
 ```bash
-pytest 
+pytest
 ```
 
 ## Documentation
@@ -77,7 +77,6 @@ ACore is an open-source project, and we welcome contributions of all kinds via G
 
 We appreciate your feedback! If you have any comments, suggestions, or run into issues while using ACore, feel free to [open an issue][new-issue] in this repository. Your input helps us make ACore better for everyone.
 
-
 [acore-pypi]: https://pypi.org/project/acore/
 [acore-license]: https://github.com/Multiomics-Analytics-Group/acore/blob/main/LICENSE.md
 [acore-docs]: https://analytics-core.readthedocs.io/
@@ -90,4 +89,4 @@ We appreciate your feedback! If you have any comments, suggestions, or run into 
 [vuecore]: https://github.com/Multiomics-Analytics-Group/vuecore
 [Mona]: https://multiomics-analytics-group.github.io/
 [Biosustain]: https://www.biosustain.dtu.dk/
-[new-issue]:https://github.com/Multiomics-Analytics-Group/acore/issues/new
+[new-issue]: https://github.com/Multiomics-Analytics-Group/acore/issues/new
