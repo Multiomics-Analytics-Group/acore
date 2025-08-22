@@ -1,5 +1,5 @@
 
-.. include:: ../README.md
+.. include:: sections_readme/home_page.md
    :parser: myst_parser.sphinx_
    :start-line: 0
    :end-line: 40
