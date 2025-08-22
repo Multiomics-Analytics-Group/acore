@@ -1,7 +1,8 @@
 
-.. include:: ../README.rst 
+.. include:: ../README.md
+   :parser: myst_parser.sphinx_
    :start-line: 0
-   :end-line: 66
+   :end-line: 40
 
 .. only supported in myst markdown for include...
 .. :relative-docs: docs
