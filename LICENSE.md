@@ -1,8 +1,9 @@
+## GNU General Public License v3
+
 GNU GENERAL PUBLIC LICENSE
                       Version 3, 29 June 2007
 
-    A Python package with statistical functions to analyse multimodal molecular data
-    Copyright (C) 2023  Alberto Santos Delgado
+    Copyright (c) 2025 Multi-omics Network Analytics Group
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,3 +32,11 @@ the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <http://www.gnu.org/philosophy/why-not-lgpl.html>.
 
+## Creative Commons Attribution 4.0 International License (CC BY 4.0)
+
+Copyright (c) 2025 Multi-omics Network Analytics Group
+
+The creative works from this project are licensed under a Creative Commons Attribution 
+4.0 International License.
+
+To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.
