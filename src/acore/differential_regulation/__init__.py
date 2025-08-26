@@ -511,8 +511,12 @@ def run_ttest(
         scores["rejected"] = rejected.astype(bool)
         corrected = True
 
-    scores["group1"] = condition1.astype(str)
-    scores["group2"] = condition2.astype(str)
+    scores["group1"] = (
+        condition1.astype(str) if not isinstance(condition1, str) else condition1
+    )
+    scores["group2"] = (
+        condition2.astype(str) if not isinstance(condition2, str) else condition2
+    )
     if is_logged:
         scores["FC"] = scores["log2FC"].apply(lambda x: np.power(2, x))
     else:
