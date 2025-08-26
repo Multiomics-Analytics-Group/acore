@@ -82,6 +82,11 @@ omics = omics.rename(columns=pg_map)
 omics = np.log2(omics + 1)
 omics
 
+# %%
+from acore.types import check_numeric_dataframe
+
+check_numeric_dataframe(omics)
+
 # %% [markdown]
 # For easier inspection we just sample 100 protein groups. Remove this step in a
 # real analysis.
@@ -104,6 +109,8 @@ clinic[["age", "male", "AD"]].describe()
 omics_and_clinic = omics.join(clinic[["age", "male", "AD"]])
 omics_and_clinic
 
+# %%
+check_numeric_dataframe(omics_and_clinic)
 
 # %% [markdown]
 # ## Checking missing data
@@ -188,6 +195,11 @@ ancova = (
 ancova_acore = ancova
 ancova
 
+# %%
+from acore.types.differential_analysis import AncovaSchema
+
+AncovaSchema.validate(ancova)
+
 # %% [markdown]
 # The first columns contain group averages for each group for the specific
 # protein group
@@ -226,6 +238,16 @@ anova = (
     .sort_values(by="padj")
 )
 anova
+
+# %%
+from acore.types.differential_analysis import AnovaSchema
+
+AnovaSchema.validate(anova)
+
+# %%
+# ToDo: Something is wrong with the mean and std dev calculations for each group
+# FC is also calculated along means and std dev.
+anova.describe().T
 
 # %% [markdown]
 # Set subject to None

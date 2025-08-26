@@ -72,7 +72,9 @@ def run_anova(
     """
     Performs statistical test for each protein in a dataset.
     Checks what type of data is the input (paired, unpaired or repeated measurements) and
-    performs posthoc tests for multiclass data.
+    performs posthoc tests for multiclass data (i.e., when there are more than two groups,
+    posthoc tests such as pairwise t-tests or Tukey's HSD are used to determine which specific
+    groups differ after finding a significant overall effect).
     Multiple hypothesis correction uses permutation-based
     if permutations>0 and Benjamini/Hochberg if permutations=0.
 
@@ -450,10 +452,10 @@ def run_ttest(
                 )
     """
     columns = [
-        "T-statistics",
+        "T-Statistics",
         "pvalue",
-        "mean_group1",
-        "mean_group2",
+        "mean(group1)",
+        "mean(group2)",
         "std(group1)",
         "std(group2)",
         "log2FC",
@@ -506,11 +508,11 @@ def run_ttest(
         )
         scores["correction"] = "FDR correction BH"
         scores["padj"] = padj
-        scores["rejected"] = rejected
+        scores["rejected"] = rejected.astype(bool)
         corrected = True
 
-    scores["group1"] = condition1
-    scores["group2"] = condition2
+    scores["group1"] = condition1.astype(str)
+    scores["group2"] = condition2.astype(str)
     if is_logged:
         scores["FC"] = scores["log2FC"].apply(lambda x: np.power(2, x))
     else:
