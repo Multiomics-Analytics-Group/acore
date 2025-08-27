@@ -39,6 +39,7 @@ dependencies = [
     "inmoose", # combat batch correction
     "requests",
     "rarfile",
+    "pandera",
 ]
 
 [project.optional-dependencies]
