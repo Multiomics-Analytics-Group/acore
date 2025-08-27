@@ -1,8 +1,8 @@
 .. highlight:: shell
 
-====================
-Installation options
-====================
+==================================      
+Available options for installation
+==================================
 
 
 Stable release

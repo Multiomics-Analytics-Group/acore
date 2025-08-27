@@ -1,3 +1,5 @@
+Acore documentation
+=================================
 
 .. include:: sections_readme/home_page.md
    :parser: myst_parser.sphinx_
@@ -10,6 +12,7 @@
 
 .. toctree::
    :maxdepth: 1
+   :caption: Installation
    :hidden:
 
    installation
