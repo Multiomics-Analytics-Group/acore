@@ -5,6 +5,7 @@ https://pandera.readthedocs.io/en/stable/dataframe_models.html
 """
 
 import pandas as pd
+import pandera.pandas as pa
 
 
 # ? could be moved to dsp_pandas
@@ -29,3 +30,16 @@ def select_numeric_columns(df: pd.DataFrame) -> pd.DataFrame:
     ret = df.select_dtypes(include="number")
 
     return ret
+
+
+# Schema: all columns must be numeric (int or float)
+def build_schema_all_floats(df: pd.DataFrame) -> pa.DataFrameSchema:
+    """Build a schema that checks if all columns are float, potentially
+    containing NaN values."""
+    columns = {col: pa.Column(float, nullable=True) for col in df.columns}
+    schema_for_df = pa.DataFrameSchema(
+        columns=columns,  # we do not know the column names
+        # dtype=float,  # checks all columns have that dtype
+        # checks=check_numeric_dataframe
+    )
+    return schema_for_df

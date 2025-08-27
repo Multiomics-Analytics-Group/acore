@@ -88,6 +88,15 @@ from acore.types import check_numeric_dataframe
 check_numeric_dataframe(omics)
 
 # %% [markdown]
+# Validate the schema of the omics DataFrame. builds and then uses the schema on the
+# same data frame (experimental)
+
+# %%
+from acore.types import build_schema_all_floats
+
+build_schema_all_floats(omics).validate(omics)
+
+# %% [markdown]
 # For easier inspection we just sample 100 protein groups. Remove this step in a
 # real analysis.
 
@@ -388,4 +397,5 @@ viewed_cols.extend(view.columns)
 view
 
 # %% [markdown]
+# Done.
 # Done.
