@@ -14,7 +14,7 @@ Add a subpackage to core.
       they are available when the subpackage is imported.
 - [ ] Create **Pandera schema** in a file with subpackage name in the `src/acore/types` folder.
       Optimal is to have only one output schema of results per subpackage or module.
-- [ ] Create an **api example jupyter notebook** in the `docs/api_examples folder`
+- [ ] Create an **api example jupyter notebook** in the `docs/api_examples` folder
 - [ ] Use **jupytext** to sync the Jupyter notebook with a Python script
 - [ ] Update `index.md` file in the `docs` folder with the new example
 - [ ] Create **test script** in the `/test` folder with the name of the subpackage or module
