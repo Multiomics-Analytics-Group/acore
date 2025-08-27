@@ -1,7 +1,3 @@
-# what
-helloo:
-	echo "Hello, World!"
-
 # List of directories to remove
 CLEAN_BUILD_DIRS = _build jupyter_execute
 CLEAN_DIRS = $(CLEAN_BUILD_DIRS) downloaded reference sections_readme
