@@ -5,7 +5,7 @@ Note that text within html comment tags will not be rendered.
 
 ### Description
 
-Add a subpackage to core.
+Add a subpackage (as new model) to core.
 
 ### Tasks Checklist
 
