@@ -84,14 +84,16 @@ If you work on a Windows shell, see the docs for instructions:
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass flake8 and the
-   tests, including testing other Python versions with tox::
+5. When you're done making changes, check that your changes are formatted and pass ruff 
+   checks and the tests at least in your development environment::
 
-    $ flake8 acore tests
-    $ python setup.py test or pytest
-    $ tox
+    $ black .
+    $ ruff check src
+    $ pytest .
 
-   To get flake8 and tox, just pip install them into your virtualenv.
+   Some changes ruff can automatically fix for you, if you pass the `--fix` flag:
+
+   $ ruff check src --fix
 
 6. Commit your changes and push your branch to GitHub::
 
@@ -100,6 +102,18 @@ If you work on a Windows shell, see the docs for instructions:
     $ git push origin name-of-your-bugfix-or-feature
 
 7. Submit a pull request through the GitHub website.
+
+General design principles in the library
+----------------------------------------
+
+- at best only one type of `DataFrame` output per module (subpackage.). For example, 
+  the enrichment module should output a `DataFrame` which adheres to a single pandera
+  schema defined under `src/acore/types/enrichment_analysis.py`. Thus there is a 'type'
+  of enrichment analysis results.
+- User facing functions should have clear names and good docstrings. They can something
+  along `run_analysis` (`run_enrichment_analysis`) or
+  `apply_normalization` (`apply_step` or `apply_method`).
+
 
 Pull Request Guidelines
 -----------------------
@@ -113,14 +127,8 @@ Before you submit a pull request, check that it meets these guidelines:
 3. The pull request should pass the workflows on GitHub.
 
 See for example the PR-Template for a module: 
-`Add module PR template <https://github.com/Multiomics-Analytics-Group/acore/blob/main/.github/PULL_REQUEST_TEMPLATE/module.md>`_
+`Add module PR template <https://github.com/Multiomics-Analytics-Group/acore/blob/main/.github/PULL_REQUEST_TEMPLATE/module.md>`_.
 
-Tips
-----
-
-To run a subset of tests::
-
-$ pytest tests
 
 
 Deploying
