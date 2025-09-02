@@ -12,13 +12,6 @@ Acore documentation
 
 .. toctree::
    :maxdepth: 1
-   :caption: Installation
-   :hidden:
-
-   installation
-
-.. toctree::
-   :maxdepth: 1
    :caption: API usage examples
    :hidden:
 
