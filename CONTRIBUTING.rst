@@ -113,6 +113,7 @@ General design principles in the library
 - User facing functions should have clear names and good docstrings. They can something
   along `run_analysis` (`run_enrichment_analysis`) or
   `apply_normalization` (`apply_step` or `apply_method`).
+- docstrings for functions can be numpy, google or the classic Sphinx one.
 
 
 Pull Request Guidelines
