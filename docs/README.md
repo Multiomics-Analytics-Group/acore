@@ -29,6 +29,8 @@ Options:
 sphinx-apidoc --force --implicit-namespaces --module-first -o reference ../src/acore
 # download other resources
 python fetch_files.py
+# parse main repository README
+python split_readme.py
 # build docs
 sphinx-build -n -W --keep-going -b html ./ ./_build/
 ```
