@@ -44,7 +44,7 @@ You can also install the package for development by cloning this repository and 
 > We assume you are in the root directory of the cloned repository when running this command. Otherwise, you need to specify the path to the `acore` directory.
 
 ```bash
-pip install -e .
+pip install -e '.[dev]'
 ```
 
 To run all tests, you can use the following command:
