@@ -1,5 +1,7 @@
 """Differential regulation module."""
 
+from typing import Union
+
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
@@ -13,7 +15,11 @@ from acore.multiple_testing import (
     correct_pairwise_ttest,
     get_max_permutations,
 )
-from acore.types.differential_analysis import AncovaSchema, AnovaSchema
+from acore.types.differential_analysis import (
+    AncovaSchema,
+    AnovaSchema,
+    AnovaSchemaMultiGroup,
+)
 
 from .tests import (  # calculate_thsd, complement_posthoc,
     calc_means_between_groups,
@@ -70,7 +76,7 @@ def run_anova(
     correction: str = "fdr_bh",
     is_logged: bool = True,
     non_par: bool = False,
-) -> DataFrame[AnovaSchema]:
+) -> Union[DataFrame[AnovaSchema], DataFrame[AnovaSchemaMultiGroup]]:
     """
     Performs statistical test for each protein in a dataset.
     Checks what type of data is the input (paired, unpaired or repeated measurements) and
@@ -92,8 +98,8 @@ def run_anova(
     :param bool is_logged: whether data is log-transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
-    :return: DataFrame adhering to AnovaSchema.
-    :rtype: DataFrame[AnovaSchema]
+    :return: DataFrame adhering to AnovaSchema or AnovaSchemaMultiGroup.
+    :rtype: DataFrame[AnovaSchema] | DataFrame[AnovaSchemaMultiGroup]
 
     Example::
 
@@ -169,6 +175,7 @@ def run_anova(
             )
             res["Method"] = "One-way anova"
             res = correct_pairwise_ttest(res, alpha, correction)
+            res = AnovaSchemaMultiGroup.validate(res)
     else:
         raise ValueError("Number of groups must be greater than 1")
     return res

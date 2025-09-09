@@ -247,11 +247,6 @@ anova = (
 anova
 
 # %%
-from acore.types.differential_analysis import AnovaSchema
-
-AnovaSchema.validate(anova)
-
-# %%
 # ToDo: Something is wrong with the mean and std dev calculations for each group
 # FC is also calculated along means and std dev.
 anova.describe().T
