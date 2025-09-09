@@ -164,8 +164,8 @@ reference/api/pandas.DataFrame.groupby.html
     :param str correction: method to be used for multiple-testing correction
     :param float alpha: adjusted p-value cutoff to define significance
     :param float lfc_cutoff: log fold-change cutoff to define practical significance
-    :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
-        'background', 'pvalue', 'padj', 'rejected', 'direction' and 'comparison'.
+    :return: DataFrame adhering to EnrichmentAnalysisSchema
+    :rtype: DataFrame[EnrichmentAnalysisSchema]
 
     Example::
 
@@ -237,6 +237,8 @@ reference/api/pandas.DataFrame.groupby.html
     if not ret.empty:
         ret["rejected"] = ret["rejected"].astype(bool)
 
+    ret = EnrichmentAnalysisSchema.validate(ret)
+
     return ret
 
 
@@ -251,7 +253,7 @@ def run_regulation_enrichment(
     min_detected_in_set: int = 2,
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
-) -> DataFrame[EnrichmentAnalysisSchema]:
+) -> pd.DataFrame:
     """
     This function runs a simple enrichment analysis for significantly regulated features
     in a dataset.
@@ -338,7 +340,7 @@ def run_enrichment(
     method: str = "fisher",
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
-) -> DataFrame[EnrichmentAnalysisSchema]:
+) -> pd.DataFrame:
     """
     Computes enrichment of the foreground relative to a given backgroung,
     using Fisher's exact test, and corrects for multiple hypothesis testing.

@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
+from pandera.typing.pandas import DataFrame
 from statsmodels.formula.api import ols
 
 import acore.utils
@@ -12,6 +13,7 @@ from acore.multiple_testing import (
     correct_pairwise_ttest,
     get_max_permutations,
 )
+from acore.types.differential_analysis import AncovaSchema, AnovaSchema
 
 from .tests import (  # calculate_thsd, complement_posthoc,
     calc_means_between_groups,
@@ -68,7 +70,7 @@ def run_anova(
     correction: str = "fdr_bh",
     is_logged: bool = True,
     non_par: bool = False,
-) -> pd.DataFrame:
+) -> DataFrame[AnovaSchema]:
     """
     Performs statistical test for each protein in a dataset.
     Checks what type of data is the input (paired, unpaired or repeated measurements) and
@@ -90,10 +92,8 @@ def run_anova(
     :param bool is_logged: whether data is log-transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
-    :return: Pandas dataframe with columns 'identifier', 'group1', 'group2',
-        'mean(group1)', 'mean(group2)', 'Log2FC', 'std_error', 'tail', 't-statistics',
-        'posthoc pvalue', 'effsize', 'efftype', 'FC', 'rejected', 'F-statistics', 'p-value',
-        'correction', '-log10 p-value', and 'method'.
+    :return: DataFrame adhering to AnovaSchema.
+    :rtype: DataFrame[AnovaSchema]
 
     Example::
 
@@ -128,6 +128,7 @@ def run_anova(
             is_logged=is_logged,
             non_par=non_par,
         )
+        res = AnovaSchema.validate(res)
     elif len(df[group].unique()) > 2:
         if paired:
             res = run_repeated_measurements_anova(
@@ -170,7 +171,6 @@ def run_anova(
             res = correct_pairwise_ttest(res, alpha, correction)
     else:
         raise ValueError("Number of groups must be greater than 1")
-
     return res
 
 
@@ -185,7 +185,7 @@ def run_ancova(
     correction: str = "fdr_bh",
     is_logged: bool = True,
     non_par: bool = False,
-) -> pd.DataFrame:
+) -> DataFrame[AncovaSchema]:
     """
     Performs statistical test for each protein in a dataset.
     Checks what type of data is the input (paired, unpaired or repeated measurements)
@@ -206,10 +206,8 @@ def run_ancova(
     :param bool is_logged: whether data is log-transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
-    :return: Pandas DataFrame with columns 'identifier', 'group1', 'group2',
-        'mean(group1)', 'mean(group2)', 'Log2FC', 'std_error', 'tail', 't-statistics',
-        'posthoc pvalue', 'effsize', 'efftype', 'FC', 'rejected', 'F-statistics', 'p-value',
-        'correction', '-log10 p-value', and 'method'.
+    :return: DataFrame adhering to AncovaSchema
+    :rtype: DataFrame[AncovaSchema]
 
     Example::
 
@@ -254,6 +252,7 @@ def run_ancova(
     )
     res["Method"] = "One-way ancova"
     res = correct_pairwise_ttest(res, alpha, correction)
+    res = AncovaSchema.validate(res)
 
     return res
 

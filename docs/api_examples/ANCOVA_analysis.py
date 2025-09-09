@@ -26,6 +26,7 @@ import numpy as np
 import pandas as pd
 
 import acore.differential_regulation as ad
+import acore.types
 
 dsp_pandas.format.set_pandas_options(
     max_columns=9,
@@ -82,19 +83,18 @@ omics = omics.rename(columns=pg_map)
 omics = np.log2(omics + 1)
 omics
 
-# %%
-from acore.types import check_numeric_dataframe
+# %% [markdown]
+# Check if all values are numeric as this is required for differential analysis
 
-check_numeric_dataframe(omics)
+# %%
+acore.types.check_numeric_dataframe(omics)
 
 # %% [markdown]
-# Validate the schema of the omics DataFrame. builds and then uses the schema on the
+# Validate the schema of the omics DataFrame. Builds and then uses the schema on the
 # same data frame (experimental)
 
 # %%
-from acore.types import build_schema_all_floats
-
-build_schema_all_floats(omics).validate(omics)
+acore.types.build_schema_all_floats(omics).validate(omics)
 
 # %% [markdown]
 # For easier inspection we just sample 100 protein groups. Remove this step in a
@@ -118,8 +118,11 @@ clinic[["age", "male", "AD"]].describe()
 omics_and_clinic = omics.join(clinic[["age", "male", "AD"]])
 omics_and_clinic
 
+# %% [markdown]
+# Check that the added clinical metadata is numeric
+
 # %%
-check_numeric_dataframe(omics_and_clinic)
+acore.types.check_numeric_dataframe(omics_and_clinic)
 
 # %% [markdown]
 # ## Checking missing data
@@ -203,11 +206,6 @@ ancova = (
 )  # need to be floats?
 ancova_acore = ancova
 ancova
-
-# %%
-from acore.types.differential_analysis import AncovaSchema
-
-AncovaSchema.validate(ancova)
 
 # %% [markdown]
 # The first columns contain group averages for each group for the specific
@@ -397,5 +395,4 @@ viewed_cols.extend(view.columns)
 view
 
 # %% [markdown]
-# Done.
 # Done.
