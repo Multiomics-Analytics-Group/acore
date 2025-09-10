@@ -1,7 +1,6 @@
 import numpy as np 
 import pandas as pd
 
-
 def _permute(*groups, rng=np.random.default_rng(seed=12345)):
     """
     Perform a single permutation of the groups.
@@ -64,4 +63,21 @@ def _contingency_table(*groups, to_np:bool=True)-> np.array:
         return table.to_numpy()
     else:
         return table
+
+
+def _check_degeneracy(array: np.ndarray) -> bool:
+    """
+    Check for degeneracy in the differences of paired samples.
+
+    Parameters
+    ----------
+    array : np.ndarray
+        The differences array. e.g. cond1 - cond2
+
+    Returns
+    -------
+    bool
+        True if the conditions are degenerate, False otherwise.
+    """
+    return np.all(array == array[0])
 
