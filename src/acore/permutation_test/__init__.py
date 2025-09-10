@@ -24,8 +24,32 @@ def paired_permutation(
     rng: np.random.Generator = np.random.default_rng(seed=12345),
     **kwargs
 ) -> dict:
-    """Perform a permutation test for paired samples."""
-    # Validate input
+    """
+    Perform a permutation test for paired samples.
+
+    Parameters
+    ----------
+    cond1 : np.ndarray
+        First condition (paired samples).
+    cond2 : np.ndarray
+        Second condition (paired samples).
+    metric : str or callable, optional
+        Metric to compute ('t-statistic', 'mean', 'median', or a custom function).
+    n_permutations : int, optional
+        Number of permutations to perform (default is 10000).
+    rng : np.random.Generator, optional
+        Random number generator (default is np.random.default_rng(seed=12345)).
+    **kwargs
+        Additional arguments passed to the metric function.
+
+    Returns
+    -------
+    dict
+        Dictionary with keys:
+        - 'metric': Metric function used.
+        - 'observed': Observed metric value.
+        - 'p_value': Permutation test p-value (np.nan if degenerate).
+    """    # Validate input
     if not isinstance(cond1, np.ndarray) or not isinstance(cond2, np.ndarray):
         raise TypeError("Input must be numpy arrays.")
     if cond1.shape != cond2.shape:
@@ -108,7 +132,23 @@ def chi2_permutation(
     rng: np.random.Generator = np.random.default_rng(seed=12345)
 ) -> dict:
     """
-    
+    Perform a permutation test for categorical data using the chi-squared statistic.
+
+    Parameters
+    ----------
+    *groups : array-like
+        Arrays representing categorical groups.
+    n_permutations : int, optional
+        Number of permutations to perform (default is 10000).
+    rng : np.random.Generator, optional
+        Random number generator (default is np.random.default_rng(seed=12345)).
+
+    Returns
+    -------
+    dict
+        Dictionary with keys:
+        - 'observed': Observed chi-squared test result.
+        - 'p_value': Permutation test p-value.
     """
     # generate contingency table
     cont_table = _contingency_table(*groups, to_np=True)
@@ -144,7 +184,30 @@ def indep_permutation(
     **kwargs
 ) -> dict:
     """
-    TODO
+    Perform a permutation test for independent samples.
+
+    Parameters
+    ----------
+    group1 : np.ndarray
+        First group of samples.
+    group2 : np.ndarray
+        Second group of samples.
+    metric : str or callable, optional
+        Metric to compute ('t-statistic', 'anova', 'mean', 'median', or a custom function).
+    n_permutations : int, optional
+        Number of permutations to perform (default is 10000).
+    rng : np.random.Generator, optional
+        Random number generator (default is np.random.default_rng(seed=12345)).
+    **kwargs
+        Additional arguments passed to the metric function.
+
+    Returns
+    -------
+    dict
+        Dictionary with keys:
+        - 'metric': Metric function used.
+        - 'observed': Observed metric value.
+        - 'p_value': Permutation test p-value.
     """
 
     ## PRECONDITIONS
