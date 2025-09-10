@@ -6,8 +6,14 @@ from scipy.stats import (
     ttest_ind,
     f_oneway,
 )
+import warnings
+warnings.simplefilter("always", UserWarning)
 
-from .internal_functions import _permute, _contingency_table
+from .internal_functions import (
+    _permute, 
+    _contingency_table, 
+    _check_degeneracy
+)
 
 
 def paired_permutation(
@@ -72,14 +78,28 @@ def paired_permutation(
         # compute permuted metric
         permuted_f.append(new_result)
 
-    # Compute p-value
-    p_value = np.mean(permuted_f >= abs_met)
+    if _check_degeneracy(diff):
+        identical_warn = (
+            "Degenerate conditions detected (the data are identical). "
+            "Consider using a different statistical test. "
+            "Results may be unreliable."
+        )
+        warnings.warn(identical_warn)
 
-    return {
-        "metric": calculator,
-        "observed": observed_metric,
-        "p_value": p_value
-    }
+        return {
+            "metric": calculator,
+            "observed": observed_metric,
+            "p_value": np.nan,
+        }
+    else:
+        # Compute p-value
+        p_value = np.mean(permuted_f >= abs_met)
+
+        return {
+            "metric": calculator,
+            "observed": observed_metric,
+            "p_value": p_value
+        }
 
 
 def chi2_permutation(
@@ -87,8 +107,9 @@ def chi2_permutation(
     n_permutations: int = 10000,
     rng: np.random.Generator = np.random.default_rng(seed=12345)
 ) -> dict:
-    """Perform a permutation test for chi-squared statistics."""
-
+    """
+    
+    """
     # generate contingency table
     cont_table = _contingency_table(*groups, to_np=True)
 
@@ -179,6 +200,7 @@ def indep_permutation(
         "observed": observed_metric,
         "p_value": p_value
     }
+
 
 
 
