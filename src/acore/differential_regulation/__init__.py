@@ -1,8 +1,11 @@
 """Differential regulation module."""
 
+from typing import Union
+
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
+from pandera.typing.pandas import DataFrame
 from statsmodels.formula.api import ols
 
 import acore.utils
@@ -11,6 +14,11 @@ from acore.multiple_testing import (
     apply_pvalue_permutation_fdrcorrection,
     correct_pairwise_ttest,
     get_max_permutations,
+)
+from acore.types.differential_analysis import (
+    AncovaSchema,
+    AnovaSchema,
+    AnovaSchemaMultiGroup,
 )
 
 from .tests import (  # calculate_thsd, complement_posthoc,
@@ -68,11 +76,13 @@ def run_anova(
     correction: str = "fdr_bh",
     is_logged: bool = True,
     non_par: bool = False,
-) -> pd.DataFrame:
+) -> Union[DataFrame[AnovaSchema], DataFrame[AnovaSchemaMultiGroup]]:
     """
     Performs statistical test for each protein in a dataset.
     Checks what type of data is the input (paired, unpaired or repeated measurements) and
-    performs posthoc tests for multiclass data.
+    performs posthoc tests for multiclass data (i.e., when there are more than two groups,
+    posthoc tests such as pairwise t-tests or Tukey's HSD are used to determine which specific
+    groups differ after finding a significant overall effect).
     Multiple hypothesis correction uses permutation-based
     if permutations>0 and Benjamini/Hochberg if permutations=0.
 
@@ -88,10 +98,8 @@ def run_anova(
     :param bool is_logged: whether data is log-transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
-    :return: Pandas dataframe with columns 'identifier', 'group1', 'group2',
-        'mean(group1)', 'mean(group2)', 'Log2FC', 'std_error', 'tail', 't-statistics',
-        'posthoc pvalue', 'effsize', 'efftype', 'FC', 'rejected', 'F-statistics', 'p-value',
-        'correction', '-log10 p-value', and 'method'.
+    :return: DataFrame adhering to AnovaSchema or AnovaSchemaMultiGroup.
+    :rtype: DataFrame[AnovaSchema] | DataFrame[AnovaSchemaMultiGroup]
 
     Example::
 
@@ -126,6 +134,7 @@ def run_anova(
             is_logged=is_logged,
             non_par=non_par,
         )
+        res = AnovaSchema.validate(res)
     elif len(df[group].unique()) > 2:
         if paired:
             res = run_repeated_measurements_anova(
@@ -166,9 +175,9 @@ def run_anova(
             )
             res["Method"] = "One-way anova"
             res = correct_pairwise_ttest(res, alpha, correction)
+            res = AnovaSchemaMultiGroup.validate(res)
     else:
         raise ValueError("Number of groups must be greater than 1")
-
     return res
 
 
@@ -183,7 +192,7 @@ def run_ancova(
     correction: str = "fdr_bh",
     is_logged: bool = True,
     non_par: bool = False,
-) -> pd.DataFrame:
+) -> DataFrame[AncovaSchema]:
     """
     Performs statistical test for each protein in a dataset.
     Checks what type of data is the input (paired, unpaired or repeated measurements)
@@ -204,10 +213,8 @@ def run_ancova(
     :param bool is_logged: whether data is log-transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
-    :return: Pandas DataFrame with columns 'identifier', 'group1', 'group2',
-        'mean(group1)', 'mean(group2)', 'Log2FC', 'std_error', 'tail', 't-statistics',
-        'posthoc pvalue', 'effsize', 'efftype', 'FC', 'rejected', 'F-statistics', 'p-value',
-        'correction', '-log10 p-value', and 'method'.
+    :return: DataFrame adhering to AncovaSchema
+    :rtype: DataFrame[AncovaSchema]
 
     Example::
 
@@ -252,6 +259,7 @@ def run_ancova(
     )
     res["Method"] = "One-way ancova"
     res = correct_pairwise_ttest(res, alpha, correction)
+    res = AncovaSchema.validate(res)
 
     return res
 
@@ -450,10 +458,10 @@ def run_ttest(
                 )
     """
     columns = [
-        "T-statistics",
+        "T-Statistics",
         "pvalue",
-        "mean_group1",
-        "mean_group2",
+        "mean(group1)",
+        "mean(group2)",
         "std(group1)",
         "std(group2)",
         "log2FC",
@@ -506,11 +514,15 @@ def run_ttest(
         )
         scores["correction"] = "FDR correction BH"
         scores["padj"] = padj
-        scores["rejected"] = rejected
+        scores["rejected"] = rejected.astype(bool)
         corrected = True
 
-    scores["group1"] = condition1
-    scores["group2"] = condition2
+    scores["group1"] = (
+        condition1.astype(str) if not isinstance(condition1, str) else condition1
+    )
+    scores["group2"] = (
+        condition2.astype(str) if not isinstance(condition2, str) else condition2
+    )
     if is_logged:
         scores["FC"] = scores["log2FC"].apply(lambda x: np.power(2, x))
     else:
