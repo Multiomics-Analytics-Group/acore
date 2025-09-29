@@ -1,6 +1,4 @@
-""" Module for filtering metabolomics feature table.
-
-"""
+"""Module for filtering metabolomics feature table."""
 
 import pandas as pd
 
@@ -8,22 +6,22 @@ from filter_biological_relevance import filter_biological_relevance
 from make_numeric import convert_to_numeric
 
 
-def filter_mz_rt(df:pd.DataFrame, 
-        rt_col:str="Average Rt(min)", 
-        mz_col:str="Average Mz", 
-        mz_decimals:tuple=None, 
-        mz_low:int=None, 
-        rt_dead_volume:float=None, 
-        save_removed:bool=True,
-        print_na_summary:bool=True
-    ) -> tuple:
-
-    """ 
+def filter_mz_rt(
+    df: pd.DataFrame,
+    rt_col: str = "Average Rt(min)",
+    mz_col: str = "Average Mz",
+    mz_decimals: tuple = None,
+    mz_low: int = None,
+    rt_dead_volume: float = None,
+    save_removed: bool = True,
+    print_na_summary: bool = True,
+) -> tuple:
+    """
     This function filters rows from a data frame based on retention time and m/z and checks data types.
     If specified by the user, it evaluates each row on whether there are NaN values and prints
     a statement for each.
 
-    Data types: 
+    Data types:
         Tries to convert mz and RT columns to numeric.
 
     M/z filtering:
@@ -56,25 +54,27 @@ def filter_mz_rt(df:pd.DataFrame,
 
     :return: Tuple containing the cleaned DataFrame and optionally the removed features DataFrame.
     :rtype: tuple
-        - If `save_removed=True`: `(cleaned_df, removed_df)`  
+        - If `save_removed=True`: `(cleaned_df, removed_df)`
         - If `save_removed=False`: `(cleaned_df, None)`
     """
 
     cols_to_convert = [rt_col, mz_col]
-    numeric_df = convert_to_numeric(df, cols_to_convert=cols_to_convert, print_na_summary=True)
+    numeric_df = convert_to_numeric(
+        df, cols_to_convert=cols_to_convert, print_na_summary=True
+    )
 
-    rt_dead_volume = 0.8 # in minutes
-    mz_decimals = [0.3,0.9]
+    rt_dead_volume = 0.8  # in minutes
+    mz_decimals = [0.3, 0.9]
     mz_low = 600
 
     filtered_df, removed_features = filter_biological_relevance(
-        numeric_df, 
-        rt_col=rt_col, 
-        mz_col=mz_col, 
-        mz_decimals=mz_decimals, 
-        mz_low=mz_low, 
-        rt_dead_volume=rt_dead_volume, 
-        save_removed=True
+        numeric_df,
+        rt_col=rt_col,
+        mz_col=mz_col,
+        mz_decimals=mz_decimals,
+        mz_low=mz_low,
+        rt_dead_volume=rt_dead_volume,
+        save_removed=True,
     )
 
     if rt_dead_volume is not None:
@@ -83,18 +83,3 @@ def filter_mz_rt(df:pd.DataFrame,
         print("Filtering based on m/z was completed.")
 
     return filtered_df, removed_features
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-

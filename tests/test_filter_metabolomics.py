@@ -3,7 +3,7 @@ import unittest
 
 import pandas as pd
 
-import acore.filter_metabolomics as fm
+from acore import filter_metabolomics as fm
 
 def test_filter_mz_rt():
 
@@ -36,7 +36,7 @@ def test_filter_mz_rt():
         orient="index",
     )
 
-    actual_filtered, actual_removed = filter_mz_rt(
+    actual_filtered, actual_removed = fm.filter_mz_rt(
         df=data,
         rt_dead_volume=0.8,
         mz_decimals=(0.3, 0.9),
