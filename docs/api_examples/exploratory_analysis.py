@@ -8,6 +8,12 @@
 import pandas as pd
 
 import acore.exploratory_analysis as ea
+from acore.types.exploratory_analysis import (
+    AnnotationResult,
+    TwoComponentSchema,
+    TwoLoadingsSchema,
+    TwoVariance,
+)
 
 data = pd.DataFrame(
     {
@@ -22,6 +28,11 @@ data = pd.DataFrame(
 # Show first two principal components of the data.
 
 # %%
+map_names = {
+    "value": "feature_communiality",
+    "x": "PC1",
+    "y": "PC2",
+}
 result_dfs, annotation = ea.run_pca(
     data, drop_cols=[], annotation_cols=[], group="group", components=2, dropna=True
 )
@@ -30,21 +41,25 @@ result_dfs, annotation = ea.run_pca(
 # Show what was computed:
 
 # %%
-result_dfs[0]
+TwoComponentSchema(result_dfs[0]).rename(columns=map_names)
 
 # %%
-result_dfs[1]
+TwoLoadingsSchema(result_dfs[1]).rename(columns=map_names)
 
 # %%
-result_dfs[2]
+TwoVariance(pd.Series(result_dfs[2], index=["PC1", "PC2"]))
 
 # %%
-annotation
+AnnotationResult(**annotation)  # .model_dump()
 
 # %% [markdown]
 # Visualize UMAP low-dimensional embedding of the data.
 
 # %%
+map_names = {
+    "x": "UMAP1",
+    "y": "UMAP2",
+}
 result, annotation = ea.run_umap(
     data,
     drop_cols=["sample", "subject"],
@@ -56,10 +71,10 @@ result, annotation = ea.run_umap(
 )
 
 # %%
-result["umap"]
+TwoComponentSchema(result["umap"]).rename(columns=map_names)
 
 # %%
-annotation
+AnnotationResult(**annotation)
 
 # %% [markdown]
 # Make sure to check the parameter annotations in the API docs.
