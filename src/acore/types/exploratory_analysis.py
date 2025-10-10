@@ -3,7 +3,8 @@ from typing import Optional
 import pandera.pandas as pa
 import pydantic
 from pandera.pandas import DataFrameModel, Field, SeriesSchema
-from pandera.typing.pandas import DataFrame
+
+# from pandera.typing.pandas import DataFrame, Series
 
 
 class TwoComponentSchema(DataFrameModel):
@@ -31,17 +32,16 @@ TwoVariance = SeriesSchema(float, checks=pa.Check(lambda x: x >= 0, element_wise
 
 AnnotationSchema = SeriesSchema(str)
 
+# Not used currently - integrate pandera types with pydantic
+# https://pandera.readthedocs.io/en/stable/pydantic_integration.html
+# class PcaResult(pydantic.BaseModel):
+#     """
+#     Represents the result of a Principal Component Analysis (PCA).
+#     """
 
-class PcaResult(pydantic.BaseModel):
-    """
-    Represents the result of a Principal Component Analysis (PCA).
-    """
-
-    # PCAResult = namedtuple("PCAResult", ["components", "loadings", "variance"])
-
-    components: DataFrame[TwoComponentSchema]
-    loadings: DataFrame[TwoLoadingsSchema]
-    variance: TwoVariance
+#     components: DataFrame[TwoComponentSchema]
+#     loadings: DataFrame[TwoLoadingsSchema]
+#     variance: TwoVariance
 
 
 class AnnotationResult(pydantic.BaseModel):
