@@ -48,7 +48,9 @@ autodoc_default_options = {
     "members": True,
     "show-inheritance": True,
     "undoc-members": True,
+    "inherited-members": "BaseModel",
 }
+
 ## Generate autodoc stubs with summaries from code
 autosummary_generate = True
 
@@ -141,6 +143,7 @@ intersphinx_mapping = {
     # "scikit-learn": ("https://scikit-learn.org/stable/", None),
     # "matplotlib": ("https://matplotlib.org/stable/", None),
 }
+
 
 # -- Options for HTML output -------------------------------------------------
 
