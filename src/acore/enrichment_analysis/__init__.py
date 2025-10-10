@@ -14,6 +14,7 @@ import uuid
 
 import gseapy as gp
 import pandas as pd
+from pandera.typing.pandas import DataFrame
 
 from acore.enrichment_analysis.annotate import annotate_features
 from acore.enrichment_analysis.statistical_tests.fisher import run_fisher
@@ -21,6 +22,7 @@ from acore.enrichment_analysis.statistical_tests.kolmogorov_smirnov import (
     run_kolmogorov_smirnov,
 )
 from acore.multiple_testing import apply_pvalue_correction
+from acore.types.enrichment_analysis import EnrichmentAnalysisSchema
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +52,7 @@ def run_site_regulation_enrichment(
     regex: str = "(\\w+~.+)_\\w\\d+\\-\\w+",
     correction: str = "fdr_bh",
     remove_duplicates: bool = False,
-):
+) -> DataFrame[EnrichmentAnalysisSchema]:
     r"""
     This function runs a simple enrichment analysis for significantly
     regulated protein sites in a dataset.
@@ -137,7 +139,7 @@ def run_up_down_regulation_enrichment(
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
     lfc_cutoff: float = 1,
-) -> pd.DataFrame:
+) -> DataFrame[EnrichmentAnalysisSchema]:
     """
     This function runs a simple enrichment analysis for significantly regulated proteins
     distinguishing between up- and down-regulated.
@@ -162,8 +164,8 @@ reference/api/pandas.DataFrame.groupby.html
     :param str correction: method to be used for multiple-testing correction
     :param float alpha: adjusted p-value cutoff to define significance
     :param float lfc_cutoff: log fold-change cutoff to define practical significance
-    :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
-        'background', 'pvalue', 'padj', 'rejected', 'direction' and 'comparison'.
+    :return: DataFrame adhering to EnrichmentAnalysisSchema
+    :rtype: DataFrame[EnrichmentAnalysisSchema]
 
     Example::
 
@@ -231,6 +233,11 @@ reference/api/pandas.DataFrame.groupby.html
             ret.append(_enrichment)
 
     ret = pd.concat(ret)
+
+    if not ret.empty:
+        ret["rejected"] = ret["rejected"].astype(bool)
+
+    ret = EnrichmentAnalysisSchema.validate(ret)
 
     return ret
 
@@ -316,8 +323,7 @@ def run_regulation_enrichment(
         correction=correction,
         min_detected_in_set=min_detected_in_set,
         correction_alpha=correction_alpha,
-    )
-
+    ).convert_dtypes(convert_boolean=False)
     return result
 
 

@@ -188,6 +188,7 @@ def run_pca(
         var_exp = pca.explained_variance_ratio_
         loadings = pd.DataFrame(pca.components_.transpose())
         loadings.index = df.columns
+        # ? apply calculation before transposition on columns (for performance)
         values = {
             index: np.sqrt(np.power(row, 2).sum()) for index, row in loadings.iterrows()
         }
