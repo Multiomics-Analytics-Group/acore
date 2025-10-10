@@ -48,7 +48,9 @@ autodoc_default_options = {
     "members": True,
     "show-inheritance": True,
     "undoc-members": True,
+    "inherited-members": "BaseModel",
 }
+
 ## Generate autodoc stubs with summaries from code
 autosummary_generate = True
 
@@ -137,9 +139,11 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "pandera": ("https://pandera.readthedocs.io/en/stable/", None),
     # "scikit-learn": ("https://scikit-learn.org/stable/", None),
     # "matplotlib": ("https://matplotlib.org/stable/", None),
 }
+
 
 # -- Options for HTML output -------------------------------------------------
 

@@ -26,6 +26,7 @@ import numpy as np
 import pandas as pd
 
 import acore.differential_regulation as ad
+import acore.types
 
 dsp_pandas.format.set_pandas_options(
     max_columns=9,
@@ -83,6 +84,19 @@ omics = np.log2(omics + 1)
 omics
 
 # %% [markdown]
+# Check if all values are numeric as this is required for differential analysis
+
+# %%
+acore.types.check_numeric_dataframe(omics)
+
+# %% [markdown]
+# Validate the schema of the omics DataFrame. Builds and then uses the schema on the
+# same data frame (experimental)
+
+# %%
+acore.types.build_schema_all_floats(omics).validate(omics)
+
+# %% [markdown]
 # For easier inspection we just sample 100 protein groups. Remove this step in a
 # real analysis.
 
@@ -104,6 +118,11 @@ clinic[["age", "male", "AD"]].describe()
 omics_and_clinic = omics.join(clinic[["age", "male", "AD"]])
 omics_and_clinic
 
+# %% [markdown]
+# Check that the added clinical metadata is numeric
+
+# %%
+acore.types.check_numeric_dataframe(omics_and_clinic)
 
 # %% [markdown]
 # ## Checking missing data
@@ -226,6 +245,11 @@ anova = (
     .sort_values(by="padj")
 )
 anova
+
+# %%
+# ToDo: Something is wrong with the mean and std dev calculations for each group
+# FC is also calculated along means and std dev.
+anova.describe().T
 
 # %% [markdown]
 # Set subject to None
