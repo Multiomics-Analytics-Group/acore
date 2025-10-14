@@ -1,5 +1,6 @@
-import numpy as np 
+import numpy as np
 import pandas as pd
+
 
 def _permute(*groups, rng=np.random.default_rng(seed=12345)):
     """
@@ -31,7 +32,7 @@ def _permute(*groups, rng=np.random.default_rng(seed=12345)):
     return new_groups
 
 
-def _contingency_table(*groups, to_np:bool=True)-> np.array:
+def _contingency_table(*groups, to_np: bool = True) -> np.array:
     """
     Create a contingency table from the provided groups.
 
@@ -52,12 +53,13 @@ def _contingency_table(*groups, to_np:bool=True)-> np.array:
         if not isinstance(group, (list, pd.Series, np.ndarray)):
             raise TypeError("Each group must be a list, pandas Series, or numpy array.")
 
-
     # MAIN FUNCTION
     # Create contingency table
-    table = pd.concat(
-        [pd.Series(group).value_counts() for group in groups], axis=1
-    ).fillna(0).T
+    table = (
+        pd.concat([pd.Series(group).value_counts() for group in groups], axis=1)
+        .fillna(0)
+        .T
+    )
 
     if to_np:
         return table.to_numpy()
@@ -80,4 +82,3 @@ def _check_degeneracy(array: np.ndarray) -> bool:
         True if the conditions are degenerate, False otherwise.
     """
     return np.all(array == array[0])
-

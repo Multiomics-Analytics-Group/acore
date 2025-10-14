@@ -1,19 +1,14 @@
 import numpy as np
-import pandas as pd
 from scipy.stats import (
-    chi2_contingency, 
+    chi2_contingency,
     ttest_rel,
     ttest_ind,
     f_oneway,
 )
+from .internal_functions import _permute, _contingency_table, _check_degeneracy
 import warnings
-warnings.simplefilter("always", UserWarning)
 
-from .internal_functions import (
-    _permute, 
-    _contingency_table, 
-    _check_degeneracy
-)
+warnings.simplefilter("always", UserWarning)
 
 
 def paired_permutation(
@@ -22,7 +17,7 @@ def paired_permutation(
     metric: str = "t-statistic",
     n_permutations: int = 10000,
     rng: np.random.Generator = np.random.default_rng(seed=12345),
-    **kwargs
+    **kwargs,
 ) -> dict:
     """
     Perform a permutation test for paired samples.
@@ -49,14 +44,14 @@ def paired_permutation(
         - 'metric': Metric function used.
         - 'observed': Observed metric value.
         - 'p_value': Permutation test p-value (np.nan if degenerate).
-    """    # Validate input
+    """  # Validate input
     if not isinstance(cond1, np.ndarray) or not isinstance(cond2, np.ndarray):
         raise TypeError("Input must be numpy arrays.")
     if cond1.shape != cond2.shape:
         raise ValueError("Input arrays must have the same shape.")
 
     # paired differences
-    diff = cond1-cond2
+    diff = cond1 - cond2
     args = [diff]
 
     # compute observed metric
@@ -87,11 +82,13 @@ def paired_permutation(
     for _ in range(n_permutations):
         # randomly flip direction of differences
         permuted_diff = diff * rng.choice([-1, 1], size=diff.shape)
-        new_cond1 = np.where((permuted_diff==diff), cond1, cond2)
-        new_cond2 = np.where((permuted_diff==diff), cond2, cond1)
+        new_cond1 = np.where((permuted_diff == diff), cond1, cond2)
+        new_cond2 = np.where((permuted_diff == diff), cond2, cond1)
         # postcondition check
         if not (permuted_diff == (new_cond1 - new_cond2)).all():
-            raise ArithmeticError("Postcondition failed: Issue with permuted differences")
+            raise ArithmeticError(
+                "Postcondition failed: Issue with permuted differences"
+            )
         # prep args
         if metric == "t-statistic":
             new_args = [new_cond1, new_cond2]
@@ -119,17 +116,13 @@ def paired_permutation(
         # Compute p-value
         p_value = np.mean(permuted_f >= abs_met)
 
-        return {
-            "metric": calculator,
-            "observed": observed_metric,
-            "p_value": p_value
-        }
+        return {"metric": calculator, "observed": observed_metric, "p_value": p_value}
 
 
 def chi2_permutation(
     *groups,
     n_permutations: int = 10000,
-    rng: np.random.Generator = np.random.default_rng(seed=12345)
+    rng: np.random.Generator = np.random.default_rng(seed=12345),
 ) -> dict:
     """
     Perform a permutation test for categorical data using the chi-squared statistic.
@@ -169,10 +162,7 @@ def chi2_permutation(
     # Compute p-value
     p_value = np.mean(permuted_chi2 >= observed_chi2)
 
-    return {
-        "observed": observed_test,
-        "p_value": p_value
-    }
+    return {"observed": observed_test, "p_value": p_value}
 
 
 def indep_permutation(
@@ -181,7 +171,7 @@ def indep_permutation(
     metric: str = "t-statistic",
     n_permutations: int = 10000,
     rng: np.random.Generator = np.random.default_rng(seed=12345),
-    **kwargs
+    **kwargs,
 ) -> dict:
     """
     Perform a permutation test for independent samples.
@@ -236,7 +226,7 @@ def indep_permutation(
         )
 
     # compute observed metric
-    if stat: 
+    if stat:
         observed_metric = calculator(group1, group2, **kwargs)
     else:
         observed_metric = abs(calculator(group1) - calculator(group2))
@@ -258,13 +248,4 @@ def indep_permutation(
     # Compute p-value
     p_value = np.mean(permuted_f >= abs_met)
 
-    return {
-        "metric": calculator,
-        "observed": observed_metric,
-        "p_value": p_value
-    }
-
-
-
-
-
+    return {"metric": calculator, "observed": observed_metric, "p_value": p_value}
