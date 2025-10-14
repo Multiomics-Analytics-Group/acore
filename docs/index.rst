@@ -19,6 +19,7 @@ Acore documentation
    api_examples/normalization_analysis
    api_examples/ANCOVA_analysis
    api_examples/enrichment_analysis
+   api_examples/permutation_testing
 
 .. toctree::
    :maxdepth: 1

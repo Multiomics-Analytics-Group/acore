@@ -1,4 +1,4 @@
-run_id_enf,run_id_inf,sam_source,sam_read,abundance_enf,abundance_inf
+eff_id,inf_id,sampling_location,sampling_read,eff_abundance,inf_abundance
 ERR2985255,ERR2814663,TG,READ2 Taxonomy ID:256318,3.2572833167019404,4.226818522502555
 ERR2985256,ERR2814664,MN,READ2 Taxonomy ID:256318,2.5728406558389647,3.8471905353288207
 ERR2985257,ERR2814651,AH,READ1 Taxonomy ID:256318,4.298777376040054,4.08684074171776
