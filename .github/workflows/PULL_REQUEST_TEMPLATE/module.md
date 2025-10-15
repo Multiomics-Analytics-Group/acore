@@ -17,6 +17,6 @@ Add a subpackage (as new model) to core.
 - [ ] Add a relatively small and public dataset to the `data` folder, or reuse an existing one for testing
 - [ ] Create an **api example jupyter notebook** in the `docs/api_examples` folder with that data
 - [ ] Use **jupytext** to sync the Jupyter notebook with a Python script
-- [ ] Update `index.md` file in the `docs` folder with the new example
+- [ ] Update `index.rst` file in the `docs` folder with the new example
 - [ ] Create **test script** in the `/test` folder with the name of the subpackage or module
       using pytest or unittests to test your new functionality.
