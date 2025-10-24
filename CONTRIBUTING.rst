@@ -70,7 +70,7 @@ advanced editor to help you with some of the common steps described below, e.g.
     $ cd acore/
     $ python -m venv .env
     $ source .env/bin/activate
-    $ pip install -e .[dev]
+    $ pip install -e ".[dev]"
 
 If you work on a Windows shell, see the docs for instructions: 
 `How venvs work <https://docs.python.org/3/library/venv.html#how-venvs-work>`_
