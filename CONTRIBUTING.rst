@@ -125,7 +125,7 @@ Before you submit a pull request, check that it meets these guidelines:
 3. The pull request should pass the workflows on GitHub.
 
 See for example the PR-Template for a module: 
-`Add module PR template <https://github.com/Multiomics-Analytics-Group/acore/blob/main/.github/PULL_REQUEST_TEMPLATE/module.md>`_.
+`Add module PR template <https://github.com/Multiomics-Analytics-Group/acore/blob/main/.github/workflows/PULL_REQUEST_TEMPLATE/module.md>`_.
 
 
 
