@@ -11,3 +11,9 @@ clean:
 clean_build:
 	rm -rf $(CLEAN_BUILD_DIRS)
 
+build:
+	sphinx-apidoc --force --implicit-namespaces --module-first -o reference ../src/acore
+	python fetch_files.py
+	python split_readme.py
+	sphinx-build -n -W --keep-going -b html ./ ./_build/
+
