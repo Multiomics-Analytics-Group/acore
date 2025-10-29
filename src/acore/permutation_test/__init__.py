@@ -5,10 +5,16 @@ from scipy.stats import (
     ttest_ind,
     f_oneway,
 )
-from .internal_functions import _permute, _contingency_table, _check_degeneracy
+from .internal_functions import (
+    _permute, 
+    _contingency_table, 
+    _check_degeneracy
+)
 import warnings
 
 warnings.simplefilter("always", UserWarning)
+
+from acore.types.permutation_test import PermutationResult
 
 
 def paired_permutation(
@@ -107,16 +113,23 @@ def paired_permutation(
         )
         warnings.warn(identical_warn)
 
-        return {
+        val_result = PermutationResult.model_validate({
             "metric": calculator,
             "observed": observed_metric,
             "p_value": np.nan,
-        }
+        })
+        
     else:
         # Compute p-value
         p_value = np.mean(permuted_f >= abs_met)
 
-        return {"metric": calculator, "observed": observed_metric, "p_value": p_value}
+        val_result = PermutationResult.model_validate({
+            "metric": calculator,
+            "observed": observed_metric,
+            "p_value": p_value
+        })
+
+    return val_result.model_dump()
 
 
 def chi2_permutation(
@@ -162,7 +175,12 @@ def chi2_permutation(
     # Compute p-value
     p_value = np.mean(permuted_chi2 >= observed_chi2)
 
-    return {"observed": observed_test, "p_value": p_value}
+    val_result = PermutationResult.model_validate({
+        "observed": observed_test,
+        "p_value": p_value
+    })
+
+    return val_result.model_dump(exclude_none=True)
 
 
 def indep_permutation(
@@ -248,4 +266,10 @@ def indep_permutation(
     # Compute p-value
     p_value = np.mean(permuted_f >= abs_met)
 
-    return {"metric": calculator, "observed": observed_metric, "p_value": p_value}
+    val_result = PermutationResult.model_validate({
+        "metric": calculator,
+        "observed": observed_metric,
+        "p_value": p_value
+    })
+
+    return val_result.model_dump()
