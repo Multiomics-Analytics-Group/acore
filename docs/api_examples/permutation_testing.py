@@ -59,7 +59,9 @@
 # %%
 import pandas as pd 
 
-df_data = pd.read_csv('/Users/anglup/GitHub/acore/example_data/mgnify/Ju2018_GO0017001_enf_inf_paired.csv')
+df_data = pd.read_csv(
+    'https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/refs/heads/anglup-learning/example_data/mgnify/Ju2018_GO0017001_enf_inf_paired.csv'
+)
 # sanity check 
 df_data.head()
 
