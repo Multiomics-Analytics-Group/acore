@@ -552,13 +552,13 @@ def run_ssgsea(
     index.index = name
     df = df.set_index("Name").transpose()
 
-    if not annotation_col in annotation:
+    if annotation_col not in annotation:
         raise ValueError(
             f"Missing Annotation Column: {annotation_col}"
             " as specified by `annotation_col`"
         )
 
-    if not identifier_col in annotation:
+    if identifier_col not in annotation:
         raise ValueError(
             f"Missing Identifier Column: {identifier_col}"
             " as specified by `identifier_col`"

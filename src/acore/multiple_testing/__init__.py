@@ -207,7 +207,7 @@ def correct_pairwise_ttest(df, alpha, correction="fdr_bh"):
 
     required_col = ["group1", "group2", "posthoc pvalue"]
     for _col in required_col:
-        if not _col in df:
+        if _col not in df:
             raise KeyError(f"Did not find '{_col}' in columns of data.")
 
     for comparison in df.groupby(["group1", "group2"]).groups:

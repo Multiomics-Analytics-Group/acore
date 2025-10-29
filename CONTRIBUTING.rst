@@ -70,7 +70,7 @@ advanced editor to help you with some of the common steps described below, e.g.
     $ cd acore/
     $ python -m venv .env
     $ source .env/bin/activate
-    $ pip install -e .[dev]
+    $ pip install -e ".[dev]"
 
 If you work on a Windows shell, see the docs for instructions: 
 `How venvs work <https://docs.python.org/3/library/venv.html#how-venvs-work>`_
@@ -125,7 +125,7 @@ Before you submit a pull request, check that it meets these guidelines:
 3. The pull request should pass the workflows on GitHub.
 
 See for example the PR-Template for a module: 
-`Add module PR template <https://github.com/Multiomics-Analytics-Group/acore/blob/main/.github/PULL_REQUEST_TEMPLATE/module.md>`_.
+`Add module PR template <https://github.com/Multiomics-Analytics-Group/acore/blob/main/.github/workflows/PULL_REQUEST_TEMPLATE/module.md>`_.
 
 
 
