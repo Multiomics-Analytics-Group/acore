@@ -13,7 +13,7 @@
 # ---
 
 # %% [markdown]
-# # Tutorial: Permutation Testing using `acore`
+# # Permutation Tests
 #
 # In this notebook we will demonstrate how to use acore's permutation testing functions on metagenomics data collected by [Ju and colleagues (2018)](https://doi.org/10.1038/s41396-018-0277-8).
 #
