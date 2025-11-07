@@ -1,4 +1,5 @@
 """Run UMAP on DataFrame and return result."""
+
 import pandas as pd
 import umap
 
