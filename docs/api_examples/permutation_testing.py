@@ -30,7 +30,7 @@
 #
 # ### Preprocessing of abundances
 # - To account for technical variation due to sequencing technology limitations, we first transform the abundance values so they are relative to the total reads for the sample aka getting relative abundances.
-# - The relative abundances are compositional data (CoDa) so we map them to unconstrained vectors using centred log-ratio transformation `acore.microbiome.internal_functions.calc_clr()` to not violate assumptions of any frequentist stats we do
+# - The relative abundances are compositional data (CoDa) so we map them to unconstrained vectors using centred log-ratio transformation [`acore.microbiome.internal_functions.calc_clr`](`acore.microbiome.internal_functions.calc_clr`) to not violate assumptions of any frequentist stats we do
 #
 # ### Preprocessing of the metadata
 # - the sample metadata needed for this demo (sampling location) were available in their "sample-desc"
