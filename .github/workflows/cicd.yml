@@ -1,0 +1,101 @@
+name: Python package
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  release:
+    types: [published]
+    
+jobs:
+
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: psf/black@stable
+      - uses: isort/isort-action@v1
+  lint:
+    name: Lint with ruff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install ruff
+        run: |
+          pip install ruff
+      - name: Lint with ruff
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          ruff check src
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [
+          "3.9",
+          "3.10", 
+          "3.11",
+          "3.12",
+          "3.13"
+        ]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install ".[dev]"
+    - name: Test with pytest
+      run: python -m pytest tests
+
+  build_source_dist:
+    name: Build source distribution
+    if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install build
+        run: python -m pip install build
+
+      - name: Run build
+        run: python -m build --sdist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ./dist/*.tar.gz
+
+
+  publish:
+    name: Publish package
+    if: startsWith(github.ref, 'refs/tags')
+    permissions:
+      id-token: write
+    needs:
+      - format
+      - lint
+      - test
+      - build_source_dist
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: artifact
+          path: ./dist
+      # register PyPI integration:
+      # https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
