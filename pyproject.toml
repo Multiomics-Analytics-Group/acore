@@ -18,7 +18,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "numpy<2.1.0", # as in inmoose... 
+    "numpy",
     "pandas",
     "dsp-pandas", # has only pandas related dependencies
     "vuecore",
