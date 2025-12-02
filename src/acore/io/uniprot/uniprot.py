@@ -177,8 +177,6 @@ def get_id_mapping_results_stream(url):
     return decode_results(request, file_format, compressed)
 
 
-
-
 if __name__ == "__main__":
     # id mapping is used to create a link to a query (you can see the json in the browser)
     # UniProtKB is the knowleadgebase integrating all kind of other databases
