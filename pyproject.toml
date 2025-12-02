@@ -1,6 +1,8 @@
 [project]
-authors = [{ name = "Alberto Santos Delgado", email = "albsad@dtu.dk" },
-           { name = "Henry Webel", email = "heweb@dtu.dk"}]
+authors = [
+  { name = "Alberto Santos Delgado", email = "albsad@dtu.dk" },
+  { name = "Henry Webel", email = "heweb@dtu.dk" },
+]
 name = "acore"
 dynamic = ["version"]
 description = "A Python package with statistical functions to analyse multimodal molecular data"
@@ -8,38 +10,38 @@ license = { text = "GNU General Public License v3" }
 readme = "README.rst"
 requires-python = ">=3.9"
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    "Natural Language :: English",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
 ]
 
 dependencies = [
-    "numpy",
-    "pandas",
-    "dsp-pandas", # has only pandas related dependencies
-    "vuecore",
-    "scipy",
-    "scikit-learn>=1.5",
-    "networkx",
-    "biopython",
-    "combat",
-    "gseapy!=1.1.5",
-    "kmapper",
-    "lifelines",
-    "pingouin",
-    "python-louvain",
-    "PyWGCNA!=2.2.0", # to fix.
-    "snfpy",
-    "umap-learn",
-    "statsmodels",
-    "inmoose", # combat batch correction
-    "requests",
-    "rarfile",
-    "pandera",
+  "numpy",
+  "pandas",
+  "dsp-pandas",        # has only pandas related dependencies
+  "vuecore",
+  "scipy",
+  "scikit-learn>=1.5",
+  "networkx",
+  "biopython",
+  "combat",
+  "gseapy!=1.1.5",
+  "kmapper",
+  "lifelines",
+  "pingouin",
+  "python-louvain",
+  "PyWGCNA!=2.2.0",    # to fix.
+  "snfpy",
+  "umap-learn",
+  "statsmodels",
+  "inmoose",           # combat batch correction
+  "requests",
+  "rarfile",
+  "pandera",
 ]
 
 [project.optional-dependencies]
