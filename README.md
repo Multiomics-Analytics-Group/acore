@@ -8,7 +8,7 @@
 | :-------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Package**           | [![PyPI Latest Release](https://img.shields.io/pypi/v/acore.svg)][acore-pypi] [![Supported versions](https://img.shields.io/pypi/pyversions/acore.svg)][acore-pypi] [![Supported implementations](https://img.shields.io/pypi/implementation/acore.svg)][acore-pypi] [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)][gpl-license] |
 | **Documentation**     | [![View - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=flat)][acore-docs] [![made-with-sphinx-doc](https://img.shields.io/badge/Made%20with-Sphinx-1f425f.svg)](https://www.sphinx-doc.org/) ![Docs](https://readthedocs.org/projects/analytics-core/badge/?style=flat) [![CC BY 4.0][cc-by-shield]][acore-license]            |
-| **Build**             | [![CI](https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/tox-gha.yml/badge.svg)][ci-gh-action]                                                                                                                                                                                                                                          |
+| **Build**             | [![CI](https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/cicd.yml/badge.svg)][ci-gh-action]                                                                                                                                                                                                                                             |
 | **Discuss on GitHub** | [![GitHub issues](https://img.shields.io/github/issues/Multiomics-Analytics-Group/acore)][issues] [![GitHub pull requests](https://img.shields.io/github/issues-pr/Multiomics-Analytics-Group/acore)][pulls]                                                                                                                                                |
 
 ## Table of contents:
@@ -82,7 +82,7 @@ We appreciate your feedback! If you have any comments, suggestions, or run into 
 [acore-docs]: https://analytics-core.readthedocs.io/
 [cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
 [gpl-license]: https://www.gnu.org/licenses/gpl-3.0
-[ci-gh-action]: https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/tox-gha.yml
+[ci-gh-action]: https://github.com/Multiomics-Analytics-Group/acore/actions/workflows/cicd.yml
 [issues]: https://github.com/Multiomics-Analytics-Group/acore/issues
 [pulls]: https://github.com/Multiomics-Analytics-Group/acore/pulls
 [vuegen]: https://github.com/Multiomics-Analytics-Group/vuegen
