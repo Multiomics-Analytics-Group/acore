@@ -14,13 +14,14 @@
 # ---
 
 # %% [markdown]
-# # Normalization of samples in a dataset example
+# # Batch correction of samples in a dataset example
 #
 # We will explore an Alzheimer dataset where the data was collected in four different sites.
 # We will see that the sites have a an effect where the data is in principal component space
 # and in UMAP space. We will then normalize the data and see how the effect on these plots.
 #
-# Refers to the [`acore.normalization`](acore.normalization) module.
+# Refers to the [`acore.batch_correction`](acore.batch_correction) module.
+
 
 # %% tags=["hide-output"]
 # %pip install acore
@@ -36,8 +37,8 @@ import sklearn.impute
 import sklearn.preprocessing
 import vuecore.decomposition
 
+import acore.batch_correction
 import acore.decomposition
-import acore.normalization
 
 
 def plot_umap(X_scaled, y, meta_column, random_state=42) -> plt.Axes:
@@ -189,146 +190,42 @@ if METACOL_LABEL is None:
 y = metadata[METACOL_LABEL].astype("category")
 
 # %% [markdown]
-# For simplicity we normalize here all samples together, but normally you would need to
-# apply the normalization from you training data to the test data. So see these examples
-# here as a way to do it for your training data.
+# ## Before batch correction
+# Explore data in PCA and UMAP space before batch correction
 
-# %% [markdown]
-# ### Fill missing values for preliminary plots
-
-# %% [markdown]
-# Impute using median to impute (before scaling, which can be changed).
 
 # %% tags=["hide-input"]
-omics_imputed = median_impute(omics)
-assert omics_imputed.isna().sum().sum() == 0
-omics_imputed.shape
+omics_imp = median_impute(omics)
+omics_imp_scaled = standard_normalize(omics_imp)
+PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
+ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
+
 
 # %% [markdown]
-# Explained variance by first four principal components in data.
-
-# %% tags=["hide-input"]
-PCs, pca = acore.decomposition.pca.run_pca(omics_imputed, n_components=4)
-ax = vuecore.decomposition.plot_explained_variance(pca)
-ax.locator_params(axis="x", integer=True)
-
-# %% [markdown]
-# ## Normalization of samples in a dataset
-# We will use the `acore.normalization` module to normalize the data.
+# ## Combat normalization
+# Correct for batch effects in the data using a robust regression approach normalizing
+# mean and scale effects out for each feature by batch. Assumes normally distributed data.
 #
-# We will do it for each of the data on the omics dataset which is log transformed,
-# but not yet imputed and normalized. Then we will reapply standard
-# normalization before replotting the PCA and UMAP plots. The execption is combat as it
-# need complete data.
-
-# %% tags=["hide-input"]
-omics
-
-
-# %% [markdown]
-# ## Median normalization
-# Substracts a constant from all features of a sample. All samples will have the same
-# global median.
+# > ⚠️ Combat needs imputed data
 
 # %%
 # %%time
-X = acore.normalization.normalize_data(omics, "median")
+X = median_impute(omics)
+X = acore.batch_correction.combat_batch_correction(
+    X.join(y),
+    batch_col="site",
+)
 X
 
 # %% tags=["hide-input"]
-omics_imp = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp)
-PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
-ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
+# omics_imp = median_impute(X)
+# omics_imp_scaled = standard_normalize(omics_imp)
+PCs, fig = run_and_plot_pca(X, y, METACOL_LABEL, n_components=4)
+ax = plot_umap(X, y, METACOL_LABEL)
 
 # %% [markdown]
-# See change by substracting median normalized data from original data.
+# See change by substracting combat normalized data from original data.
+# - NAs in original data will remain NA below (no imputation done here)
 
 # %% tags=["hide-input"]
 omics - X
-
-# %%
-# %% [markdown]
-# ## Z-score normalization
-# Normalize a sample by it's mean and standard deviation.
-
-# %%
-# %%time
-X = acore.normalization.normalize_data(omics, "zscore")
-X
-
-# %% tags=["hide-input"]
-omics_imp = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp)
-PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
-ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
-
-# %% [markdown]
-# See change by substracting z-score normalized data from original data.
-
-# %% tags=["hide-input"]
-omics_imp_scaled - X
-
-# %% [markdown]
-# ## Median Polish Normalization
-# - normalize iteratively features and samples to have zero median.
-
-# %%
-# %%time
-X = acore.normalization.normalize_data(omics, "median_polish")
-X
-
-# %% tags=["hide-input"]
-omics_imp = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp)
-PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
-ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
-
-# %% [markdown]
-# See change by substracting median polish normalized data from original data.
-
-# %% tags=["hide-input"]
-omics_imp_scaled - X
-
-# %% [markdown]
-# ## Quantile normalization
-# quantile normalize each feature column.
-
-# %%
-# %%time
-X = acore.normalization.normalize_data(omics, "quantile")
-X
-
-# %% tags=["hide-input"]
-omics_imp = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp)
-PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
-ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
-
-# %%
-omics - X
-
-
-# %% [markdown]
-# ## Linear normalization
-
-# %%
-# %%time
-X = acore.normalization.normalize_data(omics, "linear")
-X
-
-# %% tags=["hide-input"]
-omics_imp = median_impute(X)
-omics_imp_scaled = standard_normalize(omics_imp)
-PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
-ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
-
-# %% tags=["hide-input"]
-omics - X
-
-# %% [markdown]
-# ## Summmary
-# Besides the median polish normalization, the structure of the data is not changed
-# too much by the normalization using this Alzheimer example. This notebook can be opened
-# on colab and might be a good starting point for investigating the effect of normalization
-# on your data - or to disect some approaches further.

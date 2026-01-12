@@ -17,6 +17,7 @@ Acore documentation
 
    api_examples/exploratory_analysis
    api_examples/normalization_analysis
+   api_examples/batch_correction
    api_examples/ANCOVA_analysis
    api_examples/enrichment_analysis
 
