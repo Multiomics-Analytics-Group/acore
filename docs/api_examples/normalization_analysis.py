@@ -20,7 +20,7 @@
 # We will see that the sites have a an effect where the data is in principal component space
 # and in UMAP space. We will then normalize the data and see how the effect on these plots.
 #
-# Refers to the `acore.normalization` module.
+# Refers to the [`acore.normalization`](acore.normalization) module.
 
 # %% tags=["hide-output"]
 # %pip install acore
