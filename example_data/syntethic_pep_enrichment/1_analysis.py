@@ -8,6 +8,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from scipy.stats import fisher_exact, hypergeom
 
 import acore.enrichment_analysis as ea
 
@@ -57,8 +58,6 @@ res
 # playing with the components of single test to understand
 # fisher exact test and how it works:
 
-# %%
-from scipy.stats import fisher_exact
 
 # %%
 num_in_foreground = 4
@@ -87,8 +86,6 @@ print(f"Fisher exact test p-value: {res.pvalue:.4f}")
 # - foreground population and number of peptides in foreground are important
 
 # %%
-from scipy.stats import hypergeom
-
 [M, n, N] = [background_pop, foreground_pop, num_in_background + num_in_foreground]
 rv = hypergeom(M, n, N)
 x = np.arange(0, n + 1)
