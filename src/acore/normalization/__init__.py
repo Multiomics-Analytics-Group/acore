@@ -10,12 +10,6 @@ from __future__ import annotations
 
 import pandas as pd
 
-# PyPI pycombat as described in the docstring was never used:
-# https://pypi.org/project/pycombat/
-# https://github.com/epigenelabs/inmoose is the update from combat.pycombat on PyPI
-# from combat.pycombat import pycombat
-from inmoose.pycombat import pycombat_norm
-
 from .strategies import (
     linear_normalization,
     median_normalization,
@@ -26,8 +20,6 @@ from .strategies import (
 )
 
 __all__ = ["combat_batch_correction", "normalize_data", "normalize_data_per_group"]
-
-
 
 
 def normalize_data_per_group(
