@@ -47,8 +47,6 @@ def test_paired_permutation_reject(random_low, random_high):
     cond2 = random_high
     for stat in ["t-statistic", "mean", "median"]:
         result = pt.paired_permutation(cond1, cond2, metric=stat)
-        print(result)
-        print(ttest_rel(cond1, cond2))
         assert result["p_value"] < 0.05
 
 

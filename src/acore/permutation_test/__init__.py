@@ -69,7 +69,7 @@ def paired_permutation(
     else:
         raise ValueError(
             "Invalid metric specified. Acceptable metrics are: "
-            "'t-statistic', 'mean', 'median', or a custom function"
+            "'t-statistic', 'mean', 'median', or a custom function "
             "that takes `cond1-cond2` as input."
         )
 
@@ -234,7 +234,7 @@ def indep_permutation(
     else:
         raise ValueError(
             "Invalid metric specified. Acceptable metrics are: "
-            "'t-statistic', 'mean', 'median', or a custom function"
+            "'t-statistic', 'mean', 'median', or a custom function "
             "that takes each group as input."
         )
 
