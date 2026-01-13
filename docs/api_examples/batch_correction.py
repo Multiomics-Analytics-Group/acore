@@ -14,7 +14,7 @@
 # ---
 
 # %% [markdown]
-# # Batch correction of samples in a dataset example
+# # Batch correction of samples
 #
 # We will explore an Alzheimer dataset where the data was collected in four different sites.
 # We will see that the sites have a an effect where the data is in principal component space

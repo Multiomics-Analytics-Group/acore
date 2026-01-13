@@ -14,7 +14,7 @@
 # ---
 
 # %% [markdown]
-# # Normalization of samples in a dataset example
+# # Normalization of samples
 #
 # We will explore an Alzheimer dataset where the data was collected in four different sites.
 # We will see that the sites have a an effect where the data is in principal component space
