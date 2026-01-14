@@ -23,6 +23,7 @@ api_examples/batch_correction
 api_examples/exploratory_analysis
 api_examples/ANCOVA_analysis
 api_examples/enrichment_analysis
+api_examples/permutation_testing
 ```
 
 ```{toctree}
