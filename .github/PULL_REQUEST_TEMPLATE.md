@@ -21,4 +21,4 @@ Fixes #<NUM>
 
 ### Checks
 
-- [ ] Look at [CONTRIBUTING.md](../CONTRIBUTING.md) for guidance on how to contribute.
+- [ ] Look at [CONTRIBUTING.md](https://github.com/Multiomics-Analytics-Group/acore/blob/HEAD/CONTRIBUTING.md) for guidance on how to contribute.
