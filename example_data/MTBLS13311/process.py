@@ -1,0 +1,29 @@
+# %% [markdown]
+# # Process script for MTBLS13311 example dataset
+
+# %%
+import pandas as pd
+import numpy as np
+
+
+#%%
+fname_meta = "s_MTBLS13411.txt"
+fname_data = "m_MTBLS13411_LC-MS_alternating_hilic_metabolite_profiling_v2_maf.tsv"
+
+# %%
+metadata = pd.read_csv(fname_meta, index_col=0, sep="\t")
+metadata
+
+# %%
+data = pd.read_csv(fname_data, sep="\t", index_col="metabolite_identification")
+data
+
+# %%
+df = data[metadata.index].T
+df = np.log2(df)
+df
+
+# %%
+df.to_csv("MTBLS13411_processed_data.csv")
+
+# %%
