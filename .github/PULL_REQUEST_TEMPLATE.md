@@ -2,7 +2,7 @@
 Please complete the following sections when you submit your pull request.
 Note that text within html comment tags will not be rendered.
 
-Have a look at the CONTRIBUTING file in the root of the repository. -->
+Have a look at the CONTRIBUTING.md file in the root of the repository. -->
 
 ### Summary
 
@@ -18,3 +18,7 @@ Fixes #<NUM>
 
 - [ ] ...
 - [ ] ...
+
+### Checks
+
+- [ ] Look at [CONTRIBUTING.md](../CONTRIBUTING.md) for guidance on how to contribute.
