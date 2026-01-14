@@ -64,8 +64,8 @@ git clone https://github.com/Multiomics-Analytics-Group/acore.git
 cd acore/
 python -m venv .env
 source .env/bin/activate
+
 pip install -e ".[dev]"
-```
 
 If you work on Windows, see the docs: https://docs.python.org/3/library/venv.html#how-venvs-work
 
