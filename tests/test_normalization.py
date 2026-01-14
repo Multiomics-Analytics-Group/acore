@@ -1,6 +1,6 @@
 import pandas as pd
 
-from acore import normalization as normalization
+from acore import batch_correction, normalization
 
 
 def test_combat_batch_correction():
@@ -21,7 +21,7 @@ def test_combat_batch_correction():
         3: {"a": 3.3051631491010953, "b": 4.671866609626733, "c": 9.362703235564519},
         4: {"a": 2.537904319175784, "b": 3.589114860839033, "c": 6.885375054723476},
     }
-    actual = normalization.combat_batch_correction(data, "batch").to_dict(
+    actual = batch_correction.combat_batch_correction(data, "batch").to_dict(
         orient="index"
     )
     assert actual == expected
