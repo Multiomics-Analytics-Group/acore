@@ -14,11 +14,11 @@
 # ---
 
 # %% [markdown]
-# # Batch correction of samples in a dataset example
+# # Batch correction of samples
 #
 # We will explore an Alzheimer dataset where the data was collected in four different sites.
 # We will see that the sites have a an effect where the data is in principal component space
-# and in UMAP space. We will then normalize the data and see how the effect on these plots.
+# and in UMAP space. We will then batch correct the data and see how the effect on these plots.
 #
 # Refers to the [`acore.batch_correction`](acore.batch_correction) module.
 
@@ -197,14 +197,15 @@ y = metadata[METACOL_LABEL].astype("category")
 # %% tags=["hide-input"]
 omics_imp = median_impute(omics)
 omics_imp_scaled = standard_normalize(omics_imp)
-PCs, fig = run_and_plot_pca(omics_imp_scaled, y, METACOL_LABEL, n_components=4)
-ax = plot_umap(omics_imp_scaled, y, METACOL_LABEL)
+PCs, fig = run_and_plot_pca(omics_imp, y, METACOL_LABEL, n_components=4)
+ax = plot_umap(omics_imp, y, METACOL_LABEL)
 
 
 # %% [markdown]
-# ## Combat normalization
-# Correct for batch effects in the data using a robust regression approach normalizing
-# mean and scale effects out for each feature by batch. Assumes normally distributed data.
+# ## Combat batch correction
+# Correct for batch effects in the data using a robust regression approach removing
+# mean and scale effects out for each provided co-variate by batch.
+# Assumes normally distributed data.
 #
 # > ⚠️ Combat needs imputed data
 
@@ -217,14 +218,15 @@ X = acore.batch_correction.combat_batch_correction(
 )
 X
 
+# %% [markdown]
+# Plot PCA and UMAP after batch correction on standard normalized data
+
 # %% tags=["hide-input"]
-# omics_imp = median_impute(X)
-# omics_imp_scaled = standard_normalize(omics_imp)
-PCs, fig = run_and_plot_pca(X, y, METACOL_LABEL, n_components=4)
+PCs, fig = run_and_plot_pca(standard_normalize(X), y, METACOL_LABEL, n_components=4)
 ax = plot_umap(X, y, METACOL_LABEL)
 
 # %% [markdown]
-# See change by substracting combat normalized data from original data.
+# See change by substracting combat corrected data from original data.
 # - NAs in original data will remain NA below (no imputation done here)
 
 # %% tags=["hide-input"]
