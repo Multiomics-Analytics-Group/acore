@@ -1,12 +1,10 @@
 # %% [markdown]
 # # Process script for MTBLS13311 example dataset
 
-# %%
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-
-#%%
+# %%
 fname_meta = "s_MTBLS13411.txt"
 fname_data = "m_MTBLS13411_LC-MS_alternating_hilic_metabolite_profiling_v2_maf.tsv"
 
