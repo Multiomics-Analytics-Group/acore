@@ -25,3 +25,13 @@ df
 df.to_csv("MTBLS13411_processed_data.csv")
 
 # %%
+factor = "Factor Value[Strain type]"
+group = "group"
+
+metadata[group] = metadata.index.str.split("-").str[0]
+metadata[[factor, group]]
+
+# %%
+metadata[[factor, group]].to_csv("MTBLS13411_meta_data.csv")
+
+# %%

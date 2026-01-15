@@ -1,6 +1,21 @@
 # MTBLS13411
 
-From MetaboLights, see: [www.ebi.ac.uk/metabolights/editor/MTBLS13411](https://www.ebi.ac.uk/metabolights/editor/MTBLS13411/files)
+From MetaboLights, see:
+[www.ebi.ac.uk/metabolights/editor/MTBLS13411](https://www.ebi.ac.uk/metabolights/editor/MTBLS13411/files)
+
+Supports differential analysis, except ANCOVA as no covariates are available.
+
+```python
+factor = 'Factor Value[Strain type]'
+group = 'group' # was generated based on sample names
+```
+
+Processed data files available:
+
+| File type | Filename                      |
+| --------- | ----------------------------- |
+| omics     | MTBLS13411_processed_data.csv |
+| metadata  | MTBLS13411_meta_data.csv      |
 
 ## Abstract
 
