@@ -5,6 +5,7 @@
 # %pip install acore
 
 # %%
+import matplotlib.pyplot as plt
 import pandas as pd
 
 import acore.exploratory_analysis as ea
@@ -24,6 +25,22 @@ data = pd.DataFrame(
     }
 )
 
+data = (
+    "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
+    "refs/heads/add_metabolomics_data/"
+    "example_data/MTBLS13311/MTBLS13411_processed_data.csv"
+)
+data = pd.read_csv(data, index_col=0)
+data
+
+# %% [markdown]
+# We add the group here based on the sample names. Alternatively you could merge it from
+# the avilable metadata.
+
+# %%
+data["group"] = data.index.str.split("-").str[0]
+data["group"].value_counts()
+
 # %% [markdown]
 # Show first two principal components of the data.
 
@@ -33,24 +50,39 @@ map_names = {
     "x": "PC1",
     "y": "PC2",
 }
-result_dfs, annotation = ea.run_pca(
+results_dfs, annotation = ea.run_pca(
     data, drop_cols=[], annotation_cols=[], group="group", components=2, dropna=True
 )
+pcs, loadings, var_explained = results_dfs
+
+# %%
+TwoVariance(pd.Series(var_explained, index=["PC1", "PC2"]))
+
+# %%
+annotation = AnnotationResult(**annotation)  # .model_dump()
+annotation
+
+# %%
+fig, ax = plt.subplots()
+for i, (group, group_df) in enumerate(pcs.groupby("group")):
+    ax = group_df.rename(columns=map_names).plot.scatter(
+        x="PC1",
+        y="PC2",
+        label=group,
+        c=f"C{i}",
+        ax=ax,
+    )
+_ = ax.set(ylabel=annotation.y_title, xlabel=annotation.x_title)
 
 # %% [markdown]
 # Show what was computed:
 
 # %%
-TwoComponentSchema(result_dfs[0]).rename(columns=map_names)
+TwoComponentSchema(pcs).rename(columns=map_names)
 
 # %%
-TwoLoadingsSchema(result_dfs[1]).rename(columns=map_names)
+TwoLoadingsSchema(loadings).rename(columns=map_names)
 
-# %%
-TwoVariance(pd.Series(result_dfs[2], index=["PC1", "PC2"]))
-
-# %%
-AnnotationResult(**annotation)  # .model_dump()
 
 # %% [markdown]
 # Visualize UMAP low-dimensional embedding of the data.
