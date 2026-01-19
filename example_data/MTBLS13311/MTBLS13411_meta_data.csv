@@ -1,0 +1,22 @@
+Source Name,Factor Value[Strain type],group
+rapZE227Stop-1,phage-resistant,rapZE227Stop
+rapZE227Stop-2,phage-resistant,rapZE227Stop
+rapZE227Stop-3,phage-resistant,rapZE227Stop
+rapZE227Stop-4,phage-resistant,rapZE227Stop
+rapZE227Stop-5,phage-resistant,rapZE227Stop
+rapZE227Stop-6,phage-resistant,rapZE227Stop
+WT-1,Wild Type,WT
+WT-2,Wild Type,WT
+WT-3,Wild Type,WT
+WT-4,Wild Type,WT
+WT-5,Wild Type,WT
+WT-6,Wild Type,WT
+WRP-1,phage-resistant,WRP
+WRP-2,phage-resistant,WRP
+WRP-3,phage-resistant,WRP
+WRP-4,phage-resistant,WRP
+WRP-5,phage-resistant,WRP
+WRP-6,phage-resistant,WRP
+QC-1,,QC
+QC-2,,QC
+QC-3,,QC
