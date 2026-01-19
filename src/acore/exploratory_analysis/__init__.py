@@ -1,3 +1,5 @@
+from typing import Optional
+
 import numpy as np
 import pandas as pd
 import scipy.stats
@@ -18,22 +20,27 @@ def calculate_coefficient_variation(values: np.ndarray) -> np.ndarray:
 
     Example::
 
-        result = calculate_coefficient_variation()
+        result = calculate_coefficient_variation(data)
     """
     cv = scipy.stats.variation(values.apply(lambda x: np.power(2, x)).values) * 100
 
     return cv
 
 
-def get_coefficient_variation(data, drop_columns, group, columns=["name", "y"]):
+def get_coefficient_variation(
+    data: pd.DataFrame,
+    drop_columns: Optional[list[str]] = None,
+    group: str = "group",
+):
     """
     Extracts the coefficients of variation in each group.
 
-    :param data: pandas dataframe with samples as rows and protein identifiers as columns
-                 (with additional columns 'group', 'sample' and 'subject').
+    :param data: pandas.DataFrame with samples as rows and protein identifiers as columns
+                 (with additional columns 'group', 'sample' and 'subject'). The values
+                 should be the original intensities for massspectrometry-based
+                 measurements.
     :param list drop_columns: column labels to be dropped from the dataframe
     :param str group: column label containing group identifiers.
-    :param list columns: names to use for the variable column(s), and for the value column(s)
     :return: Pandas dataframe with columns 'name' (protein identifier),
              'x' (coefficient of variation), 'y' (mean) and 'group'.
 
@@ -42,6 +49,8 @@ def get_coefficient_variation(data, drop_columns, group, columns=["name", "y"]):
         result = get_coefficient_variation(data, drop_columns=['sample', 'subject'], group='group')
     """
     df = data.copy()
+    if drop_columns is None:
+        drop_columns = list()
     formated_df = df.drop(drop_columns, axis=1)
     cvs = formated_df.groupby(group).apply(func=calculate_coefficient_variation)
     cols = formated_df.set_index(group).columns.tolist()
@@ -49,7 +58,7 @@ def get_coefficient_variation(data, drop_columns, group, columns=["name", "y"]):
     for i in cvs.index:
         gcvs = cvs[i].tolist()
         ints = formated_df.set_index(group).mean().values.tolist()
-        tdf = pd.DataFrame(data={"name": cols, "x": gcvs, "y": ints})
+        tdf = pd.DataFrame(data={"name": cols, "mean": gcvs, "coef_of_var": ints})
         tdf[group] = i
 
         if cvs_df.empty:

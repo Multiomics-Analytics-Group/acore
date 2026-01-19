@@ -5,6 +5,8 @@
 # %pip install acore
 
 # %%
+from typing import Optional
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -16,18 +18,33 @@ from acore.types.exploratory_analysis import (
     TwoVariance,
 )
 
-data = pd.DataFrame(
-    {
-        "group": ["A", "A", "B", "B"],
-        "protein1": [1.4, 2.2, 5.3, 4.2],
-        "protein2": [5.6, 0.3, 2.1, 8.1],
-        "protein3": [9.1, 10.01, 11.2, 12.9],
-    }
-)
+
+def make_plot(
+    embeddings,
+    x: str,
+    y: str,
+    annotation: Optional[dict[str, str]] = None,
+    group: str = "group",
+    **kwargs,
+):
+    """Utility function for static plot of dimensionality reductions."""
+    fig, ax = plt.subplots()
+    for i, (group, group_df) in enumerate(embeddings.groupby("group")):
+        ax = group_df.rename(columns=map_names).plot.scatter(
+            x=x,
+            y=y,
+            label=group,
+            c=f"C{i}",
+            ax=ax,
+        )
+    if annotation is not None:
+        _ = ax.set(ylabel=annotation.y_title, xlabel=annotation.x_title)
+    return fig, ax
+
 
 data = (
     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-    "refs/heads/add_metabolomics_data/"
+    "refs/heads/main/"
     "example_data/MTBLS13311/MTBLS13411_processed_data.csv"
 )
 data = pd.read_csv(data, index_col=0)
@@ -63,16 +80,7 @@ annotation = AnnotationResult(**annotation)  # .model_dump()
 annotation
 
 # %%
-fig, ax = plt.subplots()
-for i, (group, group_df) in enumerate(pcs.groupby("group")):
-    ax = group_df.rename(columns=map_names).plot.scatter(
-        x="PC1",
-        y="PC2",
-        label=group,
-        c=f"C{i}",
-        ax=ax,
-    )
-_ = ax.set(ylabel=annotation.y_title, xlabel=annotation.x_title)
+fig, ax = make_plot(pcs, annotation=annotation, **map_names)
 
 # %% [markdown]
 # Show what was computed:
@@ -82,7 +90,6 @@ TwoComponentSchema(pcs).rename(columns=map_names)
 
 # %%
 TwoLoadingsSchema(loadings).rename(columns=map_names)
-
 
 # %% [markdown]
 # Visualize UMAP low-dimensional embedding of the data.
@@ -103,10 +110,27 @@ result, annotation = ea.run_umap(
 )
 
 # %%
-TwoComponentSchema(result["umap"]).rename(columns=map_names)
+annotation = AnnotationResult(**annotation)
+annotation
 
 # %%
-AnnotationResult(**annotation)
+fig, ax = make_plot(result["umap"], annotation=annotation, **map_names)
+TwoComponentSchema(result["umap"]).rename(columns=map_names)
 
 # %% [markdown]
 # Make sure to check the parameter annotations in the API docs.
+
+
+# %% [markdown]
+# ## Correlation analysis
+#
+# ### Coefficient of variation
+# - as of now does an internal data transformation
+
+# %%
+res = ea.get_coefficient_variation(data=data, group="group")
+res
+
+# %%
+map_names = {"x": "mean", "y": "coef_of_var", "group": "group"}
+fig, ax = make_plot(res, **map_names)
