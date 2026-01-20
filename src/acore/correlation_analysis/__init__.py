@@ -12,7 +12,7 @@ from acore.multiple_testing import apply_pvalue_correction
 
 def corr_lower_triangle(df: pd.DataFrame, **kwargs) -> pd.DataFrame:
     """Compute the correlation matrix, returning only unique values (lower triangle).
-    Passes kwargs to pandas.DataFrame.corr method.
+    Passes kwargs to [pandas.DataFrame.corr](pandas.DataFrame.corr) method.
     """
     corr_df = df.corr(**kwargs)
     lower_triangle = pd.DataFrame(np.tril(np.ones(corr_df.shape), -1)).astype(bool)
@@ -22,7 +22,9 @@ def corr_lower_triangle(df: pd.DataFrame, **kwargs) -> pd.DataFrame:
 
 def calculate_correlations(x, y, method="pearson"):
     """
-    Calculates a Spearman (nonparametric) or a Pearson (parametric) correlation coefficient and p-value to test for non-correlation.
+    Calculates a Spearman (nonparametric)
+    or a Pearson (parametric) correlation coefficient
+    and p-value to test for non-correlation.
 
     :param numpy.ndarray x: array 1
     :param numpy.ndarray y: array 2

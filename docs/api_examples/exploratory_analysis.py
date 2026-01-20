@@ -10,7 +10,9 @@ from typing import Optional
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
 
+import acore.correlation_analysis as ca
 import acore.exploratory_analysis as ea
 from acore.types.exploratory_analysis import (
     AnnotationResult,
@@ -156,12 +158,9 @@ TwoComponentSchema(result["umap"]).rename(columns=map_names)
 # %% [markdown]
 # Make sure to check the parameters and tutorials annotations in the API docs at
 # [umap-learn.readthedocs.io](https://umap-learn.readthedocs.io).
-
-
-# %% [markdown]
-# ## Correlation analysis
 #
-# ### Coefficient of variation
+#
+# ## Coefficient of variation
 # Using masspectrometry data, we can compute the coefficient of variation on the non-log transformed
 # intensities. We do this for each group separately.
 # First we undo the log transformation, which is something specific to this dataset.
@@ -180,3 +179,43 @@ res.describe()
 # %%
 map_names = {"x": "mean_log2", "y": "coef_of_var", "group": "group"}
 fig, ax = make_plot(res, **map_names)
+
+# %% [markdown]
+# ## Correlation analysis
+# See [`acore.correlation_analysis`](acore.correlation_analysis) for more functions
+# and details.
+#
+# The basic functionality is built into pandas:
+
+# %%
+data.columns = data.columns.str.split("(").str[-1].str.replace(")", "")
+corr = data.corr(method="pearson")
+corr
+
+# %% [markdown]
+# Plot the correlation heatmap using seaborn
+
+# %%
+plt.rcParams["xtick.labelsize"], plt.rcParams["ytick.labelsize"] = 5, 5
+fig, ax = plt.subplots(figsize=(7.1, 6))
+heatmap = sns.heatmap(
+    corr,
+    cmap="vlag",
+    center=0,
+    square=True,
+    linewidths=0.1,
+    cbar_kws={"label": "Pearson r"},
+    ax=ax,
+)
+ax.set(title="Correlation Heatmap")
+fig.tight_layout()
+
+# %%
+# If you only want to keep the lower triangle of the correlation matrix to have
+# unique values of interst, you can use the utility function:
+
+# %%
+lower_corr = ca.corr_lower_triangle(data, method="pearson")
+lower_corr
+
+# %%
