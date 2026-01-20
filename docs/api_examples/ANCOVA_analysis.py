@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.17.2
+#       jupytext_version: 1.18.1
 #   kernelspec:
 #     display_name: .venv
 #     language: python
@@ -13,8 +13,22 @@
 # ---
 
 # %% [markdown]
-# # ANCOVA analysis
+# # Differential regulation
 #
+# This API example shows the functionality in the [`acore.differential_regulation`](acore.differential_regulation) module:
+#
+# - ANOVA (for two groups)
+# - ANCOVA (for two groups)
+# - comparision between two results
+#
+# Then we can do the same for examples with three
+# and more groups, where a omnibus analysis across groups
+# is combined with posthoc anlysis for separate groups.
+#
+# The functions are the same for both cases. The `group1` and 
+# `group2` columns give the posthoc comparison.
+#
+# Using vuecore we add:
 # - [ ] include a PCA colored by groups as well as covariance factors
 
 # %% tags=["hide-output"]
