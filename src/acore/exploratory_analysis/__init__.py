@@ -8,23 +8,74 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
 
-def calculate_coefficient_variation(values: np.ndarray) -> np.ndarray:
+def calculate_coefficient_variation(df: pd.DataFrame) -> pd.Series:
     """
-    Compute the coefficient of variation, the ratio of the biased standard
-    deviation to the mean, in percentage. For more information
-    visit https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.variation.html.
+    Compute the coefficient of variation (CV) for each column in a DataFrame.
 
-    :param numpy.ndarray values: numpy array of log2 transformed values
-    :return: The calculated variation along rows.
-    :rtype: numpy.ndarray
+    The coefficient of variation is defined as the ratio of the standard deviation
+    to the mean, expressed as a percentage. This function uses the biased standard
+    deviation (normalization by N) as implemented in `scipy.stats.variation`.
 
-    Example::
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Input DataFrame containing numeric values (e.g., log2-transformed data).
+        Each column will be processed independently.
 
-        result = calculate_coefficient_variation(data)
+    Returns
+    -------
+    pandas.Series
+        Series containing the coefficient of variation (in percent) for each column.
+        The index corresponds to the columns of the input DataFrame.
+
+    See Also
+    --------
+    scipy.stats.variation : Function used to compute the coefficient of variation.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+    >>> calculate_coefficient_variation(df)
+    A   40.825
+    B   16.330
+    Name: coef_of_var, dtype: float64
     """
-    cv = scipy.stats.variation(values.apply(lambda x: np.power(2, x)).values) * 100
-
+    cv = scipy.stats.variation(df, axis=0) * 100
+    cv = pd.Series(cv, index=df.columns).rename("coef_of_var")
     return cv
+
+
+def calculate_coef_of_var_and_mean(
+    df: pd.DataFrame,
+) -> pd.DataFrame:
+    """Calculate coefficient of variation and mean for each column in the dataframe,
+    the mean calculated on both log2 and linear scale.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The input dataframe containing the linear values (non-log transformed).
+
+    Returns
+    -------
+    pd.DataFrame
+        A dataframe with columns 'mean_log2', 'mean' and 'coef_of_var' for each column
+        in the input dataframe.
+    """
+    cv = calculate_coefficient_variation(df)
+    means = df.mean().rename("mean")
+    means_logs = np.log2(df).mean().rename("mean_log2")
+
+    return pd.concat(
+        [
+            means_logs,
+            means,
+            cv,
+        ],
+        axis=1,
+    ).rename_axis("name")
 
 
 def get_coefficient_variation(
@@ -48,23 +99,12 @@ def get_coefficient_variation(
 
         result = get_coefficient_variation(data, drop_columns=['sample', 'subject'], group='group')
     """
-    df = data.copy()
-    if drop_columns is None:
-        drop_columns = list()
-    formated_df = df.drop(drop_columns, axis=1)
-    cvs = formated_df.groupby(group).apply(func=calculate_coefficient_variation)
-    cols = formated_df.set_index(group).columns.tolist()
-    cvs_df = pd.DataFrame()
-    for i in cvs.index:
-        gcvs = cvs[i].tolist()
-        ints = formated_df.set_index(group).mean().values.tolist()
-        tdf = pd.DataFrame(data={"name": cols, "mean": gcvs, "coef_of_var": ints})
-        tdf[group] = i
-
-        if cvs_df.empty:
-            cvs_df = tdf.copy()
-        else:
-            cvs_df = pd.concat([cvs_df, tdf])
+    formated_df = data
+    if drop_columns is not None:
+        formated_df = data.drop(drop_columns, axis=1)
+    cvs = formated_df.groupby(group).apply(func=calculate_coef_of_var_and_mean)
+    cvs = cvs.reset_index()[["name", "mean_log2", "mean", "coef_of_var", group]]
+    cvs_df = cvs
 
     return cvs_df
 

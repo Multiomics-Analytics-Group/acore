@@ -8,6 +8,7 @@
 from typing import Optional
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
 import acore.exploratory_analysis as ea
@@ -18,7 +19,11 @@ from acore.types.exploratory_analysis import (
     TwoVariance,
 )
 
+# %% [markdown]
+# Utility function for plotting
 
+
+# %%
 def make_plot(
     embeddings,
     x: str,
@@ -42,6 +47,10 @@ def make_plot(
     return fig, ax
 
 
+# %% [markdown]
+# ## Load metabolomics example data
+
+# %%
 data = (
     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
     "refs/heads/main/"
@@ -59,9 +68,11 @@ data["group"] = data.index.str.split("-").str[0]
 data["group"].value_counts()
 
 # %% [markdown]
+# ## Principal Component Analysis (PCA)
 # Show first two principal components of the data.
 
 # %%
+# map_names gives the column names for the plot axes (which default to "x" and "y")
 map_names = {
     "value": "feature_communiality",
     "x": "PC1",
@@ -72,29 +83,54 @@ results_dfs, annotation = ea.run_pca(
 )
 pcs, loadings, var_explained = results_dfs
 
+# %% [markdown]
+# See how much variance is explained by the first two components and validate that
+# they adhere to the expected format:
+
 # %%
 TwoVariance(pd.Series(var_explained, index=["PC1", "PC2"]))
 
+# %% [markdown]
+# Show the annotation information for plotting and validate that
+# they adhere to the expected format:
+
 # %%
-annotation = AnnotationResult(**annotation)  # .model_dump()
+annotation = AnnotationResult(**annotation)
 annotation
+
+# %% [markdown]
+# Make the PCA plot:
 
 # %%
 fig, ax = make_plot(pcs, annotation=annotation, **map_names)
 
 # %% [markdown]
-# Show what was computed:
+# Show what was computed and validate that
+# they adhere to the expected format:
+# - first two principal components of the samples
+# - loadings for the features on the first two components
+#
+# We rename the columns for better readability.
 
 # %%
 TwoComponentSchema(pcs).rename(columns=map_names)
+
+# %% [markdown]
+# The feature communality of the loading is the absolute length of the projection.
+# So the features listed first here contribute the most to the two first components,
+# therefore driving the PCA separation.
 
 # %%
 TwoLoadingsSchema(loadings).rename(columns=map_names)
 
 # %% [markdown]
+# ## Uniform Manifold Approximation and Projection (UMAP)
 # Visualize UMAP low-dimensional embedding of the data.
+# This uses the `umap-learn` package, which is documented with examples at
+# [umap-learn.readthedocs.io](https://umap-learn.readthedocs.io).
 
 # %%
+# map_names gives the column names for the plot axes (which default to "x" and "y")
 map_names = {
     "x": "UMAP1",
     "y": "UMAP2",
@@ -118,19 +154,29 @@ fig, ax = make_plot(result["umap"], annotation=annotation, **map_names)
 TwoComponentSchema(result["umap"]).rename(columns=map_names)
 
 # %% [markdown]
-# Make sure to check the parameter annotations in the API docs.
+# Make sure to check the parameters and tutorials annotations in the API docs at
+# [umap-learn.readthedocs.io](https://umap-learn.readthedocs.io).
 
 
 # %% [markdown]
 # ## Correlation analysis
 #
 # ### Coefficient of variation
-# - as of now does an internal data transformation
+# Using masspectrometry data, we can compute the coefficient of variation on the non-log transformed
+# intensities. We do this for each group separately.
+# First we undo the log transformation, which is something specific to this dataset.
 
 # %%
-res = ea.get_coefficient_variation(data=data, group="group")
+data_exp = data.drop(columns=["group"]).apply(lambda x: np.exp2(x)).join(data["group"])
+data_exp
+
+# %%
+res = ea.get_coefficient_variation(data=data_exp, group="group")
 res
 
 # %%
-map_names = {"x": "mean", "y": "coef_of_var", "group": "group"}
+res.describe()
+
+# %%
+map_names = {"x": "mean_log2", "y": "coef_of_var", "group": "group"}
 fig, ax = make_plot(res, **map_names)
