@@ -418,18 +418,20 @@ def run_umap(
         if len(list(set(annotation_cols).intersection(data.columns))) > 0:
             annotations = data[annotation_cols]
 
-    if X.size:
-        X = umap.UMAP(
-            n_neighbors=n_neighbors, min_dist=min_dist, metric=metric
-        ).fit_transform(X)
-        args = {"x_title": "C1", "y_title": "C2"}
-        resultDf = pd.DataFrame(X, index=y)
-        resultDf = resultDf.reset_index()
-        cols = []
-        if len(resultDf.columns) > 3:
-            cols = resultDf.columns[3:]
-        resultDf.columns = ["group", "x", "y"] + cols
-        resultDf = resultDf.join(annotations)
-        result["umap"] = resultDf
+    if not X.size:
+        return result, args
+
+    X = umap.UMAP(
+        n_neighbors=n_neighbors, min_dist=min_dist, metric=metric
+    ).fit_transform(X)
+    args = {"x_title": "C1", "y_title": "C2"}
+    resultDf = pd.DataFrame(X, index=y)
+    resultDf = resultDf.reset_index()
+    cols = []
+    if len(resultDf.columns) > 3:
+        cols = resultDf.columns[3:]
+    resultDf.columns = ["group", "x", "y"] + cols
+    resultDf = resultDf.join(annotations)
+    result["umap"] = resultDf
 
     return result, args
