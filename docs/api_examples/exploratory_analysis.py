@@ -224,4 +224,27 @@ lower_corr = ca.corr_lower_triangle(data.drop(columns=["group"]), method="pearso
 lower_corr
 
 # %% [markdown]
+# This function can be used to compute multiple correlation methods at once
+# and compare them:
+#
+# It only works on numeric values.
+
+# %%
+corr = list()
+for method in ["pearson", "spearman", "kendall"]:
+    _corr = (
+        ca.corr_lower_triangle(data, method=method, numeric_only=True)
+        .stack()
+        .rename(method)
+    )
+    corr.append(_corr)
+corr = pd.concat(corr, axis=1).sort_values(by="pearson", ascending=True)
+corr.plot(
+    style=".",
+    ylim=(-1.05, 1.05),
+    alpha=0.5,
+    rot=45,
+)
+
+# %% [markdown]
 # Done.
