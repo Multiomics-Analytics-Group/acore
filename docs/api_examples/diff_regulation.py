@@ -25,7 +25,7 @@
 # and more groups, where a omnibus analysis across groups
 # is combined with posthoc anlysis for separate groups.
 #
-# The functions are the same for both cases. The `group1` and 
+# The functions are the same for both cases. The `group1` and
 # `group2` columns give the posthoc comparison.
 #
 # Using vuecore we add:
@@ -57,14 +57,31 @@ OMICS: str = "proteome.csv"  # omics data
 freq_cutoff: float = (
     0.7  # at least x percent of samples must have a value for a feature (here: protein group)
 )
+#
+covariates: list[str] = ["age", "male"]
+group: str = "AD"
+subject_col: str = "Sample ID"
+factor_and_covars: list[str] = [group, *covariates]
+
+# BASE = (
+#     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
+#     "HEAD/example_data/MTBLS13311/"
+#     ""
+# )
+# CLINIC_ML: str = "MTBLS13411_meta_data.csv"  # clinical data
+# OMICS: str = "MTBLS13411_processed_data.csv"  # omics data
+# covariates: list[str] = []
+# group: str = "Factor Value[Strain type]"
+# subject_col: str | int = 0
+# factor_and_covars: list[str] = [group, *covariates]
 
 # %% [markdown]
 # # Data for recipe
 # Clinical data:
 
 # %% tags=["hide-input"]
-clinic = pd.read_csv(f"{BASE}/{CLINIC_ML}", index_col=0).convert_dtypes()
-omics = pd.read_csv(f"{BASE}/{OMICS}", index_col=0)
+clinic = pd.read_csv(f"{BASE}/{CLINIC_ML}", index_col=subject_col).convert_dtypes()
+omics = pd.read_csv(f"{BASE}/{OMICS}", index_col=subject_col)
 clinic
 
 # %% [markdown]
@@ -115,7 +132,7 @@ acore.types.build_schema_all_floats(omics).validate(omics)
 # real analysis.
 
 # %%
-omics = omics.sample(100, axis=1, random_state=42)
+omics = omics.sample(min(omics.shape[1], 100), axis=1, random_state=42)
 omics
 
 # %% [markdown]
@@ -126,10 +143,10 @@ omics
 # add both relevant clinical information to the omics data
 
 # %% tags=["hide-input"]
-clinic[["age", "male", "AD"]].describe()
+clinic[factor_and_covars].describe()
 
 # %% tags=["hide-input"]
-omics_and_clinic = omics.join(clinic[["age", "male", "AD"]])
+omics_and_clinic = clinic[factor_and_covars].dropna().join(omics)
 omics_and_clinic
 
 # %% [markdown]
@@ -144,7 +161,9 @@ acore.types.check_numeric_dataframe(omics_and_clinic)
 
 # %% tags=["hide-input"]
 data_completeness = (
-    omics_and_clinic.groupby("AD").count().divide(clinic["AD"].value_counts(), axis=0)
+    omics_and_clinic.groupby(by=group)
+    .count()
+    .divide(clinic[group].value_counts(), axis=0)
 )
 data_completeness
 
@@ -153,7 +172,8 @@ data_completeness
 # in non-Alzheimer disease group
 
 # %% tags=["hide-input"]
-ax = data_completeness.T.sort_values(0).plot(
+sort_by = data_completeness.index[0]
+ax = data_completeness.T.sort_values(sort_by).plot(
     style=".", ylim=(0, 1.05), alpha=0.5, rot=45
 )
 
@@ -166,7 +186,7 @@ idx_largerst_diff = (
 )
 ax = (
     data_completeness.loc[:, idx_largerst_diff]
-    .T.sort_values(0)
+    .T.sort_values(sort_by)
     .plot(
         style=".",
         ylim=(0, 1.05),
@@ -196,8 +216,6 @@ omics_and_clinic
 omics_and_clinic.dtypes.value_counts()
 
 # %% tags=["hide-input"]
-group = "AD"
-covariates = ["male", "age"]
 omics_and_clinic[[group, *covariates]]
 
 
@@ -209,10 +227,10 @@ omics_and_clinic[[group, *covariates]]
 # # ? this is no needed for run_ancova (the regex where groups are joined)
 ancova = (
     ad.run_ancova(
-        omics_and_clinic.astype({"AD": str}),  # ! target needs to be of type str
-        # subject='Sample ID', # not used
+        omics_and_clinic.astype({group: str}),  # ! target needs to be of type str
+        # subject=subject_col, # not used
         drop_cols=[],
-        group="AD",  # needs to be a string
+        group=group,  # needs to be a string
         covariates=covariates,
     )
     .set_index("identifier")
@@ -248,12 +266,15 @@ ancova.iloc[:, 6:].filter(regex=f"^(?!.*({regex_filter})).*$")
 # > To check: pvalues for proteins with missing mean values? some merging issue?
 
 # %%
+if not isinstance(subject_col, str):
+    subject_col = omics_and_clinic.index.name or "index"
+    omics_and_clinic.rename_axis(subject_col, axis=0, inplace=True)
 anova = (
     ad.run_anova(
         omics_and_clinic.reset_index(),
-        subject="Sample ID",
+        subject=subject_col,
         drop_cols=covariates,
-        group="AD",
+        group=group,
     )
     .set_index("identifier")
     .sort_values(by="padj")
@@ -274,7 +295,7 @@ anova = (
         omics_and_clinic,
         subject=None,
         drop_cols=covariates,
-        group="AD",
+        group=group,
     )
     .set_index("identifier")
     .sort_values(by="padj")
