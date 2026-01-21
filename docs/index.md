@@ -21,7 +21,7 @@
 api_examples/normalization_analysis
 api_examples/batch_correction
 api_examples/exploratory_analysis
-api_examples/ANCOVA_analysis
+api_examples/diff_regulation
 api_examples/enrichment_analysis
 ```
 
