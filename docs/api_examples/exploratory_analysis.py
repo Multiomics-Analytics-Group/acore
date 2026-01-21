@@ -59,6 +59,8 @@ data = (
     "example_data/MTBLS13311/MTBLS13411_processed_data.csv"
 )
 data = pd.read_csv(data, index_col=0)
+# specific to this data, we shorten some column names for better readability
+data.columns = data.columns.str.split("(").str[-1].str.replace(")", "")
 data
 
 # %% [markdown]
@@ -185,11 +187,14 @@ fig, ax = make_plot(res, **map_names)
 # See [`acore.correlation_analysis`](acore.correlation_analysis) for more functions
 # and details.
 #
-# The basic functionality is built into pandas:
+# The basic functionality is built into pandas, but you need to filter out columns
+# which are not numeric for pearson correlation.
+#
+# Generally: Ordered categorical values can be used, assuming equal spacing between
+# the categories. Otherwise, continous numeric values are required.
 
 # %%
-data.columns = data.columns.str.split("(").str[-1].str.replace(")", "")
-corr = data.corr(method="pearson")
+corr = data.drop(columns=["group"]).corr(method="pearson")
 corr
 
 # %% [markdown]
@@ -215,7 +220,8 @@ fig.tight_layout()
 # unique values of interst, you can use the utility function:
 
 # %%
-lower_corr = ca.corr_lower_triangle(data, method="pearson")
+lower_corr = ca.corr_lower_triangle(data.drop(columns=["group"]), method="pearson")
 lower_corr
 
-# %%
+# %% [markdown]
+# Done.
