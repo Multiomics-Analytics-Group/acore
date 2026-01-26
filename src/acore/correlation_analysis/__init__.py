@@ -242,6 +242,23 @@ def run_rm_correlation(df, alpha=0.05, subject="subject", correction="fdr_bh"):
     return correlation
 
 
+def calculate_pvalue_correlation(r: pd.DataFrame):
+    # ToDo: Check and document further
+    # Calculate p-values for Pearson correlation
+    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html
+    diagonal = np.triu_indices(r.shape[0], 1)
+    rf = r[diagonal]
+    df = r.shape[1] - 2
+    ts = rf * rf * (df / (1 - rf * rf))
+    pf = betainc(0.5 * df, 0.5, df / (df + ts))
+    p = np.zeros(shape=r.shape)
+    p[np.triu_indices(p.shape[0], 1)] = pf
+    p[np.tril_indices(p.shape[0], -1)] = pf
+    p[np.diag_indices(p.shape[0])] = np.ones(p.shape[0])
+
+    return p
+
+
 def run_efficient_correlation(data, method="pearson"):
     """
     Calculates pairwise correlations and returns lower triangle of the matrix with
@@ -258,22 +275,14 @@ def run_efficient_correlation(data, method="pearson"):
     matrix = data
     if method == "pearson":
         r = np.corrcoef(matrix, rowvar=False)
+        p = None
     elif method == "spearman":
         r, p = stats.spearmanr(matrix, axis=0)
 
-    # ToDo: Check and document further
-    # Calculate p-values for Pearson correlation
-    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html
-    diagonal = np.triu_indices(r.shape[0], 1)
-    rf = r[diagonal]
-    df = matrix.shape[1] - 2
-    ts = rf * rf * (df / (1 - rf * rf))
-    pf = betainc(0.5 * df, 0.5, df / (df + ts))
-    p = np.zeros(shape=r.shape)
-    p[np.triu_indices(p.shape[0], 1)] = pf
-    p[np.tril_indices(p.shape[0], -1)] = pf
-    p[np.diag_indices(p.shape[0])] = np.ones(p.shape[0])
+    if p is None:
+        p = calculate_pvalue_correlation(r)
 
+    diagonal = np.triu_indices(r.shape[0], 1)
     r[diagonal] = np.nan
     p[diagonal] = np.nan
 
