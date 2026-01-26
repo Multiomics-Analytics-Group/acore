@@ -10,6 +10,7 @@ from typing import Optional
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import scipy
 import seaborn as sns
 
 import acore.correlation_analysis as ca
@@ -249,7 +250,7 @@ lower_corr_stack.loc[idx_largerst_corr]
 
 # %% [markdown]
 # This function can be used to compute multiple correlation methods at once
-# and compare them:
+# and compare them, here for the first four features.
 #
 # It only works on numeric values.
 
@@ -257,7 +258,7 @@ lower_corr_stack.loc[idx_largerst_corr]
 corr = list()
 for method in ["pearson", "spearman", "kendall"]:
     _corr = (
-        ca.corr_lower_triangle(data.iloc[:, :3], method=method, numeric_only=True)
+        ca.corr_lower_triangle(data.iloc[:, :4], method=method, numeric_only=True)
         .stack()
         .rename(method)
     )
@@ -270,37 +271,61 @@ corr.plot(
     rot=45,
 )
 
+# %% [markdown]
+# Filtering correlations based on p-values with multiple testing correction
+# - the p-value depends on the number of samples
+# - and the strenght of the correlation
+
 # %%
 res = ca.calculate_correlations(data.iloc[:, 0], data.iloc[:, 1], method="pearson")
 print(res)
 
+# %% [markdown]
+# For the first four features, we would only keep one significant correlation
+# after multiple testing correction with the Benjamini-Hochberg method.
+
 # %%
 correlation = ca.run_correlation(
-    data.iloc[:, :3], alpha=0.05, group="group", method="pearson", correction="fdr_bh"
+    data.iloc[:, :4], alpha=0.05, group="group", method="pearson", correction="fdr_bh"
 )
 correlation
 
+# %% [markdown]
+# The efficient correlation calculation can be used to compute the correlation
+# matrix and p-value matrix for larger datasets.
+
 # %%
-corr, p = ca.run_efficient_correlation(data.iloc[:, :3], method="spearman")
+corr, p = ca.run_efficient_correlation(data.iloc[:, :4], method="spearman")
 pd.DataFrame(p)
 
-# %%
-from scipy import stats
+# %% [markdown]
+# you can verify the results against [`scipy.stats.spearmanr`](scipy.stats.spearmanr)
 
-r, p = stats.spearmanr(data.iloc[:, :3])
+# %%
+r, p = scipy.stats.spearmanr(data.iloc[:, :4])
 pd.DataFrame(p)
 
-# %%
-p = ca.calculate_pvalue_correlation_sample_in_rows(r, n_obs=data.shape[0])
-pd.DataFrame(p)
-
-# %%
-r, p = stats.pearsonr(data.iloc[:, 0], data.iloc[:, 2])
-r, p
+# %% [markdown]
+# same for pearson correlation
 
 # %%
 r, p = ca.run_efficient_correlation(data.iloc[:, :3], method="pearson")
 pd.DataFrame(p)
+
+# %%
+r_20, p_20 = scipy.stats.pearsonr(data.iloc[:, 0], data.iloc[:, 2])
+r_20, p_20
+assert r[2, 0] - r_20 < 1e-8
+assert p[2, 0] - p_20 < 1e-8
+
+# %% [markdown]
+# To calculate p-values for the correlation matrix, you can use
+
+# %%
+res = ca.calculate_pvalue_correlation_sample_in_rows(
+    data.iloc[:, :3].corr(method="pearson").values, n_obs=data.shape[0]
+)
+pd.DataFrame(res)
 
 # %% [markdown]
 # Done.
