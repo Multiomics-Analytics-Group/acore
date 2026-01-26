@@ -1,4 +1,5 @@
 import itertools
+from typing import NamedTuple
 
 import numpy as np
 import pandas as pd
@@ -8,6 +9,17 @@ from scipy.special import betainc
 
 import acore.utils as utils
 from acore.multiple_testing import apply_pvalue_correction
+
+
+class CorrelationCoefficient(NamedTuple):
+    coefficient: float
+    pvalue: float
+
+    def __str__(self):
+        return (
+            f"CorrelationCoefficient(coefficient={self.coefficient:.4f},"
+            f" pvalue={self.pvalue:.4f})"
+        )
 
 
 def corr_lower_triangle(df: pd.DataFrame, **kwargs) -> pd.DataFrame:
@@ -40,7 +52,7 @@ def calculate_correlations(x, y, method="pearson"):
     elif method == "spearman":
         coefficient, pvalue = stats.spearmanr(x, y)
 
-    return (coefficient, pvalue)
+    return CorrelationCoefficient(coefficient, pvalue)
 
 
 def run_correlation(
