@@ -246,8 +246,8 @@ def calculate_pvalue_correlation(r: pd.DataFrame):
     # ToDo: Check and document further
     # Calculate p-values for Pearson correlation
     # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html
-    diagonal = np.triu_indices(r.shape[0], 1)
-    rf = r[diagonal]
+    upper_idx = np.triu_indices(r.shape[0], 1)
+    rf = r[upper_idx]
     df = r.shape[1] - 2
     ts = rf * rf * (df / (1 - rf * rf))
     pf = betainc(0.5 * df, 0.5, df / (df + ts))
@@ -256,6 +256,26 @@ def calculate_pvalue_correlation(r: pd.DataFrame):
     p[np.tril_indices(p.shape[0], -1)] = pf
     p[np.diag_indices(p.shape[0])] = np.ones(p.shape[0])
 
+    return p
+
+
+def calculate_pvalue_correlation_sample_in_rows(r, n_obs):
+
+    upper_idx = np.triu_indices_from(r, k=1)
+
+    if n_obs < 3:
+        msg = "Need at least three observations to compute correlation p-values."
+        raise ValueError(msg)
+    df = n_obs - 2
+
+    rf = r[upper_idx]
+    denom = np.clip(1 - np.square(rf), np.finfo(float).eps, None)
+    ts = np.square(rf) * (df / denom)
+    pf = betainc(0.5 * df, 0.5, df / (df + ts))
+
+    p = np.ones_like(r)
+    p[upper_idx] = pf
+    p[(upper_idx[1], upper_idx[0])] = pf
     return p
 
 
@@ -280,7 +300,7 @@ def run_efficient_correlation(data, method="pearson"):
         r, p = stats.spearmanr(matrix, axis=0)
 
     if p is None:
-        p = calculate_pvalue_correlation(r)
+        p = calculate_pvalue_correlation_sample_in_rows(r, n_obs=data.shape[0])
 
     diagonal = np.triu_indices(r.shape[0], 1)
     r[diagonal] = np.nan

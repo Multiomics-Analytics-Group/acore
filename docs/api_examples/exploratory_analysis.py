@@ -257,7 +257,7 @@ lower_corr_stack.loc[idx_largerst_corr]
 corr = list()
 for method in ["pearson", "spearman", "kendall"]:
     _corr = (
-        ca.corr_lower_triangle(data, method=method, numeric_only=True)
+        ca.corr_lower_triangle(data.iloc[:, :3], method=method, numeric_only=True)
         .stack()
         .rename(method)
     )
@@ -271,19 +271,36 @@ corr.plot(
 )
 
 # %%
-res = ca.calculate_correlations(
-    data["Cytosine"], data["Glutaryl-CoA"], method="pearson"
-)
+res = ca.calculate_correlations(data.iloc[:, 0], data.iloc[:, 1], method="pearson")
 print(res)
 
 # %%
 correlation = ca.run_correlation(
-    data, alpha=0.05, group="group", method="pearson", correction="fdr_bh"
+    data.iloc[:, :3], alpha=0.05, group="group", method="pearson", correction="fdr_bh"
 )
 correlation
 
 # %%
-ca.run_efficient_correlation(data.drop(columns=["group"]), method="pearson")
+corr, p = ca.run_efficient_correlation(data.iloc[:, :3], method="spearman")
+pd.DataFrame(p)
+
+# %%
+from scipy import stats
+
+r, p = stats.spearmanr(data.iloc[:, :3])
+pd.DataFrame(p)
+
+# %%
+p = ca.calculate_pvalue_correlation_sample_in_rows(r, n_obs=data.shape[0])
+pd.DataFrame(p)
+
+# %%
+r, p = stats.pearsonr(data.iloc[:, 0], data.iloc[:, 2])
+r, p
+
+# %%
+r, p = ca.run_efficient_correlation(data.iloc[:, :3], method="pearson")
+pd.DataFrame(p)
 
 # %% [markdown]
 # Done.
