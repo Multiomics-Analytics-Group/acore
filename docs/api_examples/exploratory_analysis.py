@@ -163,8 +163,8 @@ TwoComponentSchema(result["umap"]).rename(columns=map_names)
 #
 #
 # ## Coefficient of variation
-# Using masspectrometry data, we can compute the coefficient of variation on the non-log transformed
-# intensities. We do this for each group separately.
+# Using masspectrometry data, we can compute the coefficient of variation on the
+# non-log transformed intensities. We do this for each group separately.
 # First we undo the log transformation, which is something specific to this dataset.
 
 # %%
@@ -224,6 +224,30 @@ lower_corr = ca.corr_lower_triangle(data.drop(columns=["group"]), method="pearso
 lower_corr
 
 # %% [markdown]
+# Plot the lower triangle correlations as a histrogram to see the distribution of
+# correlation values
+
+# %%
+ax = lower_corr.stack().plot.hist(
+    bins=50,
+    grid=False,
+    figsize=(6, 4),
+    title="Distribution of Pearson correlation values",
+    xlabel="Pearson r",
+    ylabel="Frequency",
+    xlim=(-1.02, 1.02),
+)
+
+# %% [markdown]
+# or to find the strongest correlations, which you might want to filter further for
+# uninteresting correlation between redundant features.
+
+# %%
+lower_corr_stack = lower_corr.stack()
+idx_largerst_corr = lower_corr_stack.abs().sort_values(ascending=False).head(20).index
+lower_corr_stack.loc[idx_largerst_corr]
+
+# %% [markdown]
 # This function can be used to compute multiple correlation methods at once
 # and compare them:
 #
@@ -245,6 +269,21 @@ corr.plot(
     alpha=0.5,
     rot=45,
 )
+
+# %%
+res = ca.calculate_correlations(
+    data["Cytosine"], data["Glutaryl-CoA"], method="pearson"
+)
+print(res)
+
+# %%
+correlation = ca.run_correlation(
+    data, alpha=0.05, group="group", method="pearson", correction="fdr_bh"
+)
+correlation
+
+# %%
+ca.run_efficient_correlation(data.drop(columns=["group"]), method="pearson")
 
 # %% [markdown]
 # Done.
