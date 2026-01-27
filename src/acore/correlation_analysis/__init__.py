@@ -242,13 +242,13 @@ def run_rm_correlation(df, alpha=0.05, subject="subject", correction="fdr_bh"):
     return correlation
 
 
-def calculate_pvalue_correlation(r: pd.DataFrame):
+def calculate_pvalue_correlation_old(r: pd.DataFrame, n_obs: int) -> pd.DataFrame:
     # ToDo: Check and document further
     # Calculate p-values for Pearson correlation
     # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html
     upper_idx = np.triu_indices(r.shape[0], 1)
     rf = r[upper_idx]
-    df = r.shape[1] - 2
+    df = n_obs - 2
     ts = rf * rf * (df / (1 - rf * rf))
     pf = betainc(0.5 * df, 0.5, df / (df + ts))
     p = np.zeros(shape=r.shape)
@@ -259,7 +259,7 @@ def calculate_pvalue_correlation(r: pd.DataFrame):
     return p
 
 
-def calculate_pvalue_correlation_sample_in_rows(r, n_obs):
+def calculate_pvalue_correlation(r, n_obs):
 
     upper_idx = np.triu_indices_from(r, k=1)
 
@@ -300,7 +300,7 @@ def run_efficient_correlation(data, method="pearson"):
         r, p = stats.spearmanr(matrix, axis=0)
 
     if p is None:
-        p = calculate_pvalue_correlation_sample_in_rows(r, n_obs=data.shape[0])
+        p = calculate_pvalue_correlation(r, n_obs=data.shape[0])
 
     diagonal = np.triu_indices(r.shape[0], 1)
     r[diagonal] = np.nan
