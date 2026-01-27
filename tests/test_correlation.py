@@ -96,9 +96,7 @@ def test_run_efficient_correlation_pearson():
             print(i, j)
             corr_, p_ = stats.pearsonr(df.iloc[:, i], df.iloc[:, j])
             np.testing.assert_almost_equal(corr[j, i], corr_)
-            if i != j:
-                # ToDo: Diagonal p-values should be zero, not one
-                np.testing.assert_almost_equal(p[j, i], p_)
+            np.testing.assert_almost_equal(p[j, i], p_)
 
 
 def test_corr_lower_triangle():

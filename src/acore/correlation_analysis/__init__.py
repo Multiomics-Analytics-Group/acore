@@ -254,8 +254,7 @@ def calculate_pvalue_correlation_old(r: pd.DataFrame, n_obs: int) -> pd.DataFram
     p = np.zeros(shape=r.shape)
     p[np.triu_indices(p.shape[0], 1)] = pf
     p[np.tril_indices(p.shape[0], -1)] = pf
-    p[np.diag_indices(p.shape[0])] = np.ones(p.shape[0])
-
+    p[np.diag_indices(p.shape[0])] = np.zeros(p.shape[0])
     return p
 
 
@@ -273,7 +272,7 @@ def calculate_pvalue_correlation(r, n_obs):
     ts = np.square(rf) * (df / denom)
     pf = betainc(0.5 * df, 0.5, df / (df + ts))
 
-    p = np.ones_like(r)
+    p = np.zeros_like(r)
     p[upper_idx] = pf
     p[(upper_idx[1], upper_idx[0])] = pf
     return p
