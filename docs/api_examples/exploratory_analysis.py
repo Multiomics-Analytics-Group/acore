@@ -322,10 +322,42 @@ assert p[2, 0] - p_20 < 1e-8
 # To calculate p-values for the correlation matrix, you can use
 
 # %%
-res = ca.calculate_pvalue_correlation_sample_in_rows(
+res = ca.calculate_pvalue_correlation(
     data.iloc[:, :3].corr(method="pearson").values, n_obs=data.shape[0]
 )
 pd.DataFrame(res)
+
+# %% [markdown]
+# ## Histogram of the data
+# We often want to plot the distribution of the data values.
+# Sometimes you want to use custom bins, e.g. to align multiple histograms.
+# Here we plot and compute a histogram frequencies with custom bins.
+
+# %%
+# data = data.drop(columns=["group"])
+bins = np.arange(int(data.min(axis=None)), int(data.max(axis=None)) + 1, step=1)
+
+for col in data.columns[:4]:
+    ax = data[col].plot.hist(
+        bins=bins,
+        alpha=0.5,
+        xlabel="Value",
+        ylabel="Frequency",
+    )
+ax.title.set_text("Histogram with custom bins")
+ax.legend()
+
+
+# %%
+hist_series = []
+for col in data.columns[:4]:
+    s = data[col]
+    ret = ea.get_histogram_series(s, bins)
+    hist_series.append(ret.rename(col))
+
+hist_df = pd.concat(hist_series, axis=1)
+hist_df
+
 
 # %% [markdown]
 # Done.

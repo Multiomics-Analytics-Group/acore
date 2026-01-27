@@ -8,6 +8,18 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
 
+def get_histogram_series(s: pd.Series, bins: np.ndarray) -> pd.Series:
+    hist_data, bin_edges = np.histogram(s, bins=bins)
+    ret = pd.Series(
+        hist_data,
+        index=pd.MultiIndex.from_arrays(
+            [bin_edges[:-1], bin_edges[1:], range(len(hist_data))],
+            names=["bin_number", "bin_start", "bin_end"],
+        ),
+    )
+    return ret
+
+
 def calculate_coefficient_variation(df: pd.DataFrame) -> pd.Series:
     """
     Compute the coefficient of variation (CV) for each column in a DataFrame.
