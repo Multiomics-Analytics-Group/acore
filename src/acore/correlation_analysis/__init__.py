@@ -89,7 +89,6 @@ def run_correlation(
                     method='pearson', correction='fdr_bh')
     """
     correlation = pd.DataFrame()
-    # ToDo
     # The Repeated measurements correlation calculation is too time consuming so it
     # only runs if the number of features is less than 200
     if subject is not None and utils.check_is_paired(df, subject, group):
@@ -174,7 +173,8 @@ def run_multi_correlation(
 
 def calculate_rm_correlation(df, x, y, subject):
     """
-    Computes correlation and p-values between two columns a and b in df.
+    Computes correlation and p-values between two columns a and b in df with
+    repeated measures (rm).
 
     :param df: pandas dataframe with subjects as rows and two features and columns.
     :param str x: feature a name.
@@ -243,9 +243,22 @@ def run_rm_correlation(df, alpha=0.05, subject="subject", correction="fdr_bh"):
 
 
 def calculate_pvalue_correlation_old(r: pd.DataFrame, n_obs: int) -> pd.DataFrame:
-    # ToDo: Check and document further
-    # Calculate p-values for Pearson correlation
-    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html
+    """Calculate p-values for Pearson correlation using a all values from the
+    correlation matrix.
+
+    Parameters
+    ----------
+    r : pd.DataFrame
+        Correlation matrix.
+    n_obs : int
+        Number of observations used to calculate the correlation matrix (assumes no
+        missing values).
+
+    Returns
+    -------
+    pd.DataFrame
+        p-value matrix assuming fixed number of observations.
+    """
     upper_idx = np.triu_indices(r.shape[0], 1)
     rf = r[upper_idx]
     df = n_obs - 2
@@ -259,7 +272,26 @@ def calculate_pvalue_correlation_old(r: pd.DataFrame, n_obs: int) -> pd.DataFram
 
 
 def calculate_pvalue_correlation(r, n_obs):
+    """Calculate p-values for Pearson correlation using a all values from the
+    correlation matrix.
 
+    Tested against Pearson correlation using a all values from the correlation
+    matrix, see
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html
+
+    Parameters
+    ----------
+    r : pd.DataFrame
+        Correlation matrix.
+    n_obs : int
+        Number of observations used to calculate the correlation matrix (assumes no
+        missing values).
+
+    Returns
+    -------
+    pd.DataFrame
+        p-value matrix assuming fixed number of observations.
+    """
     upper_idx = np.triu_indices_from(r, k=1)
 
     if n_obs < 3:
@@ -281,7 +313,8 @@ def calculate_pvalue_correlation(r, n_obs):
 def run_efficient_correlation(data, method="pearson"):
     """
     Calculates pairwise correlations and returns lower triangle of the matrix with
-    correlation values and p-values.
+    correlation values and p-values. For pearson correlation, p-values are calculated
+    assuming a fixed number of observations.
 
     :param data: pandas dataframe with samples as index and features as columns (numeric data only).
     :param str method: method to use for correlation calculation ('pearson', 'spearman').
