@@ -334,11 +334,11 @@ pd.DataFrame(res)
 # Here we plot and compute a histogram frequencies with custom bins.
 
 # %%
-# data = data.drop(columns=["group"])
-bins = np.arange(int(data.min(axis=None)), int(data.max(axis=None)) + 1, step=1)
+view = data.select_dtypes(include="number")
+bins = np.arange(int(view.min(axis=None)), int(view.max(axis=None)) + 1, step=1)
 
-for col in data.columns[:4]:
-    ax = data[col].plot.hist(
+for col in view.columns[:4]:
+    ax = view[col].plot.hist(
         bins=bins,
         alpha=0.5,
         xlabel="Value",
@@ -350,8 +350,8 @@ ax.legend()
 
 # %%
 hist_series = []
-for col in data.columns[:4]:
-    s = data[col]
+for col in view.columns[:4]:
+    s = view[col]
     ret = ea.get_histogram_series(s, bins)
     hist_series.append(ret.rename(col))
 
