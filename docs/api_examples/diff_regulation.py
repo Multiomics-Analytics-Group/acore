@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.17.2
+#       jupytext_version: 1.18.1
 #   kernelspec:
 #     display_name: .venv
 #     language: python
@@ -13,8 +13,22 @@
 # ---
 
 # %% [markdown]
-# # ANCOVA analysis
+# # Differential regulation
 #
+# This API example shows the functionality in the [`acore.differential_regulation`](acore.differential_regulation) module:
+#
+# - ANOVA (for two groups)
+# - ANCOVA (for two groups)
+# - comparision between two results
+#
+# Then we can do the same for examples with three
+# and more groups, where a omnibus analysis across groups
+# is combined with posthoc anlysis for separate groups.
+#
+# The functions are the same for both cases. The `group1` and
+# `group2` columns give the posthoc comparison.
+#
+# Using vuecore we add:
 # - [ ] include a PCA colored by groups as well as covariance factors
 
 # %% tags=["hide-output"]
@@ -22,11 +36,9 @@
 
 # %% tags=["hide-input"]
 import dsp_pandas
-import numpy as np
 import pandas as pd
 
 import acore.differential_regulation as ad
-import acore.types
 
 dsp_pandas.format.set_pandas_options(
     max_columns=9,
@@ -43,136 +55,33 @@ OMICS: str = "proteome.csv"  # omics data
 freq_cutoff: float = (
     0.7  # at least x percent of samples must have a value for a feature (here: protein group)
 )
+#
+covariates: list[str] = ["age", "male"]
+group: str = "AD"
+subject_col: str = "Sample ID"
+factor_and_covars: list[str] = [group, *covariates]
 
-# %% [markdown]
-# # Data for recipe
-# Clinical data:
-
-# %% tags=["hide-input"]
-clinic = pd.read_csv(f"{BASE}/{CLINIC_ML}", index_col=0).convert_dtypes()
-omics = pd.read_csv(f"{BASE}/{OMICS}", index_col=0)
-clinic
-
-# %% [markdown]
-# Proteomics data:
-
-# %% tags=["hide-input"]
-omics
-
-# %% [markdown]
-# ## Filtering data
-
-# %% [markdown]
-# If data is already filtered and/or imputed, skip this step.
-
-# %% tags=["hide-input"]
-M_before = omics.shape[1]
-omics = omics.dropna(thresh=int(len(omics) * freq_cutoff), axis=1)
-M_after = omics.shape[1]
-msg = (
-    f"Removed {M_before-M_after} features "
-    f"with more than {(1-freq_cutoff)*100:.2f}% missing values."
-    f"\nRemaining features: {M_after} (of {M_before})"
-)
-print(msg)
-# keep a map of all proteins in protein group, but only display first protein
-# proteins are unique to protein groups
-pg_map = {k: k.split(";")[0] for k in omics.columns}
-omics = omics.rename(columns=pg_map)
-# log2 transform raw intensity data:
-omics = np.log2(omics + 1)
-omics
-
-# %% [markdown]
-# Check if all values are numeric as this is required for differential analysis
-
-# %%
-acore.types.check_numeric_dataframe(omics)
-
-# %% [markdown]
-# Validate the schema of the omics DataFrame. Builds and then uses the schema on the
-# same data frame (experimental)
-
-# %%
-acore.types.build_schema_all_floats(omics).validate(omics)
-
-# %% [markdown]
-# For easier inspection we just sample 100 protein groups. Remove this step in a
-# real analysis.
-
-# %%
-omics = omics.sample(100, axis=1, random_state=42)
-omics
-
-# %% [markdown]
-# Consider replacing with the filter from the acore package!
-
-# %% [markdown]
-# ## Preparing metadata
-# add both relevant clinical information to the omics data
-
-# %% tags=["hide-input"]
-clinic[["age", "male", "AD"]].describe()
-
-# %% tags=["hide-input"]
-omics_and_clinic = omics.join(clinic[["age", "male", "AD"]])
-omics_and_clinic
-
-# %% [markdown]
-# Check that the added clinical metadata is numeric
-
-# %%
-acore.types.check_numeric_dataframe(omics_and_clinic)
-
-# %% [markdown]
-# ## Checking missing data
-# ... between two AD groups (after previous filtering)
-
-# %% tags=["hide-input"]
-data_completeness = (
-    omics_and_clinic.groupby("AD").count().divide(clinic["AD"].value_counts(), axis=0)
-)
-data_completeness
-
-# %% [markdown]
-# Plot number of missing values per group, ordered by proportion of non-misisng values
-# in non-Alzheimer disease group
-
-# %% tags=["hide-input"]
-ax = data_completeness.T.sort_values(0).plot(
-    style=".", ylim=(0, 1.05), alpha=0.5, rot=45
-)
-
-# %% [markdown]
-# Plot 20 protein groups with biggest difference in missing values between groups
-
-# %% tags=["hide-input"]
-idx_largerst_diff = (
-    data_completeness.diff().dropna().T.squeeze().abs().nlargest(20).index
-)
-ax = (
-    data_completeness.loc[:, idx_largerst_diff]
-    .T.sort_values(0)
-    .plot(
-        style=".",
-        ylim=(0, 1.05),
-        alpha=0.5,
-        rot=45,
-    )
-)
-_ = ax.set_xticks(range(len(idx_largerst_diff)))
-_ = ax.set_xticklabels(
-    idx_largerst_diff,
-    rotation=45,
-    ha="right",
-    fontsize=7,
-)
+# BASE = (
+#     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
+#     "HEAD/example_data/MTBLS13311/"
+#     ""
+# )
+# CLINIC_ML: str = "MTBLS13411_meta_data.csv"  # clinical data
+# OMICS: str = "MTBLS13411_processed_data.csv"  # omics data
+# covariates: list[str] = []
+# group: str = "Factor Value[Strain type]"
+# subject_col: str | int = 0
+# factor_and_covars: list[str] = [group, *covariates]
 
 # %% [markdown]
 # # ANCOVA analysis for two groups
 # Use combined dataset for ANCOVA analysis.
 
 # %% tags=["hide-input"]
+omics_and_clinic = pd.read_csv(
+    "../../example_data/alzheimer_proteomics/alzheimer_example_omics_and_clinic.csv",
+    index_col=subject_col,
+)
 omics_and_clinic
 
 # %% [markdown]
@@ -182,8 +91,6 @@ omics_and_clinic
 omics_and_clinic.dtypes.value_counts()
 
 # %% tags=["hide-input"]
-group = "AD"
-covariates = ["male", "age"]
 omics_and_clinic[[group, *covariates]]
 
 
@@ -195,10 +102,10 @@ omics_and_clinic[[group, *covariates]]
 # # ? this is no needed for run_ancova (the regex where groups are joined)
 ancova = (
     ad.run_ancova(
-        omics_and_clinic.astype({"AD": str}),  # ! target needs to be of type str
-        # subject='Sample ID', # not used
+        omics_and_clinic.astype({group: str}),  # ! target needs to be of type str
+        # subject=subject_col, # not used
         drop_cols=[],
-        group="AD",  # needs to be a string
+        group=group,  # needs to be a string
         covariates=covariates,
     )
     .set_index("identifier")
@@ -234,12 +141,15 @@ ancova.iloc[:, 6:].filter(regex=f"^(?!.*({regex_filter})).*$")
 # > To check: pvalues for proteins with missing mean values? some merging issue?
 
 # %%
+if not isinstance(subject_col, str):
+    subject_col = omics_and_clinic.index.name or "index"
+    omics_and_clinic.rename_axis(subject_col, axis=0, inplace=True)
 anova = (
     ad.run_anova(
         omics_and_clinic.reset_index(),
-        subject="Sample ID",
+        subject=subject_col,
         drop_cols=covariates,
-        group="AD",
+        group=group,
     )
     .set_index("identifier")
     .sort_values(by="padj")
@@ -260,7 +170,7 @@ anova = (
         omics_and_clinic,
         subject=None,
         drop_cols=covariates,
-        group="AD",
+        group=group,
     )
     .set_index("identifier")
     .sort_values(by="padj")
@@ -333,7 +243,11 @@ meta
 # Sample five protein groups (for easier inspection) and combine with metadata.
 
 # %%
-omics_and_clinic = omics.sample(5, axis=1, random_state=42).join(meta)
+omics_and_clinic = (
+    omics_and_clinic.drop(columns=["AD", "age", "male"])
+    .sample(5, axis=1, random_state=42)
+    .join(meta)
+)
 omics_and_clinic
 
 # %%
