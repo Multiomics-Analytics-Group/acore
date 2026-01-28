@@ -38,8 +38,9 @@ PXD040621 <downloaded/PXD040621_analysis>
 :caption: Example dataset (preprocessing)
 :hidden:
 
-api_examples/Download_PRIDE_data
-api_examples/ovarian_cancer
+example_data/Download_PRIDE_data
+example_data/ovarian_cancer
+example_data/alzheimer_proteomics
 ```
 
 ```{toctree}
