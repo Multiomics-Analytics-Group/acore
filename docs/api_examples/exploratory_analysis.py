@@ -314,12 +314,18 @@ pd.DataFrame(p)
 
 # %%
 r_20, p_20 = scipy.stats.pearsonr(data.iloc[:, 0], data.iloc[:, 2])
-r_20, p_20
 assert r[2, 0] - r_20 < 1e-8
 assert p[2, 0] - p_20 < 1e-8
+desc = (
+    f"Correlation coefficient (r) in row three and the first column is {r_20:.3f} \n"
+    f"and the corresponding p-value is {p_20:.3f}."
+)
+print(desc)
 
 # %% [markdown]
-# To calculate p-values for the correlation matrix, you can use
+# To calculate p-values for the correlation matrix, e.g. using pandas
+# [`corr`](pandas.DataFrame.corr)
+# you can use:
 
 # %%
 res = ca.calculate_pvalue_correlation(
@@ -358,6 +364,16 @@ for col in view.columns[:4]:
 hist_df = pd.concat(hist_series, axis=1)
 hist_df
 
+# %% [markdown]
+# ## Summary statistics
+# You can use pandas to compute summary statistics for the data, specifying the
+# percentiles you are interested in.
+
+# %%
+summary_stats = (
+    data.select_dtypes(include="number").describe(percentiles=[0.5]).T
+).rename(columns={"50%": "median"})
+summary_stats
 
 # %% [markdown]
 # Done.
