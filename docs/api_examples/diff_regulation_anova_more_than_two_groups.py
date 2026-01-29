@@ -42,51 +42,34 @@ dsp_pandas.format.set_pandas_options(
 
 # %% tags=["parameters"]
 BASE = (
-    "https://raw.githubusercontent.com/RasmussenLab/njab/"
-    "HEAD/docs/tutorial/data/alzheimer/"
+    "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
+    "HEAD/example_data/MTBLS13311"
+    ""
 )
-CLINIC_ML: str = "clinic_ml.csv"  # clinical data
-OMICS: str = "proteome.csv"  # omics data
-freq_cutoff: float = (
-    0.7  # at least x percent of samples must have a value for a feature (here: protein group)
-)
-#
-covariates: list[str] = ["age", "male"]
-group: str = "AD"
-subject_col: str = "Sample ID"
+CLINIC_ML: str = "MTBLS13411_meta_data.csv"  # clinical data
+OMICS: str = "MTBLS13411_processed_data.csv"  # omics data
+covariates: list[str] = []
+group: str = "Factor Value[Strain type]"
+subject_col: str | int = 0
 factor_and_covars: list[str] = [group, *covariates]
-
-# BASE = (
-#     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-#     "HEAD/example_data/MTBLS13311/"
-#     ""
-# )
-# CLINIC_ML: str = "MTBLS13411_meta_data.csv"  # clinical data
-# OMICS: str = "MTBLS13411_processed_data.csv"  # omics data
-# covariates: list[str] = []
-# group: str = "Factor Value[Strain type]"
-# subject_col: str | int = 0
-# factor_and_covars: list[str] = [group, *covariates]
 
 # %% [markdown]
 # # ANCOVA analysis for two groups
 # Use combined dataset for ANCOVA analysis.
 
 # %% tags=["hide-input"]
-omics_and_clinic = pd.read_csv(
-    "../../example_data/alzheimer_proteomics/alzheimer_example_omics_and_clinic.csv",
-    index_col=subject_col,
-)
-omics_and_clinic
-
+omics = pd.read_csv(f"{BASE}/{OMICS}", index_col=subject_col).convert_dtypes()
+meta = pd.read_csv(f"{BASE}/{CLINIC_ML}", index_col=subject_col).convert_dtypes()
+omics_and_meta = meta[factor_and_covars].join(omics, how="inner")
+omics_and_meta
 # %% [markdown]
 # metadata here is of type integer. All floats are proteomics measurements.
 
 # %% tags=["hide-input"]
-omics_and_clinic.dtypes.value_counts()
+omics_and_meta.dtypes.value_counts()
 
 # %% tags=["hide-input"]
-omics_and_clinic[[group, *covariates]]
+omics_and_meta[factor_and_covars]
 
 
 # %% [markdown]
@@ -97,49 +80,20 @@ omics_and_clinic[[group, *covariates]]
 # # With three and more groups
 # Acore make each combinatorial comparison between groups in the group column.
 
-# %%
-CLINIC: str = "meta.csv"  # clincial data
-meta = (
-    pd.read_csv(f"{BASE}/{CLINIC}", index_col=0)
-    .convert_dtypes()
-    .rename(
-        {
-            "_collection site": "site",
-            "_age at CSF collection": "age",
-            "_gender": "gender",
-        },
-        axis=1,
-    )
-)[["site", "age", "gender"]].astype(
-    {
-        "gender": "category",
-        "site": "category",
-    }
-)
-meta
-
-# %% [markdown]
-# Sample five protein groups (for easier inspection) and combine with metadata.
 
 # %%
-omics_and_clinic = (
-    omics_and_clinic.drop(columns=["AD", "age", "male"])
-    .sample(5, axis=1, random_state=42)
-    .join(meta)
-)
-omics_and_clinic
-
-# %%
+if isinstance(subject_col, int):
+    subject_col = omics_and_meta.index.name
 anova = (
     ad.run_anova(
-        omics_and_clinic,  # .reset_index(),
-        subject="Sample ID",
-        drop_cols=["age", "gender"],
-        group="site",
+        omics_and_meta,  # .reset_index(),
+        subject=subject_col,
+        drop_cols=[],
+        group=group,
     ).set_index(["identifier", "group1", "group2"])
     # .sort_values(by="padj")
 )
-anova
+anova.head().T
 
 # %% [markdown]
 # pairwise t-test results:
@@ -179,6 +133,6 @@ anova.drop(columns=cols_pairwise_ttest)
 # %% tags=["hide-input"]
 regex_filter = "pval|padj|reject|stat|FC"
 view = anova.filter(regex=regex_filter)
-viewed_cols = ["mean(group1)", "mean(group2)", "std(group1)", "std(group2)", "log2FC"]
-viewed_cols.extend(view.columns)
 view
+
+# %%
