@@ -1,11 +1,12 @@
 # ---
 # jupyter:
 #   jupytext:
+#     cell_metadata_filter: all
 #     text_representation:
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.1
 #   kernelspec:
 #     display_name: .venv
 #     language: python
@@ -199,109 +200,6 @@ view
 
 # %% tags=["hide-input"]
 anova.drop(columns=viewed_cols)
-
-# %% [markdown]
-# # Comparing ANOVA and ANCOVA results for two groups
-# Cross tabulated results after FDR correction for both ANOVA and ANCOVA
-
-# %% tags=["hide-input"]
-pd.crosstab(
-    anova.rejected.rename("rejected ANOVA"),
-    ancova_acore.rejected.rename("rejected ANCOVA"),
-)
-
-# %% [markdown]
-# The ANOVA and ANCOVA results are not identical. Control for relevant covariates
-# as they can confound the results. Here we used age and biological sex.
-
-# %% [markdown]
-# # With three and more groups
-# Acore make each combinatorial comparison between groups in the group column.
-
-# %%
-CLINIC: str = "meta.csv"  # clincial data
-meta = (
-    pd.read_csv(f"{BASE}/{CLINIC}", index_col=0)
-    .convert_dtypes()
-    .rename(
-        {
-            "_collection site": "site",
-            "_age at CSF collection": "age",
-            "_gender": "gender",
-        },
-        axis=1,
-    )
-)[["site", "age", "gender"]].astype(
-    {
-        "gender": "category",
-        "site": "category",
-    }
-)
-meta
-
-# %% [markdown]
-# Sample five protein groups (for easier inspection) and combine with metadata.
-
-# %%
-omics_and_clinic = (
-    omics_and_clinic.drop(columns=["AD", "age", "male"])
-    .sample(5, axis=1, random_state=42)
-    .join(meta)
-)
-omics_and_clinic
-
-# %%
-anova = (
-    ad.run_anova(
-        omics_and_clinic,  # .reset_index(),
-        subject="Sample ID",
-        drop_cols=["age", "gender"],
-        group="site",
-    ).set_index(["identifier", "group1", "group2"])
-    # .sort_values(by="padj")
-)
-anova
-
-# %% [markdown]
-# pairwise t-test results:
-
-# %%
-cols_pairwise_ttest = [
-    # "group1",
-    # "group2",
-    "mean(group1)",
-    "std(group1)",
-    "mean(group2)",
-    "std(group2)",
-    "posthoc Paired",
-    "posthoc Parametric",
-    "posthoc T-Statistics",
-    "posthoc dof",
-    "posthoc tail",
-    "posthoc pvalue",
-    "posthoc BF10",
-    "posthoc effsize",
-    # "identifier",
-    "log2FC",
-    "FC",
-    "efftype",
-]
-anova[cols_pairwise_ttest]
-
-# %% [markdown]
-# ANOVA results
-
-# %%
-anova.drop(columns=cols_pairwise_ttest)
-
-# %% [markdown]
-# Test results
-
-# %% tags=["hide-input"]
-regex_filter = "pval|padj|reject|stat|FC"
-view = anova.filter(regex=regex_filter)
-viewed_cols.extend(view.columns)
-view
 
 # %% [markdown]
 # Done.
