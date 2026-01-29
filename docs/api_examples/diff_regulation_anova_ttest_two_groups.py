@@ -14,13 +14,11 @@
 # ---
 
 # %% [markdown]
-# # Differential regulation
+# # Differential regulation (t-test for two groups)
 #
 # This API example shows the functionality in the [`acore.differential_regulation`](acore.differential_regulation) module:
 #
-# - ANOVA (for two groups)
-# - ANCOVA (for two groups)
-# - comparision between two results
+# - ANOVA (for two groups) is equivalent to t-test between two groups
 #
 # Then we can do the same for examples with three
 # and more groups, where a omnibus analysis across groups
@@ -94,47 +92,6 @@ omics_and_clinic.dtypes.value_counts()
 # %% tags=["hide-input"]
 omics_and_clinic[[group, *covariates]]
 
-
-# %% [markdown]
-# run ANCOVA analysis
-
-# %%
-# omics_and_clinic = omics_and_clinic.astype(float)
-# # ? this is no needed for run_ancova (the regex where groups are joined)
-ancova = (
-    ad.run_ancova(
-        omics_and_clinic.astype({group: str}),  # ! target needs to be of type str
-        # subject=subject_col, # not used
-        drop_cols=[],
-        group=group,  # needs to be a string
-        covariates=covariates,
-    )
-    .set_index("identifier")
-    .sort_values(by="posthoc padj")
-)  # need to be floats?
-ancova_acore = ancova
-ancova
-
-# %% [markdown]
-# The first columns contain group averages for each group for the specific
-# protein group
-
-# %%
-ancova.iloc[:, :6]
-
-# %% [markdown]
-# The others contain the test results (based on a linear model) for each protein group
-# (on each row). Some information is duplicated.
-
-# %% tags=["hide-input"]
-regex_filter = "pval|padj|reject|post"
-ancova.filter(regex=regex_filter)
-
-# %% [markdown]
-# The other information is about fold-changes and other information.
-
-# %% tags=["hide-input"]
-ancova.iloc[:, 6:].filter(regex=f"^(?!.*({regex_filter})).*$")
 
 # %% [markdown]
 # # ANOVA analysis for two groups

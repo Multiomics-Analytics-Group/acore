@@ -10,7 +10,7 @@
 # ---
 
 # %% [markdown]
-# # Differential regulation (ANCOVA)
+# # Differential regulation (ANCOVA for two groups)
 #
 # This API example shows the functionality in the
 # [`acore.differential_regulation`](acore.differential_regulation) module:
