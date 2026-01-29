@@ -101,7 +101,7 @@ acore.types.build_schema_all_floats(omics).validate(omics)
 # For easier inspection we just sample 100 protein groups. Remove this step in a
 # real analysis.
 
-# %%
+# %% tags=["hide-input"]
 omics = omics.sample(min(omics.shape[1], 100), axis=1, random_state=42)
 omics
 
