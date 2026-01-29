@@ -1,0 +1,162 @@
+# ---
+# jupyter:
+#   jupytext:
+#     cell_metadata_filter: all
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.19.1
+#   kernelspec:
+#     display_name: .venv
+#     language: python
+#     name: python3
+# ---
+
+# %% [markdown]
+# # Differential regulation (t-test for two groups)
+#
+# This API example shows the functionality in the [`acore.differential_regulation`](acore.differential_regulation) module:
+#
+# - ANOVA (for two groups) is equivalent to t-test between two groups
+#
+# Then we can do the same for examples with three
+# and more groups, where a omnibus analysis across groups
+# is combined with posthoc anlysis for separate groups.
+#
+# The functions are the same for both cases. The `group1` and
+# `group2` columns give the posthoc comparison.
+#
+# Using vuecore we add:
+# - [ ] include a PCA colored by groups as well as covariance factors
+
+# %% tags=["hide-output"]
+# %pip install acore
+
+# %% tags=["hide-input"]
+import dsp_pandas
+import pandas as pd
+
+import acore.differential_regulation as ad
+
+dsp_pandas.format.set_pandas_options(
+    max_columns=9,
+    max_colwidth=20,
+)
+
+# %% tags=["parameters"]
+BASE = (
+    "https://raw.githubusercontent.com/RasmussenLab/njab/"
+    "HEAD/docs/tutorial/data/alzheimer/"
+)
+CLINIC_ML: str = "clinic_ml.csv"  # clinical data
+OMICS: str = "proteome.csv"  # omics data
+freq_cutoff: float = (
+    0.7  # at least x percent of samples must have a value for a feature (here: protein group)
+)
+#
+covariates: list[str] = ["age", "male"]
+group: str = "AD"
+subject_col: str = "Sample ID"
+factor_and_covars: list[str] = [group, *covariates]
+
+# BASE = (
+#     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
+#     "HEAD/example_data/MTBLS13311/"
+#     ""
+# )
+# CLINIC_ML: str = "MTBLS13411_meta_data.csv"  # clinical data
+# OMICS: str = "MTBLS13411_processed_data.csv"  # omics data
+# covariates: list[str] = []
+# group: str = "Factor Value[Strain type]"
+# subject_col: str | int = 0
+# factor_and_covars: list[str] = [group, *covariates]
+
+# %% [markdown]
+# # ANCOVA analysis for two groups
+# Use combined dataset for ANCOVA analysis.
+
+# %% tags=["hide-input"]
+omics_and_clinic = pd.read_csv(
+    "../../example_data/alzheimer_proteomics/alzheimer_example_omics_and_clinic.csv",
+    index_col=subject_col,
+)
+omics_and_clinic
+
+# %% [markdown]
+# metadata here is of type integer. All floats are proteomics measurements.
+
+# %% tags=["hide-input"]
+omics_and_clinic.dtypes.value_counts()
+
+# %% tags=["hide-input"]
+omics_and_clinic[[group, *covariates]]
+
+
+# %% [markdown]
+# # ANOVA analysis for two groups
+# not controlling for covariates
+# > To check: pvalues for proteins with missing mean values? some merging issue?
+
+# %%
+if not isinstance(subject_col, str):
+    subject_col = omics_and_clinic.index.name or "index"
+    omics_and_clinic.rename_axis(subject_col, axis=0, inplace=True)
+anova = (
+    ad.run_anova(
+        omics_and_clinic.reset_index(),
+        subject=subject_col,
+        drop_cols=covariates,
+        group=group,
+    )
+    .set_index("identifier")
+    .sort_values(by="padj")
+)
+anova
+
+# %%
+# ToDo: Something is wrong with the mean and std dev calculations for each group
+# FC is also calculated along means and std dev.
+anova.describe().T
+
+# %% [markdown]
+# Set subject to None
+
+# %%
+anova = (
+    ad.run_anova(
+        omics_and_clinic,
+        subject=None,
+        drop_cols=covariates,
+        group=group,
+    )
+    .set_index("identifier")
+    .sort_values(by="padj")
+)
+anova
+
+# %% [markdown]
+# view averages per protein group
+
+# %% tags=["hide-input"]
+view = anova.iloc[:, 2:7]
+viewed_cols = view.columns.to_list()
+view
+
+# %% [markdown]
+# Test results
+
+# %% tags=["hide-input"]
+regex_filter = "pval|padj|reject|stat|FC"
+view = anova.filter(regex=regex_filter)
+viewed_cols.extend(view.columns)
+view
+
+# %% [markdown]
+# Other information
+
+# %% tags=["hide-input"]
+anova.drop(columns=viewed_cols)
+
+# %% [markdown]
+# Done.
