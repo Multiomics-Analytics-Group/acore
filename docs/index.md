@@ -21,7 +21,9 @@
 api_examples/normalization_analysis
 api_examples/batch_correction
 api_examples/exploratory_analysis
-api_examples/diff_regulation
+api_examples/diff_regulation_anova_ttest_two_groups
+api_examples/diff_regulation_anova_more_than_two_groups
+api_examples/diff_regulation_ancova
 api_examples/enrichment_analysis
 ```
 
