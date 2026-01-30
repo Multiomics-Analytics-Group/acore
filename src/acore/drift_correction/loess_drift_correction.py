@@ -127,6 +127,7 @@ def qc_rlsc_loess(
             span = max(
                 (1 + 1) / n, alpha
             )  # minimum alpha is (λ+1)/n, λ=1 for linear LOESS
+
             # Compute LOESS on full QC data
             loess_fit = lowess(y_qc, x_qc, frac=span, it=0, return_sorted=False)
 
@@ -147,8 +148,7 @@ def qc_rlsc_loess(
 
     # Fit LOESS again with best alpha for final curve
     if best_alpha is None or use_default:
-        # fallback to reasonable default if optimization failed
-        best_alpha = 0.75
+        best_alpha = 0.75  # fallback to reasonable default if optimization failed
         if print_logs and not use_default:
             print(
                 f"Warning: LOESS optimization failed for n={n}. Using default alpha=0.75."
@@ -158,20 +158,20 @@ def qc_rlsc_loess(
     loess_fit = lowess(y_qc, x_qc, frac=span, it=0, return_sorted=False)
 
     # Cubic spline interpolation for all points (samples + QCs)
-    # Restrict to interpolation range only
     cs = CubicSpline(
-        x_qc, loess_fit, extrapolate=False
-    )  # No extrapolation outside QC range
+        x_qc,
+        loess_fit,
+        extrapolate=False,  # No extrapolation outside QC range (restrict to interpolation range only)
+    )
     drift_curve = cs(x_all)
 
-    # Optional: Clip drift_curve to the edge values to prevent NaNs or negatives
-    x_min, x_max = np.min(x_qc), np.max(x_qc)
-
-    # For values outside QC range, hold the first/last fitted value (clamping)
+    # Clip drift_curve to the edge values to prevent NaNs or negatives
+    x_min, x_max = np.min(x_qc), np.max(
+        x_qc
+    )  # For values outside QC range, hold the first/last fitted value (clamping)
     drift_curve[x_all < x_min] = loess_fit[0]
     drift_curve[x_all > x_max] = loess_fit[-1]
-    # Final safeguard: ensure no negatives
-    drift_curve = np.clip(drift_curve, a_min=1e-6, a_max=None)
+    drift_curve = np.clip(drift_curve, a_min=1e-6, a_max=None)  # Ensure no negatives
 
     return drift_curve, best_alpha
 
@@ -282,11 +282,10 @@ def run_drift_correction(
     injection_order_map = dict(
         zip(sample_order["File Name"], sample_order["Sample ID"])
     )
-
     x_all = np.array(
         [injection_order_map.get(sample, np.nan) for sample in all_cols]
     )  # Order of samples in order of file names
-    print(x_all)
+
     if np.isnan(x_all).any():
         print(
             "Warning: some of your samples don't have an associated sample order. They will be skipped.",
@@ -296,7 +295,7 @@ def run_drift_correction(
     if filter_percent is not None:  # Filter features by QC completeness
         df = filter_features_by_qc(
             df, qc_cols, threshold=filter_percent
-        )  # Only keeping features that have min half of all QCs not nan
+        )  # Only keeping features that have min <percent> of all QCs not nan
 
     # Loop through all features in filtered df
     for feature_idx, row in df[all_cols].iterrows():
@@ -304,7 +303,7 @@ def run_drift_correction(
         # Y VALUES ARE INTENSITIES
         # X VALUES ARE RUN ORDER IDX
 
-        cid_value = df.at[feature_idx, "TempName"]  # feature ID
+        cid_value = df.at[feature_idx, "TempName"]  # feature ID, used for logs
 
         # Intensities (y) for all cols in the samples (t, c and nan)
         y_all = row.values.astype(float)
@@ -315,17 +314,16 @@ def run_drift_correction(
         )  # Gets all intensity values for row for all qcs
         x_qc = np.array(
             [injection_order_map.get(s, np.nan) for s in qc_cols]
-        )  # Gets the order for those
+        )  # Gets the order
 
         # Remove NaNs from QC for fitting
-        valid_mask = ~np.isnan(y_qc) & ~np.isnan(
-            x_qc
-        )  # Figure out which ones are nan (mask, has True/False in it)
-        y_qc_valid = y_qc[valid_mask]  # Same as y_qc but only non-nans
+        valid_mask = ~np.isnan(y_qc) & ~np.isnan(x_qc)
+        y_qc_valid = y_qc[valid_mask]
         x_qc_valid = x_qc[valid_mask]
 
         # Calculate RSD
-        rsd_qc = 100 * np.std(y_qc_valid) / np.mean(y_qc_valid)
+        eps = 1e-9
+        rsd_qc = 100 * np.std(y_qc_valid) / (np.mean(y_qc_valid) + eps)
         if rsd_qc > 30 and print_logs:
             print(
                 f"Flagging feature {cid_value} due to too high QC RSD. (Feature not skipped)"
@@ -356,14 +354,12 @@ def run_drift_correction(
                 print_logs=print_logs,
                 use_default=use_default,
             )  # Calculate curve and alpha value
-            median_qc = np.median(y_qc_valid)
-            # print("Any negatives in drift_curve?", np.any(drift_curve < 0))
-            # print("median", median_qc)
 
             # Remove NaNs from y_all for indexing (just keep for drift correction) -> only if they are not nan in either data or drift curve
             valid_mask = ~np.isnan(y_all) & ~np.isnan(drift_curve)
 
             # Normalize all intensities using drift curve
+            median_qc = np.median(y_qc_valid)
             corrected = np.full_like(
                 y_all, np.nan, dtype=float
             )  # Initialise corrected array
@@ -375,7 +371,7 @@ def run_drift_correction(
 
             correction_info[cid_value] = {
                 "alpha": best_alpha,
-                "drift_curve": drift_curve.tolist(),  # Convert to list for JSON/pickle
+                "drift_curve": drift_curve.tolist(),
                 "y_qc": y_qc_valid.tolist(),  # Store QC values
                 "x_qc": x_qc_valid.tolist(),  # Store QC injection orders
                 "rsd_qc": rsd_qc,
@@ -389,8 +385,11 @@ def run_drift_correction(
 
         except Exception as e:
             print(f"Skipping feature {cid_value} due to error: {e}")
-
             continue
 
     corrected_df["Name"] = df["TempName"]
+    if print_logs:
+        print(
+            "\nAll done. For further information on the corrected values, check the second returned object."
+        )
     return corrected_df, correction_info
