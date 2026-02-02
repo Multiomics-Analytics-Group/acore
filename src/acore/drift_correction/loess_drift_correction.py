@@ -387,9 +387,13 @@ def run_drift_correction(
             print(f"Skipping feature {cid_value} due to error: {e}")
             continue
 
-    corrected_df["Name"] = df["TempName"]
+    # Add metadata back into output df
+    meta_cols = df.columns.difference(all_cols)
+    corrected_df = corrected_df.join(df.loc[corrected_df.index, meta_cols])
+    corrected_df = corrected_df[df.columns]
+
     if print_logs:
         print(
-            "\nAll done. For further information on the corrected values, check the second returned object."
+            "\nAll done. For further information on the corrected values, check the second returned object. Also reordered rows!"
         )
     return corrected_df, correction_info
