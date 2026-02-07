@@ -304,7 +304,8 @@ def calculate_pvalue_correlation(r, n_obs):
     ts = np.square(rf) * (df / denom)
     pf = betainc(0.5 * df, 0.5, df / (df + ts))
 
-    p = np.zeros_like(r)
+    # Initialize with ones so that diagonal p-values are 1 (non-significant)
+    p = np.ones_like(r)
     p[upper_idx] = pf
     p[(upper_idx[1], upper_idx[0])] = pf
     return p
