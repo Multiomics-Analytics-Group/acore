@@ -1,7 +1,8 @@
 # %% [markdown]
 # # Exploratory Analysis
 #
-# Using a metabolomics dataset as an example, we show how to use the exploratory analysis
+# Using a metabolomics dataset ([MTBLS13411](../example_data/MTBLS13411.md)) as an
+# example, we show how to use the exploratory analysis
 # for the four groups present in the data. The groups are derived based on the sample
 # names, but you could also merge them from available metadata.
 #
