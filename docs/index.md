@@ -40,6 +40,7 @@ PXD040621 <downloaded/PXD040621_analysis>
 
 api_examples/Download_PRIDE_data
 api_examples/ovarian_cancer
+example_data/MTBLS13411
 ```
 
 ```{toctree}
