@@ -1,5 +1,20 @@
 # %% [markdown]
 # # Exploratory Analysis
+#
+# Using a metabolomics dataset as an example, we show how to use the exploratory analysis
+# for the four groups present in the data. The groups are derived based on the sample
+# names, but you could also merge them from available metadata.
+#
+# - Principal Component Analysis (PCA)
+# - Uniform Manifold Approximation and Projection (UMAP)
+# - Coefficient of variation (CoV)
+# - Correlation analysis
+# - Histogram of the data
+# - Summary statistics
+#
+# The focus of acore is not plotting, but getting the data in the right format for
+# plotting. Nonetheless, we show some examples of how to plot the results. VueCore
+# offers more examples.
 
 # %%
 # %pip install acore
@@ -104,7 +119,7 @@ annotation = AnnotationResult(**annotation)
 annotation
 
 # %% [markdown]
-# Make the PCA plot:
+# Show PCA for the two first components, highlighting the groups
 
 # %%
 fig, ax = make_plot(pcs, annotation=annotation, **map_names)
@@ -219,8 +234,6 @@ fig.tight_layout()
 # %%
 # If you only want to keep the lower triangle of the correlation matrix to have
 # unique values of interst, you can use the utility function:
-
-# %%
 lower_corr = ca.corr_lower_triangle(data.drop(columns=["group"]), method="pearson")
 lower_corr
 
@@ -264,7 +277,7 @@ for method in ["pearson", "spearman", "kendall"]:
     )
     corr.append(_corr)
 corr = pd.concat(corr, axis=1).sort_values(by="pearson", ascending=True)
-corr.plot(
+_ = corr.plot(
     style=".",
     ylim=(-1.05, 1.05),
     alpha=0.5,
@@ -283,6 +296,10 @@ print(res)
 # %% [markdown]
 # For the first four features, we would only keep one significant correlation
 # after multiple testing correction with the Benjamini-Hochberg method.
+#
+# > Note that the p-value for the correlation between the same feature is set to one,
+# > not zero as in scipy, to not consider these correlation in downstream analysis by
+# > accident.
 
 # %%
 correlation = ca.run_correlation(
@@ -335,7 +352,7 @@ pd.DataFrame(res)
 
 # %% [markdown]
 # ## Histogram of the data
-# We often want to plot the distribution of the data values.
+# We often want to plot the distribution of feature values.
 # Sometimes you want to use custom bins, e.g. to align multiple histograms.
 # Here we plot and compute a histogram frequencies with custom bins.
 
@@ -351,7 +368,12 @@ for col in view.columns[:4]:
         ylabel="Frequency",
     )
 ax.title.set_text("Histogram with custom bins")
-ax.legend()
+_ = ax.legend()
+
+# %% [markdown]
+# We could easily plot the histogram with custom bins, but if we want the count data
+# of the histogram frequencies in a dataframe, `acore` has a utility function
+# which can be used to compute the histogram frequencies for a feature.
 
 
 # %%
