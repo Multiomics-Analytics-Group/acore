@@ -36,6 +36,7 @@
 # %% tags=["hide-input"]
 import dsp_pandas
 import pandas as pd
+import vuecore.plots.basic.scatter
 
 import acore.differential_regulation as ad
 
@@ -124,8 +125,46 @@ anova = (
 anova
 
 # %%
-# FC is also calculated along means and std dev.
+# See summary statistics for numeric values in ANOVA results, such as for
+# - pvalue (unadjusted)
+# - padj (adjusted p-value, FDR corrected)
+# - fold change (FC) of the mean of group1 vs group2 (group1/group2)
 anova.describe().T
+
+# %% [markdown]
+# ## View Volcano plot for the ANOVA results
+# - p-value (unadjusted) using the -log10 transformation on the y-axis
+# - fold change (FC) in the log2 space on the x-axis (log2FC of 2 means a fold
+#   change of 4, log2FC of -1 means a fold change of 0.5)
+# - significant features are colored in red using the `reject` column,
+#   which is True for significant features and False for non-significant features, and
+#   is calculated based on the `padj` column and a significance threshold (default 0.05)
+
+# %%
+scatter_plot_adv = vuecore.plots.basic.scatter.create_scatter_plot(
+    data=anova.reset_index(),
+    x="log2FC",
+    y="-log10 pvalue",
+    color="rejected",
+    title="Simple Volcano Plot",
+    subtitle="Visualizing ANOVA results",
+    labels={
+        "log2FC": "Log2 Fold Change",
+        "-log10 pvalue": "-log10(p-value)",
+        "rejected": "FDR corrected Significant",
+        "identifier": "Protein Identifier",
+    },
+    hover_data=["identifier"],
+    # currently does not work:
+    # color_discrete_map={False: "#2166AC", True: "#B2182B"},  # Blue  # Red
+    color_discrete_sequence=["red", "blue"],
+    opacity=1,
+    marker_line_width=1,
+    marker_line_color="darkgray",
+    width=800,
+    height=600,
+)
+scatter_plot_adv
 
 # %% [markdown]
 # ## Inspect ANOVA results
