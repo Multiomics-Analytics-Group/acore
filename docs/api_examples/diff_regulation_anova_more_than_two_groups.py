@@ -43,27 +43,37 @@ dsp_pandas.format.set_pandas_options(
 # %% tags=["parameters"]
 BASE = (
     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-    "HEAD/example_data/MTBLS13311"
-    ""
+    "updt_diff_reg_api_example/example_data/MTBLS13311/"
 )
-CLINIC_ML: str = "MTBLS13411_meta_data.csv"  # clinical data
-OMICS: str = "MTBLS13411_processed_data.csv"  # omics data
+fname: str = "MTBLS13411_omics_and_meta.csv"  # combined omics and meta data
 covariates: list[str] = []
-group: str = "Factor Value[Strain type]"
+group: str = "group"
+drop_cols: list[str] = ["Factor Value[Strain type]"]
 subject_col: str | int = 0
 factor_and_covars: list[str] = [group, *covariates]
 
 # %% [markdown]
-# # ANCOVA analysis for two groups
-# Use combined dataset for ANCOVA analysis.
+# # ANOVA analysis for two groups
+# Use combined dataset for ANOVA analysis.
 
 # %% tags=["hide-input"]
-omics = pd.read_csv(f"{BASE}/{OMICS}", index_col=subject_col).convert_dtypes()
-meta = pd.read_csv(f"{BASE}/{CLINIC_ML}", index_col=subject_col).convert_dtypes()
-omics_and_meta = meta[factor_and_covars].join(omics, how="inner")
+omics_and_meta = (
+    pd.read_csv(f"{BASE}/{fname}", index_col=subject_col)
+    .convert_dtypes()
+    .dropna(subset=factor_and_covars)
+)
 omics_and_meta
+
 # %% [markdown]
-# metadata here is of type integer. All floats are proteomics measurements.
+# Drop unnecessary columns, if there are any specified in `drop_cols`.
+
+# %% tags=["hide-input"]
+if drop_cols:
+    omics_and_meta.drop(columns=drop_cols, inplace=True)
+omics_and_meta
+
+# %% [markdown]
+# Check data types of the columns. Metadata can be numeric, but also strings.
 
 # %% tags=["hide-input"]
 omics_and_meta.dtypes.value_counts()
@@ -73,11 +83,7 @@ omics_and_meta[factor_and_covars]
 
 
 # %% [markdown]
-# The ANOVA and ANCOVA results are not identical. Control for relevant covariates
-# as they can confound the results. Here we used age and biological sex.
-
-# %% [markdown]
-# # With three and more groups
+# ## With four groups
 # Acore make each combinatorial comparison between groups in the group column.
 
 
@@ -96,7 +102,7 @@ anova = (
 anova.head().T
 
 # %% [markdown]
-# pairwise t-test results:
+# ### pairwise t-test results:
 
 # %%
 cols_pairwise_ttest = [

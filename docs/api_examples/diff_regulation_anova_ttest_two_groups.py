@@ -74,33 +74,33 @@ factor_and_covars: list[str] = [group, *covariates]
 # factor_and_covars: list[str] = [group, *covariates]
 
 # %% [markdown]
-# # ANCOVA analysis for two groups
-# Use combined dataset for ANCOVA analysis.
+# # ANOVA analysis for two groups
+# Use combined dataset for ANOVA analysis.
 
 # %% tags=["hide-input"]
-omics_and_clinic = (
+omics_and_meta = (
     pd.read_csv(f"{BASE}/{fname}", index_col=subject_col)
     .convert_dtypes()
     .dropna(subset=factor_and_covars)
 )
-omics_and_clinic
+omics_and_meta
 
 # %% [markdown]
 # Drop unnecessary columns, if there are any specified in `drop_cols`.
 
 # %% tags=["hide-input"]
 if drop_cols:
-    omics_and_clinic.drop(columns=drop_cols, inplace=True)
-omics_and_clinic
+    omics_and_meta.drop(columns=drop_cols, inplace=True)
+omics_and_meta
 
 # %% [markdown]
 # Check data types of the columns. Metadata can be numeric, but also strings.
 
 # %% tags=["hide-input"]
-omics_and_clinic.dtypes.value_counts()
+omics_and_meta.dtypes.value_counts()
 
 # %% tags=["hide-input"]
-omics_and_clinic[[group, *covariates]]
+omics_and_meta[[group, *covariates]]
 
 
 # %% [markdown]
@@ -109,11 +109,11 @@ omics_and_clinic[[group, *covariates]]
 
 # %%
 if not isinstance(subject_col, str):
-    subject_col = omics_and_clinic.index.name or "index"
-    omics_and_clinic.rename_axis(subject_col, axis=0, inplace=True)
+    subject_col = omics_and_meta.index.name or "index"
+    omics_and_meta.rename_axis(subject_col, axis=0, inplace=True)
 anova = (
     ad.run_anova(
-        omics_and_clinic,
+        omics_and_meta,
         subject=None,
         drop_cols=covariates,
         group=group,
