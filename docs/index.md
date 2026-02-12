@@ -43,6 +43,7 @@ PXD040621 <downloaded/PXD040621_analysis>
 example_data/Download_PRIDE_data
 example_data/ovarian_cancer
 example_data/alzheimer_proteomics
+example_data/MTBLS13411
 ```
 
 ```{toctree}
