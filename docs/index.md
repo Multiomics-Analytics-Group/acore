@@ -21,7 +21,9 @@
 api_examples/normalization_analysis
 api_examples/batch_correction
 api_examples/exploratory_analysis
-api_examples/ANCOVA_analysis
+api_examples/diff_regulation_anova_ttest_two_groups
+api_examples/diff_regulation_anova_more_than_two_groups
+api_examples/diff_regulation_ancova
 api_examples/enrichment_analysis
 ```
 
@@ -38,8 +40,9 @@ PXD040621 <downloaded/PXD040621_analysis>
 :caption: Example dataset (preprocessing)
 :hidden:
 
-api_examples/Download_PRIDE_data
-api_examples/ovarian_cancer
+example_data/Download_PRIDE_data
+example_data/ovarian_cancer
+example_data/alzheimer_proteomics
 example_data/MTBLS13411
 ```
 
