@@ -94,7 +94,7 @@ if drop_cols:
 omics_and_clinic
 
 # %% [markdown]
-# metadata here is of type integer. All floats are proteomics measurements.
+# Check data types of the columns. Metadata can be numeric, but also strings.
 
 # %% tags=["hide-input"]
 omics_and_clinic.dtypes.value_counts()
@@ -105,34 +105,12 @@ omics_and_clinic[[group, *covariates]]
 
 # %% [markdown]
 # # ANOVA analysis for two groups
-# not controlling for covariates
-# > To check: pvalues for proteins with missing mean values? some merging issue?
+# - is not controlling for covariates
 
 # %%
 if not isinstance(subject_col, str):
     subject_col = omics_and_clinic.index.name or "index"
     omics_and_clinic.rename_axis(subject_col, axis=0, inplace=True)
-anova = (
-    ad.run_anova(
-        omics_and_clinic.reset_index(),
-        subject=subject_col,
-        drop_cols=covariates,
-        group=group,
-    )
-    .set_index("identifier")
-    .sort_values(by="padj")
-)
-anova
-
-# %%
-# ToDo: Something is wrong with the mean and std dev calculations for each group
-# FC is also calculated along means and std dev.
-anova.describe().T
-
-# %% [markdown]
-# Set subject to None
-
-# %%
 anova = (
     ad.run_anova(
         omics_and_clinic,
@@ -145,8 +123,18 @@ anova = (
 )
 anova
 
+# %%
+# FC is also calculated along means and std dev.
+anova.describe().T
+
 # %% [markdown]
-# view averages per protein group
+# ## Inspect ANOVA results
+# - summary statistics for each group
+# - test results
+# - t-test statistic, FDR correction method, etc.
+
+# %% [markdown]
+# ## View averages per protein group
 
 # %% tags=["hide-input"]
 view = anova.iloc[:, 2:7]
@@ -154,7 +142,7 @@ viewed_cols = view.columns.to_list()
 view
 
 # %% [markdown]
-# Test results
+# ### Test results
 
 # %% tags=["hide-input"]
 regex_filter = "pval|padj|reject|stat|FC"
@@ -163,7 +151,7 @@ viewed_cols.extend(view.columns)
 view
 
 # %% [markdown]
-# Other information
+# ### Other information
 
 # %% tags=["hide-input"]
 anova.drop(columns=viewed_cols)
