@@ -16,7 +16,7 @@ def imputation_KNN(
     K-Nearest Neighbors imputation for pandas dataframes with missing data. For more
     information visit `fancyimpute`_.
 
-    .. _fancyimpute:https://github.com/iskandr/fancyimpute/blob/HEAD/fancyimpute/knn.py
+    .. _fancyimpute: https://github.com/iskandr/fancyimpute/blob/HEAD/fancyimpute/knn.py
 
     :param data: pandas dataframe with samples as rows and protein identifiers as
                  columns (with additional columns 'group', 'sample' and 'subject').
@@ -74,6 +74,7 @@ def imputation_mixed_norm_KNN(
 ):
     """
     Missing values are replaced in two steps:
+
     1) using k-Nearest Neighbors we impute protein columns with a higher ratio of
        missing/valid values than the defined cutoff,
     2) the remaining missing values are replaced by random numbers that are drawn
@@ -120,7 +121,7 @@ def imputation_normal_distribution(
     separately.
     For more information visit `replacemissingfromgaussian`_ in coxdocs from MaxQuant.
 
-    .. _replacemissingfromgaussian:https://cox-labs.github.io/coxdocs/\
+    .. _replacemissingfromgaussian: https://cox-labs.github.io/coxdocs/\
 replacemissingfromgaussian.html
 
     :param data: pandas dataframe with samples as rows and protein identifiers as
