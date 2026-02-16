@@ -10,12 +10,13 @@
 # ---
 
 # %% [markdown]
-# # Differential regulation (ANOVA for more than two groups)
+# # Differential regulation: ANOVA across more than two groups and posthoc t-tests
 #
-# This API example shows the functionality in the [`acore.differential_regulation`](acore.differential_regulation) module:
+# This API example shows the functionality in the
+# [`acore.differential_regulation`](acore.differential_regulation) module:
 #
 # - Analysis of Variance (ANOVA) as omnibus test across more than two groups
-# - posthoc t-tests between groups
+# - posthoc t-tests between each of the groups
 #
 # An omnibus analysis across groups
 # is combined with posthoc analysis between each set of the separate groups.
@@ -23,8 +24,6 @@
 # The function is the same as for the two groups case. The `group1` and
 # `group2` columns give the posthoc comparison.
 #
-# Using vuecore we add:
-# - [ ] include a PCA colored by groups as well as covariance factors
 
 # %% tags=["hide-output"]
 # %pip install acore

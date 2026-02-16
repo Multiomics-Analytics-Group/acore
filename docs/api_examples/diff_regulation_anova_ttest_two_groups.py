@@ -27,8 +27,6 @@
 # The functions are the same for both cases. The `group1` and
 # `group2` columns give the posthoc comparison.
 #
-# Using vuecore we add:
-# - [ ] include a PCA colored by groups as well as covariance factors
 
 # %% tags=["hide-output"]
 # %pip install acore
@@ -75,7 +73,7 @@ factor_and_covars: list[str] = [group, *covariates]
 # factor_and_covars: list[str] = [group, *covariates]
 
 # %% [markdown]
-# # ANOVA analysis for two groups
+# ## ANOVA analysis for two groups
 # Use combined dataset for ANOVA analysis.
 
 # %% tags=["hide-input"]
@@ -105,7 +103,7 @@ omics_and_meta[[group, *covariates]]
 
 
 # %% [markdown]
-# # ANOVA analysis for two groups
+# ## ANOVA analysis for two groups
 # - is not controlling for covariates
 
 # %%
