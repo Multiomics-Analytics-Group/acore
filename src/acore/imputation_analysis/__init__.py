@@ -6,25 +6,34 @@ from sklearn.impute import KNNImputer
 
 
 def imputation_KNN(
-    data,
+    data: pd.DataFrame,
     drop_cols=["group", "sample", "subject"],
     group="group",
     cutoff=0.6,
     alone=True,
 ):
     """
-    k-Nearest Neighbors imputation for pandas dataframes with missing data. For more information visit https://github.com/iskandr/fancyimpute/blob/master/fancyimpute/knn.py.
+    K-Nearest Neighbors imputation for pandas dataframes with missing data. For more
+    information visit `fancyimpute`_.
 
-    :param data: pandas dataframe with samples as rows and protein identifiers as columns (with additional columns 'group', 'sample' and 'subject').
+    .. _fancyimpute:https://github.com/iskandr/fancyimpute/blob/HEAD/fancyimpute/knn.py
+
+    :param data: pandas dataframe with samples as rows and protein identifiers as
+                 columns (with additional columns 'group', 'sample' and 'subject').
     :param str group: column label containing group identifiers.
-    :param list drop_cols: column labels to be dropped. Final dataframe should only have gene/protein/etc identifiers as columns.
-    :param float cutoff: minimum ratio of missing/valid values required to impute in each column.
+    :param list drop_cols: column labels to be dropped. Final dataframe should only
+                           have gene/protein/etc identifiers as columns.
+    :param float cutoff: minimum ratio of missing/valid values required to impute
+                         in each column.
     :param bool alone: if True removes all columns with any missing values.
     :return: Pandas dataframe with samples as rows and protein identifiers as columns.
 
     Example::
 
-        result = imputation_KNN(data, drop_cols=['group', 'sample', 'subject'], group='group', cutoff=0.6, alone=True)
+        result = imputation_KNN(data,
+                    drop_cols=['group', 'sample', 'subject'],
+                    group='group', cutoff=0.6, alone=True
+        )
     """
     np.random.seed(112736)
     df = data.copy()
@@ -64,22 +73,33 @@ def imputation_mixed_norm_KNN(
     cutoff=0.6,
 ):
     """
-    Missing values are replaced in two steps: 1) using k-Nearest Neighbors we impute protein columns with a higher ratio of missing/valid values than the defined cutoff, \
-    2) the remaining missing values are replaced by random numbers that are drawn from a normal distribution.
+    Missing values are replaced in two steps:
+    1) using k-Nearest Neighbors we impute protein columns with a higher ratio of
+       missing/valid values than the defined cutoff,
+    2) the remaining missing values are replaced by random numbers that are drawn
+       from a normal distribution.
 
-    :param data: pandas dataframe with samples as rows and protein identifiers as columns (with additional columns 'group', 'sample' and 'subject').
+    :param data: pandas dataframe with samples as rows and protein identifiers as
+                 columns (with additional columns 'group', 'sample' and 'subject').
     :param str group: column label containing group identifiers.
     :param list index_cols: list of column labels to be set as dataframe index.
-    :param float shift: specifies the amount by which the distribution used for the random numbers is shifted downwards. This is in units of the \
+    :param float shift: specifies the amount by which the distribution used for the
+                        random numbers is shifted downwards. This is in units of the
                         standard deviation of the valid data.
-    :param float nstd: defines the width of the Gaussian distribution relative to the standard deviation of measured values. \
-                        A value of 0.5 would mean that the width of the distribution used for drawing random numbers is half of the standard deviation of the data.
-    :param float cutoff: minimum ratio of missing/valid values required to impute in each column.
+    :param float nstd: defines the width of the Gaussian distribution relative to the
+                       standard deviation of measured values. A value of 0.5 would mean
+                       that the width of the distribution used for drawing random
+                       numbers is half of the standard deviation of the data.
+    :param float cutoff: minimum ratio of missing/valid values required to
+                         impute in each column.
     :return: Pandas dataframe with samples as rows and protein identifiers as columns.
 
     Example::
 
-        result = imputation_mixed_norm_KNN(data, index_cols=['group', 'sample', 'subject'], shift = 1.8, nstd = 0.3, group='group', cutoff=0.6)
+        result = imputation_mixed_norm_KNN(data,
+                    index_cols=['group', 'sample', 'subject'],
+                    shift = 1.8, nstd = 0.3, group='group', cutoff=0.6
+        )
     """
     df = imputation_KNN(
         data, drop_cols=index_cols, group=group, cutoff=cutoff, alone=False
@@ -95,18 +115,32 @@ def imputation_normal_distribution(
     data, index_cols=["group", "sample", "subject"], shift=1.8, nstd=0.3
 ):
     """
-    Missing values will be replaced by random numbers that are drawn from a normal distribution. The imputation is done for each sample (across all proteins) separately.
-    For more information visit http://www.coxdocs.org/doku.php?id=perseus:user:activities:matrixprocessing:imputation:replacemissingfromgaussian.
+    Missing values will be replaced by random numbers that are drawn from a normal
+    distribution. The imputation is done for each sample (across all proteins)
+    separately.
+    For more information visit `replacemissingfromgaussian`_ in coxdocs from MaxQuant.
 
-    :param data: pandas dataframe with samples as rows and protein identifiers as columns (with additional columns 'group', 'sample' and 'subject').
+    .. _replacemissingfromgaussian:https://cox-labs.github.io/coxdocs/\
+replacemissingfromgaussian.html
+
+    :param data: pandas dataframe with samples as rows and protein identifiers as
+                 columns (with additional columns 'group', 'sample' and 'subject').
     :param list index_cols: list of column labels to be set as dataframe index.
-    :param float shift: specifies the amount by which the distribution used for the random numbers is shifted downwards. This is in units of the standard deviation of the valid data.
-    :param float nstd: defines the width of the Gaussian distribution relative to the standard deviation of measured values. A value of 0.5 would mean that the width of the distribution used for drawing random numbers is half of the standard deviation of the data.
+    :param float shift: specifies the amount by which the distribution used for the
+                        random numbers is shifted downwards. This is in units of the
+                        standard deviation of the valid data.
+    :param float nstd: defines the width of the Gaussian distribution relative to the
+                       standard deviation of measured values. A value of 0.5 would mean
+                       that the width of the distribution used for drawing random
+                       numbers is half of the standard deviation of the data.
     :return: Pandas dataframe with samples as rows and protein identifiers as columns.
 
     Example::
 
-        result = imputation_normal_distribution(data, index_cols=['group', 'sample', 'subject'], shift = 1.8, nstd = 0.3)
+        result = imputation_normal_distribution(data,
+                    index_cols=['group', 'sample', 'subject'],
+                    shift = 1.8, nstd = 0.3
+        )
     """
     np.random.seed(112736)
     df = data.copy()
