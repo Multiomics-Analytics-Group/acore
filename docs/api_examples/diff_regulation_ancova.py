@@ -10,12 +10,13 @@
 # ---
 
 # %% [markdown]
-# # Differential regulation (ANCOVA for two groups)
+# # Differential regulation: ANCOVA for two groups
 #
 # This API example shows the functionality in the
 # [`acore.differential_regulation`](acore.differential_regulation) module:
 #
 # - Analysis of Covariance (ANCOVA) for two groups
+# - Effect of covariates is taken into account in the linear model
 #
 # Then we can do the same for examples with three
 # and more groups, where a omnibus analysis across groups
@@ -24,8 +25,6 @@
 # The functions are the same for both cases. The `group1` and
 # `group2` columns give the posthoc comparison.
 #
-# Using vuecore we add:
-# - [ ] include a PCA colored by groups as well as covariance factors
 
 # %% tags=["hide-output"]
 # %pip install acore
@@ -33,6 +32,8 @@
 # %% tags=["hide-input"]
 import dsp_pandas
 import pandas as pd
+import sklearn.impute
+import vuecore.plots.basic.scatter
 
 import acore.differential_regulation as ad
 
@@ -43,61 +44,72 @@ dsp_pandas.format.set_pandas_options(
 
 # %% tags=["parameters"]
 BASE = (
-    "https://raw.githubusercontent.com/RasmussenLab/njab/"
-    "HEAD/docs/tutorial/data/alzheimer/"
+    "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
+    "updt_diff_reg_api_example/example_data/alzheimer_proteomics/"
 )
-CLINIC_ML: str = "clinic_ml.csv"  # clinical data
-OMICS: str = "proteome.csv"  # omics data
-freq_cutoff: float = (
-    0.7  # at least x percent of samples must have a value for a feature (here: protein group)
-)
-#
+# data is already preprocessed: log2, filtered
+fname: str = "alzheimer_example_omics_and_clinic.csv"  # combined omics and meta data
 covariates: list[str] = ["age", "male"]
 group: str = "AD"
 subject_col: str = "Sample ID"
+drop_cols: list[str] = []
 factor_and_covars: list[str] = [group, *covariates]
 
-# BASE = (
-#     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-#     "HEAD/example_data/MTBLS13311/"
-#     ""
-# )
-# CLINIC_ML: str = "MTBLS13411_meta_data.csv"  # clinical data
-# OMICS: str = "MTBLS13411_processed_data.csv"  # omics data
-# covariates: list[str] = []
-# group: str = "Factor Value[Strain type]"
-# subject_col: str | int = 0
-# factor_and_covars: list[str] = [group, *covariates]
-
 # %% [markdown]
-# # ANCOVA analysis for two groups
+# ## Data loading
 # Use combined dataset for ANCOVA analysis.
 
 # %% tags=["hide-input"]
-omics_and_clinic = pd.read_csv(
-    "../../example_data/alzheimer_proteomics/alzheimer_example_omics_and_clinic.csv",
-    index_col=subject_col,
+omics_and_meta = (
+    pd.read_csv(f"{BASE}/{fname}", index_col=subject_col)
+    .convert_dtypes()
+    .dropna(subset=factor_and_covars)
 )
-omics_and_clinic
+omics_and_meta
 
 # %% [markdown]
-# metadata here is of type integer. All floats are proteomics measurements.
+# Metadata here is of type integer. All floats are proteomics measurements.
 
 # %% tags=["hide-input"]
-omics_and_clinic.dtypes.value_counts()
+omics_and_meta.dtypes.value_counts()
 
 # %% tags=["hide-input"]
-omics_and_clinic[[group, *covariates]]
+omics_and_meta[[group, *covariates]]
+
 
 # %% [markdown]
-# run ANCOVA analysis
+# ## Impute missing values
+# Currently the `run_ancova` function does not handle missing values for measurments
+# which are not given.
+# > Request implementation when necessary.
+# We will therefore use acore imputation to impute missing values for the proteomics
+# measurements.
+
 
 # %%
-# omics_and_clinic = omics_and_clinic.astype(float)
+# import acore.imputation_analysis
+
+# acore.imputation_analysis.imputation_mixed_norm_KNN(
+#     omics_and_meta,
+#     index_cols=[group, *covariates],
+#     group=group,
+# )
+omics_and_meta = pd.DataFrame(
+    sklearn.impute.KNNImputer(n_neighbors=3).fit_transform(omics_and_meta),
+    index=omics_and_meta.index,
+    columns=omics_and_meta.columns,
+)
+omics_and_meta
+
+# %% [markdown]
+# ## Run ANCOVA analysis
+
+# %%
+# omics_and_meta = omics_and_meta.astype(float)
 # # ? this is no needed for run_ancova (the regex where groups are joined)
 ancova = (
     ad.run_ancova(
-        omics_and_clinic.astype({group: str}),  # ! target needs to be of type str
+        omics_and_meta.astype({group: str}),  # ! target needs to be of type str
         # subject=subject_col, # not used
         drop_cols=[],
         group=group,  # needs to be a string
@@ -110,6 +122,7 @@ ancova_acore = ancova
 ancova
 
 # %% [markdown]
+# ## Inspect ANCOVA results
 # The first columns contain group averages for each group for the specific
 # protein group
 
@@ -129,3 +142,33 @@ ancova.filter(regex=regex_filter)
 
 # %% tags=["hide-input"]
 ancova.iloc[:, 6:].filter(regex=f"^(?!.*({regex_filter})).*$")
+
+
+# %% [markdown]
+# ## See Volcano plot of ANCOVA results
+
+# %%
+scatter_plot_adv = vuecore.plots.basic.scatter.create_scatter_plot(
+    data=ancova.reset_index(),
+    x="log2FC",
+    y="-log10 pvalue",
+    color="rejected",
+    title="Simple Volcano Plot",
+    subtitle="Visualizing ANCOVA results",
+    labels={
+        "log2FC": "Log2 Fold Change",
+        "-log10 pvalue": "-log10(p-value)",
+        "rejected": "FDR corrected Significant",
+        "identifier": "Protein Identifier",
+    },
+    hover_data=["identifier"],
+    # currently does not work:
+    # color_discrete_map={False: "#2166AC", True: "#B2182B"},  # Blue  # Red
+    color_discrete_sequence=["red", "blue"],
+    opacity=1,
+    marker_line_width=1,
+    marker_line_color="darkgray",
+    width=800,
+    height=600,
+)
+scatter_plot_adv
