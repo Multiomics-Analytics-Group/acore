@@ -129,6 +129,37 @@ anova
 # - fold change (FC) of the mean of group1 vs group2 (group1/group2)
 anova.describe().T
 
+
+# %% [markdown]
+# ## Inspect ANOVA results
+# - summary statistics for each group
+# - test results
+# - t-test statistic, FDR correction method, etc.
+
+# %% [markdown]
+# ## View averages per protein group
+
+# %% tags=["hide-input"]
+view = anova.filter(regex="group")
+viewed_cols = view.columns.to_list()
+view
+
+# %% [markdown]
+# ### Test results
+
+# %% tags=["hide-input"]
+regex_filter = "pval|padj|reject|stat|FC"
+view = anova.filter(regex=regex_filter)
+viewed_cols.extend(view.columns)
+view
+
+# %% [markdown]
+# ### Other information
+# on test statistic and FDR correction method.
+
+# %% tags=["hide-input"]
+anova.drop(columns=viewed_cols)
+
 # %% [markdown]
 # ## View Volcano plot for the ANOVA results
 # - p-value (unadjusted) using the -log10 transformation on the y-axis
@@ -163,35 +194,6 @@ scatter_plot_adv = vuecore.plots.basic.scatter.create_scatter_plot(
     height=600,
 )
 scatter_plot_adv
-
-# %% [markdown]
-# ## Inspect ANOVA results
-# - summary statistics for each group
-# - test results
-# - t-test statistic, FDR correction method, etc.
-
-# %% [markdown]
-# ## View averages per protein group
-
-# %% tags=["hide-input"]
-view = anova.iloc[:, 2:7]
-viewed_cols = view.columns.to_list()
-view
-
-# %% [markdown]
-# ### Test results
-
-# %% tags=["hide-input"]
-regex_filter = "pval|padj|reject|stat|FC"
-view = anova.filter(regex=regex_filter)
-viewed_cols.extend(view.columns)
-view
-
-# %% [markdown]
-# ### Other information
-
-# %% tags=["hide-input"]
-anova.drop(columns=viewed_cols)
 
 # %% [markdown]
 # Done.

@@ -123,6 +123,12 @@ ancova
 
 # %% [markdown]
 # ## Inspect ANCOVA results
+# - summary statistics for each group
+# - test results
+# - t-test statistic, FDR correction method, etc.
+
+# %% [markdown]
+# ### View averages per protein group
 # The first columns contain group averages for each group for the specific
 # protein group
 
@@ -130,6 +136,7 @@ ancova
 ancova.iloc[:, :6]
 
 # %% [markdown]
+# ### Test results
 # The others contain the test results (based on a linear model) for each protein group
 # (on each row). Some information is duplicated.
 
@@ -138,7 +145,7 @@ regex_filter = "pval|padj|reject|post"
 ancova.filter(regex=regex_filter)
 
 # %% [markdown]
-# The other information is about fold-changes and other information.
+# ### Other information
 
 # %% tags=["hide-input"]
 ancova.iloc[:, 6:].filter(regex=f"^(?!.*({regex_filter})).*$")
