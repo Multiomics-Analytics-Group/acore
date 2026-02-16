@@ -41,6 +41,7 @@ extensions = [
     "sphinx_new_tab_link",
     "myst_nb",
     "sphinx_copybutton",
+    "sphinx_llms_txt",
 ]
 
 myst_enable_extensions = [
