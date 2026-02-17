@@ -105,7 +105,9 @@ omics_and_meta
 # ## ANCOVA analysis for two groups
 # > If there is more than two groups, the code still runs, but then the results are
 # > to be interpreted as an omnibus test across groups.
-# See for details [`pingouin.ancova`](pingouin.ancova) documentation.
+# See for details
+# [`pingouin.ancova`](https://pingouin-stats.org/build/html/generated/pingouin.ancova.html)
+#  documentation.
 
 # %%
 # omics_and_meta = omics_and_meta.astype(float)
