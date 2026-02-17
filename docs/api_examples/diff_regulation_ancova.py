@@ -102,7 +102,10 @@ omics_and_meta = pd.DataFrame(
 omics_and_meta
 
 # %% [markdown]
-# ## Run ANCOVA analysis
+# ## ANCOVA analysis for two groups
+# > If there is more than two groups, the code still runs, but then the results are
+# > to be interpreted as an omnibus test across groups.
+# See for details [`pingouin.ancova`](pingouin.ancova) documentation.
 
 # %%
 # omics_and_meta = omics_and_meta.astype(float)
@@ -152,7 +155,15 @@ ancova.iloc[:, 6:].filter(regex=f"^(?!.*({regex_filter})).*$")
 
 
 # %% [markdown]
-# ## See Volcano plot of ANCOVA results
+# ## View Volcano plot of ANCOVA results
+# - p-value (unadjusted) using the -log10 transformation on the y-axis, using
+#    `-log10 pvalue`
+# - fold change (FC) in the log2 space on the x-axis (2 means a fold
+#   change of 4, 1 a doubeling and -1 means a fold change of 0.5 and -2 of 0.25),
+#   using `log2FC`
+# - significant features are colored in red using the `reject` column,
+#   which is True for significant features and False for non-significant features, and
+#   is calculated based on the `padj` column and a significance threshold (default 0.05)
 
 # %%
 scatter_plot_adv = vuecore.plots.basic.scatter.create_scatter_plot(

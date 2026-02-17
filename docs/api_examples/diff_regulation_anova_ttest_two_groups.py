@@ -18,7 +18,7 @@
 #
 # This API example shows the functionality in the [`acore.differential_regulation`](acore.differential_regulation) module:
 #
-# - ANOVA (for two groups) is equivalent to t-test between two groups
+# - ANOVA (for two groups) is equivalent to a t-test between two groups
 #
 # Then we can do the same for examples with three
 # and more groups, where a omnibus analysis across groups
@@ -75,6 +75,7 @@ factor_and_covars: list[str] = [group, *covariates]
 # %% [markdown]
 # ## ANOVA analysis for two groups
 # Use combined dataset for ANOVA analysis.
+# Drop unnecessary columns, if there are any specified in `drop_cols`.
 
 # %% tags=["hide-input"]
 omics_and_meta = (
@@ -82,12 +83,6 @@ omics_and_meta = (
     .convert_dtypes()
     .dropna(subset=factor_and_covars)
 )
-omics_and_meta
-
-# %% [markdown]
-# Drop unnecessary columns, if there are any specified in `drop_cols`.
-
-# %% tags=["hide-input"]
 if drop_cols:
     omics_and_meta.drop(columns=drop_cols, inplace=True)
 omics_and_meta
@@ -122,11 +117,13 @@ anova = (
 )
 anova
 
-# %%
+# %% [markdown]
 # See summary statistics for numeric values in ANOVA results, such as for
 # - pvalue (unadjusted)
 # - padj (adjusted p-value, FDR corrected)
 # - fold change (FC) of the mean of group1 vs group2 (group1/group2)
+
+# %% tags=["hide-input"]
 anova.describe().T
 
 
@@ -137,7 +134,7 @@ anova.describe().T
 # - t-test statistic, FDR correction method, etc.
 
 # %% [markdown]
-# ## View averages per protein group
+# ### View averages per protein group
 
 # %% tags=["hide-input"]
 view = anova.filter(regex="group")
@@ -162,9 +159,11 @@ anova.drop(columns=viewed_cols)
 
 # %% [markdown]
 # ## View Volcano plot for the ANOVA results
-# - p-value (unadjusted) using the -log10 transformation on the y-axis
-# - fold change (FC) in the log2 space on the x-axis (log2FC of 2 means a fold
-#   change of 4, log2FC of -1 means a fold change of 0.5)
+# - p-value (unadjusted) using the -log10 transformation on the y-axis, using
+#    `-log10 pvalue`
+# - fold change (FC) in the log2 space on the x-axis (2 means a fold
+#   change of 4, 1 a doubeling and -1 means a fold change of 0.5 and -2 of 0.25),
+#   using `log2FC`
 # - significant features are colored in red using the `reject` column,
 #   which is True for significant features and False for non-significant features, and
 #   is calculated based on the `padj` column and a significance threshold (default 0.05)
