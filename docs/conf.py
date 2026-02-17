@@ -113,6 +113,35 @@ autodoc_default_options = {
 ## Generate autodoc stubs with summaries from code
 autosummary_generate = True
 
+
+# llms-txt options
+
+# Content filtering
+# in _source folder
+llms_txt_exclude = [
+    "search",
+    "genindex",
+    "404",
+    "index",
+    "README",
+    "home_page",
+    # exclude ipynb files for now
+    "example_data*",
+    "api_examples*",
+    "downloaded*",
+    "sections_readme*",
+]
+
+
+# Source code inclusion with include/exclude patterns
+llms_txt_code_files = [
+    "+:../src/**/*.py",  # Include Python files
+    # "+:../config/*.yaml",  # Include config files
+    "-:../src/**/__pycache__/**",  # Exclude cache files
+    # "-:reference/*.rst",  # Exclude markdown files
+    # "-:*.ipynb",  # Exclude notebooks
+]
+
 # -- General configuration ---------------------------------------------------
 
 myst_enable_extensions = ["dollarmath", "amsmath", "colon_fence"]
@@ -156,7 +185,7 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+# html_static_path = ["_static"]
 
 # -- Setup for sphinx-apidoc -------------------------------------------------
 
