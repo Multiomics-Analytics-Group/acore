@@ -35,3 +35,10 @@ metadata[[factor, group]]
 metadata[[factor, group]].to_csv("MTBLS13411_meta_data.csv")
 
 # %%
+omics_and_meta = metadata[[factor, group]].join(df, how="inner")
+omics_and_meta
+
+# %%
+omics_and_meta.to_csv("MTBLS13411_omics_and_meta.csv")
+
+# %%
