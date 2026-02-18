@@ -53,6 +53,7 @@ docs = [
   "sphinx-new-tab-link!=0.2.2",
   "jupytext",
   "sphinx-copybutton",
+  "sphinx-llms-txt",
 ]
 dev = [
   "black[jupyter]",
