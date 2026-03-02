@@ -15,6 +15,7 @@ def median_zero_normalization(data, normalize="samples"):
     :return: pandas.DataFrame.
 
     Example::
+
         data = pd.DataFrame({'a': [2,5,4,3,3], 'b':[4,4,6,5,3], 'c':[4,14,8,8,9]})
         result = median_normalization(data, normalize='samples')
         result
@@ -24,6 +25,7 @@ def median_zero_normalization(data, normalize="samples"):
             2 -2.000000  0.000000  2.000000
             3 -2.333333 -0.333333  2.666667
             4 -2.000000 -2.000000  4.000000
+
     """
     if normalize is None or normalize == "samples":
         norm_data = data.sub(data.median(axis=1), axis=0)
@@ -44,6 +46,7 @@ def median_normalization(data, normalize="samples"):
     :return: pandas.DataFrame.
 
     Example::
+
         data = pd.DataFrame({'a': [2,5,4,3,3], 'b':[4,4,6,5,3], 'c':[4,14,8,8,9]})
         result = median_normalization(data, normalize='samples')
         result
@@ -53,6 +56,7 @@ def median_normalization(data, normalize="samples"):
             2 -2.000000  0.000000  2.000000
             3 -2.333333 -0.333333  2.666667
             4 -2.000000 -2.000000  4.000000
+
     """
     if normalize is None or normalize == "samples":
         norm_data = data.sub(data.median(axis=1) - data.median(axis=1).median(), axis=0)
@@ -73,6 +77,7 @@ def zscore_normalization(data, normalize="samples"):
     :return: pandas.DataFrame.
 
     Example::
+
         data = pd.DataFrame({'a': [2,5,4,3,3], 'b':[4,4,6,5,3], 'c':[4,14,8,8,9]})
         result = zscore_normalization(data, normalize='samples')
         result
@@ -82,6 +87,7 @@ def zscore_normalization(data, normalize="samples"):
                 2 -1.000000  0.000000  1.000000
                 3 -0.927173 -0.132453  1.059626
                 4 -0.577350 -0.577350  1.154701
+
     """
     if normalize is None or normalize == "samples":
         norm_data = data.sub(data.mean(axis=1), axis=0).div(data.std(axis=1), axis=0)
@@ -102,6 +108,7 @@ def median_polish_normalization(data, max_iter=250):
     :return: pandas.DataFrame.
 
     Example::
+
         data = pd.DataFrame({'a': [2,5,4,3,3], 'b':[4,4,6,5,3], 'c':[4,14,8,8,9]})
         result = median_polish_normalization(data, max_iter = 10)
         result
@@ -111,6 +118,7 @@ def median_polish_normalization(data, max_iter=250):
             2  4.0  6.0   9.0
             3  3.0  5.0   8.0
             4  3.0  5.0   8.0
+
     """
     mediandf = data.copy()
     for _ in range(max_iter):
@@ -136,6 +144,7 @@ def quantile_normalization(data) -> pd.DataFrame:
     :return: pandas.DataFrame
 
     Example::
+
         data = pd.DataFrame({'a': [2,5,4,3,3], 'b':[4,4,6,5,3], 'c':[4,14,8,8,9]})
         result = quantile_normalization(data)
         result
@@ -145,6 +154,7 @@ def quantile_normalization(data) -> pd.DataFrame:
             2  3.2  4.6  8.6
             3  3.2  4.6  8.6
             4  3.2  3.2  8.6
+
     """
     rank_mean = (
         data.T.stack().groupby(data.T.rank(method="first").stack().astype(int)).mean()
@@ -167,6 +177,7 @@ def linear_normalization(data, method="l1", normalize="samples") -> pd.DataFrame
     :return: pandas.DataFrame
 
     Example::
+
         data = pd.DataFrame({'a': [2,5,4,3,3], 'b':[4,4,6,5,3], 'c':[4,14,8,8,9]})
         result = linear_normalization(data, method = "l1", by = 'samples')
         result
@@ -176,6 +187,7 @@ def linear_normalization(data, method="l1", normalize="samples") -> pd.DataFrame
             2  0.235294  0.272727  0.186047
             3  0.176471  0.227273  0.186047
             4  0.176471  0.136364  0.209302
+
     """
     if normalize is None or normalize == "samples":
         normvalues = preprocessing.normalize(
