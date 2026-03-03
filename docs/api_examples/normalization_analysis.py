@@ -91,7 +91,7 @@ def run_and_plot_pca(
 # %% tags=["parameters"]
 BASE = (
     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-    "update_batch_corr_example/example_data/alzheimer_proteomics/"
+    "main/example_data/alzheimer_proteomics/"
 )
 # data is already preprocessed: log2, filtered
 fname: str = "alzheimer_example_omics_and_clinic.csv"  # combined omics and meta data
