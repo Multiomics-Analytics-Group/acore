@@ -84,8 +84,6 @@ omics_and_meta = (
     .dropna(subset=factor_and_covars)
     .drop(columns=drop_cols)
 )
-if drop_cols:
-    omics_and_meta.drop(columns=drop_cols, inplace=True)
 omics_and_meta
 
 # %% [markdown]
