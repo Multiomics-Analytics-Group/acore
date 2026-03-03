@@ -41,11 +41,13 @@ import acore.batch_correction
 import acore.decomposition
 
 
-def plot_umap(X_scaled, y, meta_column, random_state=42) -> plt.Axes:
+def plot_umap(X_scaled, y, meta_column=None, random_state=42) -> plt.Axes:
     """Fit and plot UMAP embedding with two components with colors defined by meta_column."""
     embedding = acore.decomposition.umap.run_umap(
         X_scaled, y, random_state=random_state
     )
+    if meta_column is None:
+        meta_column = y.name
     ax = embedding.plot.scatter("UMAP 1", "UMAP 2", c=meta_column, cmap="Paired")
     return ax
 
@@ -104,8 +106,7 @@ group: str = "collection_site"
 subject_col: str = "Sample ID"
 drop_cols: list[str] = ["AD"]
 factor_and_covars: list[str] = [group, *covariates]
-METACOL: str = "collection site"  # target column in fname_metadata dataset (binary)
-METACOL_LABEL: Optional[str] = "site"  # optional: rename target variable
+group_label: Optional[str] = "site"  # optional: rename target variable
 
 # %% [markdown]
 # ## Data loading
@@ -130,7 +131,7 @@ omics_and_meta[factor_and_covars]
 
 # %%
 omics = omics_and_meta.drop(columns=[*factor_and_covars, *drop_cols])
-y = omics_and_meta[group].astype("category")
+y = omics_and_meta[group].astype("category").rename(group_label)
 
 # %% [markdown]
 # ## Before batch correction
@@ -139,8 +140,8 @@ y = omics_and_meta[group].astype("category")
 # %% tags=["hide-input"]
 omics_imp = median_impute(omics)
 omics_imp_scaled = standard_normalize(omics_imp)
-PCs, fig = run_and_plot_pca(omics_imp, y, y.name, n_components=4)
-ax = plot_umap(omics_imp, y, y.name)
+PCs, fig = run_and_plot_pca(omics_imp, y, n_components=4)
+ax = plot_umap(omics_imp, y)
 
 # %% [markdown]
 # ## Combat batch correction
@@ -154,7 +155,7 @@ ax = plot_umap(omics_imp, y, y.name)
 X = median_impute(omics)
 X = acore.batch_correction.combat_batch_correction(
     X.join(y.astype("category")),
-    batch_col=group,
+    batch_col=y.name,
 )
 X
 
@@ -162,8 +163,8 @@ X
 # Plot PCA and UMAP after batch correction on standard normalized data
 
 # %% tags=["hide-input"]
-PCs, fig = run_and_plot_pca(standard_normalize(X), y, METACOL_LABEL, n_components=4)
-ax = plot_umap(X, y, y.name)
+PCs, fig = run_and_plot_pca(standard_normalize(X), y, n_components=4)
+ax = plot_umap(X, y)
 
 # %% [markdown]
 # See change by substracting combat corrected data from original data.
@@ -171,3 +172,6 @@ ax = plot_umap(X, y, y.name)
 
 # %% tags=["hide-input"]
 omics - X
+
+# %% [markdown]
+# Done.
