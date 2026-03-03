@@ -66,8 +66,8 @@ clinic
 # data here as `collection_site`
 
 # %%
-# clinic["collection_site"] = meta["_collection site"]
-# meta
+clinic["collection_site"] = meta["_collection site"].astype("category")
+meta
 
 # %% [markdown]
 # ## Proteomics data:
@@ -136,9 +136,10 @@ omics_and_clinic
 
 # %% [markdown]
 # Check that the added clinical metadata is numeric
+# - `collection_site` is a string
 
 # %%
-acore.types.check_numeric_dataframe(omics_and_clinic)
+acore.types.check_numeric_dataframe(omics_and_clinic.drop(columns="collection_site"))
 
 # %% [markdown]
 # ## Checking missing data
