@@ -45,14 +45,14 @@ dsp_pandas.format.set_pandas_options(
 # %% tags=["parameters"]
 BASE = (
     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-    "updt_diff_reg_api_example/example_data/alzheimer_proteomics/"
+    "update_batch_corr_example/example_data/alzheimer_proteomics/"
 )
 # data is already preprocessed: log2, filtered
 fname: str = "alzheimer_example_omics_and_clinic.csv"  # combined omics and meta data
 covariates: list[str] = ["age", "male"]
 group: str = "AD"
 subject_col: str = "Sample ID"
-drop_cols: list[str] = []
+drop_cols: list[str] = ["collection_site"]
 factor_and_covars: list[str] = [group, *covariates]
 
 # %% [markdown]
@@ -64,6 +64,7 @@ omics_and_meta = (
     pd.read_csv(f"{BASE}/{fname}", index_col=subject_col)
     .convert_dtypes()
     .dropna(subset=factor_and_covars)
+    .drop(columns=drop_cols)
 )
 omics_and_meta
 
