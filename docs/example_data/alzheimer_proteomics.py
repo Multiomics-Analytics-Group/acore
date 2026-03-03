@@ -65,9 +65,9 @@ clinic
 # in the metadata, which is binary (AD vs non-AD). We will add it to the clinic
 # data here as `collection_site`
 
-# %% [markdown]
-clinic["collection_site"] = meta["_collection site"]
-meta
+# %%
+# clinic["collection_site"] = meta["_collection site"]
+# meta
 
 # %% [markdown]
 # ## Proteomics data:
@@ -195,4 +195,5 @@ omics_and_clinic.to_csv(
     "../../example_data/alzheimer_proteomics/alzheimer_example_omics_and_clinic.csv"
 )
 
-# %%
+# %% [markdown]
+# Done.
