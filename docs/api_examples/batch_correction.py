@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.18.1
+#       jupytext_version: 1.19.1
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -29,8 +29,8 @@
 # %% tags=["hide-input"]
 from typing import Optional
 
+import dsp_pandas
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import sklearn
 import sklearn.impute
@@ -83,123 +83,64 @@ def run_and_plot_pca(
     return PCs, fig
 
 
+dsp_pandas.format.set_pandas_options(
+    max_columns=9,
+    max_colwidth=20,
+)
+
 # %% [markdown]
 #
 # ## Set some parameters
 
 # %% tags=["parameters"]
-fname_metadata: str = (
-    "https://raw.githubusercontent.com/RasmussenLab/"
-    "njab/HEAD/docs/tutorial/data/alzheimer/meta.csv"  # clincial data
+BASE = (
+    "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
+    "update_batch_corr_example/example_data/alzheimer_proteomics/"
 )
-fname_omics: str = (
-    "https://raw.githubusercontent.com/RasmussenLab/"
-    "njab/HEAD/docs/tutorial/data/alzheimer/proteome.csv"  # omics data
-)
-METACOL: str = "_collection site"  # target column in fname_metadata dataset (binary)
+# data is already preprocessed: log2, filtered
+fname: str = "alzheimer_example_omics_and_clinic.csv"  # combined omics and meta data
+covariates: list[str] = ["age", "male"]
+group: str = "collection_site"
+subject_col: str = "Sample ID"
+drop_cols: list[str] = ["AD"]
+factor_and_covars: list[str] = [group, *covariates]
+METACOL: str = "collection site"  # target column in fname_metadata dataset (binary)
 METACOL_LABEL: Optional[str] = "site"  # optional: rename target variable
-n_features_max: int = 5
-freq_cutoff: float = 0.5  # Omics cutoff for sample completeness
-VAL_IDS: str = ""  #
-VAL_IDS_query: str = ""
-weights: bool = True
-FOLDER = "alzheimer"
-model_name = "all"
 
 # %% [markdown]
-# ## Setup
+# ## Data loading
+# Use combined dataset for ANCOVA analysis.
 
-# %% [markdown]
-# ### Load proteomics (protein groups) data
-
-# %%
-if METACOL_LABEL is None:
-    METACOL_LABEL = METACOL
-metadata = (
-    pd.read_csv(fname_metadata, usecols=["Sample ID", METACOL], index_col=0)
+# %% tags=["hide-input"]
+omics_and_meta = (
+    pd.read_csv(f"{BASE}/{fname}", index_col=subject_col)
     .convert_dtypes()
-    .rename(columns={METACOL: METACOL_LABEL})
+    .dropna(subset=factor_and_covars)
 )
-omics = pd.read_csv(fname_omics, index_col=0)
+omics_and_meta
 
 # %% [markdown]
-# Data shapes
-
-# %%
-omics.shape, metadata.shape
-
-# %% [markdown]
-# See how common omics features are and remove feature below choosen frequency cutoff
-
-# %%
-ax = omics.notna().sum().sort_values().plot(rot=90)
+# Metadata here is of type integer. All floats are proteomics measurements.
 
 # %% tags=["hide-input"]
-M_before = omics.shape[1]
-omics = omics.dropna(thresh=int(len(omics) * freq_cutoff), axis=1)
-M_after = omics.shape[1]
-msg = (
-    f"Removed {M_before-M_after} features with more "
-    f"than {freq_cutoff*100}% missing values."
-    f"\nRemaining features: {M_after} (of {M_before})"
-)
-print(msg)
-# keep a map of all proteins in protein group, but only display first protein
-# proteins are unique to protein groups
-pg_map = {k: k.split(";")[0] for k in omics.columns}
-omics = omics.rename(columns=pg_map)
-# log2 transform raw intensity data:
-omics = np.log2(omics + 1)
-ax = (
-    omics.notna()
-    .sum()
-    .sort_values()
-    .plot(
-        rot=90,
-        ylabel="Number of samples",
-        xlabel="Proteins (ranked by missing values)",
-    )
-)
-omics
+omics_and_meta.dtypes.value_counts()
 
-# %% [markdown]
-# ### Sample metadata
+# %% tags=["hide-input"]
+omics_and_meta[factor_and_covars]
 
 # %%
-metadata
-
-# %% [markdown]
-# Tabulate selected metadata and check for missing values
-
-# %% tags=["hide-input"]
-metadata[METACOL_LABEL].value_counts(dropna=False)
-
-# %% tags=["hide-input"]
-target_counts = metadata[METACOL_LABEL].value_counts()
-
-if target_counts.sum() < len(metadata):
-    print(
-        "Target has missing values."
-        f" Can only use {target_counts.sum()} of {len(metadata)} samples."
-    )
-    mask = metadata[METACOL_LABEL].notna()
-    metadata, omics = metadata.loc[mask], omics.loc[mask]
-
-if METACOL_LABEL is None:
-    METACOL_LABEL = METACOL_LABEL
-y = metadata[METACOL_LABEL].astype("category")
+omics = omics_and_meta.drop(columns=[*factor_and_covars, *drop_cols])
+y = omics_and_meta[group].astype("category")
 
 # %% [markdown]
 # ## Before batch correction
 # Explore data in PCA and UMAP space before batch correction
 
-
 # %% tags=["hide-input"]
 omics_imp = median_impute(omics)
 omics_imp_scaled = standard_normalize(omics_imp)
-PCs, fig = run_and_plot_pca(omics_imp, y, METACOL_LABEL, n_components=4)
-ax = plot_umap(omics_imp, y, METACOL_LABEL)
-
+PCs, fig = run_and_plot_pca(omics_imp, y, y.name, n_components=4)
+ax = plot_umap(omics_imp, y, y.name)
 
 # %% [markdown]
 # ## Combat batch correction
@@ -208,13 +149,12 @@ ax = plot_umap(omics_imp, y, METACOL_LABEL)
 # Assumes normally distributed data.
 #
 # > ⚠️ Combat needs imputed data
-
 # %%
 # %%time
 X = median_impute(omics)
 X = acore.batch_correction.combat_batch_correction(
-    X.join(y),
-    batch_col="site",
+    X.join(y.astype("category")),
+    batch_col=group,
 )
 X
 
@@ -223,7 +163,7 @@ X
 
 # %% tags=["hide-input"]
 PCs, fig = run_and_plot_pca(standard_normalize(X), y, METACOL_LABEL, n_components=4)
-ax = plot_umap(X, y, METACOL_LABEL)
+ax = plot_umap(X, y, y.name)
 
 # %% [markdown]
 # See change by substracting combat corrected data from original data.
