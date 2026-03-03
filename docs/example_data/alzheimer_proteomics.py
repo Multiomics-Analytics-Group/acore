@@ -22,13 +22,18 @@ BASE = (
     "https://raw.githubusercontent.com/RasmussenLab/njab/"
     "HEAD/docs/tutorial/data/alzheimer/"
 )
+META: str = "meta.csv"  # clincial data
 CLINIC_ML: str = "clinic_ml.csv"  # clinical data
 OMICS: str = "proteome.csv"  # omics data
 freq_cutoff: float = (
     0.7  # at least x percent of samples must have a value for a feature (here: protein group)
 )
 #
-covariates: list[str] = ["age", "male"]
+covariates: list[str] = [
+    "age",
+    "male",
+    "collection_site",
+]  # clinical covariates to add to omics data
 group: str = "AD"
 subject_col: str = "Sample ID"
 factor_and_covars: list[str] = [group, *covariates]
@@ -52,7 +57,17 @@ factor_and_covars: list[str] = [group, *covariates]
 # %% tags=["hide-input"]
 clinic = pd.read_csv(f"{BASE}/{CLINIC_ML}", index_col=subject_col).convert_dtypes()
 omics = pd.read_csv(f"{BASE}/{OMICS}", index_col=subject_col)
+meta = pd.read_csv(f"{BASE}/{META}", index_col=subject_col).convert_dtypes()
 clinic
+
+# %% [markdown]
+# the variables for the collection site are based on the `_collection site` column
+# in the metadata, which is binary (AD vs non-AD). We will add it to the clinic
+# data here as `collection_site`
+
+# %%
+clinic["collection_site"] = meta["_collection site"].astype("category")
+meta
 
 # %% [markdown]
 # ## Proteomics data:
@@ -121,9 +136,10 @@ omics_and_clinic
 
 # %% [markdown]
 # Check that the added clinical metadata is numeric
+# - `collection_site` is a string
 
 # %%
-acore.types.check_numeric_dataframe(omics_and_clinic)
+acore.types.check_numeric_dataframe(omics_and_clinic.drop(columns="collection_site"))
 
 # %% [markdown]
 # ## Checking missing data
@@ -179,3 +195,6 @@ _ = ax.set_xticklabels(
 omics_and_clinic.to_csv(
     "../../example_data/alzheimer_proteomics/alzheimer_example_omics_and_clinic.csv"
 )
+
+# %% [markdown]
+# Done.
