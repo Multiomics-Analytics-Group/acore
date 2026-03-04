@@ -63,7 +63,7 @@ factor_and_covars: list[str] = [group, *covariates]
 # %% tags=["hide-input"]
 # BASE = (
 #     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-#     "updt_diff_reg_api_example/example_data/MTBLS13311/"
+#     "main/example_data/MTBLS13311/"
 # )
 # fname: str = "MTBLS13411_omics_and_meta.csv"  # combined omics and meta data
 # covariates: list[str] = []
