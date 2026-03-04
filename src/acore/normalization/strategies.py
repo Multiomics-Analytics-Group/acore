@@ -17,7 +17,7 @@ def median_zero_normalization(data, normalize="samples"):
     Example::
 
         data = pd.DataFrame({'a': [2,5,4,3,3], 'b':[4,4,6,5,3], 'c':[4,14,8,8,9]})
-        result = median_normalization(data, normalize='samples')
+        result = median_zero_normalization(data, normalize='samples')
         result
                 a         b         c
             0 -1.333333  0.666667  0.666667
@@ -164,6 +164,8 @@ def quantile_normalization(data) -> pd.DataFrame:
     return normdf
 
 
+# ToDo: check if fillna(0) is necessary for normalize. Imputation should be handled
+# separately.
 def linear_normalization(data, method="l1", normalize="samples") -> pd.DataFrame:
     """
     This function scales input data to a unit norm. For more information visit:
@@ -179,7 +181,7 @@ def linear_normalization(data, method="l1", normalize="samples") -> pd.DataFrame
     Example::
 
         data = pd.DataFrame({'a': [2,5,4,3,3], 'b':[4,4,6,5,3], 'c':[4,14,8,8,9]})
-        result = linear_normalization(data, method = "l1", by = 'samples')
+        result = linear_normalization(data, method = "l1", normalize = 'samples')
         result
                 a         b         c
             0  0.117647  0.181818  0.093023
@@ -201,3 +203,17 @@ def linear_normalization(data, method="l1", normalize="samples") -> pd.DataFrame
     normdf = pd.DataFrame(normvalues, index=data.index, columns=data.columns)
 
     return normdf
+
+
+if __name__ == "__main__":
+    data = pd.DataFrame(
+        {"a": [2, 5, 4, 3, 3], "b": [4, 4, 6, 5, 3], "c": [4, 14, 8, 8, 9]}
+    )
+    result = linear_normalization(data, method="l1", normalize="samples")
+    print(result)
+
+    data = pd.DataFrame(
+        {"a": [2, 5, 4, 3, 3], "b": [4, 4, 6, 5, 3], "c": [4, 14, 8, 8, 9]}
+    )
+    result = median_zero_normalization(data, normalize="samples")
+    print(result)
