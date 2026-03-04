@@ -100,11 +100,13 @@ def imputation_KNN(
 
 def imputation_mixed_norm_KNN(
     data,
-    index_cols=["group", "sample", "subject"],
+    drop_cols=DROP_COLS_DEFAULT,
     shift=1.8,
     nstd=0.3,
     group="group",
     cutoff=0.6,
+    random_state=112736,
+    n_neighbors=3,
 ):
     """
     Missing values are replaced in two steps:
@@ -136,18 +138,30 @@ def imputation_mixed_norm_KNN(
                     shift = 1.8, nstd = 0.3, group='group', cutoff=0.6
         )
     """
+    if isinstance(drop_cols, tuple):
+        drop_cols = list(drop_cols)
+
     df = imputation_KNN(
-        data, drop_cols=index_cols, group=group, cutoff=cutoff, alone=False
+        data,
+        drop_cols=drop_cols,
+        group=group,
+        cutoff=cutoff,
+        alone=False,
+        n_neighbors=n_neighbors,
     )
     df = imputation_normal_distribution(
-        df, index_cols=index_cols, shift=shift, nstd=nstd
+        df, drop_cols=drop_cols, shift=shift, nstd=nstd, random_state=random_state
     )
-
     return df
 
 
+# ? This one is not using the grouping?
 def imputation_normal_distribution(
-    data, index_cols=["group", "sample", "subject"], shift=1.8, nstd=0.3
+    data,
+    drop_cols=DROP_COLS_DEFAULT,
+    shift=1.8,
+    nstd=0.3,
+    random_state=112736,
 ):
     """
     Missing values will be replaced by random numbers that are drawn from a normal
@@ -177,33 +191,44 @@ replacemissingfromgaussian.html
                     shift = 1.8, nstd = 0.3
         )
     """
-    np.random.seed(112736)
-    df = data.copy()
-    if index_cols is not None:
-        df = df.set_index(index_cols)
+    if isinstance(drop_cols, tuple):
+        drop_cols = list(drop_cols)
 
+    rng = np.random.default_rng(random_state)
+
+    df = data.copy()
+    if drop_cols is not None:
+        df = df.drop(columns=drop_cols)
+
+    # ToDo:  Transposing is expensive
     data_imputed = df.T.sort_index()
-    null_columns = data_imputed.isnull().any().index.tolist()
-    for c in null_columns:
-        missing = data_imputed[data_imputed[c].isnull()].index.tolist()
-        std = data_imputed[c].std()
-        mean = data_imputed[c].mean()
+
+    # Only iterate columns that actually have missing values
+    for c in data_imputed.columns[data_imputed.isna().any()]:
+        col = data_imputed[c]
+        missing_mask = col.isna()
+        n_missing = int(missing_mask.sum())
+        if n_missing == 0:
+            continue
+
+        std = col.std(skipna=True)
+        mean = col.mean(skipna=True)
         sigma = std * nstd
         mu = mean - (std * shift)
-        value = 0.0
+
         if (
-            not math.isnan(std)
-            and not math.isnan(mean)
-            and not math.isnan(sigma)
-            and not math.isnan(mu)
+            not (
+                np.isfinite(std)
+                and np.isfinite(mean)
+                and np.isfinite(sigma)
+                and np.isfinite(mu)
+            )
+            or sigma <= 0
         ):
-            value = np.random.normal(mu, sigma, size=len(missing))
-        i = 0
-        for m in missing:
-            if not isinstance(value, np.ndarray):
-                data_imputed.loc[m, c] = value
-            else:
-                data_imputed.loc[m, c] = value[i]
-                i += 1
+            fill_values = np.full(n_missing, 0.0, dtype=float)
+        else:
+            fill_values = rng.normal(mu, sigma, size=n_missing)
+
+        data_imputed.loc[missing_mask, c] = fill_values
 
     return data_imputed.T

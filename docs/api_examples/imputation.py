@@ -36,7 +36,11 @@ import sklearn.preprocessing
 import vuecore.decomposition
 
 import acore.decomposition
-from acore.imputation_analysis import imputation_KNN
+from acore.imputation_analysis import (
+    imputation_KNN,
+    imputation_mixed_norm_KNN,
+    imputation_normal_distribution,
+)
 
 
 def plot_umap(X_scaled, y, meta_column=None, random_state=42) -> plt.Axes:
@@ -117,29 +121,72 @@ omics_and_meta
 # Separate omics and the grouping variable
 
 # %%
+omics = omics_and_meta.drop(columns=[*factor_and_covars, *drop_cols])
+na_counts = omics.isna().sum().sort_values(ascending=False)
+na_counts.plot(
+    rot=45,
+    style=".",
+    alpha=0.5,
+    ylabel=f"Number of missing values of {omics.shape[0]} samples",
+)
+
+# %%
+(na_counts / omics.shape[0]).plot(
+    rot=45,
+    style=".",
+    alpha=0.5,
+    ylabel="Ratio of missing values",
+)
+
+# %%
 omics_and_y = omics_and_meta.drop(columns=[*covariates, *drop_cols])
 
 # %%
 omics_and_meta.isna().any(axis=None)
 
 # %%
+omics_and_y.loc[omics_and_y.isna().any(axis=1)].loc[:, omics_and_y.isna().any(axis=0)]
+
+# %%
 omics_and_y_imputed = imputation_KNN(
     data=omics_and_y,
     drop_cols=[],
     group=group,
+    cutoff=0.8,  # selected to leave some missing values for demonstration
+    alone=True,
+)
+omics_and_y_imputed
+
+# %%
+omics_and_y_imputed.loc[omics_and_y_imputed.isna().any(axis=1)].loc[
+    :, omics_and_y_imputed.isna().any(axis=0)
+]
+
+# %%
+omics_and_y_imputed = imputation_KNN(
+    data=omics_and_y_imputed,
+    drop_cols=[],
+    group=None,
     cutoff=0.6,
     alone=True,
 )
 omics_and_y_imputed
 
 # %%
-omics_and_meta_imputed = imputation_KNN(
-    data=omics_and_meta,
-    drop_cols=[],
-    group=None,
-    cutoff=0.6,
-    alone=True,
+assert omics_and_y_imputed.isna().sum().sum() == 0
+
+# %%
+# ! does not account for groups
+imputation_normal_distribution(
+    data=omics_and_y_imputed,
+    drop_cols=None,
 )
-omics_and_meta_imputed
+
+# %%
+# ! group cannot be passed yet
+imputation_mixed_norm_KNN(
+    data=omics_and_y,
+    drop_cols=[],
+)
 
 # %%
