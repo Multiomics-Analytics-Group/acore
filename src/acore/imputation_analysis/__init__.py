@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 def imputation_KNN(
     data: pd.DataFrame,
-    drop_cols: Iterable[str] = DROP_COLS_DEFAULT,
+    drop_cols: Optional[Iterable[str]] = None,
     group: Optional[str] = None,
     cutoff=0.6,
     alone=True,
@@ -30,8 +30,8 @@ def imputation_KNN(
                       single column for now.
     :param list drop_cols: column labels to be dropped. Final dataframe should only
                            have gene/protein/etc identifiers as columns.
-    :param float cutoff: minimum ratio of missing/valid values required to impute
-                         in each column.
+    :param float cutoff: minimum fraction of valid values required to impute
+                         a each column.
     :param bool alone: if True removes all columns with any missing values after initial
                        imputation.
     :return: Pandas dataframe with samples as rows and protein identifiers as columns.
@@ -44,6 +44,9 @@ def imputation_KNN(
         )
     """
     df = data.copy()
+
+    if drop_cols is None:
+        drop_cols = []
 
     # Prefer explicit numeric selection over deprecated/private pandas helpers
     df_numeric = df.select_dtypes(include="number").copy()
@@ -60,10 +63,9 @@ def imputation_KNN(
         df_numeric[group] = df[group]
         for g in df_numeric[group].dropna().unique():
             miss_df = df_numeric.loc[df_numeric[group] == g, value_cols]
-
-            miss_df = miss_df.loc[:, miss_df.notna().mean() >= cutoff].dropna(
-                axis="columns", how="all"
-            )
+            # fraction cutoff is applied per group
+            mask = miss_df.notna().mean() >= cutoff
+            miss_df = miss_df.loc[:, mask].dropna(axis="columns", how="all")
 
             if miss_df.isna().any(axis=None):
                 X = miss_df.to_numpy(dtype=np.float64, copy=False)
@@ -74,15 +76,13 @@ def imputation_KNN(
                 )
                 df_numeric.update(dfm)
 
-        return df_numeric
     else:
         # Fallback: no grouping column present -> impute across all rows
         miss_df = df_numeric.loc[:, value_cols]
-        miss_df = miss_df.loc[:, miss_df.notna().mean() >= cutoff].dropna(
-            axis="columns", how="all"
-        )
-        if miss_df.isna().to_numpy().any():
-            X = miss_df.to_numpy(dtype=np.float64, copy=False)
+        mask = miss_df.notna().mean() >= cutoff
+        miss_df = miss_df.loc[:, mask].dropna(axis="columns", how="all")
+        if miss_df.isna().any(axis=None):
+            X = miss_df  # .to_numpy(dtype=np.float64, copy=False)
             X_trans = KNNImputer(n_neighbors=n_neighbors).fit_transform(X)
             df_numeric.update(
                 pd.DataFrame(X_trans, index=miss_df.index, columns=miss_df.columns)
@@ -149,8 +149,17 @@ def imputation_mixed_norm_KNN(
         alone=False,
         n_neighbors=n_neighbors,
     )
+    # drop group column for normal data imputation
+    if drop_cols is None and not drop_cols:
+        drop_cols = [group]
+    else:
+        drop_cols.append(group)
     df = imputation_normal_distribution(
-        df, drop_cols=drop_cols, shift=shift, nstd=nstd, random_state=random_state
+        df,
+        drop_cols=[group],
+        shift=shift,
+        nstd=nstd,
+        random_state=random_state,
     )
     return df
 
@@ -202,7 +211,7 @@ replacemissingfromgaussian.html
     rng = np.random.default_rng(random_state)
 
     df = data.copy()
-    if drop_cols is not None:
+    if drop_cols is not None and drop_cols:
         df = df.drop(columns=drop_cols)
 
     # ToDo:  Transposing is expensive

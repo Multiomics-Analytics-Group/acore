@@ -14,10 +14,13 @@
 # ---
 
 # %% [markdown]
-# # Imputation of samples
+# # Imputation data (MS-example)
 #
 # We will explore imputation of proteomics data using an Alzheimer dataset where the
 # data was collected in four different sites.
+# - k Neareast Neighbour imputation can also be used with other types of data
+# - the replacement from the normal distrubtion on the sample level is typical to
+#   normally distributed samples from massspectrometer data (in the log2 space)
 #
 # Refers to the [`acore.imputation`](acore.imputation) module.
 
@@ -105,9 +108,6 @@ drop_cols: list[str] = ["AD"]
 factor_and_covars: list[str] = [group, *covariates]
 group_label: Optional[str] = "site"  # optional: rename target variable
 
-# %% [markdown]
-#
-
 # %%
 # %% [markdown]
 # ## Data loading
@@ -139,54 +139,137 @@ na_counts.plot(
 )
 
 # %%
+not_nan_counts = omics.notna().sum().sort_values(ascending=False)
+(not_nan_counts / omics.shape[0]).plot(
+    rot=45,
+    style=".",
+    alpha=0.5,
+    ylabel="Ratio of non-missing values\n(completeness)",
+)
+
+
+# %%
 omics_and_y = omics_and_meta.drop(columns=[*covariates, *drop_cols])
 
 # %%
-omics_and_meta.isna().any(axis=None)
+omics_and_meta.notna().any(axis=None)
 
 # %%
 omics_and_y.loc[omics_and_y.isna().any(axis=1)].loc[:, omics_and_y.isna().any(axis=0)]
+
+# %% [markdown]
+# ## KNN imputation
+#
+# > Can be generally applied
+# - both by group and overall
+
+# %% [markdown]
+# ### per group
+# - does return the original shape, potentially with remaining
+#   missing values
 
 # %%
 omics_and_y_imputed = imputation_KNN(
     data=omics_and_y,
     drop_cols=[],
     group=group,
-    cutoff=0.8,  # selected to leave some missing values for demonstration
-    alone=True,
+    cutoff=0.65,  # selected to leave some missing values for demonstration
+    alone=True,  # ! should return only columns without missing values
 )
-omics_and_y_imputed
+omics_and_y_imputed.isna().sum().value_counts()
+
+# %% [markdown]
+# As we have increase the threshold `cutoff` for the fraction of non-misisng
+# values per feature, the more features will not be imputed and therefore have
+# missing values.
 
 # %%
-omics_and_y_imputed.loc[omics_and_y_imputed.isna().any(axis=1)].loc[
-    :, omics_and_y_imputed.isna().any(axis=0)
+view = omics_and_y_imputed.loc[:, omics_and_y_imputed.isna().any(axis=0)].loc[
+    omics_and_y_imputed.isna().any(axis=1)
 ]
+view
+
+# %% [markdown]
+# ### overall
+
 
 # %%
 omics_and_y_imputed = imputation_KNN(
-    data=omics_and_y_imputed,
+    data=omics_and_y,
     drop_cols=[],
     group=None,
     cutoff=0.6,
-    alone=True,
+    alone=False,
 )
+assert omics_and_y_imputed.isna().sum().sum() == 0
 omics_and_y_imputed
 
 # %%
-assert omics_and_y_imputed.isna().sum().sum() == 0
+omics_and_y_imputed = imputation_KNN(
+    data=omics_and_y,
+    drop_cols=[],
+    group=None,
+    cutoff=0.90,
+    alone=False,
+)
+omics_and_y_imputed.isna().sum().sum()
+
+# %% [markdown]
+#
+
+# %%
+# ToDo: Plot per group missingness
+
+# %%
+omics_and_y_imputed = imputation_KNN(
+    data=omics_and_y,
+    drop_cols=[],
+    group=group,
+    cutoff=0.90,
+    alone=False,
+)
+omics_and_y_imputed.isna().sum().sum()
+
+# %% [markdown]
+# ## Imputation from a shifted normal distribution per sample
+# > Specific to massspectrometry based data in log2 space: normal distributed data,
+# > with detection limit (if that applies it can be used)
+# - based on mean and standard deviation missing values are replaced by drawing
+#   random values from a shifted normal distribution
+# - assumption is that missing values are due to falling below the detection limit
+#   which can be revealed by the distribution of intensities
+#
+# Below you find a generated example highlighting the idea
+
+# %%
+# ToDo: add an simulated example
 
 # %%
 # ! does not account for groups
 imputation_normal_distribution(
-    data=omics_and_y_imputed,
-    drop_cols=None,
-)
-
-# %%
-# ! group cannot be passed yet
-imputation_mixed_norm_KNN(
     data=omics_and_y,
-    drop_cols=[],
+    drop_cols=[group],
 )
 
+# %% [markdown]
+# Note that using this type of imputation before differential regulation can lead to
+# false positive and negativ results. If values are not due to assumed missing
+# mechanism (Missing not-at-random due to low abundance), but are due to technical noise
+# these values should not be replace.
+#
+# Therefore many use in proteomics a combined approach (Santos ...)
+
+# %% [markdown]
+# ## Combining KNN based imputation and random imputation from a shifted random
+# distribution
+# - For features (e.g. protein groups) that are present across groups in high enough
+#   frequency, use KNN-based imputation (which is deterministic)
+# - for the remaining missing values, use based on the distribution of observed values
+#   in a sample a shifted normal distribution to draw replacements (random,
+#   but deterministic due to the set seed)
+
 # %%
+imputation_mixed_norm_KNN(data=omics_and_y, drop_cols=[], group=group, cutoff=0.9)
+
+# %% [markdown]
+# done.
