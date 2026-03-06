@@ -137,9 +137,17 @@ def example_data():
     return df
 
 
-def test_imputation_normal_distribution(example_data):
-    actual = imputation_normal_distribution(example_data, drop_cols=None).sum().sum()
-    desired = 2151.1985850814845
+@pytest.mark.parametrize(
+    ["desired", "random_state"], [(2151.079993672961, 1), (2149.893269248854, 2)]
+)
+def test_imputation_normal_distribution(example_data, desired, random_state):
+    actual = (
+        imputation_normal_distribution(
+            example_data, drop_cols=None, random_state=random_state
+        )
+        .sum()
+        .sum()
+    )
     np.testing.assert_almost_equal(actual, desired)
 
 
