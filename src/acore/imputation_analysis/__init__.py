@@ -168,6 +168,11 @@ def imputation_normal_distribution(
     distribution. The imputation is done for each sample (across all proteins)
     separately.
     For more information visit `replacemissingfromgaussian`_ in coxdocs from MaxQuant.
+    The basic assumptions is that given normally distributed missing values in a sample
+    are low abundant and are therefore replace with a downshifted minimum value.
+    There is no control on if the drawn replacement values are below the absolut 
+    observed minimum of that protein at all, which can lead to false positives or 
+    negatives in differential expression analysis that considers imputed values.
 
     .. _replacemissingfromgaussian: https://cox-labs.github.io/coxdocs/\
 replacemissingfromgaussian.html
@@ -201,18 +206,18 @@ replacemissingfromgaussian.html
         df = df.drop(columns=drop_cols)
 
     # ToDo:  Transposing is expensive
-    data_imputed = df.T.sort_index()
+    # data_imputed = df.T.sort_index()
 
     # Only iterate columns that actually have missing values
-    for c in data_imputed.columns[data_imputed.isna().any()]:
-        col = data_imputed[c]
-        missing_mask = col.isna()
+    for r in df.index[df.isna().any(axis="columns")]:
+        row = df.loc[r]
+        missing_mask = row.isna()
         n_missing = int(missing_mask.sum())
         if n_missing == 0:
             continue
 
-        std = col.std(skipna=True)
-        mean = col.mean(skipna=True)
+        std = row.std(skipna=True)
+        mean = row.mean(skipna=True)
         sigma = std * nstd
         mu = mean - (std * shift)
 
@@ -229,6 +234,6 @@ replacemissingfromgaussian.html
         else:
             fill_values = rng.normal(mu, sigma, size=n_missing)
 
-        data_imputed.loc[missing_mask, c] = fill_values
+        df.loc[r, missing_mask] = fill_values
 
-    return data_imputed.T
+    return df
