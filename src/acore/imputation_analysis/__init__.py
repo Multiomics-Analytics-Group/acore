@@ -119,7 +119,7 @@ def imputation_mixed_norm_KNN(
     :param data: pandas dataframe with samples as rows and protein identifiers as
                  columns (with additional columns 'group', 'sample' and 'subject').
     :param str group: column label containing group identifiers.
-    :param list index_cols: list of column labels to be set as dataframe index.
+    :param list drop_cols: list of column labels to be set as dataframe index.
     :param float shift: specifies the amount by which the distribution used for the
                         random numbers is shifted downwards. This is in units of the
                         standard deviation of the valid data.
@@ -134,7 +134,7 @@ def imputation_mixed_norm_KNN(
     Example::
 
         result = imputation_mixed_norm_KNN(data,
-                    index_cols=['group', 'sample', 'subject'],
+                    drop_cols=['group', 'sample', 'subject'],
                     shift = 1.8, nstd = 0.3, group='group', cutoff=0.6
         )
     """
@@ -151,12 +151,13 @@ def imputation_mixed_norm_KNN(
     )
     # drop group column for normal data imputation
     if drop_cols is None and not drop_cols:
-        drop_cols = [group]
+        _drop_cols = [group]
     else:
-        drop_cols.append(group)
+        _drop_cols = drop_cols.copy()
+        _drop_cols.append(group)
     df = imputation_normal_distribution(
         df,
-        drop_cols=[group],
+        drop_cols=_drop_cols,
         shift=shift,
         nstd=nstd,
         random_state=random_state,
@@ -179,7 +180,7 @@ def imputation_normal_distribution(
     For more information visit `replacemissingfromgaussian`_ in coxdocs from MaxQuant.
     The basic assumptions is that given normally distributed missing values in a sample
     are low abundant and are therefore replace with a downshifted minimum value.
-    There is no control on if the drawn replacement values are below the absolut 
+    There is no control on if the drawn replacement values are below the absolute
     observed minimum of that protein at all, which can lead to false positives or 
     negatives in differential expression analysis that considers imputed values.
 
@@ -188,7 +189,7 @@ replacemissingfromgaussian.html
 
     :param data: pandas dataframe with samples as rows and protein identifiers as
                  columns (with additional columns 'group', 'sample' and 'subject').
-    :param list index_cols: list of column labels to be set as dataframe index.
+    :param list drop_cols: list of column labels to be dropped from the imputation.
     :param float shift: specifies the amount by which the distribution used for the
                         random numbers is shifted downwards. This is in units of the
                         standard deviation of the valid data.
@@ -201,7 +202,7 @@ replacemissingfromgaussian.html
     Example::
 
         result = imputation_normal_distribution(data,
-                    index_cols=['group', 'sample', 'subject'],
+                    drop_cols=['group', 'sample', 'subject'],
                     shift = 1.8, nstd = 0.3
         )
     """
