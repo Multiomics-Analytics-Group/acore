@@ -99,14 +99,14 @@ def imputation_KNN(
 
 
 def imputation_mixed_norm_KNN(
-    data,
-    drop_cols=DROP_COLS_DEFAULT,
-    shift=1.8,
-    nstd=0.3,
-    group="group",
-    cutoff=0.6,
-    random_state=112736,
-    n_neighbors=3,
+    data: pd.DataFrame,
+    drop_cols: Optional[Iterable[str]] = None,
+    shift: float = 1.8,
+    nstd: float = 0.3,
+    group: str = "group",
+    cutoff: float = 0.6,
+    random_state: int = 112736,
+    n_neighbors: int = 3,
 ):
     """
     Missing values are replaced in two steps:
@@ -166,11 +166,11 @@ def imputation_mixed_norm_KNN(
 
 # ? This one is not using the grouping?
 def imputation_normal_distribution(
-    data,
-    drop_cols=DROP_COLS_DEFAULT,
-    shift=1.8,
-    nstd=0.3,
-    random_state=112736,
+    data: pd.DataFrame,
+    drop_cols: Optional[Iterable[str]] = None,
+    shift: float = 1.8,
+    nstd: float = 0.3,
+    random_state: int = 112736,
 ):
     """
     Missing values will be replaced by random numbers that are drawn from a normal
