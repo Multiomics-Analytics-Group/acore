@@ -18,11 +18,11 @@
 #
 # We will explore imputation of proteomics data using an Alzheimer dataset where the
 # data was collected in four different sites.
-# - k Neareast Neighbour imputation can also be used with other types of data
-# - the replacement from the normal distrubtion on the sample level is typical to
-#   normally distributed samples from massspectrometer data (in the log2 space)
+# - k Nearest Neighbour imputation can also be used with other types of data
+# - the replacement from the normal distribution on the sample level is typical to
+#   normally distributed samples from mass spectrometer data (in the log2 space)
 #
-# Refers to the [`acore.imputation`](acore.imputation) module.
+# Refers to the [`acore.imputation_analysis`](acore.imputation_analysis) module.
 
 # %% tags=["hide-output"]
 # %pip install acore
@@ -33,6 +33,7 @@ from typing import Optional
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import scipy
 import sklearn
 import sklearn.impute
 import sklearn.preprocessing
@@ -325,8 +326,32 @@ print("Still missing features with cutoff of {cutoff}: {n_still_missing}")
 #
 # Below you find a generated example highlighting the idea
 
-# %%
-# ToDo: add an simulated example, maybe from PIMMS
+# %% tags=["hide-input"]
+mu = 25.0
+stddev = 1.0
+
+x = np.linspace(mu - 3, mu + 3, num=101)
+
+y_normal = scipy.stats.norm.pdf(x, loc=mu, scale=stddev)
+
+mu_shifted = mu - (1.8 * stddev)
+stddev_shifted = 0.3 * stddev
+print(f"Downshifted: {mu_shifted = }, {stddev_shifted = }")
+y_impute = scipy.stats.norm.pdf(x, loc=mu - (1.8 * stddev), scale=0.3 * stddev)
+
+fig, ax = plt.subplots(1, 1, figsize=(5, 4))
+
+for i, (y, label) in enumerate(zip([y_normal, y_impute], ["original", "down shifted"])):
+    ax.plot(x, y, color=f"C{i}", label=label)
+    ax.fill_between(x, y, color=f"C{i}", alpha=0.5)
+    ax.set_label(label)
+ax.set_xlabel("log2 intensity distribution in sample")
+ax.set_ylabel("density")
+ax.legend()
+fig.tight_layout()
+
+# %% [markdown]
+# This idea can be applied on a per sample basis using:
 
 # %%
 # does not account for groups as it is done on a per sample basis
