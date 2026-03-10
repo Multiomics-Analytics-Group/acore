@@ -1,5 +1,7 @@
 _build
+_build_markdown
 jupyter_execute
 reference
+markdown_ref
 downloaded
 sections_readme
