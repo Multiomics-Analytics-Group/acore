@@ -46,14 +46,14 @@ dsp_pandas.format.set_pandas_options(
 # %% tags=["parameters"]
 BASE = (
     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-    "updt_diff_reg_api_example/example_data/alzheimer_proteomics/"
+    "main/example_data/alzheimer_proteomics/"
 )
 # data is already preprocessed: log2, filtered
 fname: str = "alzheimer_example_omics_and_clinic.csv"  # combined omics and meta data
 covariates: list[str] = ["age", "male"]
 group: str = "AD"
 subject_col: str = "Sample ID"
-drop_cols: list[str] = []
+drop_cols: list[str] = ["collection_site"]
 factor_and_covars: list[str] = [group, *covariates]
 
 # %% [markdown]
@@ -63,7 +63,7 @@ factor_and_covars: list[str] = [group, *covariates]
 # %% tags=["hide-input"]
 # BASE = (
 #     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-#     "updt_diff_reg_api_example/example_data/MTBLS13311/"
+#     "main/example_data/MTBLS13311/"
 # )
 # fname: str = "MTBLS13411_omics_and_meta.csv"  # combined omics and meta data
 # covariates: list[str] = []
@@ -82,9 +82,8 @@ omics_and_meta = (
     pd.read_csv(f"{BASE}/{fname}", index_col=subject_col)
     .convert_dtypes()
     .dropna(subset=factor_and_covars)
+    .drop(columns=drop_cols)
 )
-if drop_cols:
-    omics_and_meta.drop(columns=drop_cols, inplace=True)
 omics_and_meta
 
 # %% [markdown]
