@@ -25,6 +25,7 @@ api_examples/diff_regulation_anova_ttest_two_groups
 api_examples/diff_regulation_anova_more_than_two_groups
 api_examples/diff_regulation_ancova
 api_examples/enrichment_analysis
+api_examples/permutation_testing
 ```
 
 ```{toctree}
