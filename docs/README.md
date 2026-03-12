@@ -15,6 +15,17 @@ Install the docs dependencies of the package (as speciefied in toml):
 pip install .[docs]
 ```
 
+## Manuel updated of LLM documentation files
+
+For now we need to get the API documentation in markdown
+
+> We need to publish update these files manually.
+
+```
+sphinx-build -n -W --keep-going -b markdown ./ ./_build_markdown
+mv _build_markdown/reference ./markdown_ref
+```
+
 ## Build docs using Sphinx command line tools
 
 Command to be run from `path/to/docs`, i.e. from within the `docs` package folder:

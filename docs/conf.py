@@ -270,4 +270,4 @@ if os.environ.get("READTHEDOCS") == "True":
         app.connect("builder-inited", run_split_readme)
         app.connect("builder-inited", run_apidoc)
         app.connect("builder-inited", download_notebooks)
-        app.connect("builder-inited", run_sphinx_to_markdown)
+        # app.connect("builder-inited", run_sphinx_to_markdown)
