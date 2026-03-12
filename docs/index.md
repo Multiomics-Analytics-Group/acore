@@ -65,6 +65,7 @@ reference/acore
 :caption: MISC:
 :hidden:
 
+llms
 contributing
 authors
 history

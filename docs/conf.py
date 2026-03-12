@@ -41,6 +41,7 @@ extensions = [
     "sphinx_new_tab_link",
     "myst_nb",
     "sphinx_copybutton",
+    "sphinx_llms_txt",
 ]
 
 myst_enable_extensions = [
@@ -52,6 +53,7 @@ myst_enable_extensions = [
 
 #  https://myst-nb.readthedocs.io/en/latest/computation/execute.html
 nb_execution_mode = "auto"
+nb_execution_mode = "off"
 
 # https://myst-nb.readthedocs.io/en/latest/configuration.html
 # Execution
@@ -69,6 +71,8 @@ templates_path = ["_templates"]
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = [
     "_build",
+    "_build_markdown",
+    # "markdown_ref",
     "Thumbs.db",
     ".DS_Store",
     "jupyter_execute",
@@ -113,6 +117,35 @@ autodoc_default_options = {
 ## Generate autodoc stubs with summaries from code
 autosummary_generate = True
 
+
+# llms-txt options
+
+# Content filtering
+# in _source folder
+llms_txt_exclude = [
+    "search",
+    "genindex",
+    "404",
+    "index",
+    "README",
+    "home_page",
+    # exclude ipynb files for now
+    "example_data*",
+    "api_examples*",
+    "downloaded*",
+    "sections_readme*",
+]
+
+
+# Source code inclusion with include/exclude patterns
+llms_txt_code_files = [
+    "+:../src/**/*.py",  # Include Python files
+    # "+:../config/*.yaml",  # Include config files
+    "-:../src/**/__pycache__/**",  # Exclude cache files
+    # "-:reference/*.rst",  # Exclude markdown files
+    # "-:*.ipynb",  # Exclude notebooks
+]
+
 # -- General configuration ---------------------------------------------------
 
 myst_enable_extensions = ["dollarmath", "amsmath", "colon_fence"]
@@ -156,7 +189,7 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+# html_static_path = ["_static"]
 
 # -- Setup for sphinx-apidoc -------------------------------------------------
 
@@ -198,6 +231,31 @@ if os.environ.get("READTHEDOCS") == "True":
             ]
         )
 
+    def run_sphinx_to_markdown(_):
+        from pathlib import Path
+
+        from sphinx.cmd.build import main as cmdline
+
+        # Convert the Sphinx documentation to Markdown format
+        cmdline(
+            [
+                "--keep-going",
+                "-b",
+                "markdown",
+                str(PROJECT_ROOT / "docs"),
+                str(PROJECT_ROOT / "_build_markdown"),
+            ]
+        )
+        # only use the markdown files in reference folder
+        # move from markdown_docs/reference to markdown_docs
+        folder_markdowns = Path("_build_markdown/reference")
+        folder_new = PROJECT_ROOT / "docs" / "markdown_ref"
+        folder_new.mkdir(exist_ok=True)
+
+        for file in folder_markdowns.iterdir():
+            if file.is_file():
+                file.rename(folder_new / file.name)
+
     def download_notebooks(_):
         from fetch_files import download_notebook
 
@@ -212,3 +270,4 @@ if os.environ.get("READTHEDOCS") == "True":
         app.connect("builder-inited", run_split_readme)
         app.connect("builder-inited", run_apidoc)
         app.connect("builder-inited", download_notebooks)
+        # app.connect("builder-inited", run_sphinx_to_markdown)
