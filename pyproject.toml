@@ -54,6 +54,7 @@ docs = [
   "jupytext",
   "sphinx-copybutton",
   "sphinx-llms-txt",
+  "sphinx-markdown-builder"
 ]
 dev = [
   "black[jupyter]",
