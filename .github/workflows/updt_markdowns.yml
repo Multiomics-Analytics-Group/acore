@@ -36,6 +36,10 @@ jobs:
       - name: Build markdown docs
         working-directory: docs
         run: |
+          sphinx-apidoc --force --implicit-namespaces --module-first -o reference ../src/acore
+          rm -r api_examples
+          rm -r example_data
+          echo "# Test" > index.md
           sphinx-build -n -W --keep-going -b markdown ./ ./_build_markdown
           rm -rf ./markdown_ref/reference
           mv ./_build_markdown/reference ./markdown_ref
