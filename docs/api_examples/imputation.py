@@ -27,7 +27,7 @@
 # Common shared parameters across: `imputation_KNN`, `imputation_normal_distribution` and
 # `imputation_mixed_norm_KNN` function presented here:
 #
-# - `data`: `pd.DataFrame` with samples as rows and features as columns, which can 
+# - `data`: `pd.DataFrame` with samples as rows and features as columns, which can
 #   can contain a `group` column.
 # - `drop_cols`: optional iterable of column names excluded from imputation.
 
@@ -117,7 +117,6 @@ drop_cols: list[str] = ["AD"]
 factor_and_covars: list[str] = [group, *covariates]
 group_label: Optional[str] = "site"  # optional: rename target variable
 
-# %%
 # %% [markdown]
 # ## Data loading
 # Use combined dataset for ANCOVA analysis.
