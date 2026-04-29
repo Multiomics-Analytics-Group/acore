@@ -139,7 +139,7 @@ llms_txt_exclude = [
 
 # Source code inclusion with include/exclude patterns
 llms_txt_code_files = [
-    "+:../src/**/*.py",  # Include Python files
+    # "+:../src/**/*.py",  # Include Python files
     # "+:../config/*.yaml",  # Include config files
     "-:../src/**/__pycache__/**",  # Exclude cache files
     # "-:reference/*.rst",  # Exclude markdown files

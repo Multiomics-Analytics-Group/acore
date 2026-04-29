@@ -1,0 +1,52 @@
+name: Update Markdown Docs After Merge
+
+on:
+    push
+#   pull_request:
+#     types:
+#       - closed
+    # branches:
+    #   - main
+
+permissions:
+  contents: write
+
+jobs:
+  update-markdowns:
+    # if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install docs dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ".[docs]"
+
+      - name: Build markdown docs
+        working-directory: docs
+        run: |
+          sphinx-build -n -W --keep-going -b markdown ./ ./_build_markdown
+          rm -rf ./markdown_ref/reference
+          mv ./_build_markdown/reference ./markdown_ref
+
+      - name: Commit and push changes
+        run: |
+          git add docs/markdown_ref
+          if git diff --cached --quiet; then
+            echo "No markdown updates to commit"
+            exit 0
+          fi
+
+          git commit -m "docs: update markdown reference after PR merge"
+          git push origin

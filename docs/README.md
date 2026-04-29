@@ -19,7 +19,8 @@ pip install .[docs]
 
 For now we need to get the API documentation in markdown
 
-> We need to publish update these files manually.
+> We need to update these files manually on PR-branches.
+> On the main branch these files are updated automatically by the CI for a commit.
 
 ```
 sphinx-build -n -W --keep-going -b markdown ./ ./_build_markdown
