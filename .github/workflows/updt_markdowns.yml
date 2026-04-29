@@ -32,6 +32,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install ".[docs]"
+          pip install sphinx-markdown-builder==0.6.9
 
       - name: Build markdown docs
         working-directory: docs
