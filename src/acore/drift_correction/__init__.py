@@ -4,3 +4,4 @@ Module for correcting drift (within-batch correction) in metabolomics data with 
 """
 
 from .loess_drift_correction import run_drift_correction
+from .loess_drift_correction import loess_example_curve

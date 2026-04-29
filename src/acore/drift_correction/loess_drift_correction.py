@@ -63,6 +63,7 @@ def qc_rlsc_loess(
     y_qc,
     x_all,
     use_default=False,
+    default=0.75,
     alpha_candidates=np.arange(0.4, 1.01, 0.05),
     print_logs=False,
 ):
@@ -148,7 +149,7 @@ def qc_rlsc_loess(
 
     # Fit LOESS again with best alpha for final curve
     if best_alpha is None or use_default:
-        best_alpha = 0.75  # fallback to reasonable default if optimization failed
+        best_alpha = default  # fallback to reasonable default if optimization failed
         if print_logs and not use_default:
             print(
                 f"Warning: LOESS optimization failed for n={n}. Using default alpha=0.75."
@@ -397,3 +398,121 @@ def run_drift_correction(
             "\nAll done. For further information on the corrected values, check the second returned object. Also reordered rows!"
         )
     return corrected_df, correction_info
+
+
+def loess_example_curve(
+    df: pd.DataFrame,
+    feature_idx: int,
+    sample_cols: list,
+    qc_cols: list,
+    sample_order: pd.DataFrame,
+    feature_name_col: str = None,
+    show_corrected: bool = True,
+    alpha: float = None,  # fixed smoothing span; if None, selected by LOOCV
+):
+    """
+    Plot the raw intensities, LOESS drift curve, and optionally the corrected
+    intensities for a single feature according to the loess drift correction function.
+    Useful for inspecting drift behaviour before running full drift correction.
+
+    The drift curve is estimated with the same method used by
+    ldc.run_drift_correction: LOESS is fit to the QC points and then
+    interpolated across all injection positions via a cubic spline
+    (qc_rlsc_loess).
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Feature matrix with features as rows and samples/QCs as columns.
+    feature_idx : int
+        Row index of the feature to plot.
+    sample_cols : list of str
+        Column names of the biological samples.
+    qc_cols : list of str
+        Column names of the pooled QC samples.
+    sample_order : pd.DataFrame
+        Injection-order table with columns "File Name" and "Sample ID"
+        (integer run order).
+    feature_name_col : str, optional
+        Column in df containing feature identifiers used in the plot title.
+        If None, the row index is used.
+    show_corrected : bool, optional
+        If True (default), overlays drift-corrected sample intensities as
+        diamond markers.
+    alpha : float, optional
+        LOESS smoothing span (0 < α ≤ 1). If None (default), the optimal span
+        is selected automatically by leave-one-out cross-validation over
+        α ∈ [0.40, 1.00]. The selected value is shown in the legend.
+    """
+
+    feature_row = df.iloc[feature_idx]
+    all_cols = sample_cols + qc_cols
+
+    order_dict = sample_order.set_index("File Name")["Sample ID"].to_dict()
+    x_all = np.array([order_dict.get(c, np.nan) for c in all_cols])
+    y_all = feature_row[all_cols].astype(float).values
+
+    n_s = len(sample_cols)
+    x_sample, y_sample = x_all[:n_s], y_all[:n_s]
+    x_qc_arr, y_qc_arr = x_all[n_s:], y_all[n_s:]
+
+    valid_sample = ~np.isnan(x_sample) & ~np.isnan(y_sample)
+    valid_qc = ~np.isnan(x_qc_arr) & ~np.isnan(y_qc_arr)
+    x_s_v, y_s_v = x_sample[valid_sample], y_sample[valid_sample]
+    x_qc_v, y_qc_v = x_qc_arr[valid_qc], y_qc_arr[valid_qc]
+
+    if feature_name_col and feature_name_col in df.columns:
+        feature_name = feature_row[feature_name_col]
+    else:
+        feature_name = f"index {feature_idx}"
+
+    fig, ax = plt.subplots(figsize=(11, 5))
+    ax.scatter(x_s_v, y_s_v, label="Samples", color="steelblue", alpha=0.7, zorder=3)
+    ax.scatter(
+        x_qc_v, y_qc_v, label="QC", color="firebrick", edgecolor="k", s=60, zorder=4
+    )
+
+    if len(x_qc_v) >= 4:
+        if alpha != None:
+            # Pass a single-element candidate list to skip LOOCV and use the given alpha directly
+            drift_curve, best_alpha = qc_rlsc_loess(
+                x_qc_v, y_qc_v, x_all, use_default=True, default=alpha
+            )
+        else:
+            drift_curve, best_alpha = qc_rlsc_loess(x_qc_v, y_qc_v, x_all)
+
+        valid_curve = ~np.isnan(x_all) & ~np.isnan(drift_curve)
+        sort_idx = np.argsort(x_all[valid_curve])
+        ax.plot(
+            x_all[valid_curve][sort_idx],
+            drift_curve[valid_curve][sort_idx],
+            label=f"LOESS drift curve (α={best_alpha:.2f})",
+            color="black",
+            lw=2,
+            zorder=5,
+        )
+
+        if show_corrected:
+            median_qc = np.median(y_qc_v)
+            drift_at_samples = drift_curve[:n_s][valid_sample]
+            corrected = (y_s_v / drift_at_samples) * median_qc
+            ax.scatter(
+                x_s_v,
+                corrected,
+                label="Corrected samples",
+                color="lightsteelblue",
+                marker="D",
+                s=40,
+                alpha=0.9,
+                zorder=3,
+            )
+    else:
+        print(f"Not enough valid QC points for LOESS ({len(x_qc_v)} found, need ≥4).")
+
+    ax.set_xlabel("Injection Order")
+    ax.set_ylabel("Intensity")
+    ax.set_title(f"Drift correction example ({feature_name})")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
