@@ -23,6 +23,8 @@ For now we need to get the API documentation in markdown
 > On the main branch these files are updated automatically by the CI for a commit.
 
 ```
+# we are only interested in the reference files
+sphinx-apidoc --force --implicit-namespaces --module-first -o reference ../
 sphinx-build -n -W --keep-going -b markdown ./ ./_build_markdown
 mv _build_markdown/reference ./markdown_ref
 ```
