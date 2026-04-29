@@ -23,6 +23,14 @@
 #   normally distributed samples from mass spectrometer data (in the log2 space)
 #
 # Refers to the [`acore.imputation_analysis`](acore.imputation_analysis) module.
+#
+# Common shared parameters across: `imputation_KNN`, `imputation_normal_distribution` and
+# `imputation_mixed_norm_KNN` function presented here:
+#
+# - `data`: `pd.DataFrame` with samples as rows and features as columns, which can 
+#   can contain a `group` column.
+# - `drop_cols`: optional iterable of column names excluded from imputation.
+
 
 # %% tags=["hide-output"]
 # %pip install acore
@@ -175,10 +183,12 @@ omics_and_y.loc[omics_and_y.isna().sum(axis=1) >= 3].loc[
 #
 # > Can be generally applied
 # - both by group and overall
-# - returns the original shape of the data, but with imputed values based on the
-#   selected cutoff for the fraction of non-missing values per feature
-#   (e.g. protein group)
-
+# - returns the imputed data, per default only features that meet the criteria
+#   based on the selected cutoff for the fraction of non-missing values for a
+#   single feature (e.g. protein group).
+# - setting `alone=False` will ensure that all features, imputed or not, are returned.
+#   This can be useful for downstream analysis where you want to keep all features,
+#   but only impute those that meet a minimal quality criteria.
 
 # %% [markdown]
 # ### overall
@@ -210,8 +220,11 @@ omics_and_y_imputed = imputation_KNN(
     alone=False,
 )
 n_still_missing = omics_and_y_imputed.isna().sum().sum()
-print("Still missing features with cutoff of {cutoff}: {n_still_missing}")
+print(f"Still missing features with cutoff of {cutoff}: {n_still_missing}")
 
+# %% [markdown]
+# ### Keep only imputed features
+# Use the `alone=True` to only keep the imputed features. It is the default.
 
 # %%
 cutoff = 0.90
@@ -228,11 +241,11 @@ print("Shape of imputed data: ", omics_and_y_imputed.shape)
 
 # %% [markdown]
 # ### By group
-# do the imputation separately for each group (e.g. target vs control) and
+# Do the imputation separately for each group (e.g. target vs control) and
 # then combine the results.
 #
-# Let's see the threshold of non-missing values per feature (e.g. protein group)
-# for which no missing values for each group:
+# Let's see the ratop of missing (left y-axis) and of non-missing (right y-axis) values
+# per feature (e.g. protein group) for which no missing values for each group:
 
 # %% tags=["hide-input"]
 frac_na_by_group = (
@@ -273,7 +286,7 @@ ax.tick_params(axis="y", labelcolor="C0")
 ax2.tick_params(axis="y", labelcolor="C1")
 
 # %% [markdown]
-# Clearly some protein groups only have missing values if combing from a certain
+# Clearly some protein groups only have missing values if combined from a certain
 # collection site, and that the ratio can be different in each group. Therefore,
 # imputation by KNN for a threshold of non-missing values per feature
 # (e.g. protein group) per group can be a good option.
@@ -300,7 +313,7 @@ omics_and_y_imputed.groupby(group).apply(
 
 
 # %% [markdown]
-# As we have increase the threshold `cutoff` for the fraction of non-misisng
+# As we increase the threshold `cutoff` for the fraction of non-misisng
 # values per feature, the more features will not be imputed and therefore have
 # missing values.
 
@@ -354,7 +367,7 @@ fig.tight_layout()
 # This idea can be applied on a per sample basis using:
 
 # %%
-# does not account for groups as it is done on a per sample basis
+# does not account for groups as it is done on a per sample basis (along columns)
 imputation_normal_distribution(
     data=omics_and_y,
     drop_cols=[group],
@@ -366,7 +379,8 @@ imputation_normal_distribution(
 # mechanism (Missing not-at-random due to low abundance), but are due to technical noise
 # these values should not be replace.
 #
-# Therefore many use in proteomics a combined approach (Santos ...)
+# Therefore many use in proteomics a combined approach
+# [Santos et al., 2020](https://www.nature.com/articles/s41587-021-01145-6):
 
 # %% [markdown]
 # ## Combining KNN based imputation and random imputation from a shifted random
@@ -376,6 +390,9 @@ imputation_normal_distribution(
 # - for the remaining missing values, use based on the distribution of observed values
 #   in a sample a shifted normal distribution to draw replacements (random,
 #   but deterministic due to the set seed)
+# See the methods section of
+# [Santos et al., 2020](https://www.nature.com/articles/s41587-021-01145-6)
+# for more details.
 
 # %%
 imputation_mixed_norm_KNN(data=omics_and_y, drop_cols=[], group=group, cutoff=0.9)
