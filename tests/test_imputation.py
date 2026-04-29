@@ -14,8 +14,6 @@ data.apply(numpy.random.shuffle, axis=1)
 data.to_csv('test_data.csv')
 """
 
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import pytest
@@ -155,6 +153,24 @@ def test_imputation_normal_distribution(example_data, desired, random_state):
     ["desired", "cutoff"],
     [(2206.6954572254326, 0.3), (1684.3585255006, 0.6), (837.3284651386293, 0.9)],
 )
-def test_test_imputation_KNN(example_data, desired, cutoff):
+def test_imputation_KNN(example_data, desired, cutoff):
     actual = imputation_KNN(example_data, cutoff=cutoff).sum().sum()
+    np.testing.assert_almost_equal(actual, desired)
+
+
+@pytest.mark.parametrize(
+    ["desired", "random_state"], [(2185.916268157555, 1), (2184.6842864127066, 2)]
+)
+def test_imputation_mixed_norm_KNN(example_data, desired, random_state):
+    # P10 and P193 will be imputed using normal distribution shifting
+    actual = (
+        imputation_mixed_norm_KNN(
+            example_data,
+            cutoff=0.6,
+            group=None,
+            random_state=random_state,
+        )
+        .sum()
+        .sum()
+    )
     np.testing.assert_almost_equal(actual, desired)
