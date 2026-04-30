@@ -51,4 +51,4 @@ jobs:
           fi
 
           git commit -m "docs: update markdown reference"
-          git push
+          git push origin HEAD:${{ github.head_ref }}
