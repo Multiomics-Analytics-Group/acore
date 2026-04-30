@@ -6,8 +6,10 @@ import sklearn.decomposition
 def run_pca(
     df_wide: pd.DataFrame, n_components: int = 2
 ) -> tuple[pd.DataFrame, sklearn.decomposition.PCA]:
-    """Run PCA on DataFrame and return result.
+    """Run PCA on DataFrame using sklearn.decomposition.PCA_.
 
+    .. _sklearn.decomposition.PCAs: \
+https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html
     Parameters
     ----------
     df : pd.DataFrame
@@ -17,10 +19,11 @@ def run_pca(
 
     Returns
     -------
-    Tuple[pd.DataFrame, PCA]
+    Tuple[pd.DataFrame, sklearn.decomposition.PCA]
         principal compoments of DataFrame with same indices as in original DataFrame,
         and fitted PCA model of sklearn
     """
+
     n_comp_max = None
     if n_components is not None:
         n_comp_max = min(df_wide.shape)
