@@ -1,9 +1,20 @@
 # LLM documentation
 
-This websites hosts a `llms-full.txt`for the full documentation of the LLMs
-used in this project and
-`llms.txt` for a brief overview of modules using the sphinx integraton
-[sphinx-llms-txt](https://sphinx-llms-txt.readthedocs.io/en/latest/getting-started.html)
-.
+This website hosts two generated files via
+[sphinx-llms-txt](https://sphinx-llms-txt.readthedocs.io/en/latest/getting-started.html):
 
-There is no direct link yet, so just add the file name to the base URL.
+- `llms-full.txt`: full LLM-oriented documentation
+- `llms.txt`: short overview of available modules
+
+There is two versions, one of the lastest main branch version of the package
+and one of the latest stable release.
+
+## Latest
+
+- [llms-full.txt (latest)](https://analytics-core.readthedocs.io/latest/llms-full.txt)
+- [llms.txt (latest)](https://analytics-core.readthedocs.io/latest/llms.txt)
+
+## Stable
+
+- [llms-full.txt (stable)](https://analytics-core.readthedocs.io/stable/llms-full.txt)
+- [llms.txt (stable)](https://analytics-core.readthedocs.io/stable/llms.txt)
