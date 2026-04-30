@@ -1,27 +1,21 @@
-name: Update Markdown Docs After Merge
+name: Update Markdown Docs
 
 on:
-    push
-#   pull_request:
-#     types:
-#       - closed
-    # branches:
-    #   - main
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   update-markdowns:
-    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout main
+      - name: Checkout repo on PR branch
         uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
+
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -45,6 +39,7 @@ jobs:
           mv ./_build_markdown/reference ./markdown_ref
 
       - name: Commit and push changes
+        # https://www.junian.net/dev/github-actions-bot-username-email-address/
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -55,5 +50,5 @@ jobs:
             exit 0
           fi
 
-          git commit -m "docs: update markdown reference after PR merge"
-          git push origin
+          git commit -m "docs: update markdown reference"
+          git push
