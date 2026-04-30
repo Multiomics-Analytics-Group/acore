@@ -57,9 +57,3 @@ Example:
 ```default
 result = imputation_normal_distribution(data, index_cols=['group', 'sample', 'subject'], shift = 1.8, nstd = 0.3)
 ```
-
-## Submodules
-
-## acore.imputation_analysis.strategies module
-
-### median_impute(X: DataFrame) → DataFrame

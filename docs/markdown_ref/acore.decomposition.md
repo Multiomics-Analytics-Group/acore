@@ -6,7 +6,13 @@
 
 ### run_pca(df_wide: DataFrame, n_components: [int](https://docs.python.org/3/library/functions.html#int) = 2) → [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[DataFrame, PCA]
 
-Run PCA on DataFrame and return result.
+Run PCA on DataFrame using 
+
+```
+sklearn.decomposition.PCA_
+```
+
+.
 
 * **Parameters:**
   * **df** (*pd.DataFrame*) – DataFrame in wide format to fit features on.
@@ -15,7 +21,7 @@ Run PCA on DataFrame and return result.
   principal compoments of DataFrame with same indices as in original DataFrame,
   and fitted PCA model of sklearn
 * **Return type:**
-  Tuple[pd.DataFrame, PCA]
+  Tuple[pd.DataFrame, sklearn.decomposition.PCA]
 
 ## acore.decomposition.umap module
 
