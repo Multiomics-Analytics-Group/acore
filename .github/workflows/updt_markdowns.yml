@@ -15,7 +15,9 @@ jobs:
     steps:
       - name: Checkout repo on PR branch
         uses: actions/checkout@v4
-
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -51,4 +53,4 @@ jobs:
           fi
 
           git commit -m "docs: update markdown reference"
-          git push origin HEAD:${{ github.head_ref }}
+          git push origin ${{ github.head_ref }}
