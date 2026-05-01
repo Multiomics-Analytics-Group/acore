@@ -28,17 +28,16 @@ def check_missingness(df: pd.DataFrame, cols_to_check: list):
     na_features = df[cols_to_check].isna().any(axis=1).sum()
 
     print(f"Features (rows) with at least one NA: {na_features} / {len(df)}")
-    print(f"\nSamples (cols) with at least one NA:")
+    print(f"Samples (cols) with at least one NA:")
     print(na_counts[na_counts > 0])
 
-    if na_counts > 0:
-        print(na_counts, "printing test")
+    if na_counts.any():
         return True
     else:
         return False
 
 
-def cpca_drift_correction(
+def run_cpca_drift_correction(
     df: pd.DataFrame, sample_cols, qc_cols, n_comps: int = 1
 ) -> pd.DataFrame:
     """
@@ -54,22 +53,19 @@ def cpca_drift_correction(
 
     Returns
     -------
-    Drift-corrected DataFrame with the same shape and index as input.
+    Full drift-corrected DataFrame with metadata columns preserved.
     """
-    if df.shape[1] <= n_comps:
-        return df
+    intensity_cols = sample_cols + qc_cols
+    meta_cols = [c for c in df.columns if c not in intensity_cols]
 
-    X = df.values.astype(float)
+    X = df[intensity_cols].values.astype(float)
 
     if np.isnan(X).any():
         raise ValueError("NA values present in dataset. Consider imputation first.")
 
-    # Convert column names to integer indices
-    cols = list(df.columns)
-    sample_idx = [cols.index(c) for c in sample_cols]
-    qc_idx = [cols.index(c) for c in qc_cols]
+    sample_idx = list(range(len(sample_cols)))
+    qc_idx = list(range(len(sample_cols), len(intensity_cols)))
 
-    # Scale across samples per feature; work in (samples, features) orientation
     scaler = StandardScaler()
     Xs = scaler.fit_transform(X.T)  # shape: (samples, features)
 
@@ -82,7 +78,6 @@ def cpca_drift_correction(
     eigenvectors = eigenvectors[:, np.argsort(eigenvalues)[::-1]]
     cpcs = eigenvectors[:, :k]
 
-    # Report explained variance
     var_projected = np.sum((Xs @ cpcs) ** 2, axis=0)
     var_cpc = np.round(var_projected / np.sum(Xs**2), 3)[:n_comps]
     print(
@@ -90,14 +85,14 @@ def cpca_drift_correction(
         dict(zip([f"CPC{i+1}" for i in range(n_comps)], var_cpc)),
     )
 
-    # Project out drift components and rescale back
     W = cpcs[:, :n_comps]
     Xs_corrected = Xs - Xs @ W @ W.T
     X_corrected = scaler.inverse_transform(
         Xs_corrected
     ).T  # back to (features, samples)
 
-    return pd.DataFrame(X_corrected, index=df.index, columns=df.columns)
+    df_corrected = pd.DataFrame(X_corrected, index=df.index, columns=intensity_cols)
+    return pd.concat([df[meta_cols], df_corrected], axis=1)
 
 
 def pca_for_cpca_drift(
