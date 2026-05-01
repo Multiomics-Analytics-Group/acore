@@ -6,7 +6,13 @@
 
 ### run_pca(df_wide: DataFrame, n_components: [int](https://docs.python.org/3/library/functions.html#int) = 2) → [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[DataFrame, PCA]
 
-Run PCA on DataFrame using `sklearn.decomposition.PCA`.
+Run PCA on DataFrame using 
+
+```
+:class:`sklearn.decomposition.PCA`_
+```
+
+.
 
 * **Parameters:**
   * **df** (*pd.DataFrame*) – DataFrame in wide format to fit features on.
