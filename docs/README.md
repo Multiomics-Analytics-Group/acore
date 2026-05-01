@@ -15,14 +15,13 @@ Install the docs dependencies of the package (as speciefied in toml):
 pip install .[docs]
 ```
 
-## Manuel updated of LLM documentation files
+## Updating LLM documentation files
 
-For now we need to get the API documentation in markdown
+The API reference in `docs/markdown_ref` is updated automatically by the CI workflow.
+If you need to regenerate these files locally, or if the automation is unavailable for your branch,
+run the following commands manually:
 
-> We need to update these files manually on PR-branches.
-> On the main branch these files are updated automatically by the CI for a commit.
-
-```
+```bash
 # we are only interested in the reference files
 sphinx-apidoc --force --implicit-namespaces --module-first -o reference ../
 sphinx-build -n -W --keep-going -b markdown ./ ./_build_markdown

@@ -6,10 +6,8 @@ import sklearn.decomposition
 def run_pca(
     df_wide: pd.DataFrame, n_components: int = 2
 ) -> tuple[pd.DataFrame, sklearn.decomposition.PCA]:
-    """Run PCA on DataFrame using sklearn.decomposition.PCA_.
+    """Run PCA on DataFrame using :class:`sklearn.decomposition.PCA`.
 
-    .. _sklearn.decomposition.PCAs: \
-https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html
     Parameters
     ----------
     df : pd.DataFrame
@@ -20,7 +18,7 @@ https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html
     Returns
     -------
     Tuple[pd.DataFrame, sklearn.decomposition.PCA]
-        principal compoments of DataFrame with same indices as in original DataFrame,
+        principal components of DataFrame with same indices as in original DataFrame,
         and fitted PCA model of sklearn
     """
 
