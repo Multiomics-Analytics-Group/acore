@@ -88,7 +88,7 @@ intersphinx_mapping = {
     "pandera": ("https://pandera.readthedocs.io/en/stable/", None),
     "pydantic": ("https://docs.pydantic.dev/latest", None),
     "pingouin": ("https://pingouin-stats.org/", None),
-    # "scikit-learn": ("https://scikit-learn.org/stable/", None),
+    "scikit-learn": ("https://scikit-learn.org/stable/", None),
     # "matplotlib": ("https://matplotlib.org/stable/", None),
 }
 
