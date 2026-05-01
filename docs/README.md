@@ -15,6 +15,19 @@ Install the docs dependencies of the package (as speciefied in toml):
 pip install .[docs]
 ```
 
+## Updating LLM documentation files
+
+The API reference in `docs/markdown_ref` is updated automatically by the CI workflow.
+If you need to regenerate these files locally, or if the automation is unavailable for your branch,
+run the following commands manually:
+
+```bash
+# we are only interested in the reference files
+sphinx-apidoc --force --implicit-namespaces --module-first -o reference ../
+sphinx-build -n -W --keep-going -b markdown ./ ./_build_markdown
+mv _build_markdown/reference ./markdown_ref
+```
+
 ## Build docs using Sphinx command line tools
 
 Command to be run from `path/to/docs`, i.e. from within the `docs` package folder:
