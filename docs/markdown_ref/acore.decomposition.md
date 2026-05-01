@@ -4,15 +4,9 @@
 
 ## acore.decomposition.pca module
 
-### run_pca(df_wide: DataFrame, n_components: [int](https://docs.python.org/3/library/functions.html#int) = 2) → [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[DataFrame, PCA]
+### run_pca(df_wide: DataFrame, n_components: [int](https://docs.python.org/3/library/functions.html#int) = 2) → [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[DataFrame, [PCA](https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html#sklearn.decomposition.PCA)]
 
-Run PCA on DataFrame using 
-
-```
-:class:`sklearn.decomposition.PCA`_
-```
-
-.
+Run PCA on DataFrame using [`sklearn.decomposition.PCA`](https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html#sklearn.decomposition.PCA).
 
 * **Parameters:**
   * **df** (*pd.DataFrame*) – DataFrame in wide format to fit features on.
@@ -21,7 +15,7 @@ Run PCA on DataFrame using
   principal components of DataFrame with same indices as in original DataFrame,
   and fitted PCA model of sklearn
 * **Return type:**
-  Tuple[pd.DataFrame, sklearn.decomposition.PCA]
+  Tuple[pd.DataFrame, [sklearn.decomposition.PCA](https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html#sklearn.decomposition.PCA)]
 
 ## acore.decomposition.umap module
 
