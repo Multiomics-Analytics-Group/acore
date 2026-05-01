@@ -6,19 +6,13 @@
 
 ### run_pca(df_wide: DataFrame, n_components: [int](https://docs.python.org/3/library/functions.html#int) = 2) → [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[DataFrame, PCA]
 
-Run PCA on DataFrame using 
-
-```
-sklearn.decomposition.PCA_
-```
-
-.
+Run PCA on DataFrame using `sklearn.decomposition.PCA`.
 
 * **Parameters:**
   * **df** (*pd.DataFrame*) – DataFrame in wide format to fit features on.
   * **n_components** ([*int*](https://docs.python.org/3/library/functions.html#int) *,* *optional*) – Number of Principal Components to fit, by default 2
 * **Returns:**
-  principal compoments of DataFrame with same indices as in original DataFrame,
+  principal components of DataFrame with same indices as in original DataFrame,
   and fitted PCA model of sklearn
 * **Return type:**
   Tuple[pd.DataFrame, sklearn.decomposition.PCA]
