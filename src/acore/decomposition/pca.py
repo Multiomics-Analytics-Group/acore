@@ -7,7 +7,7 @@ def run_pca(
     df_wide: pd.DataFrame, n_components: int = 2
 ) -> tuple[pd.DataFrame, sklearn.decomposition.PCA]:
     """Run PCA on DataFrame using :class:`sklearn.decomposition.PCA`.
-    
+
     Parameters
     ----------
     df : pd.DataFrame
