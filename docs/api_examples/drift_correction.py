@@ -22,6 +22,9 @@
 # This script shows how to correct for instrumental drift based on pooled QC data samples.
 
 # %% [markdown]
+# ## 1. LOESS smoothing-based drift correction
+
+# %% [markdown]
 # ### Load in example data
 
 # %%
@@ -29,7 +32,7 @@
 
 # %%
 import acore
-from acore import filter_metabolomics as fm
+from acore import drift_correction as dc
 
 import pandas as pd
 import os
@@ -37,17 +40,8 @@ import importlib
 
 importlib.reload(acore)
 
-# %%
-from acore import drift_correction as dc
-
-# %%
-help(dc.loess_drift_correction)
-
-# %%
-help(dc.loess_drift_correction.run_drift_correction)
-
 # %% [markdown]
-# ## Load in data
+# ### Load in data
 
 # %%
 df = pd.read_excel("../../example_data/aradopsis_seedling_lipids/kehelpannala_AnArabidopsisLipid_seedling.xlsx")
@@ -129,3 +123,186 @@ df
 
 # %%
 correction_info[200]
+
+# %% [markdown]
+# ### Plot an example curve for one feature
+
+# %% [markdown]
+# We can also plot an example feature, to see how the values have changed and what the LOESS curve would look like for the data of this feature.
+
+# %%
+dc.loess_drift_correction.loess_example_curve(
+    df=df,
+    feature_idx=5,
+    sample_cols=sample_cols,
+    qc_cols=qc_cols,
+    sample_order=sample_order
+)
+
+# %% [markdown]
+# In this plot, we can see all of the data points of this feature, ordered by the injection time. The red points are our QC samples, so we can see whether there was any instrumental drift over time. The LOESS curve is also calculated, with the smoothing value alpha chosen with leave-one-out cross validation, just like in the run_drift_correction function.
+#
+# Alternative values for the smoothing parameter alpha can be tested by adding the argument "alpha" and choosing a value, just like in the example below.
+
+# %%
+dc.loess_drift_correction.loess_example_curve(
+    df=df,
+    feature_idx=5,
+    sample_cols=sample_cols,
+    qc_cols=qc_cols,
+    sample_order=sample_order,
+    alpha=0.6
+)
+
+# %% [markdown]
+# ## 2. Common Principal Components Analysis-based drift correction
+
+# %% [markdown]
+# We can also use another method for correcting drift which is based on Common Principal Components Analysis (CPCA).
+# This method is based on common principal components in defined groups of the data. It assumes that when calculating common principal components of QC samples, the drift contribution can be identified as the direction capturing maximum variance that simultaneously diagonalizes the covariance matrices of a set of classes.
+#
+# Therefore, the variability in the identified direction can be explained as caused by experimental drift and subtracted from all samples.
+#
+# Let's use different example data for demonstrating this method.
+
+# %% [markdown]
+# ### Load in data
+
+# %%
+# Load data
+df = pd.read_csv("../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled_imputed.csv")
+
+# Define sample columns and qc columns
+collist = list(df.columns.values)
+sample_cols = []
+qc_cols = []
+for col in collist:
+    if col.startswith("AAA"):
+        sample_cols.append(col)
+    elif col.startswith("QC"):
+        qc_cols.append(col)
+
+# %%
+df
+
+# %% [markdown]
+# Seeing as this method is based on calculating principal components, as with PCA, there must not be any missing data. 
+#
+# We will therefore first calculate missingness (NAs).
+#
+# We need to check for missing values in both the sample columns and the QC columns.
+
+# %%
+if dc.check_missingness(df, sample_cols+qc_cols):
+    print("There are missing values. Consider imputing first, or use LOESS drift correction instead.")
+else:
+    print("\nThere is no missingness. We can proceed with the CPCA drift correction.")
+
+# %% [markdown]
+# ### Visualise non-corrected data
+#
+# Now that we know we can proceed, let's visualise our data before drift correction with a PCA.
+
+# %%
+dc.pca_for_cpca_drift(
+    df,
+    sample_cols,  # list of col names, OR dict {group_name: [col names]}
+    qc_cols,
+    log_transform = True,
+    title = "PCA",
+)
+
+# %% [markdown]
+# We see some clear indication of instrumental drift in the QC samples.
+
+# %% [markdown]
+# ### Run drift correction based on CPCA
+
+# %%
+df_corrected = dc.run_cpca_drift_correction(
+    df,
+    sample_cols,
+    qc_cols,
+    n_comps=1
+)
+
+# %% [markdown]
+# Let's plot the corrected data.
+
+# %%
+dc.pca_for_cpca_drift(
+    df_corrected,
+    sample_cols,  # list of col names, OR dict {group_name: [col names]}
+    qc_cols,
+    log_transform = True,
+    title = "PCA",
+)
+
+# %% [markdown]
+# There is some change, but still a signficant amount of drift is clearly visible from the PCA plot.
+#
+# We can play around with the n_comps variable which decides the number of components.
+
+# %%
+df_corrected_2comps = dc.run_cpca_drift_correction(
+    df,
+    sample_cols,
+    qc_cols,
+    n_comps=2
+)
+
+df_corrected_3comps = dc.run_cpca_drift_correction(
+    df,
+    sample_cols,
+    qc_cols,
+    n_comps=3
+)
+
+df_corrected_4comps = dc.run_cpca_drift_correction(
+    df,
+    sample_cols,
+    qc_cols,
+    n_comps=4
+)
+
+# %%
+dc.pca_for_cpca_drift(
+    df_corrected_2comps,
+    sample_cols,  # list of col names, OR dict {group_name: [col names]}
+    qc_cols,
+    log_transform = True,
+    title = "PCA with 2 components",
+)
+
+dc.pca_for_cpca_drift(
+    df_corrected_3comps,
+    sample_cols,  # list of col names, OR dict {group_name: [col names]}
+    qc_cols,
+    log_transform = True,
+    title = "PCA with 3 components",
+)
+
+dc.pca_for_cpca_drift(
+    df_corrected_4comps,
+    sample_cols,  # list of col names, OR dict {group_name: [col names]}
+    qc_cols,
+    log_transform = True,
+    title = "PCA with 4 components",
+)
+
+# %% [markdown]
+# The correction methods with three and four components are already looking better. Let's calculate the centroids of the QC principal components and the distance of the QC points to them, to objectively decide which number of n_comps is most favourable.
+
+# %%
+dc.cpca_centroid(df_corrected, sample_cols, qc_cols, log_transform=True)
+dc.cpca_centroid(df_corrected_2comps, sample_cols, qc_cols, log_transform=True)
+dc.cpca_centroid(df_corrected_3comps, sample_cols, qc_cols, log_transform=True)
+dc.cpca_centroid(df_corrected_4comps, sample_cols, qc_cols, log_transform=True)
+
+# %% [markdown]
+# According to this, the CPCA method with three principal components is most favourable in this case. 
+#
+# We can go ahead and continue our metabolomics data analysis with this data set.
+
+# %%
+df_corrected_3comps
