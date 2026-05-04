@@ -1,4 +1,5 @@
 import itertools
+from typing import NamedTuple
 
 import numpy as np
 import pandas as pd
@@ -10,9 +11,20 @@ import acore.utils as utils
 from acore.multiple_testing import apply_pvalue_correction
 
 
+class CorrelationCoefficient(NamedTuple):
+    coefficient: float
+    pvalue: float
+
+    def __str__(self):
+        return (
+            f"CorrelationCoefficient(coefficient={self.coefficient:.4f},"
+            f" pvalue={self.pvalue:.4f})"
+        )
+
+
 def corr_lower_triangle(df: pd.DataFrame, **kwargs) -> pd.DataFrame:
     """Compute the correlation matrix, returning only unique values (lower triangle).
-    Passes kwargs to pandas.DataFrame.corr method.
+    Passes kwargs to [pandas.DataFrame.corr](pandas.DataFrame.corr) method.
     """
     corr_df = df.corr(**kwargs)
     lower_triangle = pd.DataFrame(np.tril(np.ones(corr_df.shape), -1)).astype(bool)
@@ -22,7 +34,9 @@ def corr_lower_triangle(df: pd.DataFrame, **kwargs) -> pd.DataFrame:
 
 def calculate_correlations(x, y, method="pearson"):
     """
-    Calculates a Spearman (nonparametric) or a Pearson (parametric) correlation coefficient and p-value to test for non-correlation.
+    Calculates a Spearman (nonparametric)
+    or a Pearson (parametric) correlation coefficient
+    and p-value to test for non-correlation.
 
     :param numpy.ndarray x: array 1
     :param numpy.ndarray y: array 2
@@ -38,19 +52,23 @@ def calculate_correlations(x, y, method="pearson"):
     elif method == "spearman":
         coefficient, pvalue = stats.spearmanr(x, y)
 
-    return (coefficient, pvalue)
+    return CorrelationCoefficient(coefficient, pvalue)
 
 
 def run_correlation(
     df,
     alpha=0.05,
-    subject="subject",
+    subject=None,
     group="group",
     method="pearson",
     correction="fdr_bh",
+    numeric_only=True,
+    dropna=True,
 ):
     """
-    This function calculates pairwise correlations for columns in dataframe, and returns it in the shape of a edge list with 'weight' as correlation score, and the ajusted p-values.
+    This function calculates pairwise correlations for columns in dataframe,
+    and returns it in the shape of a edge list with 'weight' as correlation score,
+    and the ajusted p-values.
 
     :param df: pandas dataframe with samples as rows and features as columns.
     :param str subject: name of column containing subject identifiers.
@@ -58,42 +76,48 @@ def run_correlation(
     :param str method: method to use for correlation calculation ('pearson', 'spearman').
     :param float alpha: error rate. Values velow alpha are considered significant.
     :param str correction: type of correction see apply_pvalue_correction for methods
-    :return: Pandas dataframe with columns: 'node1', 'node2', 'weight', 'padj' and 'rejected'.
+    :param bool numeric_only: if True, only numeric columns are considered
+                for correlation calculation.
+    :param bool dropna: if True, columns with NaN values are dropped before
+                correlation calculation.
+    :return: Pandas dataframe with columns: 'node1', 'node2', 'weight',
+            'padj' and 'rejected'.
 
     Example::
 
-        result = run_correlation(df, alpha=0.05, subject='subject', group='group', method='pearson', correction='fdr_bh')
+        result = run_correlation(df, alpha=0.05, subject='subject', group='group',
+                    method='pearson', correction='fdr_bh')
     """
     correlation = pd.DataFrame()
-    # ToDo
-    # The Repeated measurements correlation calculation is too time consuming so it only runs if
-    # the number of features is less than 200
-    if utils.check_is_paired(df, subject, group):
+    # The Repeated measurements correlation calculation is too time consuming so it
+    # only runs if the number of features is less than 200
+    if subject is not None and utils.check_is_paired(df, subject, group):
         if len(df[subject].unique()) > 2:
             if len(df.columns) < 200:
                 correlation = run_rm_correlation(
                     df, alpha=alpha, subject=subject, correction=correction
                 )
-    else:
-        df = df.dropna(axis=1)._get_numeric_data()
-        if not df.empty:
-            r, p = run_efficient_correlation(df, method=method)
-            rdf = pd.DataFrame(r, index=df.columns, columns=df.columns)
-            pdf = pd.DataFrame(p, index=df.columns, columns=df.columns)
-            correlation = utils.convertToEdgeList(rdf, ["node1", "node2", "weight"])
-            pvalues = utils.convertToEdgeList(pdf, ["node1", "node2", "pvalue"])
-            correlation = pd.merge(correlation, pvalues, on=["node1", "node2"])
+        return correlation
+    if dropna:
+        df = df.dropna(axis=1, how="any")
+    if numeric_only:
+        df = df.select_dtypes(include="number")
+    if df.empty:
+        raise ValueError("Input dataframe has no data.")
 
-            rejected, padj = apply_pvalue_correction(
-                correlation["pvalue"].tolist(), alpha=alpha, method=correction
-            )
-            correlation["padj"] = padj
-            correlation["rejected"] = rejected
-            correlation = correlation[correlation.rejected]
-            correlation["pvalue"] = correlation["pvalue"].apply(
-                lambda x: str(round(x, 5))
-            )
-            correlation["padj"] = correlation["padj"].apply(lambda x: str(round(x, 5)))
+    r, p = run_efficient_correlation(df, method=method)
+    rdf = pd.DataFrame(r, index=df.columns, columns=df.columns)
+    pdf = pd.DataFrame(p, index=df.columns, columns=df.columns)
+    correlation = utils.convertToEdgeList(rdf, ["node1", "node2", "weight"])
+    pvalues = utils.convertToEdgeList(pdf, ["node1", "node2", "pvalue"])
+    correlation = pd.merge(correlation, pvalues, on=["node1", "node2"])
+
+    rejected, padj = apply_pvalue_correction(
+        correlation["pvalue"].tolist(), alpha=alpha, method=correction
+    )
+    correlation["padj"] = padj
+    correlation["rejected"] = rejected
+    correlation["rejected"] = correlation["rejected"].astype(bool)
 
     return correlation
 
@@ -121,7 +145,9 @@ def run_multi_correlation(
 
     Example::
 
-        result = run_multi_correlation(df_dict, alpha=0.05, subject='subject', on=['subject', 'biological_sample'] , group='group', method='pearson', correction='fdr_bh')
+        result = run_multi_correlation(df_dict, alpha=0.05, subject='subject',
+            on=['subject', 'biological_sample'],
+            group='group', method='pearson', correction='fdr_bh')
     """
     multidf = pd.DataFrame()
     correlation = None
@@ -147,7 +173,8 @@ def run_multi_correlation(
 
 def calculate_rm_correlation(df, x, y, subject):
     """
-    Computes correlation and p-values between two columns a and b in df.
+    Computes correlation and p-values between two columns a and b in df with
+    repeated measures (rm).
 
     :param df: pandas dataframe with subjects as rows and two features and columns.
     :param str x: feature a name.
@@ -172,48 +199,123 @@ def calculate_rm_correlation(df, x, y, subject):
 
 def run_rm_correlation(df, alpha=0.05, subject="subject", correction="fdr_bh"):
     """
-    Computes pairwise repeated measurements correlations for all columns in dataframe, and returns results as an edge list with 'weight' as correlation score, p-values, degrees of freedom and ajusted p-values.
+    Computes pairwise repeated measurements correlations for all columns in dataframe,
+    and returns results as an edge list with 'weight' as correlation score,
+    p-values, degrees of freedom and ajusted p-values.
 
     :param df: pandas dataframe with samples as rows and features as columns.
     :param str subject: name of column containing subject identifiers.
     :param float alpha: error rate. Values velow alpha are considered significant.
     :param str correction: type of correction type see apply_pvalue_correction for methods
-    :return: Pandas dataframe with columns: 'node1', 'node2', 'weight', 'pvalue', 'dof', 'padj' and 'rejected'.
+    :return: Pandas dataframe with columns: 'node1', 'node2',
+            'weight', 'pvalue', 'dof', 'padj' and 'rejected'.
 
     Example::
 
         result = run_rm_correlation(df, alpha=0.05, subject='subject', correction='fdr_bh')
     """
     rows = []
-    if not df.empty:
-        df = df.set_index(subject)._get_numeric_data().dropna(axis=1)
-        df.columns = df.columns.astype(str)
-        combinations = itertools.combinations(df.columns, 2)
-        df = df.reset_index()
-        for x, y in combinations:
-            row = [x, y]
-            subset = df[[x, y, subject]]
-            row.extend(pg.rm_corr(subset, x, y, subject).values.tolist()[0])
-            rows.append(row)
+    if df.empty:
+        raise ValueError("Input dataframe is empty.")
+    df = df.set_index(subject)._get_numeric_data().dropna(axis=1)
+    df.columns = df.columns.astype(str)
+    combinations = itertools.combinations(df.columns, 2)
+    df = df.reset_index()
+    for x, y in combinations:
+        row = [x, y]
+        subset = df[[x, y, subject]]
+        row.extend(pg.rm_corr(subset, x, y, subject).values.tolist()[0])
+        rows.append(row)
 
-        correlation = pd.DataFrame(
-            rows,
-            columns=["node1", "node2", "weight", "dof", "pvalue", "CI95%", "power"],
-        )
-        rejected, padj = apply_pvalue_correction(
-            correlation["pvalue"].tolist(), alpha=alpha, method=correction
-        )
-        correlation["padj"] = padj
-        correlation["rejected"] = rejected
-        correlation = correlation[correlation.rejected]
-        correlation["padj"] = correlation["padj"].apply(lambda x: str(round(x, 5)))
+    correlation = pd.DataFrame(
+        rows,
+        columns=["node1", "node2", "weight", "dof", "pvalue", "CI95%", "power"],
+    )
+    rejected, padj = apply_pvalue_correction(
+        correlation["pvalue"].tolist(), alpha=alpha, method=correction
+    )
+    correlation["padj"] = padj
+    correlation["rejected"] = rejected
+    correlation = correlation[correlation.rejected]
+    correlation["padj"] = correlation["padj"].apply(lambda x: str(round(x, 5)))
 
     return correlation
 
 
+def calculate_pvalue_correlation_old(r: pd.DataFrame, n_obs: int) -> pd.DataFrame:
+    """Calculate p-values for Pearson correlation using a all values from the
+    correlation matrix.
+
+    Parameters
+    ----------
+    r : pd.DataFrame
+        Correlation matrix.
+    n_obs : int
+        Number of observations used to calculate the correlation matrix (assumes no
+        missing values).
+
+    Returns
+    -------
+    pd.DataFrame
+        p-value matrix assuming fixed number of observations.
+    """
+    upper_idx = np.triu_indices(r.shape[0], 1)
+    rf = r[upper_idx]
+    df = n_obs - 2
+    ts = rf * rf * (df / (1 - rf * rf))
+    pf = betainc(0.5 * df, 0.5, df / (df + ts))
+    p = np.zeros(shape=r.shape)
+    p[np.triu_indices(p.shape[0], 1)] = pf
+    p[np.tril_indices(p.shape[0], -1)] = pf
+    p[np.diag_indices(p.shape[0])] = np.zeros(p.shape[0])
+    return p
+
+
+def calculate_pvalue_correlation(r, n_obs):
+    """Calculate p-values for Pearson correlation using a all values from the
+    correlation matrix.
+
+    Tested against Pearson correlation using a all values from the correlation
+    matrix, see
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html
+
+    Parameters
+    ----------
+    r : pd.DataFrame
+        Correlation matrix.
+    n_obs : int
+        Number of observations used to calculate the correlation matrix (assumes no
+        missing values).
+
+    Returns
+    -------
+    pd.DataFrame
+        p-value matrix assuming fixed number of observations.
+    """
+    upper_idx = np.triu_indices_from(r, k=1)
+
+    if n_obs < 3:
+        msg = "Need at least three observations to compute correlation p-values."
+        raise ValueError(msg)
+    df = n_obs - 2
+
+    rf = r[upper_idx]
+    denom = np.clip(1 - np.square(rf), np.finfo(float).eps, None)
+    ts = np.square(rf) * (df / denom)
+    pf = betainc(0.5 * df, 0.5, df / (df + ts))
+
+    # Initialize with ones so that diagonal p-values are 1 (non-significant)
+    p = np.ones_like(r)
+    p[upper_idx] = pf
+    p[(upper_idx[1], upper_idx[0])] = pf
+    return p
+
+
 def run_efficient_correlation(data, method="pearson"):
     """
-    Calculates pairwise correlations and returns lower triangle of the matrix with correlation values and p-values.
+    Calculates pairwise correlations and returns lower triangle of the matrix with
+    correlation values and p-values. For pearson correlation, p-values are calculated
+    assuming a fixed number of observations.
 
     :param data: pandas dataframe with samples as index and features as columns (numeric data only).
     :param str method: method to use for correlation calculation ('pearson', 'spearman').
@@ -223,22 +325,17 @@ def run_efficient_correlation(data, method="pearson"):
 
         result = run_efficient_correlation(data, method='pearson')
     """
-    matrix = data.values
+    matrix = data
     if method == "pearson":
         r = np.corrcoef(matrix, rowvar=False)
+        p = None
     elif method == "spearman":
         r, p = stats.spearmanr(matrix, axis=0)
 
-    diagonal = np.triu_indices(r.shape[0], 1)
-    rf = r[diagonal]
-    df = matrix.shape[1] - 2
-    ts = rf * rf * (df / (1 - rf * rf))
-    pf = betainc(0.5 * df, 0.5, df / (df + ts))
-    p = np.zeros(shape=r.shape)
-    p[np.triu_indices(p.shape[0], 1)] = pf
-    p[np.tril_indices(p.shape[0], -1)] = pf
-    p[np.diag_indices(p.shape[0])] = np.ones(p.shape[0])
+    if p is None:
+        p = calculate_pvalue_correlation(r, n_obs=data.shape[0])
 
+    diagonal = np.triu_indices(r.shape[0], 1)
     r[diagonal] = np.nan
     p[diagonal] = np.nan
 
