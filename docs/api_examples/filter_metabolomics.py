@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.17.3
+#       jupytext_version: 1.19.1
 #   kernelspec:
 #     display_name: acore
 #     language: python
@@ -19,13 +19,15 @@
 # %%
 # %pip install acore
 
+
 # %%
-import acore
-from acore import filter_metabolomics as fm
+import importlib
+import os
 
 import pandas as pd
-import os
-import importlib
+
+import acore
+from acore import filter_metabolomics as fm
 
 importlib.reload(acore)
 
@@ -55,14 +57,16 @@ data.describe()
 print(f"There are {data.shape[0]} rows and {data.shape[1]} columns in our data.")
 print("Our data has the following columns:")
 for colname in data.columns.values.tolist():
-    print("\t",colname)
+    print("\t", colname)
 
 
 # %% [markdown]
 # It looks like the m/z and RT columns contain categorical data, so we need to change that first before we can filter.
 
 # %%
-numeric_data = fm.make_numeric.convert_to_numeric(data, ["Average Mz", "Average Rt(min)"], print_na_summary=True)
+numeric_data = fm.make_numeric.convert_to_numeric(
+    data, ["Average Mz", "Average Rt(min)"], print_na_summary=True
+)
 
 
 # %%
@@ -82,22 +86,26 @@ numeric_data.dtypes
 
 # %%
 filtered_data, removed_features = fm.filter_mz_rt(
-    numeric_data, 
-    "Average Rt(min)", 
-    "Average Mz", 
-    mz_decimals=(0.3, 0.9), 
+    numeric_data,
+    "Average Rt(min)",
+    "Average Mz",
+    mz_decimals=(0.3, 0.9),
     mz_low=600,
     rt_dead_volume=0.8,
-    save_removed = True)
-
+    save_removed=True,
+)
 
 
 # %% [markdown]
 # Let's look at our filtered data.
 
 # %%
-print(f"There are {data.shape[0]} rows and {data.shape[1]} columns in our original data.")
-print(f"There are {filtered_data.shape[0]} rows and {filtered_data.shape[1]} columns in our filtered data.")
+print(
+    f"There are {data.shape[0]} rows and {data.shape[1]} columns in our original data."
+)
+print(
+    f"There are {filtered_data.shape[0]} rows and {filtered_data.shape[1]} columns in our filtered data."
+)
 print(f"{removed_features.shape[0]} features were removed from our data.")
 
 # %% [markdown]
@@ -105,8 +113,12 @@ print(f"{removed_features.shape[0]} features were removed from our data.")
 
 # %%
 bdv = removed_features[removed_features["RemovalReason"] == "BelowDeadVolume"].shape
-nbr = removed_features[removed_features["RemovalReason"] == "NotBiologicallyRelevant"].shape
+nbr = removed_features[
+    removed_features["RemovalReason"] == "NotBiologicallyRelevant"
+].shape
 print(f"{bdv[0]} features were removed because they were below the dead volume.")
-print(f"{nbr[0]} features were removed because they were deemed not biologically relevant (m/z-based filtering).")
+print(
+    f"{nbr[0]} features were removed because they were deemed not biologically relevant (m/z-based filtering)."
+)
 
 removed_features

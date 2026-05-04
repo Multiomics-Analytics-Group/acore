@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.17.3
+#       jupytext_version: 1.19.1
 #   kernelspec:
 #     display_name: acore-dev
 #     language: python
@@ -18,7 +18,7 @@
 #
 
 # %% [markdown]
-# Within-batch correction of metabolomics data. 
+# Within-batch correction of metabolomics data.
 # This script shows how to correct for instrumental drift based on pooled QC data samples.
 
 # %% [markdown]
@@ -31,12 +31,13 @@
 # #%pip install acore
 
 # %%
-import acore
-from acore import drift_correction as dc
+import importlib
+import os
 
 import pandas as pd
-import os
-import importlib
+
+import acore
+from acore import drift_correction as dc
 
 importlib.reload(acore)
 
@@ -44,8 +45,12 @@ importlib.reload(acore)
 # ### Load in data
 
 # %%
-df = pd.read_excel("../../example_data/aradopsis_seedling_lipids/kehelpannala_AnArabidopsisLipid_seedling.xlsx")
-sample_order = pd.read_csv("../../example_data/aradopsis_seedling_lipids/seedling_art_sample_order.csv")
+df = pd.read_excel(
+    "../../example_data/aradopsis_seedling_lipids/kehelpannala_AnArabidopsisLipid_seedling.xlsx"
+)
+sample_order = pd.read_csv(
+    "../../example_data/aradopsis_seedling_lipids/seedling_art_sample_order.csv"
+)
 
 # %%
 df
@@ -60,7 +65,7 @@ sample_order.sort_values("Sample ID")
 # ### Run drift correction with LOESS smoothing
 
 # %% [markdown]
-# We can now correct our data for experimental drift. 
+# We can now correct our data for experimental drift.
 #
 # With the acore LOESS drift-correction function, a LOESS (locally estimated regression) smoother is applied separately to the features in the data to model slow temporal trends, and the resulting smooth trend is used to correct the data.
 #
@@ -70,15 +75,42 @@ sample_order.sort_values("Sample ID")
 # First, we can create a dictionary for our sample names, ordering them into groups, to make the upcoming function call easier.
 
 data_groups = {
-    "SD1": ['Sd1_1','Sd1_2', 'Sd1_3', 'Sd1_4', 'Sd1_5', 'Sd1_6'],
-    "SD2": ['Sd2_1', 'Sd2_2', 'Sd2_3', 'Sd2_4', 'Sd2_5', 'Sd2_6', 'Sd2_7', 'Sd2_8', 'Sd2_9'],
-    "SD3": ['Sd3-1', 'Sd3-2', 'Sd3-3', 'Sd3-4', 'Sd3-5', 'Sd3-6', 'Sd3-7', 'Sd3-8', 'Sd3-9'],
-    "QC" : [ 'PBQC_Sd_1', 'PBQC_Sd_2', 'PBQC_Sd_3', 'PBQC_Sd_4', 'PBQC_Sd_5', 'PBQC_Sd_6']
+    "SD1": ["Sd1_1", "Sd1_2", "Sd1_3", "Sd1_4", "Sd1_5", "Sd1_6"],
+    "SD2": [
+        "Sd2_1",
+        "Sd2_2",
+        "Sd2_3",
+        "Sd2_4",
+        "Sd2_5",
+        "Sd2_6",
+        "Sd2_7",
+        "Sd2_8",
+        "Sd2_9",
+    ],
+    "SD3": [
+        "Sd3-1",
+        "Sd3-2",
+        "Sd3-3",
+        "Sd3-4",
+        "Sd3-5",
+        "Sd3-6",
+        "Sd3-7",
+        "Sd3-8",
+        "Sd3-9",
+    ],
+    "QC": [
+        "PBQC_Sd_1",
+        "PBQC_Sd_2",
+        "PBQC_Sd_3",
+        "PBQC_Sd_4",
+        "PBQC_Sd_5",
+        "PBQC_Sd_6",
+    ],
 }
 
 # %%
 # Separate groups
-sample_cols = data_groups["SD1"] + data_groups["SD2"] + data_groups[ "SD3"]
+sample_cols = data_groups["SD1"] + data_groups["SD2"] + data_groups["SD3"]
 qc_cols = data_groups["QC"]
 
 # Create a sub-df consisting only of the interesting columns, omitting metadata.
@@ -89,23 +121,23 @@ df_dc = df[sample_cols + qc_cols]
 
 # %%
 corrected_df, correction_info = dc.run_drift_correction(
-    df, 
-    qc_cols, 
-    sample_cols, 
-    sample_order=sample_order, 
+    df,
+    qc_cols,
+    sample_cols,
+    sample_order=sample_order,
     feature_name_col=None,
-    filter_percent=0.5, 
-    print_logs=True
+    filter_percent=0.5,
+    print_logs=True,
 )
 
 ### Explanation of the parameters chosen
-# - feature_name_col = the name of the column containing feature names, if there is one. 
+# - feature_name_col = the name of the column containing feature names, if there is one.
 #   This information is used for logging and showing outputs, it's not required for the functioning of the method.
 #   Here, there is no feature name column available, so "None" is used.
-# - filter_percent =  the minimum percentage of values that must be present for this feature to be retained. 
+# - filter_percent =  the minimum percentage of values that must be present for this feature to be retained.
 #   If the percentage of non-missing is below this, the feature will be filtered out.
 #   If this parameter is set to "None", no filtering will be done.
-# - print_logs = whether there should be an output for the logs of the function. Like verbose. 
+# - print_logs = whether there should be an output for the logs of the function. Like verbose.
 
 # %% [markdown]
 # Now we can inspect our results. First, the corrected output dataframe.
@@ -136,7 +168,7 @@ dc.loess_drift_correction.loess_example_curve(
     feature_idx=5,
     sample_cols=sample_cols,
     qc_cols=qc_cols,
-    sample_order=sample_order
+    sample_order=sample_order,
 )
 
 # %% [markdown]
@@ -151,7 +183,7 @@ dc.loess_drift_correction.loess_example_curve(
     sample_cols=sample_cols,
     qc_cols=qc_cols,
     sample_order=sample_order,
-    alpha=0.6
+    alpha=0.6,
 )
 
 # %% [markdown]
@@ -170,7 +202,9 @@ dc.loess_drift_correction.loess_example_curve(
 
 # %%
 # Load data
-df = pd.read_csv("../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled_imputed.csv")
+df = pd.read_csv(
+    "../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled_imputed.csv"
+)
 
 # Define sample columns and qc columns
 collist = list(df.columns.values)
@@ -186,15 +220,17 @@ for col in collist:
 df
 
 # %% [markdown]
-# Seeing as this method is based on calculating principal components, as with PCA, there must not be any missing data. 
+# Seeing as this method is based on calculating principal components, as with PCA, there must not be any missing data.
 #
 # We will therefore first calculate missingness (NAs).
 #
 # We need to check for missing values in both the sample columns and the QC columns.
 
 # %%
-if dc.check_missingness(df, sample_cols+qc_cols):
-    print("There are missing values. Consider imputing first, or use LOESS drift correction instead.")
+if dc.check_missingness(df, sample_cols + qc_cols):
+    print(
+        "There are missing values. Consider imputing first, or use LOESS drift correction instead."
+    )
 else:
     print("\nThere is no missingness. We can proceed with the CPCA drift correction.")
 
@@ -208,8 +244,8 @@ dc.pca_for_cpca_drift(
     df,
     sample_cols,  # list of col names, OR dict {group_name: [col names]}
     qc_cols,
-    log_transform = True,
-    title = "PCA",
+    log_transform=True,
+    title="PCA",
 )
 
 # %% [markdown]
@@ -219,12 +255,7 @@ dc.pca_for_cpca_drift(
 # ### Run drift correction based on CPCA
 
 # %%
-df_corrected = dc.run_cpca_drift_correction(
-    df,
-    sample_cols,
-    qc_cols,
-    n_comps=1
-)
+df_corrected = dc.run_cpca_drift_correction(df, sample_cols, qc_cols, n_comps=1)
 
 # %% [markdown]
 # Let's plot the corrected data.
@@ -234,8 +265,8 @@ dc.pca_for_cpca_drift(
     df_corrected,
     sample_cols,  # list of col names, OR dict {group_name: [col names]}
     qc_cols,
-    log_transform = True,
-    title = "PCA",
+    log_transform=True,
+    title="PCA",
 )
 
 # %% [markdown]
@@ -244,50 +275,35 @@ dc.pca_for_cpca_drift(
 # We can play around with the n_comps variable which decides the number of components.
 
 # %%
-df_corrected_2comps = dc.run_cpca_drift_correction(
-    df,
-    sample_cols,
-    qc_cols,
-    n_comps=2
-)
+df_corrected_2comps = dc.run_cpca_drift_correction(df, sample_cols, qc_cols, n_comps=2)
 
-df_corrected_3comps = dc.run_cpca_drift_correction(
-    df,
-    sample_cols,
-    qc_cols,
-    n_comps=3
-)
+df_corrected_3comps = dc.run_cpca_drift_correction(df, sample_cols, qc_cols, n_comps=3)
 
-df_corrected_4comps = dc.run_cpca_drift_correction(
-    df,
-    sample_cols,
-    qc_cols,
-    n_comps=4
-)
+df_corrected_4comps = dc.run_cpca_drift_correction(df, sample_cols, qc_cols, n_comps=4)
 
 # %%
 dc.pca_for_cpca_drift(
     df_corrected_2comps,
     sample_cols,  # list of col names, OR dict {group_name: [col names]}
     qc_cols,
-    log_transform = True,
-    title = "PCA with 2 components",
+    log_transform=True,
+    title="PCA with 2 components",
 )
 
 dc.pca_for_cpca_drift(
     df_corrected_3comps,
     sample_cols,  # list of col names, OR dict {group_name: [col names]}
     qc_cols,
-    log_transform = True,
-    title = "PCA with 3 components",
+    log_transform=True,
+    title="PCA with 3 components",
 )
 
 dc.pca_for_cpca_drift(
     df_corrected_4comps,
     sample_cols,  # list of col names, OR dict {group_name: [col names]}
     qc_cols,
-    log_transform = True,
-    title = "PCA with 4 components",
+    log_transform=True,
+    title="PCA with 4 components",
 )
 
 # %% [markdown]
@@ -300,7 +316,7 @@ dc.cpca_centroid(df_corrected_3comps, sample_cols, qc_cols, log_transform=True)
 dc.cpca_centroid(df_corrected_4comps, sample_cols, qc_cols, log_transform=True)
 
 # %% [markdown]
-# According to this, the CPCA method with three principal components is most favourable in this case. 
+# According to this, the CPCA method with three principal components is most favourable in this case.
 #
 # We can go ahead and continue our metabolomics data analysis with this data set.
 
