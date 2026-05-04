@@ -71,7 +71,6 @@ templates_path = ["_templates"]
 exclude_patterns = [
     "_build",
     "_build_markdown",
-    # "markdown_ref",
     "Thumbs.db",
     ".DS_Store",
     "jupyter_execute",
@@ -130,7 +129,7 @@ llms_txt_exclude = [
     "home_page",
     # exclude ipynb files for now
     "example_data*",
-    "api_examples*",
+    # "api_examples*",
     "downloaded*",
     "sections_readme*",
 ]
