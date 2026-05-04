@@ -29,7 +29,7 @@ def check_missingness(df: pd.DataFrame, cols_to_check: list):
     na_features = df[cols_to_check].isna().any(axis=1).sum()
 
     print(f"Features (rows) with at least one NA: {na_features} / {len(df)}")
-    print(f"Samples (cols) with at least one NA:")
+    print("Samples (cols) with at least one NA:")
     print(na_counts[na_counts > 0])
 
     if na_counts.any():
@@ -152,7 +152,7 @@ def pca_for_cpca_drift(
 
     fig, ax = plt.subplots(figsize=(8, 6))
     for group in list(sample_groups) + ["QC"]:
-        mask = [l == group for l in labels]
+        mask = [_label == group for _label in labels]
         pts = coords[mask]
         is_qc = group == "QC"
         ax.scatter(
@@ -215,7 +215,7 @@ def cpca_centroid(
 
     # define qc points in coords
     for group in list(sample_groups) + ["QC"]:
-        mask = [l == group for l in labels]
+        mask = [_label == group for _label in labels]
         qc_points = coords[mask]
 
     # Calculate centroid

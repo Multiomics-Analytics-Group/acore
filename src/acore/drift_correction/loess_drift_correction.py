@@ -473,7 +473,7 @@ def loess_example_curve(
     )
 
     if len(x_qc_v) >= 4:
-        if alpha != None:
+        if alpha is not None:
             # Pass a single-element candidate list to skip LOOCV and use the given alpha directly
             drift_curve, best_alpha = qc_rlsc_loess(
                 x_qc_v, y_qc_v, x_all, use_default=True, default=alpha
