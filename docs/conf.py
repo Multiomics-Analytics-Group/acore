@@ -230,30 +230,6 @@ if os.environ.get("READTHEDOCS") == "True":
             ]
         )
 
-    def run_sphinx_to_markdown(_):
-        from pathlib import Path
-
-        from sphinx.cmd.build import main as cmdline
-
-        # Convert the Sphinx documentation to Markdown format
-        cmdline(
-            [
-                "--keep-going",
-                "-b",
-                "markdown",
-                str(PROJECT_ROOT / "docs"),
-                str(PROJECT_ROOT / "_build_markdown"),
-            ]
-        )
-        # only use the markdown files in reference folder
-        # move from markdown_docs/reference to markdown_docs
-        folder_markdowns = Path("_build_markdown/reference")
-        folder_new = PROJECT_ROOT / "docs" / "markdown_ref"
-        folder_new.mkdir(exist_ok=True)
-
-        for file in folder_markdowns.iterdir():
-            if file.is_file():
-                file.rename(folder_new / file.name)
 
     def download_notebooks(_):
         from fetch_files import download_notebook
@@ -269,4 +245,3 @@ if os.environ.get("READTHEDOCS") == "True":
         app.connect("builder-inited", run_split_readme)
         app.connect("builder-inited", run_apidoc)
         app.connect("builder-inited", download_notebooks)
-        # app.connect("builder-inited", run_sphinx_to_markdown)
