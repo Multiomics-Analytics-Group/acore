@@ -128,7 +128,7 @@ llms_txt_exclude = [
     "authors",
     "history",
     "contributing",
-    # "llms", # maybe include it for description of the llms-txt format?
+    "llms", # maybe include it for description of the llms-txt format?
     "README",
     "home_page",
     "reference*",
