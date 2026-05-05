@@ -125,11 +125,16 @@ llms_txt_exclude = [
     "genindex",
     "404",
     "index",
+    "authors",
+    "history",
+    "contributing",
+    # "llms", # maybe include it for description of the llms-txt format?
     "README",
     "home_page",
+    "reference*",
     # exclude ipynb files for now
     "example_data*",
-    # "api_examples*",
+    "api_examples*",
     "downloaded*",
     "sections_readme*",
 ]
@@ -141,7 +146,7 @@ llms_txt_code_files = [
     # "+:../config/*.yaml",  # Include config files
     "-:../src/**/__pycache__/**",  # Exclude cache files
     # "-:reference/*.rst",  # Exclude markdown files
-    # "-:*.ipynb",  # Exclude notebooks
+    "+:api_examples/*.py" # Include notebooks in pypercent format
 ]
 
 # -- General configuration ---------------------------------------------------

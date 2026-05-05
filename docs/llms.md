@@ -3,7 +3,8 @@
 This website hosts two generated files via
 [sphinx-llms-txt](https://sphinx-llms-txt.readthedocs.io/en/latest/getting-started.html):
 
-- `llms-full.txt`: full LLM-oriented documentation
+- `llms-full.txt`: full LLM-oriented documentation of Python API and as source files
+  all api example notebooks in `docs/api_examples/` (in pypercent format)
 - `llms.txt`: short overview of available modules
 
 There is two versions, one of the lastest main branch version of the package
