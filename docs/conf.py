@@ -41,6 +41,7 @@ extensions = [
     "sphinx_new_tab_link",
     "myst_nb",
     "sphinx_copybutton",
+    "sphinx_llms_txt",
 ]
 
 myst_enable_extensions = [
@@ -69,6 +70,7 @@ templates_path = ["_templates"]
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = [
     "_build",
+    "_build_markdown",
     "Thumbs.db",
     ".DS_Store",
     "jupyter_execute",
@@ -85,7 +87,7 @@ intersphinx_mapping = {
     "pandera": ("https://pandera.readthedocs.io/en/stable/", None),
     "pydantic": ("https://docs.pydantic.dev/latest", None),
     "pingouin": ("https://pingouin-stats.org/", None),
-    # "scikit-learn": ("https://scikit-learn.org/stable/", None),
+    "scikit-learn": ("https://scikit-learn.org/stable/", None),
     # "matplotlib": ("https://matplotlib.org/stable/", None),
 }
 
@@ -112,6 +114,40 @@ autodoc_default_options = {
 
 ## Generate autodoc stubs with summaries from code
 autosummary_generate = True
+
+
+# llms-txt options
+
+# Content filtering
+# in _source folder
+llms_txt_exclude = [
+    "search",
+    "genindex",
+    "404",
+    "index",
+    "authors",
+    "history",
+    "contributing",
+    "llms",  # maybe include it for description of the llms-txt format?
+    "README",
+    "home_page",
+    "reference*",
+    # exclude ipynb files for now
+    "example_data*",
+    "api_examples*",
+    "downloaded*",
+    "sections_readme*",
+]
+
+
+# Source code inclusion with include/exclude patterns
+llms_txt_code_files = [
+    # "+:../src/**/*.py",  # Include Python files
+    # "+:../config/*.yaml",  # Include config files
+    "-:../src/**/__pycache__/**",  # Exclude cache files
+    # "-:reference/*.rst",  # Exclude markdown files
+    "+:api_examples/*.py",  # Include notebooks in pypercent format
+]
 
 # -- General configuration ---------------------------------------------------
 
@@ -156,7 +192,7 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+# html_static_path = ["_static"]
 
 # -- Setup for sphinx-apidoc -------------------------------------------------
 
