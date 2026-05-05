@@ -1,0 +1,57 @@
+name: Update Markdown Docs
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  update-markdowns:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo on PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install docs dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ".[docs]" sphinx-markdown-builder==0.6.9
+
+      - name: Build markdown docs
+        working-directory: docs
+        run: |
+          sphinx-apidoc --force --implicit-namespaces --module-first -o reference ../src/acore
+          rm -r api_examples
+          rm -r example_data
+          echo "# Test" > index.md
+          sphinx-build --keep-going -b markdown ./ ./_build_markdown
+          rm -r ./markdown_ref
+          mv ./_build_markdown/reference ./markdown_ref
+
+      - name: Commit and push changes
+        # https://www.junian.net/dev/github-actions-bot-username-email-address/
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/markdown_ref
+          if git diff --cached --quiet; then
+            echo "No markdown updates to commit"
+            exit 0
+          fi
+
+          git commit -m "docs: update markdown reference"
+          git push origin ${{ github.head_ref }}
