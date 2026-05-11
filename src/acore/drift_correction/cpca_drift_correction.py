@@ -4,6 +4,9 @@ Common Principal Components Analysis (CPCA).
 """
 
 import math
+import logging
+
+logger = logging.getLogger(__name__)
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -28,9 +31,8 @@ def check_missingness(df: pd.DataFrame, cols_to_check: list):
     na_counts = df[cols_to_check].isna().sum()
     na_features = df[cols_to_check].isna().any(axis=1).sum()
 
-    print(f"Features (rows) with at least one NA: {na_features} / {len(df)}")
-    print("Samples (cols) with at least one NA:")
-    print(na_counts[na_counts > 0])
+    logger.debug(f"Features (rows) with at least one NA: {na_features} / {len(df)}")
+    logger.debug("Samples (cols) with at least one NA:", na_counts[na_counts > 0])
 
     if na_counts.any():
         return True
@@ -81,7 +83,7 @@ def run_cpca_drift_correction(
 
     var_projected = np.sum((Xs @ cpcs) ** 2, axis=0)
     var_cpc = np.round(var_projected / np.sum(Xs**2), 3)[:n_comps]
-    print(
+    logger.info(
         "CPC explained variance:",
         dict(zip([f"CPC{i+1}" for i in range(n_comps)], var_cpc)),
     )
@@ -145,6 +147,8 @@ def cpca_centroid(
     distances = [math.dist(point, centroid) for point in qc_points]
     total_distance = sum(distances)
     avg_distance = total_distance / length
-    print(f"The average distance of the points to the centroid is {avg_distance:.3f}.")
+    logger.debug(
+        f"The average distance of the points to the centroid is {avg_distance:.3f}."
+    )
 
     return avg_distance

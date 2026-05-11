@@ -2,6 +2,10 @@
 Functions for metabolomics drift correction.
 """
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -65,7 +69,6 @@ def qc_rlsc_loess(
     use_default=False,
     default=0.75,
     alpha_candidates=np.arange(0.4, 1.01, 0.05),
-    print_logs=False,
 ):
     """
     Estimate a QC-based drift curve using LOESS smoothing with
@@ -97,8 +100,6 @@ def qc_rlsc_loess(
         List of LOESS smoothing parameters (fractions of data used
         in local regression) to evaluate during optimization.
         Default is [0.4, 0.6, 0.8, 1.0].
-    print_logs : bool, optional
-        If True, prints diagnostic information during optimization.
 
     Returns
     -------
@@ -150,9 +151,9 @@ def qc_rlsc_loess(
     # Fit LOESS again with best alpha for final curve
     if best_alpha is None or use_default:
         best_alpha = default  # fallback to reasonable default if optimization failed
-        if print_logs and not use_default:
-            print(
-                f"Warning: LOESS optimization failed for n={n}. Using default alpha=0.75."
+        if not use_default:
+            logger.warning(
+                f"LOESS optimization failed for n={n}. Using default alpha=0.75."
             )
 
     span = max((1 + 1) / n, best_alpha)
@@ -185,7 +186,6 @@ def run_loess_drift_correction(
     feature_name_col: str = None,
     filter_percent: float = None,
     qc_min_threshold: int = 4,
-    print_logs=False,
     use_default=False,
 ):
     """
@@ -226,8 +226,6 @@ def run_loess_drift_correction(
     qc_min_threshold : int, optional
         Minimum number of QC values required to perform drift
         correction. Features with fewer QCs are returned uncorrected.
-    print_logs : bool, optional
-        If True, prints status messages, RSD warnings, and errors.
     use_default: bool, optional
         If True, the alpha value 0.75 is used for the smoothing span.
         LOOCV is skipped. This option is less computationally heavy.
@@ -288,9 +286,8 @@ def run_loess_drift_correction(
     )  # Order of samples in order of file names
 
     if np.isnan(x_all).any():
-        print(
-            "Warning: some of your samples don't have an associated sample order. They will be skipped.",
-            "Make sure the names of your samples are identical in both your data frame and your sample order data.",
+        logger.warning(
+            "Some of your samples don't have an associated sample order. They will be skipped.\nMake sure the names of your samples are identical in both your data frame and your sample order data."
         )
 
     if filter_percent is not None:  # Filter features by QC completeness
@@ -325,16 +322,14 @@ def run_loess_drift_correction(
         # Calculate RSD
         eps = 1e-9
         rsd_qc = 100 * np.std(y_qc_valid) / (np.mean(y_qc_valid) + eps)
-        if rsd_qc > 30 and print_logs:
-            print(
-                f"Flagging feature {cid_value} due to too high QC RSD. (Feature not skipped)"
-            )  # RSD>20% suggests qc intensities reflect instrument drift, not biology
-            print("RSD:", rsd_qc)
+        if rsd_qc > 30:
+            logger.info(
+                f"Flagging feature {cid_value} due to too high QC RSD. (Feature not skipped). RSD: {rsd_qc}"
+            )  # RSD>20% suggests qc intensities reflect instrumental drift, not biology
 
         if len(y_qc_valid) < qc_min_threshold:
             # Skip correction but preserve the row
-            if print_logs:
-                print("skipping correction due to few QCs:", cid_value)
+            logger.info("skipping correction due to few QCs:", cid_value)
             corrected_df.loc[feature_idx] = y_all  # Insert the uncorrected values
             correction_info[cid_value] = {
                 "alpha": None,
@@ -352,7 +347,6 @@ def run_loess_drift_correction(
                 x_qc_valid,
                 y_qc_valid,
                 x_all,
-                print_logs=print_logs,
                 use_default=use_default,
             )  # Calculate curve and alpha value
 
@@ -381,11 +375,10 @@ def run_loess_drift_correction(
                 "status": "corrected",
             }
 
-            if print_logs:
-                print(f"Corrected {cid_value} with alpha {best_alpha}.")
+            logger.info(f"Corrected {cid_value} with alpha {best_alpha}.")
 
         except Exception as e:
-            print(f"Skipping feature {cid_value} due to error: {e}")
+            logger.error(f"Skipping feature {cid_value} due to error: {e}")
             continue
 
     # Add metadata back into output df
@@ -393,8 +386,7 @@ def run_loess_drift_correction(
     corrected_df = corrected_df.join(df.loc[corrected_df.index, meta_cols])
     corrected_df = corrected_df[df.columns]
 
-    if print_logs:
-        print(
-            "\nAll done. For further information on the corrected values, check the second returned object. Also reordered rows!"
-        )
+    logger.info(
+        "\nAll done. For further information on the corrected values, check the second returned object. Also reordered rows!"
+    )
     return corrected_df, correction_info
