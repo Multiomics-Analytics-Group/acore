@@ -3,8 +3,8 @@ Functions for metabolomics drift correction by
 Common Principal Components Analysis (CPCA).
 """
 
-import math
 import logging
+import math
 
 import numpy as np
 import pandas as pd
