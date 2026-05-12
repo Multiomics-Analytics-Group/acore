@@ -28,8 +28,10 @@ def filter_features_by_qc(
         List of column names corresponding to QC measurements.
     :param float threshold:
         Fraction (between 0 and 1) indicating the maximum allowed proportion
-        of missing QC values per feature. For example, `threshold=0.5` allows
-        up to 50% missing QC values. Defaults to 0.5.
+        of missing QC values per feature. For example, `threshold=0.6` allows
+        up to 60% of QC values to be missing; so a feature with 3 out of 5
+        QC values present (40% present, 60% missing) would be retained.
+        Defaults to 0.5.
 
     :returns pandas.DataFrame:
         Filtered DataFrame containing only rows with sufficient valid QC values.
@@ -222,7 +224,7 @@ def run_loess_drift_correction(
         If None, the index is used.
     filter_percent : float, optional
         Minimum proportion of QC values that must be non-missing for
-        a feature to be retained (e.g., 0.5 means at least 50% of QCs
+        a feature to be retained (e.g., 0.6 means at least 60% of QCs
         must be present).
     qc_min_threshold : int, optional
         Minimum number of QC values required to perform drift
@@ -293,8 +295,8 @@ def run_loess_drift_correction(
 
     if filter_percent is not None:  # Filter features by QC completeness
         df = filter_features_by_qc(
-            df, qc_cols, threshold=filter_percent
-        )  # Only keeping features that have min <percent> of all QCs not nan
+            df, qc_cols, threshold=(1 - filter_percent)
+        )  # Only keeping features that have at least <percent> of all QCs not nan
 
     # Loop through all features in filtered df
     for feature_idx, row in df[all_cols].iterrows():
