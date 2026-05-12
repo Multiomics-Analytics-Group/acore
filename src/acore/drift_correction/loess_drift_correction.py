@@ -56,6 +56,11 @@ def filter_features_by_qc(
         # Output: rows with at least 2 valid QC values (since ceil(3 * (1 - 0.5)) = 2)
 
     """
+    if not 0 <= threshold <= 1:  # check validity of threshold value
+        raise ValueError(
+            f"Threshold for QC filtering must be between 0 and 1, got {threshold}."
+        )
+
     n_qc = len(qc_cols)
     min_valid = int(np.ceil(n_qc * (1 - threshold)))  # minimum valid QC points
     valid_counts = df[qc_cols].notna().sum(axis=1)
@@ -265,11 +270,9 @@ def run_loess_drift_correction(
         index=df.index, columns=all_cols, dtype=float
     )  # Initialises new df to be filled (for now has all nan), all columns including QC should be corrected
     if feature_name_col:
-        df["TempName"] = df[
-            feature_name_col
-        ]  # naming it TempName so it does not interfere with any other col called Name
+        temp_names = df[feature_name_col]
     else:
-        df["TempName"] = df.index
+        temp_names = pd.Series(df.index, index=df.index)
 
     try:
         sample_order["Sample ID"] = pd.to_numeric(
@@ -304,7 +307,7 @@ def run_loess_drift_correction(
         # Y VALUES ARE INTENSITIES
         # X VALUES ARE RUN ORDER IDX
 
-        cid_value = df.at[feature_idx, "TempName"]  # feature ID, used for logs
+        cid_value = temp_names.loc[feature_idx]  # feature ID, used for logs
 
         # Intensities (y) for all cols in the samples (t, c and nan)
         y_all = row.values.astype(float)
@@ -358,12 +361,12 @@ def run_loess_drift_correction(
 
             # Normalize all intensities using drift curve
             median_qc = np.median(y_qc_valid)
-            corrected = np.full_like(
-                y_all, np.nan, dtype=float
-            )  # Initialise corrected array
+            corrected = (
+                y_all.copy()
+            )  # Preserve original values where correction is not possible
             corrected[valid_mask] = (
                 y_all[valid_mask] / drift_curve[valid_mask]
-            ) * median_qc  # The ones that were nan don't get corrected
+            ) * median_qc  # Only valid positions get corrected; skipped samples retain original intensity
 
             corrected_df.loc[feature_idx] = corrected
 
@@ -381,12 +384,22 @@ def run_loess_drift_correction(
             logger.info(f"Corrected {cid_value} with alpha {best_alpha}.")
 
         except Exception as e:
+            corrected_df.loc[feature_idx] = y_all  # Preserve original values
+            correction_info[cid_value] = {
+                "alpha": None,
+                "drift_curve": None,
+                "y_qc": y_qc_valid.tolist(),
+                "x_qc": x_qc_valid.tolist(),
+                "rsd_qc": rsd_qc,
+                "status": f"error: {e}",
+            }
+
             logger.error(f"Skipping feature {cid_value} due to error: {e}")
             continue
 
-    # Add metadata back into output df
+    # Add metadata back into output df, reindexing in case of filtering
     meta_cols = df.columns.difference(all_cols)
-    corrected_df = corrected_df.join(df.loc[corrected_df.index, meta_cols])
+    corrected_df = corrected_df.join(df.reindex(corrected_df.index)[meta_cols])
     corrected_df = corrected_df[df.columns]
 
     logger.info(
