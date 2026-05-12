@@ -25,7 +25,7 @@ def check_missingness(df: pd.DataFrame, cols_to_check: list):
 
     Returns
     --------
-    Boolean: True if there is no missingness, False if there is missingness.
+    Boolean: True if there is missingness, False if there is no missingness.
     """
     na_counts = df[cols_to_check].isna().sum()
     na_features = df[cols_to_check].isna().any(axis=1).sum()
