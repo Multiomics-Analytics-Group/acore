@@ -6,13 +6,12 @@ Common Principal Components Analysis (CPCA).
 import math
 import logging
 
-logger = logging.getLogger(__name__)
-
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+
+logger = logging.getLogger(__name__)
 
 
 def check_missingness(df: pd.DataFrame, cols_to_check: list):

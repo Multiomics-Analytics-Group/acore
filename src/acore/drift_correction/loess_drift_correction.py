@@ -4,13 +4,12 @@ Functions for metabolomics drift correction.
 
 import logging
 
-logger = logging.getLogger(__name__)
-
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.interpolate import CubicSpline
 from statsmodels.nonparametric.smoothers_lowess import lowess
+
+logger = logging.getLogger(__name__)
 
 
 def filter_features_by_qc(
