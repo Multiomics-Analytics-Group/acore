@@ -474,7 +474,7 @@ pca_for_cpca_drift( # This function is defined in the beginning of this notebook
 )
 
 # %% [markdown]
-# There is some change, but still a signficant amount of drift is clearly visible from the PCA plot.
+# There is some change, but still a significant amount of drift is clearly visible from the PCA plot.
 #
 # We can play around with the n_comps variable which decides the number of components.
 
