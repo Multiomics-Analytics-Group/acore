@@ -1,4 +1,4 @@
-# Aradopsis Seedling Lipids
+# Arabidopsis Seedling Lipids
 
 Metabolomics intensity feature table. 
 
