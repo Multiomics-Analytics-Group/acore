@@ -261,7 +261,7 @@ sample_order = pd.read_csv(
 df
 
 # %% [markdown]
-# We also have (artificial) data that has the order in which our samples were run. This information is crucial for the drift corrrection algorithm.
+# We also have (artificial) data that has the order in which our samples were run. This information is crucial for the drift correction algorithm.
 
 # %%
 sample_order.sort_values("Sample ID")
