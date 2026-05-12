@@ -57,7 +57,7 @@ For each feature:
   * **feature_name_col** ([*str*](https://docs.python.org/3/library/stdtypes.html#str) *,* *optional*) – Name of the column in data containing feature identifiers.
     If None, the index is used.
   * **filter_percent** ([*float*](https://docs.python.org/3/library/functions.html#float) *,* *optional*) – Minimum proportion of QC values that must be non-missing for
-    a feature to be retained (e.g., 0.5 means at least 50% of QCs
+    a feature to be retained (e.g., 0.6 means at least 60% of QCs
     must be present).
   * **qc_min_threshold** ([*int*](https://docs.python.org/3/library/functions.html#int) *,* *optional*) – Minimum number of QC values required to perform drift
     correction. Features with fewer QCs are returned uncorrected.
@@ -175,8 +175,10 @@ ceil(n_qc \* (1 - threshold)), where n_qc is the number of QC columns.
   * **df** ([*pandas.DataFrame*](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame)) – Input DataFrame containing feature data and QC columns.
   * **qc_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – List of column names corresponding to QC measurements.
   * **threshold** ([*float*](https://docs.python.org/3/library/functions.html#float)) – Fraction (between 0 and 1) indicating the maximum allowed proportion
-    of missing QC values per feature. For example, threshold=0.5 allows
-    up to 50% missing QC values. Defaults to 0.5.
+    of missing QC values per feature. For example, threshold=0.6 allows
+    up to 60% of QC values to be missing; so a feature with 3 out of 5
+    QC values present (40% present, 60% missing) would be retained.
+    Defaults to 0.5.
 * **Returns pandas.DataFrame:**
   Filtered DataFrame containing only rows with sufficient valid QC values.
 * **Raises:**
@@ -267,7 +269,7 @@ For each feature:
   * **feature_name_col** ([*str*](https://docs.python.org/3/library/stdtypes.html#str) *,* *optional*) – Name of the column in data containing feature identifiers.
     If None, the index is used.
   * **filter_percent** ([*float*](https://docs.python.org/3/library/functions.html#float) *,* *optional*) – Minimum proportion of QC values that must be non-missing for
-    a feature to be retained (e.g., 0.5 means at least 50% of QCs
+    a feature to be retained (e.g., 0.6 means at least 60% of QCs
     must be present).
   * **qc_min_threshold** ([*int*](https://docs.python.org/3/library/functions.html#int) *,* *optional*) – Minimum number of QC values required to perform drift
     correction. Features with fewer QCs are returned uncorrected.
