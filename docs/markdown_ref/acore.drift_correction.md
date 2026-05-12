@@ -16,17 +16,6 @@ This function checks for NAs in the data frame inside some user-provided columns
 
 ### cpca_centroid(df: DataFrame, sample_cols, qc_cols: [list](https://docs.python.org/3/library/stdtypes.html#list), log_transform: [bool](https://docs.python.org/3/library/functions.html#bool) = True)
 
-### pca_for_cpca_drift(df: DataFrame, sample_cols, qc_cols: [list](https://docs.python.org/3/library/stdtypes.html#list), log_transform: [bool](https://docs.python.org/3/library/functions.html#bool) = True, title: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'PCA')
-
-PCA of samples and QC samples.
-
-* **Parameters:**
-  * **df** (*feature matrix with features as rows* *,* *samples as columns*)
-  * **sample_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* *sample column names* *(**all one group* *)* *,*) – or dict {group_name: [col names]} for multiple groups
-  * **qc_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* *QC column names*)
-  * **log_transform** (*apply log1p before scaling*)
-  * **title** (*plot title*)
-
 ### run_cpca_drift_correction(df: DataFrame, sample_cols, qc_cols, n_comps: [int](https://docs.python.org/3/library/functions.html#int) = 1) → DataFrame
 
 Corrects technical drift using Common Principal Components Analysis (CPCA).
@@ -40,33 +29,7 @@ Adapted from [https://github.com/m-baralt/metabolomics_incident_diabetes](https:
 * **Return type:**
   Full drift-corrected DataFrame with metadata columns preserved.
 
-### loess_example_curve(df: DataFrame, feature_idx: [int](https://docs.python.org/3/library/functions.html#int), sample_cols: [list](https://docs.python.org/3/library/stdtypes.html#list), qc_cols: [list](https://docs.python.org/3/library/stdtypes.html#list), sample_order: DataFrame, feature_name_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = None, show_corrected: [bool](https://docs.python.org/3/library/functions.html#bool) = True, alpha: [float](https://docs.python.org/3/library/functions.html#float) = None)
-
-Plot the raw intensities, LOESS drift curve, and optionally the corrected
-intensities for a single feature according to the loess drift correction function.
-Useful for inspecting drift behaviour before running full drift correction.
-
-The drift curve is estimated with the same method used by
-ldc.run_drift_correction: LOESS is fit to the QC points and then
-interpolated across all injection positions via a cubic spline
-(qc_rlsc_loess).
-
-* **Parameters:**
-  * **df** (*pd.DataFrame*) – Feature matrix with features as rows and samples/QCs as columns.
-  * **feature_idx** ([*int*](https://docs.python.org/3/library/functions.html#int)) – Row index of the feature to plot.
-  * **sample_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* [*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Column names of the biological samples.
-  * **qc_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* [*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Column names of the pooled QC samples.
-  * **sample_order** (*pd.DataFrame*) – Injection-order table with columns “File Name” and “Sample ID”
-    (integer run order).
-  * **feature_name_col** ([*str*](https://docs.python.org/3/library/stdtypes.html#str) *,* *optional*) – Column in df containing feature identifiers used in the plot title.
-    If None, the row index is used.
-  * **show_corrected** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – If True (default), overlays drift-corrected sample intensities as
-    diamond markers.
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float) *,* *optional*) – LOESS smoothing span (0 < α ≤ 1). If None (default), the optimal span
-    is selected automatically by leave-one-out cross-validation over
-    α ∈ [0.40, 1.00]. The selected value is shown in the legend.
-
-### run_drift_correction(data, qc_cols, sample_cols, sample_order: DataFrame, feature_name_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = None, filter_percent: [float](https://docs.python.org/3/library/functions.html#float) = None, qc_min_threshold: [int](https://docs.python.org/3/library/functions.html#int) = 4, print_logs=False, use_default=False)
+### run_loess_drift_correction(data, qc_cols, sample_cols, sample_order: DataFrame, feature_name_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = None, filter_percent: [float](https://docs.python.org/3/library/functions.html#float) = None, qc_min_threshold: [int](https://docs.python.org/3/library/functions.html#int) = 4, use_default=False)
 
 Perform QC-based drift correction across multiple features using
 LOESS regression and spline interpolation.
@@ -98,7 +61,6 @@ For each feature:
     must be present).
   * **qc_min_threshold** ([*int*](https://docs.python.org/3/library/functions.html#int) *,* *optional*) – Minimum number of QC values required to perform drift
     correction. Features with fewer QCs are returned uncorrected.
-  * **print_logs** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – If True, prints status messages, RSD warnings, and errors.
   * **use_default** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – If True, the alpha value 0.75 is used for the smoothing span.
     LOOCV is skipped. This option is less computationally heavy.
 * **Returns:**
@@ -122,6 +84,46 @@ For each feature:
 - Drift correction rescales intensities so that QC medians remain
   unchanged.
 - Sample names in data and sample_order must match exactly.
+
+### qc_rlsc_loess(x_qc, y_qc, x_all, use_default=False, default=0.75, alpha_candidates=array([0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.]))
+
+Estimate a QC-based drift curve using LOESS smoothing with
+leave-one-out cross-validation (LOOCV) to select the optimal
+smoothing span (alpha).
+
+This function:
+1. Tests multiple LOESS spans (alpha values).
+2. Fits LOESS to QC points for each candidate span.
+3. Performs LOOCV to compute prediction error for each span.
+4. Selects the alpha producing the lowest LOOCV error.
+5. Fits LOESS once more using the best alpha.
+6. Interpolates the LOESS fit to all sample injection orders
+
+> using a cubic spline, with clamping outside the QC range.
+* **Parameters:**
+  * **x_qc** (*array-like*) – Injection order of QC samples (numeric).
+  * **y_qc** (*array-like*) – Intensity values of QC samples corresponding to x_qc.
+  * **x_all** (*array-like*) – Injection order of all samples (QCs + regular samples) in
+    the same order as data columns.
+  * **use_default** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – If True, the alpha value 0.75 is used for all values.
+    LOOCV is skipped. This option is less computationally heavy.
+  * **alpha_candidates** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* [*float*](https://docs.python.org/3/library/functions.html#float) *,* *optional*) – List of LOESS smoothing parameters (fractions of data used
+    in local regression) to evaluate during optimization.
+    Default is [0.4, 0.6, 0.8, 1.0].
+* **Returns:**
+  * **drift_curve** (*ndarray*) – The estimated drift correction curve evaluated at each
+    injection order in x_all. Values outside the QC range
+    are clamped to the nearest in-range LOESS value.
+  * **best_alpha** (*float*) – The alpha value producing the lowest LOOCV error.
+
+### Notes
+
+- LOESS fits enforce a minimum fraction of (λ + 1) / n, with λ=1
+  for linear LOESS.
+- CubicSpline is used for interpolation without extrapolation.
+  Out-of-range values are manually clamped.
+- Drift curve values are clipped to be strictly positive
+  (minimum 1e-6) to prevent division instability.
 
 ## Submodules
 
@@ -154,17 +156,6 @@ Adapted from [https://github.com/m-baralt/metabolomics_incident_diabetes](https:
   * **n_comps** (*number* *of* *common principal components to remove* *(**default 1* *)*)
 * **Return type:**
   Full drift-corrected DataFrame with metadata columns preserved.
-
-### pca_for_cpca_drift(df: DataFrame, sample_cols, qc_cols: [list](https://docs.python.org/3/library/stdtypes.html#list), log_transform: [bool](https://docs.python.org/3/library/functions.html#bool) = True, title: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'PCA')
-
-PCA of samples and QC samples.
-
-* **Parameters:**
-  * **df** (*feature matrix with features as rows* *,* *samples as columns*)
-  * **sample_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* *sample column names* *(**all one group* *)* *,*) – or dict {group_name: [col names]} for multiple groups
-  * **qc_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* *QC column names*)
-  * **log_transform** (*apply log1p before scaling*)
-  * **title** (*plot title*)
 
 ### cpca_centroid(df: DataFrame, sample_cols, qc_cols: [list](https://docs.python.org/3/library/stdtypes.html#list), log_transform: [bool](https://docs.python.org/3/library/functions.html#bool) = True)
 
@@ -208,7 +199,7 @@ ceil(n_qc \* (1 - threshold)), where n_qc is the number of QC columns.
 > print(filtered)
 > # Output: rows with at least 2 valid QC values (since ceil(3 \* (1 - 0.5)) = 2)
 
-### qc_rlsc_loess(x_qc, y_qc, x_all, use_default=False, default=0.75, alpha_candidates=array([0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.]), print_logs=False)
+### qc_rlsc_loess(x_qc, y_qc, x_all, use_default=False, default=0.75, alpha_candidates=array([0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.]))
 
 Estimate a QC-based drift curve using LOESS smoothing with
 leave-one-out cross-validation (LOOCV) to select the optimal
@@ -233,7 +224,6 @@ This function:
   * **alpha_candidates** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* [*float*](https://docs.python.org/3/library/functions.html#float) *,* *optional*) – List of LOESS smoothing parameters (fractions of data used
     in local regression) to evaluate during optimization.
     Default is [0.4, 0.6, 0.8, 1.0].
-  * **print_logs** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – If True, prints diagnostic information during optimization.
 * **Returns:**
   * **drift_curve** (*ndarray*) – The estimated drift correction curve evaluated at each
     injection order in x_all. Values outside the QC range
@@ -249,7 +239,7 @@ This function:
 - Drift curve values are clipped to be strictly positive
   (minimum 1e-6) to prevent division instability.
 
-### run_drift_correction(data, qc_cols, sample_cols, sample_order: DataFrame, feature_name_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = None, filter_percent: [float](https://docs.python.org/3/library/functions.html#float) = None, qc_min_threshold: [int](https://docs.python.org/3/library/functions.html#int) = 4, print_logs=False, use_default=False)
+### run_loess_drift_correction(data, qc_cols, sample_cols, sample_order: DataFrame, feature_name_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = None, filter_percent: [float](https://docs.python.org/3/library/functions.html#float) = None, qc_min_threshold: [int](https://docs.python.org/3/library/functions.html#int) = 4, use_default=False)
 
 Perform QC-based drift correction across multiple features using
 LOESS regression and spline interpolation.
@@ -281,7 +271,6 @@ For each feature:
     must be present).
   * **qc_min_threshold** ([*int*](https://docs.python.org/3/library/functions.html#int) *,* *optional*) – Minimum number of QC values required to perform drift
     correction. Features with fewer QCs are returned uncorrected.
-  * **print_logs** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – If True, prints status messages, RSD warnings, and errors.
   * **use_default** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – If True, the alpha value 0.75 is used for the smoothing span.
     LOOCV is skipped. This option is less computationally heavy.
 * **Returns:**
@@ -305,29 +294,3 @@ For each feature:
 - Drift correction rescales intensities so that QC medians remain
   unchanged.
 - Sample names in data and sample_order must match exactly.
-
-### loess_example_curve(df: DataFrame, feature_idx: [int](https://docs.python.org/3/library/functions.html#int), sample_cols: [list](https://docs.python.org/3/library/stdtypes.html#list), qc_cols: [list](https://docs.python.org/3/library/stdtypes.html#list), sample_order: DataFrame, feature_name_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = None, show_corrected: [bool](https://docs.python.org/3/library/functions.html#bool) = True, alpha: [float](https://docs.python.org/3/library/functions.html#float) = None)
-
-Plot the raw intensities, LOESS drift curve, and optionally the corrected
-intensities for a single feature according to the loess drift correction function.
-Useful for inspecting drift behaviour before running full drift correction.
-
-The drift curve is estimated with the same method used by
-ldc.run_drift_correction: LOESS is fit to the QC points and then
-interpolated across all injection positions via a cubic spline
-(qc_rlsc_loess).
-
-* **Parameters:**
-  * **df** (*pd.DataFrame*) – Feature matrix with features as rows and samples/QCs as columns.
-  * **feature_idx** ([*int*](https://docs.python.org/3/library/functions.html#int)) – Row index of the feature to plot.
-  * **sample_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* [*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Column names of the biological samples.
-  * **qc_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* [*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Column names of the pooled QC samples.
-  * **sample_order** (*pd.DataFrame*) – Injection-order table with columns “File Name” and “Sample ID”
-    (integer run order).
-  * **feature_name_col** ([*str*](https://docs.python.org/3/library/stdtypes.html#str) *,* *optional*) – Column in df containing feature identifiers used in the plot title.
-    If None, the row index is used.
-  * **show_corrected** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – If True (default), overlays drift-corrected sample intensities as
-    diamond markers.
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float) *,* *optional*) – LOESS smoothing span (0 < α ≤ 1). If None (default), the optimal span
-    is selected automatically by leave-one-out cross-validation over
-    α ∈ [0.40, 1.00]. The selected value is shown in the legend.
