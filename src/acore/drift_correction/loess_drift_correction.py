@@ -159,19 +159,21 @@ def qc_rlsc_loess(
     loess_fit = lowess(y_qc, x_qc, frac=span, it=0, return_sorted=False)
 
     # Cubic spline interpolation for all points (samples + QCs)
+    sort_idx = np.argsort(x_qc)
+    x_qc_sorted = np.asarray(x_qc)[sort_idx]
+    loess_fit_sorted = np.asarray(loess_fit)[sort_idx]
     cs = CubicSpline(
-        x_qc,
-        loess_fit,
+        x_qc_sorted,
+        loess_fit_sorted,
         extrapolate=False,  # No extrapolation outside QC range (restrict to interpolation range only)
     )
     drift_curve = cs(x_all)
 
     # Clip drift_curve to the edge values to prevent NaNs or negatives
-    x_min, x_max = np.min(x_qc), np.max(
-        x_qc
-    )  # For values outside QC range, hold the first/last fitted value (clamping)
-    drift_curve[x_all < x_min] = loess_fit[0]
-    drift_curve[x_all > x_max] = loess_fit[-1]
+    x_min, x_max = x_qc_sorted[0], x_qc_sorted[-1]
+    # For values outside QC range, hold the fitted value at the min/max QC positions (clamping)
+    drift_curve[x_all < x_min] = loess_fit_sorted[0]
+    drift_curve[x_all > x_max] = loess_fit_sorted[-1]
     drift_curve = np.clip(drift_curve, a_min=1e-6, a_max=None)  # Ensure no negatives
 
     return drift_curve, best_alpha
