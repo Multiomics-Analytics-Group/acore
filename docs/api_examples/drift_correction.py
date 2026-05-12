@@ -162,7 +162,6 @@ def plot_loess_example_curve(
     plt.show()
 
 
-
 # %%
 def pca_for_cpca_drift(
     df: pd.DataFrame,
@@ -465,7 +464,7 @@ df_corrected = dc.run_cpca_drift_correction(df, sample_cols, qc_cols, n_comps=1)
 # Let's plot the corrected data.
 
 # %%
-pca_for_cpca_drift( # This function is defined in the beginning of this notebook.
+pca_for_cpca_drift(  # This function is defined in the beginning of this notebook.
     df_corrected,
     sample_cols,  # list of col names, OR dict {group_name: [col names]}
     qc_cols,
