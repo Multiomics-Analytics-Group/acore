@@ -12,7 +12,7 @@ This function checks for NAs in the data frame inside some user-provided columns
 * **Returns:**
   **Boolean**
 * **Return type:**
-  True if there is no missingness, False if there is missingness.
+  True if there is missingness, False if there is no missingness.
 
 ### cpca_centroid(df: DataFrame, sample_cols, qc_cols: [list](https://docs.python.org/3/library/stdtypes.html#list), log_transform: [bool](https://docs.python.org/3/library/functions.html#bool) = True)
 
@@ -142,7 +142,7 @@ This function checks for NAs in the data frame inside some user-provided columns
 * **Returns:**
   **Boolean**
 * **Return type:**
-  True if there is no missingness, False if there is missingness.
+  True if there is missingness, False if there is no missingness.
 
 ### run_cpca_drift_correction(df: DataFrame, sample_cols, qc_cols, n_comps: [int](https://docs.python.org/3/library/functions.html#int) = 1) → DataFrame
 
