@@ -21,20 +21,18 @@
 
 
 # %%
-import importlib
-import os
-
 import pandas as pd
 
-import acore
 from acore import filter_metabolomics as fm
-
-importlib.reload(acore)
 
 # %% [markdown]
 # Load in your data. We will use an example data set from MetaboLights. It can be found in example_data/MTBLS733.
 
 # %%
+data_path = (
+    "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
+    "refs/heads/main/"
+)
 data_path = "../../example_data/MTBLS733/MetaboLights-MTBLS733-Nextflow4MS-DIAL.csv"
 data = pd.read_csv(data_path)
 
@@ -53,7 +51,7 @@ data.dtypes
 # %%
 data.describe()
 
-# %%
+# %% tags=["hide-input"]
 print(f"There are {data.shape[0]} rows and {data.shape[1]} columns in our data.")
 print("Our data has the following columns:")
 for colname in data.columns.values.tolist():
@@ -80,7 +78,7 @@ numeric_data.dtypes
 #
 # We want to filter based on RT, by removing all features that have a RT below a certain time, to exclude features that are at the dead volume. In our case, the cut-off will be 0.8 minutes.
 #
-# We also want to filter out features that have an m/z value below 600 an dhave m/z decimals between 0.3 and 0.9.
+# We also want to filter out features that have an m/z value below 600 and have m/z decimals between 0.3 and 0.9.
 #
 # We can do both of those things with the filtering function.
 

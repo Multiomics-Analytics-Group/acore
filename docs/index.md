@@ -18,6 +18,7 @@
 :caption: API usage examples
 :hidden:
 
+api_examples/filter_metabolomics
 api_examples/normalization_analysis
 api_examples/batch_correction
 api_examples/imputation
