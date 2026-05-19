@@ -112,6 +112,10 @@ diff_reg.query("rejected")
 # %% [markdown]
 # # Download functional annotations, here pathways, for the protein groups
 # in our selection of the dataset.
+#
+# Check the `acore.io.uniprot` module for more details on how to fetch and process
+# annotations from UNIPROT, especially check the link given there on all the available
+# fields: [return_fields](https://www.uniprot.org/help/return_fields)
 
 # %%
 from acore.io.uniprot import fetch_annotations, process_annotations
@@ -129,7 +133,6 @@ except FileNotFoundError:
     # cache the annotations
     fname.parent.mkdir(exist_ok=True, parents=True)
     annotations.to_csv(fname, index=True)
-
 annotations
 
 # %% [markdown]
