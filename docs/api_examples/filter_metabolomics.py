@@ -16,7 +16,7 @@
 # %% [markdown]
 # # Metabolomics data filtering
 
-# %%
+# %% tags=["hide-output"]
 # %pip install acore
 
 

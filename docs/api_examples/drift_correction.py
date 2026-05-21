@@ -24,8 +24,8 @@
 # %% [markdown]
 # ## 1. LOESS smoothing-based drift correction
 
-# %%
-# # %pip install acore
+# %% tags=["hide-output"]
+# %pip install acore
 
 # %%
 import matplotlib.pyplot as plt
