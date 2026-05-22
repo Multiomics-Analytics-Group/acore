@@ -274,7 +274,9 @@ df
 # Note: If you do not have metadata that contains the order in which samples and QCs were run, you can use the second method explained in this notebook, CPCA (scroll down).
 
 # %%
-sample_order = pd.read_csv("../../example_data/DidacMauricio_hilic/DidacMauricio_hilic_pos_injectionorder.csv")
+sample_order = pd.read_csv(
+    "../../example_data/DidacMauricio_hilic/DidacMauricio_hilic_pos_injectionorder.csv"
+)
 sample_order["File Name"] = sample_order["SampleName"]
 sample_order["Sample ID"] = sample_order["injectionOrder"]
 
@@ -525,10 +527,18 @@ pca_for_cpca_drift(
 # QC points to them, to objectively decide which number of n_comps is most favourable.
 
 # %%
-print(f"1 component: {dc.cpca_centroid(df_corrected, sample_cols, qc_cols, log_transform=True)}")
-print(f"2 components: {dc.cpca_centroid(df_corrected_2comps, sample_cols, qc_cols, log_transform=True)}")
-print(f"3 components: {dc.cpca_centroid(df_corrected_3comps, sample_cols, qc_cols, log_transform=True)}")
-print(f"4 components: {dc.cpca_centroid(df_corrected_4comps, sample_cols, qc_cols, log_transform=True)}")
+print(
+    f"1 component: {dc.cpca_centroid(df_corrected, sample_cols, qc_cols, log_transform=True)}"
+)
+print(
+    f"2 components: {dc.cpca_centroid(df_corrected_2comps, sample_cols, qc_cols, log_transform=True)}"
+)
+print(
+    f"3 components: {dc.cpca_centroid(df_corrected_3comps, sample_cols, qc_cols, log_transform=True)}"
+)
+print(
+    f"4 components: {dc.cpca_centroid(df_corrected_4comps, sample_cols, qc_cols, log_transform=True)}"
+)
 
 # %% [markdown]
 # According to this, the CPCA method with three principal components is most favourable
