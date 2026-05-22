@@ -248,10 +248,12 @@ data_path = (
     "refs/heads/main/"
 )
 df = pd.read_excel(
-    "../../example_data/aradopsis_seedling_lipids/kehelpannala_AnArabidopsisLipid_seedling.xlsx"
+    "../../example_data/aradopsis_seedling_lipids/kehelpannala_AnArabidopsisLipid_seedling.xlsx",
+    index_col=0,
 )
 sample_order = pd.read_csv(
-    "../../example_data/aradopsis_seedling_lipids/seedling_art_sample_order.csv"
+    "../../example_data/aradopsis_seedling_lipids/seedling_art_sample_order.csv",
+    index_col=0,
 )
 
 # %%
@@ -423,7 +425,8 @@ plot_loess_example_curve(
 # %%
 # Load data
 df = pd.read_csv(
-    "../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled_imputed.csv"
+    "../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled_imputed.csv",
+    index_col=0,
 )
 
 # Define sample columns and qc columns
@@ -435,8 +438,6 @@ for col in collist:
         sample_cols.append(col)
     elif col.startswith("QC"):
         qc_cols.append(col)
-
-# %%
 df
 
 # %% [markdown]
