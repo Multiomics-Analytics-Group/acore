@@ -18,11 +18,14 @@
 #
 
 # %% [markdown]
-# Within-batch correction of metabolomics data. This script shows how to correct for
+# Within-batch correction of metabolomics data. This notebook shows how to correct for
 # instrumental drift based on pooled QC data samples.
 
 # %% [markdown]
 # ## 1. LOESS smoothing-based drift correction
+
+# %% [markdown]
+# First, let's load our packages, including acore.
 
 # %% tags=["hide-output"]
 # %pip install acore
@@ -242,29 +245,40 @@ def pca_for_cpca_drift(
 # %% [markdown]
 # ### Load in data
 
+# %% [markdown]
+# We will use some example data that can be found in this repo.
+
 # %%
 data_path = (
     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
     "refs/heads/main/"
 )
-df = pd.read_excel(
-    "../../example_data/aradopsis_seedling_lipids/kehelpannala_AnArabidopsisLipid_seedling.xlsx",
-    index_col=0,
-)
-sample_order = pd.read_csv(
-    "../../example_data/aradopsis_seedling_lipids/seedling_art_sample_order.csv",
+
+df = pd.read_csv(
+    "../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled_imputed.csv",
     index_col=0,
 )
 
-# %%
+# %% [markdown]
+# This is what the data frame, an intensity table, looks like.
+
+# %% tags=["hide-inputs"]
 df
 
 # %% [markdown]
-# We also have (artificial) data that has the order in which our samples were run. This
-# information is crucial for the drift correction algorithm.
+# We also have data that contains the order in which our samples were run. This
+# information is crucial for the drift correction algorithm; it cannot be performed without it.
+#
+# The data needs to contain the columns "File Name" and "Sample ID", referring to the name of the sample and the index of the sample, meaning the order in which the samples were run.
+#
+# Note: If you do not have metadata that contains the order in which samples and QCs were run, you can use the second method explained in this notebook, CPCA (scroll down).
 
 # %%
-sample_order.sort_values("Sample ID")
+sample_order = pd.read_csv("../../example_data/DidacMauricio_hilic/DidacMauricio_hilic_pos_injectionorder.csv")
+sample_order["File Name"] = sample_order["SampleName"]
+sample_order["Sample ID"] = sample_order["injectionOrder"]
+
+sample_order
 
 # %% [markdown]
 # ### Run drift correction with LOESS smoothing
@@ -279,54 +293,33 @@ sample_order.sort_values("Sample ID")
 # Before the function estimation and correction, the data can filtered, to remove
 # features that have too many missing values in the QC samples.
 
-# %%
-# First, we can create a dictionary for our sample names, ordering them into groups, to
-# make the upcoming function call easier.
-
-data_groups = {
-    "SD1": ["Sd1_1", "Sd1_2", "Sd1_3", "Sd1_4", "Sd1_5", "Sd1_6"],
-    "SD2": [
-        "Sd2_1",
-        "Sd2_2",
-        "Sd2_3",
-        "Sd2_4",
-        "Sd2_5",
-        "Sd2_6",
-        "Sd2_7",
-        "Sd2_8",
-        "Sd2_9",
-    ],
-    "SD3": [
-        "Sd3-1",
-        "Sd3-2",
-        "Sd3-3",
-        "Sd3-4",
-        "Sd3-5",
-        "Sd3-6",
-        "Sd3-7",
-        "Sd3-8",
-        "Sd3-9",
-    ],
-    "QC": [
-        "PBQC_Sd_1",
-        "PBQC_Sd_2",
-        "PBQC_Sd_3",
-        "PBQC_Sd_4",
-        "PBQC_Sd_5",
-        "PBQC_Sd_6",
-    ],
-}
+# %% [markdown]
+# First, we can create a dictionary for our sample names, ordering them into groups, to make the upcoming function call easier.
 
 # %%
-# Separate groups
-sample_cols = data_groups["SD1"] + data_groups["SD2"] + data_groups["SD3"]
-qc_cols = data_groups["QC"]
-
-# Create a sub-df consisting only of the interesting columns, omitting metadata.
-df_dc = df[sample_cols + qc_cols]
+column_list = list(df.columns.values)
+sample_cols = []
+qc_cols = []
+for col in column_list:
+    if col.startswith("AAA"):
+        sample_cols.append(col)
+    elif col.startswith("QC"):
+        qc_cols.append(col)
 
 # %% [markdown]
-# Now we can run the drift correction.
+# Now, are sample column names are summarised in the sample_cols variable. Here is a preview of them:
+
+# %% tags=["hide-input"]
+sample_cols
+
+# %% [markdown]
+# Our columns corresponding to QC data are saved in the qc_cols variable. Here is a preview of them:
+
+# %% tags=["hide-input"]
+qc_cols
+
+# %% [markdown]
+# Now we can run the drift correction, using the acore run_loess_drift_correction function.
 
 # %%
 corrected_df, correction_info = dc.run_loess_drift_correction(
@@ -338,25 +331,21 @@ corrected_df, correction_info = dc.run_loess_drift_correction(
     filter_percent=0.5,
 )
 
-### Explanation of the parameters chosen
-# - feature_name_col = the name of the column containing feature names, if there is one.
-#   This information is used for logging and showing outputs, it's not required for the
+# %% [markdown]
+# Explanation of the parameters chosen:
+#  - feature_name_col = the name of the column containing feature names, if there is one.
+#    This information is used for logging and showing outputs, it's not required for the
 #   functioning of the method. Here, there is no feature name column available, so
 #   "None" is used.
 # - filter_percent =  the minimum percentage of values that must be present for this
-#   feature to be retained. If the percentage of non-missing is below this, the feature
-#   will be filtered out. If this parameter is set to "None", no filtering will be done.
-# - print_logs = whether there should be an output for the logs of the function. Like
-#   verbose.
+#   feature to be retained. If the percentage of non-missing is below this, the feature   will be filtered out. If this parameter is set to "None", no filtering will be done.
+#
 
 # %% [markdown]
 # Now we can inspect our results. First, the corrected output dataframe.
 
-# %%
+# %% tags=["hide-input"]
 corrected_df
-
-# %%
-df
 
 # %% [markdown]
 # We can also look further into the correction_info object, to see the parameters that
@@ -377,7 +366,7 @@ correction_info[200]
 # %%
 plot_loess_example_curve(
     df=df,
-    feature_idx=5,
+    feature_idx=300,
     sample_cols=sample_cols,
     qc_cols=qc_cols,
     sample_order=sample_order,
@@ -396,7 +385,7 @@ plot_loess_example_curve(
 # %%
 plot_loess_example_curve(
     df=df,
-    feature_idx=5,
+    feature_idx=300,
     sample_cols=sample_cols,
     qc_cols=qc_cols,
     sample_order=sample_order,
@@ -536,10 +525,10 @@ pca_for_cpca_drift(
 # QC points to them, to objectively decide which number of n_comps is most favourable.
 
 # %%
-dc.cpca_centroid(df_corrected, sample_cols, qc_cols, log_transform=True)
-dc.cpca_centroid(df_corrected_2comps, sample_cols, qc_cols, log_transform=True)
-dc.cpca_centroid(df_corrected_3comps, sample_cols, qc_cols, log_transform=True)
-dc.cpca_centroid(df_corrected_4comps, sample_cols, qc_cols, log_transform=True)
+print(f"1 component: {dc.cpca_centroid(df_corrected, sample_cols, qc_cols, log_transform=True)}")
+print(f"2 components: {dc.cpca_centroid(df_corrected_2comps, sample_cols, qc_cols, log_transform=True)}")
+print(f"3 components: {dc.cpca_centroid(df_corrected_3comps, sample_cols, qc_cols, log_transform=True)}")
+print(f"4 components: {dc.cpca_centroid(df_corrected_4comps, sample_cols, qc_cols, log_transform=True)}")
 
 # %% [markdown]
 # According to this, the CPCA method with three principal components is most favourable
