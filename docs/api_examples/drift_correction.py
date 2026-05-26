@@ -275,7 +275,7 @@ df
 # were run.
 #
 # Note: If you do not have metadata that contains the order in which samples and QCs
-# were run, you can use the second method explained in this notebook, 
+# were run, you can use the second method explained in this notebook,
 # [CPCA](#common-principal-components-analysis-based-drift-correction).
 
 # %%
@@ -327,7 +327,7 @@ sample_cols
 qc_cols
 
 # %% [markdown]
-# Now we can run the drift correction, using the acore run_loess_drift_correction 
+# Now we can run the drift correction, using the acore run_loess_drift_correction
 # function.
 
 # %%
@@ -347,7 +347,7 @@ corrected_df, correction_info = dc.run_loess_drift_correction(
 #    for the functioning of the method. Here, there is no feature name column available,
 #    so `None` is used.
 # - `filter_percent` is  the minimum percentage of values that must be present for this
-#   feature to be retained. If the percentage of non-missing is below this, the feature  
+#   feature to be retained. If the percentage of non-missing is below this, the feature
 #   will be filtered out. If this parameter is set to "None", no filtering will be done.
 #
 
