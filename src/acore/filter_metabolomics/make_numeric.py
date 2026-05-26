@@ -4,7 +4,11 @@ an average and replacing the range with it.
 
 """
 
+import logging
+
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 
 def parse_average(value):
@@ -32,7 +36,7 @@ def parse_average(value):
         return float(value)
     # If it's a string with underscore, split and average
 
-    if "_" in value:
+    if isinstance(value, str) and "_" in value:
         parts = value.split("_")
         try:
             nums = [float(p) for p in parts]
@@ -77,8 +81,10 @@ def convert_to_numeric(
             # Check for NAs that remain
             num_na = df[col].isna().sum()
             if num_na > 0:
-                print(f"Column '{col}' has {num_na} NaN values after conversion")
+                logger.info(f"Column '{col}' has {num_na} NaN values after conversion")
             else:
-                print(f"Column {col} has been converted successfully, no NaN values.")
+                logger.info(
+                    f"Column {col} has been converted successfully, no NaN values."
+                )
 
     return df
