@@ -59,6 +59,8 @@
       * [`run_umap()`](acore.exploratory_analysis.md#acore.exploratory_analysis.run_umap)
     * [acore.filter_metabolomics package](acore.filter_metabolomics.md)
       * [`filter_mz_rt()`](acore.filter_metabolomics.md#acore.filter_metabolomics.filter_mz_rt)
+      * [`filter_biological_relevance()`](acore.filter_metabolomics.md#acore.filter_metabolomics.filter_biological_relevance)
+      * [`convert_to_numeric()`](acore.filter_metabolomics.md#acore.filter_metabolomics.convert_to_numeric)
       * [Submodules](acore.filter_metabolomics.md#submodules)
       * [acore.filter_metabolomics.filter_data module](acore.filter_metabolomics.md#module-acore.filter_metabolomics.filter_data)
       * [acore.filter_metabolomics.make_numeric module](acore.filter_metabolomics.md#module-acore.filter_metabolomics.make_numeric)
