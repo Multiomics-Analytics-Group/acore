@@ -54,7 +54,6 @@ def test_filter_mz_rt():
         rt_dead_volume=0.8,
         mz_decimals=(0.3, 0.9),
         mz_low=600,
-        save_removed=True,
     )
 
     # Convert to dict for easy assertion
