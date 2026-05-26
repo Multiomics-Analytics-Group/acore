@@ -96,7 +96,6 @@ filtered_data, removed_features = fm.filter_mz_rt(
     mz_decimals=(0.3, 0.9),
     mz_low=600,
     rt_dead_volume=0.8,
-    save_removed=True,
 )
 
 
