@@ -26,7 +26,8 @@ import pandas as pd
 from acore import filter_metabolomics as fm
 
 # %% [markdown]
-# Load in your data. We will use an example data set from MetaboLights. It can be found in example_data/MTBLS733.
+# Load in your data. We will use an example data set from MetaboLights. It
+# can be found in example_data/MTBLS733.
 
 # %%
 data_path = (
@@ -36,10 +37,10 @@ data_path = (
 data_path = "../../example_data/MTBLS733/MetaboLights-MTBLS733-Nextflow4MS-DIAL.csv"
 data = pd.read_csv(data_path)
 
-# %% [markdown]
-# Let's look more into the data.
+# %% Let's look more into the data. [markdown]
 #
-# - The .dtypes function shows which columns are numeric (int64, float64) and which are categorical (object, bool).
+# - The .dtypes function shows which columns are numeric (int64, float64) and which are
+#   categorical (object, bool).
 #
 # - The .describe function summarises the numeric columns.
 #
@@ -59,7 +60,8 @@ for colname in data.columns.values.tolist():
 
 
 # %% [markdown]
-# It looks like the m/z and RT columns contain categorical data, so we need to change that first before we can filter.
+# It looks like the m/z and RT columns contain categorical data, so we
+# need to change that first before we can filter.
 
 # %%
 numeric_data = fm.make_numeric.convert_to_numeric(
@@ -74,11 +76,15 @@ numeric_data
 numeric_data.dtypes
 
 # %% [markdown]
-# Now the Mz and RT columns are dtype float, so they are numeric. That means that now we can proceed with filtering.
+# Now the Mz and RT columns are dtype float, so they are numeric. That means that now we
+# can proceed with filtering.
 #
-# We want to filter based on RT, by removing all features that have a RT below a certain time, to exclude features that are at the dead volume. In our case, the cut-off will be 0.8 minutes.
+# We want to filter based on RT, by removing all features that have a RT below a certain
+# time, to exclude features that are at the dead volume. In our case, the cut-off will
+# be 0.8 minutes.
 #
-# We also want to filter out features that have an m/z value below 600 and have m/z decimals between 0.3 and 0.9.
+# We also want to filter out features that have an m/z value below 600 and have m/z
+# decimals between 0.3 and 0.9.
 #
 # We can do both of those things with the filtering function.
 
@@ -102,7 +108,8 @@ print(
     f"There are {data.shape[0]} rows and {data.shape[1]} columns in our original data."
 )
 print(
-    f"There are {filtered_data.shape[0]} rows and {filtered_data.shape[1]} columns in our filtered data."
+    f"There are {filtered_data.shape[0]} rows and"
+    f" {filtered_data.shape[1]} columns in our filtered data."
 )
 print(f"{removed_features.shape[0]} features were removed from our data.")
 
@@ -116,7 +123,8 @@ nbr = removed_features[
 ].shape
 print(f"{bdv[0]} features were removed because they were below the dead volume.")
 print(
-    f"{nbr[0]} features were removed because they were deemed not biologically relevant (m/z-based filtering)."
+    f"{nbr[0]} features were removed "
+    "because they were deemed not biologically relevant (m/z-based filtering)."
 )
 
 removed_features

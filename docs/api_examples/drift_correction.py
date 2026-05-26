@@ -72,7 +72,7 @@ def plot_loess_example_curve(
     qc_cols : list of str
         Column names of the pooled QC samples.
     sample_order : pd.DataFrame
-        Injection-order table with columns "File Name" and "Sample ID"
+        Injection-order table with columns `File Name` and `Sample ID`
         (integer run order).
     feature_name_col : str, optional
         Column in df containing feature identifiers used in the plot title.
@@ -267,11 +267,16 @@ df
 
 # %% [markdown]
 # We also have data that contains the order in which our samples were run. This
-# information is crucial for the drift correction algorithm; it cannot be performed without it.
+# information is crucial for the drift correction algorithm; it cannot be performed
+# without it.
 #
-# The data needs to contain the columns "File Name" and "Sample ID", referring to the name of the sample and the index of the sample, meaning the order in which the samples were run.
+# The data needs to contain the columns `File Name` and `Sample ID`, referring to the
+# name of the sample and the index of the sample, meaning the order in which the samples
+# were run.
 #
-# Note: If you do not have metadata that contains the order in which samples and QCs were run, you can use the second method explained in this notebook, CPCA (scroll down).
+# Note: If you do not have metadata that contains the order in which samples and QCs
+# were run, you can use the second method explained in this notebook, 
+# [CPCA](#common-principal-components-analysis-based-drift-correction).
 
 # %%
 sample_order = pd.read_csv(
@@ -296,7 +301,8 @@ sample_order
 # features that have too many missing values in the QC samples.
 
 # %% [markdown]
-# First, we can create a dictionary for our sample names, ordering them into groups, to make the upcoming function call easier.
+# First, we can create a dictionary for our sample names, ordering them
+# into groups, to make the upcoming function call easier.
 
 # %%
 column_list = list(df.columns.values)
@@ -309,19 +315,20 @@ for col in column_list:
         qc_cols.append(col)
 
 # %% [markdown]
-# Now, are sample column names are summarised in the sample_cols variable. Here is a preview of them:
+# Now, are sample column names are summarised in the sample_cols variable:
 
-# %% tags=["hide-input"]
+# %% tags=["hide-output"]
 sample_cols
 
 # %% [markdown]
-# Our columns corresponding to QC data are saved in the qc_cols variable. Here is a preview of them:
+# Our columns corresponding to QC data are saved in the qc_cols variable:
 
-# %% tags=["hide-input"]
+# %% tags=["hide-output"]
 qc_cols
 
 # %% [markdown]
-# Now we can run the drift correction, using the acore run_loess_drift_correction function.
+# Now we can run the drift correction, using the acore run_loess_drift_correction 
+# function.
 
 # %%
 corrected_df, correction_info = dc.run_loess_drift_correction(
@@ -335,12 +342,13 @@ corrected_df, correction_info = dc.run_loess_drift_correction(
 
 # %% [markdown]
 # Explanation of the parameters chosen:
-#  - feature_name_col = the name of the column containing feature names, if there is one.
-#    This information is used for logging and showing outputs, it's not required for the
-#   functioning of the method. Here, there is no feature name column available, so
-#   "None" is used.
-# - filter_percent =  the minimum percentage of values that must be present for this
-#   feature to be retained. If the percentage of non-missing is below this, the feature   will be filtered out. If this parameter is set to "None", no filtering will be done.
+#  - `feature_name_col` is the name of the column containing feature names, if there is
+#    one. This information is used for logging and showing outputs, it's not required
+#    for the functioning of the method. Here, there is no feature name column available,
+#    so `None` is used.
+# - `filter_percent` is  the minimum percentage of values that must be present for this
+#   feature to be retained. If the percentage of non-missing is below this, the feature  
+#   will be filtered out. If this parameter is set to "None", no filtering will be done.
 #
 
 # %% [markdown]
@@ -355,8 +363,8 @@ corrected_df
 #
 # For example, let's check the parameters used for the 200th feature.
 
-# %%
-correction_info[200]
+# %% tags=["hide-output"]
+print(correction_info[200])
 
 # %% [markdown]
 # ### Plot an example curve for one feature
@@ -365,7 +373,7 @@ correction_info[200]
 # We can also plot an example feature, to see how the values have changed
 # and what the LOESS curve would look like for the data of this feature.
 
-# %%
+# %% tags=["hide-input"]
 plot_loess_example_curve(
     df=df,
     feature_idx=300,
@@ -384,7 +392,7 @@ plot_loess_example_curve(
 # Alternative values for the smoothing parameter alpha can be tested by adding the
 # argument "alpha" and choosing a value, just like in the example below.
 
-# %%
+# %% tags=["hide-input"]
 plot_loess_example_curve(
     df=df,
     feature_idx=300,
@@ -439,7 +447,7 @@ df
 #
 # We need to check for missing values in both the sample columns and the QC columns.
 
-# %%
+# %% tags=["hide-input"]
 if dc.check_missingness(df, sample_cols + qc_cols):
     print(
         "There are missing values. Consider imputing first, or use LOESS drift correction instead."
@@ -453,7 +461,7 @@ else:
 # Now that we know we can proceed, let's visualise our data before drift correction with
 # a PCA.
 
-# %%
+# %% tags=["hide-input"]
 pca_for_cpca_drift(
     df,
     sample_cols,  # list of col names, OR dict {group_name: [col names]}
@@ -474,7 +482,7 @@ df_corrected = dc.run_cpca_drift_correction(df, sample_cols, qc_cols, n_comps=1)
 # %% [markdown]
 # Let's plot the corrected data.
 
-# %%
+# %% tags=["hide-input"]
 pca_for_cpca_drift(  # This function is defined in the beginning of this notebook.
     df_corrected,
     sample_cols,  # list of col names, OR dict {group_name: [col names]}
@@ -491,12 +499,10 @@ pca_for_cpca_drift(  # This function is defined in the beginning of this noteboo
 
 # %%
 df_corrected_2comps = dc.run_cpca_drift_correction(df, sample_cols, qc_cols, n_comps=2)
-
 df_corrected_3comps = dc.run_cpca_drift_correction(df, sample_cols, qc_cols, n_comps=3)
-
 df_corrected_4comps = dc.run_cpca_drift_correction(df, sample_cols, qc_cols, n_comps=4)
 
-# %%
+# %% tags=["hide-input"]
 pca_for_cpca_drift(
     df_corrected_2comps,
     sample_cols,  # list of col names, OR dict {group_name: [col names]}
@@ -526,7 +532,7 @@ pca_for_cpca_drift(
 # Let's calculate the centroids of the QC principal components and the distance of the
 # QC points to them, to objectively decide which number of n_comps is most favourable.
 
-# %%
+# %% tags=["hide-input"]
 print(
     f"1 component: {dc.cpca_centroid(df_corrected, sample_cols, qc_cols, log_transform=True)}"
 )
