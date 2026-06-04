@@ -30,20 +30,29 @@
 # %pip install acore
 
 
+import matplotlib.pyplot as plt
+
 # %%
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from acore import filter_metabolomics as fm
 
 
 # %% tags=["hide-input"]
-def plot_tic(data, blanks, threshold=0.5, figsize=(8, 4), color='#3266ad', ylim=None, title=f"TIC: Blanks intensities before filtering"):
-    data.loc[blanks].sum(axis=1).plot(kind='bar', figsize=figsize, color=color)
+def plot_tic(
+    data,
+    blanks,
+    threshold=0.5,
+    figsize=(8, 4),
+    color="#3266ad",
+    ylim=None,
+    title="TIC: Blanks intensities before filtering",
+):
+    data.loc[blanks].sum(axis=1).plot(kind="bar", figsize=figsize, color=color)
 
     plt.title(title)
-    plt.xlabel('Sample')
-    plt.ylabel('Total intensity')
+    plt.xlabel("Sample")
+    plt.ylabel("Total intensity")
     plt.xticks(rotation=0)
     if ylim is not None:
         plt.ylim(0, ylim)
@@ -62,7 +71,9 @@ data_path = (
     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
     "refs/heads/main/"
 )
-data_path = "../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled.csv"
+data_path = (
+    "../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled.csv"
+)
 data_original = pd.read_csv(data_path)
 
 # %% [markdown]
@@ -76,7 +87,9 @@ data_original
 
 # %%
 data = data_original.T
-data = data.drop(["Qidx", "SOIidx", "rtmed", "start", "end", "mass", "MaxInt", "formula", "anot"])
+data = data.drop(
+    ["Qidx", "SOIidx", "rtmed", "start", "end", "mass", "MaxInt", "formula", "anot"]
+)
 
 
 # %% [markdown]
@@ -92,16 +105,66 @@ data
 # Let's also define a variable that contains all the names of samples that belong to each group. This will make it easier later-on to perform filtering based on different variables, controls or conditions.
 
 # %%
-blanks = ['Bf_1', 'Bf_2', 'Bi_1', 'Bi_2']
-qcs = ['QC_00', 'QC_01', 'QC_02', 'QC_03', 'QC_04', 'QC_05', 'QC_06', 'QC_07', 'QC_08', 'QC_09', 'QC_10', 'QC_11', 'QC_12', 'QC_13', 'QC_14', 'QC_15', 'QC_16', 'QC_17', 'QC_18', 'QC_19', 'QC_20', 'QC_21', 'QC_22', 'QC_23', 'QC_24', 'QC_25', 'QC_26', 'QC_27', 'QC_28', 'QC_29', 'QC_30', 'QC_31', 'QC_32', 'QC_33', 'QC_34', 'QC_35', 'QC_36', 'QC_37', 'QC_38', 'QC_39', 'QC_40', 'QC_41', 'QC_42', 'QC_43', 'QC_44']
+blanks = ["Bf_1", "Bf_2", "Bi_1", "Bi_2"]
+qcs = [
+    "QC_00",
+    "QC_01",
+    "QC_02",
+    "QC_03",
+    "QC_04",
+    "QC_05",
+    "QC_06",
+    "QC_07",
+    "QC_08",
+    "QC_09",
+    "QC_10",
+    "QC_11",
+    "QC_12",
+    "QC_13",
+    "QC_14",
+    "QC_15",
+    "QC_16",
+    "QC_17",
+    "QC_18",
+    "QC_19",
+    "QC_20",
+    "QC_21",
+    "QC_22",
+    "QC_23",
+    "QC_24",
+    "QC_25",
+    "QC_26",
+    "QC_27",
+    "QC_28",
+    "QC_29",
+    "QC_30",
+    "QC_31",
+    "QC_32",
+    "QC_33",
+    "QC_34",
+    "QC_35",
+    "QC_36",
+    "QC_37",
+    "QC_38",
+    "QC_39",
+    "QC_40",
+    "QC_41",
+    "QC_42",
+    "QC_43",
+    "QC_44",
+]
 samples = [label for label in data.index if label not in blanks and label not in qcs]
 
-print(f"Checking... all group labels accounted for in our lists: {(len(blanks)+len(qcs)+len(samples)) == len(data.index)}")
+print(
+    f"Checking... all group labels accounted for in our lists: {(len(blanks)+len(qcs)+len(samples)) == len(data.index)}"
+)
 
-samples_a = [idx for idx in data.index if idx.startswith('AAA')]
-samples_p = [idx for idx in data.index if idx.startswith('P')]
+samples_a = [idx for idx in data.index if idx.startswith("AAA")]
+samples_p = [idx for idx in data.index if idx.startswith("P")]
 
-print(f"Checking... all sample names accounted for in our lists: {(len(samples_a)+len(samples_p)) == len(samples)}")
+print(
+    f"Checking... all sample names accounted for in our lists: {(len(samples_a)+len(samples_p)) == len(samples)}"
+)
 
 
 # %% [markdown]
@@ -110,9 +173,9 @@ print(f"Checking... all sample names accounted for in our lists: {(len(samples_a
 # %% [markdown]
 # ### Filtering by missingness: 80%-rule
 #
-# The 80%-rule filters out features with too much missingness from our data. More specifically, if for a feature, more than 20% of the data is missing across all sample columns, it will be removed, so features must have at least 80% of data present in order to be retained. 
+# The 80%-rule filters out features with too much missingness from our data. More specifically, if for a feature, more than 20% of the data is missing across all sample columns, it will be removed, so features must have at least 80% of data present in order to be retained.
 #
-# Although it is called the 80%-rule, other thresholds can be used to make the filtering more lenient or more stringent. 
+# Although it is called the 80%-rule, other thresholds can be used to make the filtering more lenient or more stringent.
 #
 # In acore, this method is implemented in the function filter_by_missingness. Let's first have a look at our function.
 #
@@ -127,13 +190,13 @@ help(fm.filter_by_missingness)
 # %%
 # 80% rule classic with percent=80
 data_missingness_80_classic = fm.filter_by_missingness(
-    data,
-    method = "classic",
-    samples=samples
+    data, method="classic", samples=samples
 )
 
 # %%
-print(f"Num. of features before filtering: {data.shape[1]}\nNum. of features after filtering: {data_missingness_80_classic.shape[1]}")
+print(
+    f"Num. of features before filtering: {data.shape[1]}\nNum. of features after filtering: {data_missingness_80_classic.shape[1]}"
+)
 print(f"Difference: {data.shape[1]-data_missingness_80_classic.shape[1]} rows removed.")
 
 # %% [markdown]
@@ -142,32 +205,35 @@ print(f"Difference: {data.shape[1]-data_missingness_80_classic.shape[1]} rows re
 # %%
 # 80% rule classic with percent=60
 data_missingness_60_classic = fm.filter_by_missingness(
-    data,
-    percent = 60,
-    method = "classic",
-    samples=samples
+    data, percent=60, method="classic", samples=samples
 )
 
 # %%
-print(f"Num. of features before filtering: {data.shape[1]}\nNum. of features after filtering: {data_missingness_60_classic.shape[1]}")
+print(
+    f"Num. of features before filtering: {data.shape[1]}\nNum. of features after filtering: {data_missingness_60_classic.shape[1]}"
+)
 print(f"Difference: {data.shape[1]-data_missingness_60_classic.shape[1]} rows removed.")
 
 # %% [markdown]
-# Now we can also use the modified 80%-rule. This method divides into sample groups and computes the missingness per group. A feature survives filtering if it meets the missingness requirements in at least one group. 
+# Now we can also use the modified 80%-rule. This method divides into sample groups and computes the missingness per group. A feature survives filtering if it meets the missingness requirements in at least one group.
 # The idea behind this is making sure that if there is "the perfect biomarker" in our data, meaning that there is a feature which shows up very strongly in one experimental condition and not at all in another condition, it is not filtered out.
 
 # %%
 # 80% rule modified with percent=80
 data_missingness_80_modified = fm.filter_by_missingness(
     data,
-    percent = 80,
-    method = "modified",
-    groups = {"samples_a":samples_a, "samples_p": samples_p}
+    percent=80,
+    method="modified",
+    groups={"samples_a": samples_a, "samples_p": samples_p},
 )
 
 # %%
-print(f"Num. of features after filtering with classic method: {data_missingness_80_classic.shape[1]}\nNum. of features after filtering with modified method: {data_missingness_80_modified.shape[1]}")
-print(f"Difference: {data_missingness_80_modified.shape[1]-data_missingness_80_classic.shape[1]} more rows retained than when using classic method.")
+print(
+    f"Num. of features after filtering with classic method: {data_missingness_80_classic.shape[1]}\nNum. of features after filtering with modified method: {data_missingness_80_modified.shape[1]}"
+)
+print(
+    f"Difference: {data_missingness_80_modified.shape[1]-data_missingness_80_classic.shape[1]} more rows retained than when using classic method."
+)
 
 # %% [markdown]
 # ### Filtering by Coefficient of Variation (CV)
@@ -175,7 +241,7 @@ print(f"Difference: {data_missingness_80_modified.shape[1]-data_missingness_80_c
 # %% [markdown]
 # In this method, we are taking into account the quality control (QC) samples.
 #
-# The CV of the biological samples and the CV of the QC samples are calculated per feature, and if for a given feature the CV of the QC samples is larger than that of the biological samples, it is removed. 
+# The CV of the biological samples and the CV of the QC samples are calculated per feature, and if for a given feature the CV of the QC samples is larger than that of the biological samples, it is removed.
 #
 # In acore, this method is implemented in the function filter_cv.
 
@@ -183,14 +249,12 @@ print(f"Difference: {data_missingness_80_modified.shape[1]-data_missingness_80_c
 help(fm.filter_cv)
 
 # %%
-data_cv = fm.filter_cv(
-    data = data,
-    samples = samples,
-    qcs = qcs
-)
+data_cv = fm.filter_cv(data=data, samples=samples, qcs=qcs)
 
 # %%
-print(f"Num. of features before filtering: {data.shape[1]}\nNum. of features after filtering: {data_cv.shape[1]}")
+print(
+    f"Num. of features before filtering: {data.shape[1]}\nNum. of features after filtering: {data_cv.shape[1]}"
+)
 print(f"Difference: {data.shape[1]-data_cv.shape[1]} rows removed.")
 
 # %% [markdown]
@@ -206,24 +270,18 @@ help(fm.filter_blanks)
 # First, we can check whether there is signal in the blanks samples. For that, we can plot their total ion chromatograms (TICs).
 
 # %%
-plot_tic(
-    data,
-    blanks,
-    ylim=150000000
-)
+plot_tic(data, blanks, ylim=150000000)
 
 # %% [markdown]
 # There is some signal. So we can run the blanks filtering, filtering out features with the default threshold.
 
 # %%
-data_blanks_05 = fm.filter_blanks(
-    data,
-    blanks = blanks,
-    samples = samples
-)
+data_blanks_05 = fm.filter_blanks(data, blanks=blanks, samples=samples)
 
 # %%
-print(f"Num. of features before filtering: {data.shape[1]}\nNum. of features after filtering: {data_blanks_05.shape[1]}")
+print(
+    f"Num. of features before filtering: {data.shape[1]}\nNum. of features after filtering: {data_blanks_05.shape[1]}"
+)
 print(f"Difference: {data.shape[1]-data_blanks_05.shape[1]} rows removed.")
 
 # %%
@@ -231,7 +289,7 @@ plot_tic(
     data_blanks_05,
     blanks,
     ylim=150000000,
-    title="TIC: Blanks intensities after filtering with threshold=0.5"
+    title="TIC: Blanks intensities after filtering with threshold=0.5",
 )
 
 # %% [markdown]
@@ -239,15 +297,12 @@ plot_tic(
 # Now we can check how it looks if we use a different parameter than the default.
 
 # %%
-data_blanks_01 = fm.filter_blanks(
-    data,
-    blanks = blanks,
-    samples = samples,
-    threshold = 0.1
-)
+data_blanks_01 = fm.filter_blanks(data, blanks=blanks, samples=samples, threshold=0.1)
 
 # %%
-print(f"Num. of features before filtering: {data.shape[1]}\nNum. of features after filtering: {data_blanks_01.shape[1]}")
+print(
+    f"Num. of features before filtering: {data.shape[1]}\nNum. of features after filtering: {data_blanks_01.shape[1]}"
+)
 print(f"Difference: {data.shape[1]-data_blanks_01.shape[1]} rows removed.")
 
 # %%
@@ -255,7 +310,7 @@ plot_tic(
     data_blanks_01,
     blanks,
     ylim=150000000,
-    title="TIC: Blanks intensities after filtering with threshold=0.1"
+    title="TIC: Blanks intensities after filtering with threshold=0.1",
 )
 
 # %% [markdown]
