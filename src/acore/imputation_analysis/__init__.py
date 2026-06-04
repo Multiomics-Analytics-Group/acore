@@ -250,3 +250,111 @@ replacemissingfromgaussian.html
         df.loc[r, missing_mask] = fill_values
 
     return df
+
+
+def imputation_zeros(
+    data: pd.DataFrame,
+    on_cols: Optional[Iterable[str]] = None,
+    drop_cols: Optional[Iterable[str]] = None,
+):
+    """
+    Replace missing values with zeros.
+
+    :param data: DataFrame with samples as rows and features as columns.
+    :param list on_cols: columns to fill with zeros. If None, all numeric columns are filled.
+                         Non-numeric columns in "on_cols" are skipped with a warning.
+    :param list drop_cols: columns to permanently drop before imputation. If a column
+                           appears in both "on_cols" and "drop_cols" it will be dropped
+                           and a warning is emitted.
+    :return: DataFrame with missing values in the target columns replaced by zero.
+
+    Example:
+
+        result = imputation_zeros(data, on_cols=['featureA', 'featureB'])
+    """
+    df = data.copy()
+
+    if drop_cols is not None and drop_cols:
+        if on_cols is not None:
+            overlap = set(on_cols) & set(drop_cols)
+            if overlap:
+                logger.warning(
+                    f"Columns in both on_cols and drop_cols will be dropped, not filled: {overlap}"
+                )
+        df = df.drop(columns=drop_cols)
+
+    if on_cols is None:
+        for col in df.columns:
+            if df[col].dtype == object:
+                df[col] = pd.to_numeric(df[col], errors="ignore")
+        cols = df.select_dtypes(include="number").columns.tolist()
+    else:
+        cols = [c for c in on_cols if c in df.columns]
+        non_numeric = [c for c in cols if not pd.api.types.is_numeric_dtype(df[c])]
+        if non_numeric:
+            logger.warning(
+                f"Non-numeric columns skipped in zero imputation: {non_numeric}"
+            )
+        cols = [c for c in cols if c not in non_numeric]
+        print(cols)
+
+    df[cols] = df[cols].fillna(0)
+
+    return df
+
+
+def imputation_half_minimum(
+    data: pd.DataFrame,
+    on_cols: Optional[Iterable[str]] = None,
+    drop_cols: Optional[Iterable[str]] = None,
+):
+    """
+    Replace missing values with half the per-column minimum of observed values.
+
+    :param data: DataFrame with samples as rows and features as columns.
+    :param list on_cols: columns to impute. If None, all numeric columns are used.
+                         Non-numeric columns in ``on_cols`` are skipped with a warning.
+    :param list drop_cols: columns to permanently drop before imputation. If a column
+                           appears in both ``on_cols`` and ``drop_cols`` it will be dropped
+                           and a warning is emitted.
+    :return: DataFrame with missing values replaced by half the per-column minimum.
+
+    Example::
+
+        result = imputation_half_minimum(data, on_cols=['featureA', 'featureB'])
+    """
+    df = data.copy()
+
+    if drop_cols is not None and drop_cols:
+        if on_cols is not None:
+            overlap = set(on_cols) & set(drop_cols)
+            if overlap:
+                logger.warning(
+                    f"Columns in both on_cols and drop_cols will be dropped, not filled: {overlap}"
+                )
+        df = df.drop(columns=drop_cols)
+
+    if on_cols is None:
+        for col in df.columns:
+            if df[col].dtype == object:
+                df[col] = pd.to_numeric(df[col], errors="ignore")
+        cols = df.select_dtypes(include="number").columns.tolist()
+    else:
+        cols = [c for c in on_cols if c in df.columns]
+        non_numeric = [c for c in cols if not pd.api.types.is_numeric_dtype(df[c])]
+        if non_numeric:
+            logger.warning(
+                f"Non-numeric columns skipped in half-minimum imputation: {non_numeric}"
+            )
+        cols = [c for c in cols if c not in non_numeric]
+
+    all_nan = [c for c in cols if df[c].isna().all()]
+    if all_nan:
+        logger.warning(
+            f"Columns with no observed values cannot be imputed and are left as NaN: {all_nan}"
+        )
+
+    half_col_mins = df[cols].min(axis=0, skipna=True) / 2
+    df[cols] = df[cols].fillna(half_col_mins)
+
+    return df
