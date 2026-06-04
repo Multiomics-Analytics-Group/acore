@@ -2,168 +2,69 @@
 
 Module for filtering metabolomics feature table.
 
-### filter_mz_rt(df: DataFrame, rt_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'Average Rt(min)', mz_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'Average Mz', mz_decimals: [tuple](https://docs.python.org/3/library/stdtypes.html#tuple) = (0.3, 0.9), mz_low: [int](https://docs.python.org/3/library/functions.html#int) = 600, rt_dead_volume: [float](https://docs.python.org/3/library/functions.html#float) = 0.8) → [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)
+### filter_by_missingness(data: DataFrame, percent: [int](https://docs.python.org/3/library/functions.html#int) = 80, method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'classic', samples: [list](https://docs.python.org/3/library/stdtypes.html#list) | [None](https://docs.python.org/3/library/constants.html#None) = None, groups: [dict](https://docs.python.org/3/library/stdtypes.html#dict) | [None](https://docs.python.org/3/library/constants.html#None) = None)
 
-This function filters rows from a data frame based on retention time and m/z and
-checks data types. If specified by the user, it evaluates each row on whether there
-are NaN values and prints a statement for each.
+Implementation of the 80%-rule.
 
-Data types:
-: Tries to convert mz and RT columns to numeric.
-
-M/z filtering:
-: Filters out all features that have m/z decimals in a given range that are below
-  a certain m/z value.
-
-RT filtering:
-: Filters out all features that have RT below a certain number (in minutes).
-  Corresponds to dead volume.
-
-If save_removed==True, the removed features are saved to a separate DataFrame that
-also contains a new column, “RemovalReason”, indicating the removal reason.
-
-Usage: filter_mz_rt(df, rt_col, mz_col, mz_decimals. mz_low, rt_dead_volume)
+If there are more than 20% of values (intensities) missing for one feature,
+this feature will get removed.
 
 * **Parameters:**
-  * **df** (*pd.DataFrame*) – Input DataFrame.
-  * **rt_col** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Column name for retention time.
-  * **mz_col** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Column name for m/z values.
-  * **mz_decimals** ([*tuple*](https://docs.python.org/3/library/stdtypes.html#tuple)) – optional - Tuple specifying fractional range to filter for
-    m/z (e.g., (0.3, 0.9)).
-  * **mz_low** ([*int*](https://docs.python.org/3/library/functions.html#int)) – optional - Threshold for low m/z values.
-  * **rt_dead_volume** ([*float*](https://docs.python.org/3/library/functions.html#float)) – optional - Minimum retention time threshold.
-  * **save_removed** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – default=True - Whether to return a DataFrame containing
-    removed rows.
-* **Return tuple:**
-  Tuple containing the cleaned DataFrame and optionally the removed
-  features DataFrame. - If save_removed=True: (cleaned_df, removed_df) - If
-  save_removed=False: (cleaned_df, None)
+  * **data** – pandas data frame with samples as rows and features as columns.
+  * **percent** – percentage chosen for filtering. The default is 80%, meaning that
+    at least 80% of the values of every feature need to be present in order for this
+    feature to be retained.
+  * **method** – str that is either “classic” or “modified”.
+    If “classic”, all samples are considered for each feature. Samples are taken from the
+    “samples” parameter and should not include controls or QCs.
+    If “modified”, conditions are separated when calculating the percentage of
+    missingness. A feature is retained if at least 
 
-### filter_biological_relevance(df: DataFrame, rt_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'Average Rt(min)', mz_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'Average Mz', mz_decimals: [tuple](https://docs.python.org/3/library/stdtypes.html#tuple) = None, mz_low: [int](https://docs.python.org/3/library/functions.html#int) = None, rt_dead_volume: [float](https://docs.python.org/3/library/functions.html#float) = None, save_removed: [bool](https://docs.python.org/3/library/functions.html#bool) = True) → [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)
+    ```
+    `
+    ```
 
-Cleans a DataFrame by filtering rows based on retention time and m/z.
+    percent\`% of its values are
+    present in ANY one condition. This allows condition-specific features (e.g.
+    present in treatment but missing in control) to be retained.
+  * **samples** – list of row index labels (from data.index) identifying the biological
+    sample rows, e.g. [“S1”, “S2”, “S3”]. Required when method=”classic”. Should not
+    include control or QC samples.
+  * **groups** – dict mapping condition name to a list of row index labels belonging to
+    that condition, e.g. {“treatment”: [“S1”, “S2”, “S3”], “control”: [“S4”, “S5”, “S6”]}.
+    Required when method=”modified”, ignored otherwise. QCs and blanks are excluded
+    by simply not including them in the dict.
 
-M/z filtering:
-: Filters out all features that have m/z decimals in a given range that are below
-  a certain m/z value.
+### filter_cv(data: DataFrame, samples: [list](https://docs.python.org/3/library/stdtypes.html#list), qcs: [list](https://docs.python.org/3/library/stdtypes.html#list))
 
-RT filtering:
-: Filters out all features that have RT below a certain number (in minutes). Corresponds
-  to dead volume.
+Implementation of coefficient of variation (CV)-based filtering.
 
-If save_removed==True, the removed features are saved to a separate DataFrame that also
-contains a new column, “RemovalReason”, indicating the removal reason.
-
-Usage: filter_biological_relevance(df, rt_col, mz_col, mz_decimals, mz_low, rt_dead_volume, save_removed)
-
-* **Parameters:**
-  * **df** (*pd.DataFrame*) – Input DataFrame.
-  * **rt_col** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Column name for retention time.
-  * **mz_col** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Column name for m/z values.
-  * **mz_decimals** ([*tuple*](https://docs.python.org/3/library/stdtypes.html#tuple)) – optional - Tuple specifying fractional range to filter for m/z (e.g., (0.3, 0.9)).
-  * **mz_low** ([*int*](https://docs.python.org/3/library/functions.html#int)) – optional - Threshold for low m/z values.
-  * **rt_dead_volume** ([*float*](https://docs.python.org/3/library/functions.html#float)) – optional - Minimum retention time threshold.
-  * **save_removed** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – default=True - Whether to return a DataFrame containing removed rows.
-* **Return tuple:**
-  Tuple containing the cleaned DataFrame and optionally the removed features DataFrame.
-  - If save_removed=True: (cleaned_df, removed_df)
-  - If save_removed=False: (cleaned_df, None)
-
-### convert_to_numeric(df: DataFrame, cols_to_convert: [list](https://docs.python.org/3/library/stdtypes.html#list), print_na_summary: [bool](https://docs.python.org/3/library/functions.html#bool) = False) → DataFrame
-
-Converts specified columns of a DataFrame to numeric values using parse_average.
-
-For each column in cols_to_convert, this function applies parse_average, which:
-- Converts numeric strings to floats.
-- Averages values in strings containing two numbers separated by an underscore.
-- Converts invalid values to NaN.
-
-After conversion, it prints a summary for each column indicating how many NaN
-values remain.
-
-Usage: convert_to_numeric(df, cols_to_convert, print_na_summary=False)
+Features are removed when their CV across biological samples is smaller than their CV
+across QC samples, meaning analytical noise exceeds biological variability.
 
 * **Parameters:**
-  * **df** (*pd.DataFrame*) – Input DataFrame to be modified in place.
-  * **cols_to_convert** ( *(*[*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* [*str*](https://docs.python.org/3/library/stdtypes.html#str) *)*) – List of column names to convert to numeric
+  * **data** – pandas data frame with samples as rows and features as columns.
+  * **samples** – list of row index labels (from data.index) identifying the
+    biological sample rows, e.g. [“S1”, “S2”, “S3”].
+  * **qcs** – list of row index labels identifying the quality control rows,
+    e.g. [“QC1”, “QC2”, “QC3”].
 
-:return pd.DataFrame:Converted DataFrame.
+### filter_blanks(data: DataFrame, blanks: [list](https://docs.python.org/3/library/stdtypes.html#list), samples: [list](https://docs.python.org/3/library/stdtypes.html#list), threshold: [float](https://docs.python.org/3/library/functions.html#float) = 0.5)
 
-## Submodules
+Filtering out features that show up in the blanks control.
 
-## acore.filter_metabolomics.filter_data module
-
-Functions for filtering metabolomics feature table by biologically relevant features.
-
-### filter_biological_relevance(df: DataFrame, rt_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'Average Rt(min)', mz_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'Average Mz', mz_decimals: [tuple](https://docs.python.org/3/library/stdtypes.html#tuple) = None, mz_low: [int](https://docs.python.org/3/library/functions.html#int) = None, rt_dead_volume: [float](https://docs.python.org/3/library/functions.html#float) = None, save_removed: [bool](https://docs.python.org/3/library/functions.html#bool) = True) → [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)
-
-Cleans a DataFrame by filtering rows based on retention time and m/z.
-
-M/z filtering:
-: Filters out all features that have m/z decimals in a given range that are below
-  a certain m/z value.
-
-RT filtering:
-: Filters out all features that have RT below a certain number (in minutes). Corresponds
-  to dead volume.
-
-If save_removed==True, the removed features are saved to a separate DataFrame that also
-contains a new column, “RemovalReason”, indicating the removal reason.
-
-Usage: filter_biological_relevance(df, rt_col, mz_col, mz_decimals, mz_low, rt_dead_volume, save_removed)
+The mean intensity scores are calculated per-feature within the
+blanks and the samples. If the ratio of a feature’s mean intensity in the blanks
+to its mean intensity in the samples is more than half (per default), the feature
+gets removed. It is assumed to have potentially contaminated the instrument, so
+the measurements in the samples cannot be trusted to be biologically relevant.
 
 * **Parameters:**
-  * **df** (*pd.DataFrame*) – Input DataFrame.
-  * **rt_col** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Column name for retention time.
-  * **mz_col** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Column name for m/z values.
-  * **mz_decimals** ([*tuple*](https://docs.python.org/3/library/stdtypes.html#tuple)) – optional - Tuple specifying fractional range to filter for m/z (e.g., (0.3, 0.9)).
-  * **mz_low** ([*int*](https://docs.python.org/3/library/functions.html#int)) – optional - Threshold for low m/z values.
-  * **rt_dead_volume** ([*float*](https://docs.python.org/3/library/functions.html#float)) – optional - Minimum retention time threshold.
-  * **save_removed** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – default=True - Whether to return a DataFrame containing removed rows.
-* **Return tuple:**
-  Tuple containing the cleaned DataFrame and optionally the removed features DataFrame.
-  - If save_removed=True: (cleaned_df, removed_df)
-  - If save_removed=False: (cleaned_df, None)
-
-## acore.filter_metabolomics.make_numeric module
-
-Cleans data frame to make selected columns numeric.
-Deals with entries that display two values (e.g. 3.564_3.745) by computing
-an average and replacing the range with it.
-
-### parse_average(value)
-
-Converts a string or numeric value to a float.
-
-If the input value contains an underscore (‘_’), it splits the string into
-two numbers and returns their average. If the input is already numeric, it
-returns it as a float. If conversion fails, returns None.
-
-Usage: parse_average(value)
-
-* **Parameters:**
-  **value** ( *(*[*int*](https://docs.python.org/3/library/functions.html#int) *,* [*float*](https://docs.python.org/3/library/functions.html#float) *, or* [*str*](https://docs.python.org/3/library/stdtypes.html#str) *)*) – Input value to convert. Can be numeric or a string containing
-  a single number or two numbers separated by an underscore.
-* **Return (float or None):**
-  Float representation of the input, the average if two numbers are
-  provided, or None if conversion is not possible.
-
-### convert_to_numeric(df: DataFrame, cols_to_convert: [list](https://docs.python.org/3/library/stdtypes.html#list), print_na_summary: [bool](https://docs.python.org/3/library/functions.html#bool) = False) → DataFrame
-
-Converts specified columns of a DataFrame to numeric values using parse_average.
-
-For each column in cols_to_convert, this function applies parse_average, which:
-- Converts numeric strings to floats.
-- Averages values in strings containing two numbers separated by an underscore.
-- Converts invalid values to NaN.
-
-After conversion, it prints a summary for each column indicating how many NaN
-values remain.
-
-Usage: convert_to_numeric(df, cols_to_convert, print_na_summary=False)
-
-* **Parameters:**
-  * **df** (*pd.DataFrame*) – Input DataFrame to be modified in place.
-  * **cols_to_convert** ( *(*[*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* [*str*](https://docs.python.org/3/library/stdtypes.html#str) *)*) – List of column names to convert to numeric
-
-:return pd.DataFrame:Converted DataFrame.
+  * **data** – pandas DataFrame containing data with samples as rows and features as columns
+  * **blanks** – list of row index labels (from data.index) identifying the blanks
+    measurement rows, e.g. [“Blank1”, “Blank2”]
+  * **samples** – list of row index labels (from data.index) identifying the biological
+    sample rows, e.g. [“S1”, “S2”, “S3”]
+  * **threshold** – optional ratio used as a threshold to determine whether the detected
+    intensities in blanks are too high in comparison with sample intensities.
+    Defaults to 0.5, but can be adjusted based on data and stringency.
