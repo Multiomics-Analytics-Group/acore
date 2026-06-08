@@ -1,9 +1,10 @@
 """Module for filtering metabolomics feature table."""
 
+from __future__ import annotations
+
 import logging
 
 import pandas as pd
-from __future__ import annotations
 
 logger = logging.getLogger(__name__)
 
