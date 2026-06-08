@@ -255,6 +255,7 @@ replacemissingfromgaussian.html
 def imputation_zeros(
     data: pd.DataFrame,
     on_cols: Optional[Iterable[str]] = None,
+    on_rows: Optional[Iterable[str]] = None,
     drop_cols: Optional[Iterable[str]] = None,
 ):
     """
@@ -263,6 +264,9 @@ def imputation_zeros(
     :param data: DataFrame with samples as rows and features as columns.
     :param list on_cols: columns to fill with zeros. If None, all numeric columns are filled.
                          Non-numeric columns in "on_cols" are skipped with a warning.
+    :param list on_rows: row index labels to restrict imputation to. If None, all rows are
+                         imputed. Useful for imputing only a subset of samples (e.g. QCs,
+                         blanks, controls) while leaving others untouched.
     :param list drop_cols: columns to permanently drop before imputation. If a column
                            appears in both "on_cols" and "drop_cols" it will be dropped
                            and a warning is emitted.
@@ -271,6 +275,7 @@ def imputation_zeros(
     Example:
 
         result = imputation_zeros(data, on_cols=['featureA', 'featureB'])
+        result = imputation_zeros(data, on_rows=['QC1', 'QC2', 'blank1'])
     """
     df = data.copy()
 
@@ -296,9 +301,12 @@ def imputation_zeros(
                 f"Non-numeric columns skipped in zero imputation: {non_numeric}"
             )
         cols = [c for c in cols if c not in non_numeric]
-        print(cols)
 
-    df[cols] = df[cols].fillna(0)
+    if on_rows is not None:
+        rows = [r for r in on_rows if r in df.index]
+        df.loc[rows, cols] = df.loc[rows, cols].fillna(0)
+    else:
+        df[cols] = df[cols].fillna(0)
 
     return df
 
@@ -306,6 +314,7 @@ def imputation_zeros(
 def imputation_half_minimum(
     data: pd.DataFrame,
     on_cols: Optional[Iterable[str]] = None,
+    on_rows: Optional[Iterable[str]] = None,
     drop_cols: Optional[Iterable[str]] = None,
 ):
     """
@@ -314,6 +323,10 @@ def imputation_half_minimum(
     :param data: DataFrame with samples as rows and features as columns.
     :param list on_cols: columns to impute. If None, all numeric columns are used.
                          Non-numeric columns in ``on_cols`` are skipped with a warning.
+    :param list on_rows: row index labels to restrict imputation to. If None, all rows are
+                         imputed. When provided, the per-column minimum is also computed
+                         from only those rows, so each subset gets its own half-minimum
+                         (e.g. blanks are imputed with half the blank-minimum).
     :param list drop_cols: columns to permanently drop before imputation. If a column
                            appears in both ``on_cols`` and ``drop_cols`` it will be dropped
                            and a warning is emitted.
@@ -322,6 +335,7 @@ def imputation_half_minimum(
     Example::
 
         result = imputation_half_minimum(data, on_cols=['featureA', 'featureB'])
+        result = imputation_half_minimum(data, on_rows=['blank1', 'blank2'])
     """
     df = data.copy()
 
@@ -348,13 +362,23 @@ def imputation_half_minimum(
             )
         cols = [c for c in cols if c not in non_numeric]
 
-    all_nan = [c for c in cols if df[c].isna().all()]
-    if all_nan:
-        logger.warning(
-            f"Columns with no observed values cannot be imputed and are left as NaN: {all_nan}"
-        )
-
-    half_col_mins = df[cols].min(axis=0, skipna=True) / 2
-    df[cols] = df[cols].fillna(half_col_mins)
+    if on_rows is not None:
+        rows = [r for r in on_rows if r in df.index]
+        subset = df.loc[rows, cols]
+        all_nan = [c for c in cols if subset[c].isna().all()]
+        if all_nan:
+            logger.warning(
+                f"Columns with no observed values in the selected rows cannot be imputed and are left as NaN: {all_nan}"
+            )
+        half_col_mins = subset.min(axis=0, skipna=True) / 2
+        df.loc[rows, cols] = subset.fillna(half_col_mins)
+    else:
+        all_nan = [c for c in cols if df[c].isna().all()]
+        if all_nan:
+            logger.warning(
+                f"Columns with no observed values cannot be imputed and are left as NaN: {all_nan}"
+            )
+        half_col_mins = df[cols].min(axis=0, skipna=True) / 2
+        df[cols] = df[cols].fillna(half_col_mins)
 
     return df
