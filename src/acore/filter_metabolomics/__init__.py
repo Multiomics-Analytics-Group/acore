@@ -3,6 +3,7 @@
 import logging
 
 import pandas as pd
+from __future__ import annotations
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +88,9 @@ def filter_cv(
         return df.std() / df.mean()
 
     if len(qcs) < 2:
-        logger.warning("You need more than 1 QC sample to apply this filtering method.")
+        raise ValueError(
+            f"You need more than 1 QC sample to apply this filtering method. Got {len(qcs)}."
+        )
 
     df = data.copy()
     cv_qcs = cv(df.loc[qcs])
