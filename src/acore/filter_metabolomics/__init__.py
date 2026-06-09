@@ -3,7 +3,6 @@
 import logging
 
 import pandas as pd
-import scipy
 
 logger = logging.getLogger(__name__)
 

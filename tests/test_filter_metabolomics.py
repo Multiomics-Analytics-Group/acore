@@ -259,4 +259,3 @@ def test_filter_blanks_preserves_all_rows():
     )
     assert list(result.index) == ["S1", "S2", "Blank1", "Blank2"]
     assert result.equals(expected)
-
