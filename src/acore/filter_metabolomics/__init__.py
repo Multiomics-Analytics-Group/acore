@@ -3,6 +3,7 @@
 import logging
 
 import pandas as pd
+import scipy
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +85,7 @@ def filter_cv(
     """
 
     def cv(df):
+        # scipy.stats.variation(df, ddof=1)
         return df.std() / df.mean()
 
     if len(qcs) < 2:
