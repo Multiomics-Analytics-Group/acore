@@ -60,7 +60,7 @@ nb_execution_raise_on_error = True
 # Rendering
 nb_merge_streams = True
 # maximum execution time per cell in seconds
-nb_execution_timeout = 120
+nb_execution_timeout = 240
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
