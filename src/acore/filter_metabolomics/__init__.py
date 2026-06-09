@@ -1,4 +1,5 @@
 """Module for filtering metabolomics feature table."""
+
 import logging
 
 import pandas as pd
