@@ -2,7 +2,7 @@
 
 Module for filtering metabolomics feature table.
 
-### filter_by_missingness(data: DataFrame, percent: [int](https://docs.python.org/3/library/functions.html#int) = 80, method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'classic', samples: [list](https://docs.python.org/3/library/stdtypes.html#list) | [None](https://docs.python.org/3/library/constants.html#None) = None, groups: [dict](https://docs.python.org/3/library/stdtypes.html#dict) | [None](https://docs.python.org/3/library/constants.html#None) = None)
+### filter_by_missingness(data: DataFrame, percent: [int](https://docs.python.org/3/library/functions.html#int) = 80, method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'classic', samples: [list](https://docs.python.org/3/library/stdtypes.html#list) | [None](https://docs.python.org/3/library/constants.html#None) = None, groups: [dict](https://docs.python.org/3/library/stdtypes.html#dict) | [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None)
 
 Implementation of the 80%-rule.
 
@@ -30,10 +30,17 @@ this feature will get removed.
   * **samples** – list of row index labels (from data.index) identifying the biological
     sample rows, e.g. [“S1”, “S2”, “S3”]. Required when method=”classic”. Should not
     include control or QC samples.
-  * **groups** – dict mapping condition name to a list of row index labels belonging to
-    that condition, e.g. {“treatment”: [“S1”, “S2”, “S3”], “control”: [“S4”, “S5”, “S6”]}.
-    Required when method=”modified”, ignored otherwise. QCs and blanks are excluded
-    by simply not including them in the dict.
+  * **groups** – 
+
+    required when method=”modified”, ignored otherwise. Can be either:
+    - A dict mapping condition name to a list of row index labels belonging to that
+      condition, e.g. `{"treatment": ["S1", "S2", "S3"], "control": ["S4", "S5"]}`.
+      QCs and blanks are excluded by simply not including them in the dict.
+    - A str naming a column in `data` whose values define the condition for each row,
+      e.g. `"sample collection"` if rows carry values like `"Berlin"`, `"Copenhagen"`, `"London"`.
+      Every unique value in that column becomes a condition group containing all rows
+      with that value. When using this option, make sure to not include any other metadata
+      columns in the data frame.
 
 ### filter_cv(data: DataFrame, samples: [list](https://docs.python.org/3/library/stdtypes.html#list), qcs: [list](https://docs.python.org/3/library/stdtypes.html#list))
 
