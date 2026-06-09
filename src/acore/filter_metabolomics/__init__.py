@@ -6,6 +6,8 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
+__all__ = ["filter_by_missingness", "filter_cv", "filter_blanks"]
+
 
 def filter_by_missingness(
     data: pd.DataFrame,
@@ -28,7 +30,7 @@ def filter_by_missingness(
         If "classic", all samples are considered for each feature. Samples are taken from the
         "samples" parameter and should not include controls or QCs.
         If "modified", conditions are separated when calculating the percentage of
-        missingness. A feature is retained if at least `percent`% of its values are
+        missingness. A feature is retained if at least ``percent``% of its values are
         present in ANY one condition. This allows condition-specific features (e.g.
         present in treatment but missing in control) to be retained.
     :param samples: list of row index labels (from data.index) identifying the biological
@@ -40,7 +42,7 @@ def filter_by_missingness(
         by simply not including them in the dict.
     """
     if not 0 < percent < 100:
-        logger.warning(
+        raise ValueError(
             f"The percentage value must be between 0 and 100. User input: {percent}"
         )
 
@@ -105,7 +107,7 @@ def filter_cv(
         )
 
     cv_samples = cv(df.loc[samples])
-    keep = cv_samples >= cv_qcs
+    keep = (cv_samples >= cv_qcs) & ~undefined
 
     return df.loc[:, keep]
 

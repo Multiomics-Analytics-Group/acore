@@ -39,7 +39,6 @@ from acore import filter_metabolomics as fm
 def plot_tic(
     data,
     blanks,
-    threshold=0.5,
     figsize=(8, 4),
     color="#3266ad",
     ylim=None,
@@ -162,7 +161,9 @@ print(
     f"Num. of features before filtering: {data.shape[1]}\n"
     f"Num. of features after filtering: {data_missingness_80_classic.shape[1]}"
 )
-print(f"Difference: {data.shape[1]-data_missingness_80_classic.shape[1]} rows removed.")
+print(
+    f"Difference: {data.shape[1]-data_missingness_80_classic.shape[1]} features removed."
+)
 
 # %% [markdown]
 # Let's see how our filtering changes when we apply a different threshold.
@@ -178,7 +179,9 @@ print(
     f"Num. of features before filtering: {data.shape[1]}\n"
     f"Num. of features after filtering: {data_missingness_60_classic.shape[1]}"
 )
-print(f"Difference: {data.shape[1]-data_missingness_60_classic.shape[1]} rows removed.")
+print(
+    f"Difference: {data.shape[1]-data_missingness_60_classic.shape[1]} features removed."
+)
 
 # %% [markdown]
 # Now we can also use the modified 80%-rule. This method divides into sample groups and
@@ -213,10 +216,10 @@ print(
 
 # %% [markdown]
 # Features retained by the modified 80%-rule but removed by the classic rule —
-# shown in the original data (samples only, no metadata). It shows that the featues
+# shown in the original data (samples only, no metadata). It shows that the features
 # retained additionally have in one group missingness above 20%.
 #
-# > note that the group sizes are unqual in this example.
+# > note that the group sizes are unequal in this example.
 
 # %% tags=["hide-input"]
 (
@@ -271,14 +274,14 @@ print(
     f"Num. of features before filtering: {data.shape[1]}\n"
     f"Num. of features after filtering: {data_cv.shape[1]}"
 )
-print(f"Difference: {data.shape[1]-data_cv.shape[1]} rows removed.")
+print(f"Difference: {data.shape[1]-data_cv.shape[1]} features removed.")
 
 # %% [markdown]
 # ### Filtering with the blanks control: Removing background noise and carryover
 #
 # This method removes features that have too high intensities in the blanks control,
 # measured by the ratio of the mean intensity in blanks to the mean intensity in
-# biological samples. The default threshold is 0.5, meaning that a featuer gets removed if
+# biological samples. The default threshold is 0.5, meaning that a feature gets removed if
 # its mean intensity in the blanks is half as large as its mean intensity in samples.
 #
 
@@ -304,7 +307,7 @@ print(
     f"Num. of features before filtering: {data.shape[1]}\n"
     f"Num. of features after filtering: {data_blanks_05.shape[1]}"
 )
-print(f"Difference: {data.shape[1]-data_blanks_05.shape[1]} rows removed.")
+print(f"Difference: {data.shape[1]-data_blanks_05.shape[1]} features removed.")
 
 plot_tic(
     data_blanks_05,
@@ -325,7 +328,7 @@ print(
     f"Num. of features before filtering: {data.shape[1]}\n"
     f"Num. of features after filtering: {data_blanks_01.shape[1]}"
 )
-print(f"Difference: {data.shape[1]-data_blanks_01.shape[1]} rows removed.")
+print(f"Difference: {data.shape[1]-data_blanks_01.shape[1]} features removed.")
 
 plot_tic(
     data_blanks_01,
@@ -335,5 +338,5 @@ plot_tic(
 )
 
 # %% [markdown]
-# This threshold is more stringent so less features are retained which also
+# This threshold is more stringent so fewer features are retained which also
 # means that there is less total intensity in the blanks samples.
