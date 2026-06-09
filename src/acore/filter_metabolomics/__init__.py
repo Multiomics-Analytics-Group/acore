@@ -14,7 +14,7 @@ def filter_by_missingness(
     percent: int = 80,
     method: str = "classic",
     samples: list | None = None,
-    groups: dict | None = None,
+    groups: dict | str | None = None,
 ):
     """
     Implementation of the 80%-rule.
@@ -36,10 +36,16 @@ def filter_by_missingness(
     :param samples: list of row index labels (from data.index) identifying the biological
         sample rows, e.g. ["S1", "S2", "S3"]. Required when method="classic". Should not
         include control or QC samples.
-    :param groups: dict mapping condition name to a list of row index labels belonging to
-        that condition, e.g. {"treatment": ["S1", "S2", "S3"], "control": ["S4", "S5", "S6"]}.
-        Required when method="modified", ignored otherwise. QCs and blanks are excluded
-        by simply not including them in the dict.
+    :param groups: required when method="modified", ignored otherwise. Can be either:
+
+        - A dict mapping condition name to a list of row index labels belonging to that
+          condition, e.g. ``{"treatment": ["S1", "S2", "S3"], "control": ["S4", "S5"]}``.
+          QCs and blanks are excluded by simply not including them in the dict.
+        - A str naming a column in ``data`` whose values define the condition for each row,
+          e.g. ``"sample collection"`` if rows carry values like ``"Berlin"``, ``"Copenhagen"``, ``"London"``.
+          Every unique value in that column becomes a condition group containing all rows
+          with that value. When using this option, make sure to not include any other metadata
+          columns in the data frame.
     """
     if not 0 < percent < 100:
         raise ValueError(
@@ -57,6 +63,12 @@ def filter_by_missingness(
     elif method == "modified":
         if groups is None:
             raise ValueError("groups must be provided when method='modified'")
+        if isinstance(groups, str):
+            col = df[groups]
+            groups = {
+                condition: list(col[col == condition].index)
+                for condition in col.unique()
+            }
         keep = pd.Series(False, index=df.columns)
         for condition_samples in groups.values():
             group_data = df.loc[condition_samples]
