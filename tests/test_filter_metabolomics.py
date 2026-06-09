@@ -96,6 +96,36 @@ def test_filter_by_missingness_modified_keeps_condition_specific_features():
     assert result.equals(expected)
 
 
+def test_filter_by_missingness_modified_keeps_condition_specific_features_groups_str():
+    # F1 only present in treatment, F2 only in control, F3 in neither
+    data = pd.DataFrame(
+        {
+            "F1": [1.0, 1.0, 1.0, float("nan"), float("nan")],
+            "F2": [float("nan"), float("nan"), float("nan"), 1.0, 1.0],
+            "F3": [
+                float("nan"),
+                float("nan"),
+                float("nan"),
+                float("nan"),
+                float("nan"),
+            ],
+            "group": ["treatment", "treatment", "treatment", "control", "control"],
+        },
+        index=["S1", "S2", "S3", "S4", "S5"],
+    )
+    result = filter_by_missingness(data, percent=80, method="modified", groups="group")
+    expected = pd.DataFrame(
+        {
+            "F1": [1.0, 1.0, 1.0, float("nan"), float("nan")],
+            "F2": [float("nan"), float("nan"), float("nan"), 1.0, 1.0],
+            "group": ["treatment", "treatment", "treatment", "control", "control"],
+        },
+        index=["S1", "S2", "S3", "S4", "S5"],
+    )
+    assert set(result.columns) == {"F1", "F2", "group"}
+    assert result.equals(expected)
+
+
 def test_filter_by_missingness_raises_without_samples_for_classic():
     data = pd.DataFrame({"F1": [1.0, 2.0]}, index=["S1", "S2"])
     with pytest.raises(ValueError, match="sample names must be provided"):
