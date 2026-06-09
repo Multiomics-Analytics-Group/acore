@@ -18,9 +18,12 @@
 :caption: API usage examples
 :hidden:
 
+api_examples/filter_metabolomics
 api_examples/normalization_analysis
 api_examples/batch_correction
+api_examples/imputation
 api_examples/exploratory_analysis
+api_examples/drift_correction
 api_examples/diff_regulation_anova_ttest_two_groups
 api_examples/diff_regulation_anova_more_than_two_groups
 api_examples/diff_regulation_ancova
@@ -65,6 +68,7 @@ reference/acore
 :caption: MISC:
 :hidden:
 
+llms
 contributing
 authors
 history
