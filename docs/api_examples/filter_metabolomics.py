@@ -105,53 +105,7 @@ data
 
 # %% tags=["hide-input"]
 blanks = ["Bf_1", "Bf_2", "Bi_1", "Bi_2"]
-qcs = [
-    "QC_00",
-    "QC_01",
-    "QC_02",
-    "QC_03",
-    "QC_04",
-    "QC_05",
-    "QC_06",
-    "QC_07",
-    "QC_08",
-    "QC_09",
-    "QC_10",
-    "QC_11",
-    "QC_12",
-    "QC_13",
-    "QC_14",
-    "QC_15",
-    "QC_16",
-    "QC_17",
-    "QC_18",
-    "QC_19",
-    "QC_20",
-    "QC_21",
-    "QC_22",
-    "QC_23",
-    "QC_24",
-    "QC_25",
-    "QC_26",
-    "QC_27",
-    "QC_28",
-    "QC_29",
-    "QC_30",
-    "QC_31",
-    "QC_32",
-    "QC_33",
-    "QC_34",
-    "QC_35",
-    "QC_36",
-    "QC_37",
-    "QC_38",
-    "QC_39",
-    "QC_40",
-    "QC_41",
-    "QC_42",
-    "QC_43",
-    "QC_44",
-]
+qcs = [idx for idx in data.index if idx.startswith("QC_")]
 samples = [label for label in data.index if label not in blanks and label not in qcs]
 
 print(
@@ -167,6 +121,11 @@ print(
     f"{(len(samples_a)+len(samples_p)) == len(samples)}"
 )
 
+s_groups = pd.Series("other", index=data.index)
+s_groups.loc[samples_a] = "samples_a"
+s_groups.loc[samples_p] = "samples_p"
+s_groups.loc[qcs] = "qcs"
+s_groups.loc[blanks] = "blanks"
 
 # %% [markdown]
 # Now we are ready to filter our data.
@@ -244,11 +203,50 @@ print(
     f"{data_missingness_80_classic.shape[1]}\nNum. of features after filtering "
     f"with modified method: {data_missingness_80_modified.shape[1]}"
 )
-print(
-    "Difference:"
-    f" {data_missingness_80_modified.shape[1]-data_missingness_80_classic.shape[1]}"
-    " more rows retained than when using classic method."
+features_only_in_modified = data_missingness_80_modified.columns.difference(
+    data_missingness_80_classic.columns
 )
+print(
+    f"Difference: {len(features_only_in_modified)} more features retained"
+    " by modified method than classic method."
+)
+
+# %% [markdown]
+# Features retained by the modified 80%-rule but removed by the classic rule —
+# shown in the original data (samples only, no metadata). It shows that the featues
+# retained additionally have in one group missingness above 20%.
+#
+# > note that the group sizes are unqual in this example.
+
+# %% tags=["hide-input"]
+(
+    data[features_only_in_modified]
+    .notna()
+    .groupby(s_groups)
+    .mean()
+    .T[["samples_a", "samples_p"]]
+    .sort_values(by=["samples_a", "samples_p"], ascending=[False, True])
+    .assign(
+        global_average=lambda df: df.multiply(
+            s_groups.value_counts().loc[["samples_a", "samples_p"]], axis="columns"
+        )
+        .sum(axis=1)
+        .div(s_groups.value_counts().loc[["samples_a", "samples_p"]].sum())
+    )
+)
+
+# %%
+counts = s_groups.value_counts()
+(
+    data[features_only_in_modified]
+    .notna()
+    .groupby(s_groups)
+    .mean()
+    .multiply(counts, axis="index")  # weight each row by its group size
+    .sum()
+    .div(counts.sum())  # normalize to get overall weighted mean
+)
+
 
 # %% [markdown]
 # ### Filtering by Coefficient of Variation (CV)
