@@ -21,10 +21,10 @@ this feature will get removed.
     missingness. A feature is retained if at least 
 
     ```
-    `
+    ``
     ```
 
-    percent\`% of its values are
+    percent\`\`% of its values are
     present in ANY one condition. This allows condition-specific features (e.g.
     present in treatment but missing in control) to be retained.
   * **samples** – list of row index labels (from data.index) identifying the biological
