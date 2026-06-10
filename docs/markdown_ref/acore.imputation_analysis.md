@@ -97,3 +97,50 @@ result = imputation_normal_distribution(data,
             shift = 1.8, nstd = 0.3
 )
 ```
+
+### imputation_zeros(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, drop_cols: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None)
+
+Replace missing values with zeros.
+
+* **Parameters:**
+  * **data** – DataFrame with samples as rows and features as columns.
+  * **on_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – columns to fill with zeros. If None, all numeric columns are filled.
+    Non-numeric columns in “on_cols” are skipped with a warning.
+  * **on_rows** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
+    imputed. Useful for imputing only a subset of samples (e.g. QCs,
+    blanks, controls) while leaving others untouched.
+  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
+    appears in both “on_cols” and “drop_cols” it will be dropped
+    and a warning is emitted.
+* **Returns:**
+  DataFrame with missing values in the target columns replaced by zero.
+
+### Example
+
+result = imputation_zeros(data, on_cols=[‘featureA’, ‘featureB’])
+result = imputation_zeros(data, on_rows=[‘QC1’, ‘QC2’, ‘blank1’])
+
+### imputation_half_minimum(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, drop_cols: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None)
+
+Replace missing values with half the per-column minimum of observed values.
+
+* **Parameters:**
+  * **data** – DataFrame with samples as rows and features as columns.
+  * **on_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – columns to impute. If None, all numeric columns are used.
+    Non-numeric columns in `on_cols` are skipped with a warning.
+  * **on_rows** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
+    imputed. When provided, the per-column minimum is also computed
+    from only those rows, so each subset gets its own half-minimum
+    (e.g. blanks are imputed with half the blank-minimum).
+  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
+    appears in both `on_cols` and `drop_cols` it will be dropped
+    and a warning is emitted.
+* **Returns:**
+  DataFrame with missing values replaced by half the per-column minimum.
+
+Example:
+
+```default
+result = imputation_half_minimum(data, on_cols=['featureA', 'featureB'])
+result = imputation_half_minimum(data, on_rows=['blank1', 'blank2'])
+```
