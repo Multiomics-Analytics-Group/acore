@@ -14,24 +14,26 @@ from sklearn.preprocessing import StandardScaler
 logger = logging.getLogger(__name__)
 
 
-def check_missingness(df: pd.DataFrame, cols_to_check: list):
+def check_missingness(df: pd.DataFrame, rows_to_check: list):
     """
-    This function checks for NAs in the data frame inside some user-provided columns.
+    This function checks for NAs in the data frame inside some user-provided rows.
 
     Parameters
     ---------
-    df      : features as rows, samples as columns
-    cols_to_check    : list of columns that should be checked for missingness
+    df              : samples as rows, features as columns
+    rows_to_check   : list of rows that should be checked for missingness
 
     Returns
     --------
     Boolean: True if there is missingness, False if there is no missingness.
     """
-    na_counts = df[cols_to_check].isna().sum()
-    na_features = df[cols_to_check].isna().any(axis=1).sum()
+    na_counts = df.loc[rows_to_check].isna().sum()
+    na_features = df.loc[rows_to_check].isna().any(axis=0).sum()
 
-    logger.debug(f"Features (rows) with at least one NA: {na_features} / {len(df)}")
-    logger.debug("Samples (cols) with at least one NA:", na_counts[na_counts > 0])
+    logger.debug(
+        f"Features (cols) with at least one NA: {na_features} / {len(df.columns)}"
+    )
+    logger.debug("Samples (rows) with at least one NA:", na_counts[na_counts > 0])
 
     if na_counts.any():
         return True
@@ -40,7 +42,7 @@ def check_missingness(df: pd.DataFrame, cols_to_check: list):
 
 
 def run_cpca_drift_correction(
-    df: pd.DataFrame, sample_cols, qc_cols, n_comps: int = 1
+    df: pd.DataFrame, sample_rows, qc_rows, n_comps: int = 1
 ) -> pd.DataFrame:
     """
     Corrects technical drift using Common Principal Components Analysis (CPCA).
@@ -48,28 +50,28 @@ def run_cpca_drift_correction(
 
     Parameters
     ----------
-    df          : features as rows, samples as columns
-    sample_cols : list of sample column names
-    qc_cols     : list of QC column names
+    df          : samples as rows, features as columns
+    sample_rows : list of sample row indices
+    qc_rows     : list of QC row indices
     n_comps     : number of common principal components to remove (default 1)
 
     Returns
     -------
-    Full drift-corrected DataFrame with metadata columns preserved.
+    Full input DataFrame with corrected values applied to the intensity rows
+    (sample_rows + qc_rows). Rows outside those arguments are returned unchanged.
     """
-    intensity_cols = sample_cols + qc_cols
-    meta_cols = [c for c in df.columns if c not in intensity_cols]
+    intensity_rows = sample_rows + qc_rows
 
-    X = df[intensity_cols].values.astype(float)
+    X = df.loc[intensity_rows].values.astype(float)  # shape: (n_samples, n_features)
 
     if np.isnan(X).any():
         raise ValueError("NA values present in dataset. Consider imputation first.")
 
-    sample_idx = list(range(len(sample_cols)))
-    qc_idx = list(range(len(sample_cols), len(intensity_cols)))
+    sample_idx = list(range(len(sample_rows)))
+    qc_idx = list(range(len(sample_rows), len(intensity_rows)))
 
     scaler = StandardScaler()
-    Xs = scaler.fit_transform(X.T)  # shape: (samples, features)
+    Xs = scaler.fit_transform(X)  # shape: (n_samples, n_features)
 
     cov_sample = np.cov(Xs[sample_idx], rowvar=False)
     cov_qc = np.cov(Xs[qc_idx], rowvar=False)
@@ -91,43 +93,44 @@ def run_cpca_drift_correction(
     Xs_corrected = Xs - Xs @ W @ W.T
     X_corrected = scaler.inverse_transform(
         Xs_corrected
-    ).T  # back to (features, samples)
+    )  # shape: (n_samples, n_features)
 
-    df_corrected = pd.DataFrame(X_corrected, index=df.index, columns=intensity_cols)
-    return pd.concat([df[meta_cols], df_corrected], axis=1)
+    df_out = df.copy()
+    df_out.loc[intensity_rows] = X_corrected
+    return df_out
 
 
 def cpca_centroid(
     df: pd.DataFrame,
-    sample_cols,  # list of col names, OR dict {group_name: [col names]}
-    qc_cols: list,
+    sample_rows,  # list of row indices, OR dict {group_name: [row indices]}
+    qc_rows: list,
     log_transform: bool = True,
 ):
-    # Normalise sample_cols to a dict
-    if isinstance(sample_cols, list):
-        sample_groups = {"Samples": sample_cols}
+    # Normalise sample_rows to a dict
+    if isinstance(sample_rows, list):
+        sample_groups = {"Samples": sample_rows}
     else:
-        sample_groups = sample_cols
+        sample_groups = sample_rows
 
-    # Build ordered column + label arrays
-    all_cols, labels = [], []
-    for group, cols in sample_groups.items():
-        for c in cols:
-            if c in df.columns:
-                all_cols.append(c)
+    # Build ordered row + label arrays
+    all_rows, labels = [], []
+    for group, rows in sample_groups.items():
+        for r in rows:
+            if r in df.index:
+                all_rows.append(r)
                 labels.append(group)
-    for c in qc_cols:
-        if c in df.columns:
-            all_cols.append(c)
+    for r in qc_rows:
+        if r in df.index:
+            all_rows.append(r)
             labels.append("QC")
 
     # Coerce to numeric, drop features with any NaN
-    X = df[all_cols].apply(pd.to_numeric, errors="coerce").dropna(axis=0)
+    X = df.loc[all_rows].apply(pd.to_numeric, errors="coerce").dropna(axis=1)
 
     if log_transform:
         X = np.log1p(X.clip(lower=0))
 
-    X_scaled = StandardScaler().fit_transform(X.T.values.astype(float))
+    X_scaled = StandardScaler().fit_transform(X.values.astype(float))
 
     pca = PCA(n_components=2)
     coords = pca.fit_transform(X_scaled)
