@@ -18,7 +18,7 @@
 # %% [markdown]
 # In this notebook, we will showcase the acore functions for imputing data which are specific for metabolomics data analysis. Namely, we will go through imputation with zeros and half-minimum imputation.
 #
-# For this, we will use a Diabetes example data set from this paper: [Barranco-Altirriba M et al., 2025](https://doi.org/10.3389/fendo.2025.1706886htt)
+# For this, we will use a Diabetes example data set from this paper: [Barranco-Altirriba M et al., 2025](https://doi.org/10.3389/fendo.2025.1706886)
 #
 # This notebook refers to the [`acore.imputation_analysis`](acore.imputation_analysis) module.
 

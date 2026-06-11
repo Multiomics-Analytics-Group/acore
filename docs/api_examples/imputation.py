@@ -205,7 +205,7 @@ assert omics_and_y_imputed.isna().sum().sum() == 0
 omics_and_y_imputed
 
 # %% [markdown]
-# As we have increased the threshold `cutoff` for the fraction of non-misisng
+# As we have increased the threshold `cutoff` for the fraction of non-missing
 # values per feature, more features will not be imputed and therefore have
 # missing values.
 
@@ -374,7 +374,7 @@ imputation_normal_distribution(
 
 # %% [markdown]
 # Note that using this type of imputation before differential regulation can lead to
-# false positive and negativ results. If values are not due to assumed missing
+# false positive and negative results. If values are not due to assumed missing
 # mechanism (Missing not-at-random due to low abundance), but are due to technical noise,
 # these values should not be replaced.
 #

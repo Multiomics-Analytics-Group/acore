@@ -263,7 +263,7 @@ def imputation_zeros(
 
     :param data: DataFrame with samples as rows and features as columns.
     :param list on_cols: columns to fill with zeros. If `None`, all numeric columns are filled.
-                         Non-numeric columns in "on_cols" are skipped with a warning.
+                         Non-numeric columns in "on_cols" will raise a TypeError.
     :param list on_rows: row index labels to restrict imputation to. If `None`, all rows are
                          imputed. Useful for imputing only a subset of samples (e.g. QCs,
                          blanks, controls) while leaving others untouched.
@@ -322,7 +322,7 @@ def imputation_half_minimum(
 
     :param data: DataFrame with samples as rows and features as columns.
     :param list on_cols: columns to impute. If None, all numeric columns are used.
-                         Non-numeric columns in ``on_cols`` are skipped with a warning.
+                         Non-numeric columns in ``on_cols`` will raise a TypeError.
     :param list on_rows: row index labels to restrict imputation to. If None, all rows are
                          imputed. When provided, the per-column minimum is also computed
                          from only those rows, so each subset gets its own half-minimum
