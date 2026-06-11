@@ -13,19 +13,19 @@ logger = logging.getLogger(__name__)
 
 
 def filter_features_by_qc(
-    df: pd.DataFrame, qc_cols: list, threshold: float = 0.5
+    df: pd.DataFrame, qc_rows: list, threshold: float = 0.5
 ) -> pd.DataFrame:
     """
     Filter features in a DataFrame based on quality control (QC) completeness.
 
-    This function removes rows (features) that do not meet a minimum number of valid
+    This function removes columns (features) that do not meet a minimum number of valid
     (non-missing) QC values. The minimum number of required valid values is computed as
-    `ceil(n_qc * (1 - threshold))`, where `n_qc` is the number of QC columns.
+    `ceil(n_qc * (1 - threshold))`, where `n_qc` is the number of QC rows.
 
     :param pandas.DataFrame df:
-        Input DataFrame containing feature data and QC columns.
-    :param list qc_cols:
-        List of column names corresponding to QC measurements.
+        Input DataFrame with samples as rows and features as columns.
+    :param list qc_rows:
+        List of row indices corresponding to QC samples.
     :param float threshold:
         Fraction (between 0 and 1) indicating the maximum allowed proportion
         of missing QC values per feature. For example, `threshold=0.6` allows
@@ -34,7 +34,7 @@ def filter_features_by_qc(
         Defaults to 0.5.
 
     :returns pandas.DataFrame:
-        Filtered DataFrame containing only rows with sufficient valid QC values.
+        Filtered DataFrame containing only columns with sufficient valid QC values.
 
     :raises ValueError:
         If `threshold` is not between 0 and 1.
@@ -45,15 +45,14 @@ def filter_features_by_qc(
         import numpy as np
 
         df = pd.DataFrame({
-            'feature': ['A', 'B', 'C'],
-            'QC1': [1.0, np.nan, 2.0],
-            'QC2': [np.nan, 3.0, np.nan],
-            'QC3': [4.0, np.nan, 6.0]
-        })
+            'A': [1.0, np.nan, 2.0],
+            'B': [np.nan, 3.0, np.nan],
+            'C': [4.0, np.nan, 6.0]
+        }, index=['QC1', 'QC2', 'QC3'])
 
-        filtered = filter_features_by_qc(df, qc_cols=['QC1', 'QC2', 'QC3'], threshold=0.5)
+        filtered = filter_features_by_qc(df, qc_rows=['QC1', 'QC2', 'QC3'], threshold=0.5)
         print(filtered)
-        # Output: rows with at least 2 valid QC values (since ceil(3 * (1 - 0.5)) = 2)
+        # Output: columns with at least 2 valid QC values (since ceil(3 * (1 - 0.5)) = 2)
 
     """
     if not 0 <= threshold <= 1:  # check validity of threshold value
@@ -61,18 +60,18 @@ def filter_features_by_qc(
             f"Threshold for QC filtering must be between 0 and 1, got {threshold}."
         )
 
-    n_qc = len(qc_cols)
+    n_qc = len(qc_rows)
     min_valid = int(np.ceil(n_qc * (1 - threshold)))  # minimum valid QC points
-    valid_counts = df[qc_cols].notna().sum(axis=1)
+    valid_counts = df.loc[qc_rows].notna().sum(axis=0)
 
-    return df.loc[valid_counts >= min_valid]
+    return df.loc[:, valid_counts >= min_valid]
 
 
 def qc_rlsc_loess(
     x_qc,
     y_qc,
     x_all,
-    use_default=False,
+    always_use_default=False,
     default=0.75,
     alpha_candidates=np.arange(0.4, 1.01, 0.05),
 ):
@@ -98,8 +97,8 @@ def qc_rlsc_loess(
         Intensity values of QC samples corresponding to `x_qc`.
     x_all : array-like
         Injection order of all samples (QCs + regular samples) in
-        the same order as data columns.
-    use_default: bool, optional
+        the same order as data rows.
+    always_use_default: bool, optional
         If True, the alpha value 0.75 is used for all values.
         LOOCV is skipped. This option is less computationally heavy.
     alpha_candidates : list of float, optional
@@ -130,7 +129,9 @@ def qc_rlsc_loess(
     best_loocv_error = np.inf
     n = len(x_qc)
 
-    if not use_default:  # do leave one out cross validation for determining best alpha
+    if (
+        not always_use_default
+    ):  # do leave one out cross validation for determining best alpha
         for alpha in alpha_candidates:
             span = max(
                 (1 + 1) / n, alpha
@@ -155,9 +156,9 @@ def qc_rlsc_loess(
                 best_alpha = alpha
 
     # Fit LOESS again with best alpha for final curve
-    if best_alpha is None or use_default:
+    if best_alpha is None or always_use_default:
         best_alpha = default  # fallback to reasonable default if optimization failed
-        if not use_default:
+        if not always_use_default:
             logger.warning(
                 f"LOESS optimization failed for n={n}. Using default alpha=0.75."
             )
@@ -188,13 +189,13 @@ def qc_rlsc_loess(
 
 def run_loess_drift_correction(
     data,
-    qc_cols,
-    sample_cols,
+    qc_rows,
+    sample_rows,
     sample_order: pd.DataFrame,
-    feature_name_col: str = None,
     filter_percent: float = None,
     qc_min_threshold: int = 4,
-    use_default=False,
+    always_use_default=False,
+    default=0.75,
 ):
     """
     Perform QC-based drift correction across multiple features using
@@ -214,19 +215,15 @@ def run_loess_drift_correction(
     Parameters
     ----------
     data : pandas.DataFrame
-        Input intensity matrix, with features as rows and sample/QC
-        names as columns.
-    qc_cols : list of str
-        Names of columns corresponding to QC injections.
-    sample_cols : list of str
-        Names of columns corresponding to biological samples.
+        Input intensity matrix with samples as rows and features as columns.
+    qc_rows : list of str
+        Row indices corresponding to QC injections.
+    sample_rows : list of str
+        Row indices corresponding to biological samples.
     sample_order : pandas.DataFrame
         Table mapping file names to injection order. Must contain
         columns "File Name" and "Sample ID". Sample ID must be
         numeric.
-    feature_name_col : str, optional
-        Name of the column in `data` containing feature identifiers.
-        If None, the index is used.
     filter_percent : float, optional
         Minimum proportion of QC values that must be non-missing for
         a feature to be retained (e.g., 0.6 means at least 60% of QCs
@@ -234,16 +231,17 @@ def run_loess_drift_correction(
     qc_min_threshold : int, optional
         Minimum number of QC values required to perform drift
         correction. Features with fewer QCs are returned uncorrected.
-    use_default: bool, optional
+    always_use_default: bool, optional
         If True, the alpha value 0.75 is used for the smoothing span.
         LOOCV is skipped. This option is less computationally heavy.
 
     Returns
     -------
     corrected_df : pandas.DataFrame
-        A feature x sample matrix of drift-corrected intensities.
-        All sample and QC columns are included. Features that fail
-        QC requirements are returned unchanged.
+        Full input DataFrame with corrected values applied to
+        sample_rows + qc_rows. Rows outside those arguments are
+        returned unchanged. Features that fail QC requirements are
+        returned unchanged.
     correction_info : dict
         Dictionary keyed by feature name, containing:
         - 'alpha': selected LOESS alpha (or None if skipped)
@@ -263,16 +261,10 @@ def run_loess_drift_correction(
       unchanged.
     - Sample names in `data` and `sample_order` must match exactly.
     """
+    df_out = data.copy()
     df = data.copy()
     correction_info = {}  # Feature name -> dict with 'alpha' and 'drift_curve'
-    all_cols = sample_cols + qc_cols
-    corrected_df = pd.DataFrame(
-        index=df.index, columns=all_cols, dtype=float
-    )  # Initialises new df to be filled (for now has all nan), all columns including QC should be corrected
-    if feature_name_col:
-        temp_names = df[feature_name_col]
-    else:
-        temp_names = pd.Series(df.index, index=df.index)
+    all_rows = sample_rows + qc_rows
 
     try:
         sample_order["Sample ID"] = pd.to_numeric(
@@ -288,7 +280,7 @@ def run_loess_drift_correction(
         zip(sample_order["File Name"], sample_order["Sample ID"])
     )
     x_all = np.array(
-        [injection_order_map.get(sample, np.nan) for sample in all_cols]
+        [injection_order_map.get(sample, np.nan) for sample in all_rows]
     )  # Order of samples in order of file names
 
     if np.isnan(x_all).any():
@@ -298,26 +290,28 @@ def run_loess_drift_correction(
 
     if filter_percent is not None:  # Filter features by QC completeness
         df = filter_features_by_qc(
-            df, qc_cols, threshold=(1 - filter_percent)
+            df, qc_rows, threshold=(1 - filter_percent)
         )  # Only keeping features that have at least <percent> of all QCs not nan
 
-    # Loop through all features in filtered df
-    for feature_idx, row in df[all_cols].iterrows():
+    corrected_df = pd.DataFrame(
+        index=all_rows, columns=df.columns, dtype=float
+    )  # Initialises new df to be filled (for now has all nan), all rows including QC should be corrected
+
+    # Loop through all features (columns) in filtered df
+    for feature_name, col in df.loc[all_rows].items():
 
         # Y VALUES ARE INTENSITIES
         # X VALUES ARE RUN ORDER IDX
 
-        cid_value = temp_names.loc[feature_idx]  # feature ID, used for logs
-
-        # Intensities (y) for all cols in the samples (t, c and nan)
-        y_all = row.values.astype(float)
+        # Intensities (y) for all rows in the samples (t, c and nan)
+        y_all = col.values.astype(float)
 
         # Get intensities (y) and run order idx (x) for all QC data points
-        y_qc = row[qc_cols].values.astype(
+        y_qc = col.loc[qc_rows].values.astype(
             float
-        )  # Gets all intensity values for row for all qcs
+        )  # Gets all intensity values for feature for all qcs
         x_qc = np.array(
-            [injection_order_map.get(s, np.nan) for s in qc_cols]
+            [injection_order_map.get(s, np.nan) for s in qc_rows]
         )  # Gets the order
 
         # Remove NaNs from QC for fitting
@@ -330,14 +324,14 @@ def run_loess_drift_correction(
         rsd_qc = 100 * np.std(y_qc_valid) / (np.mean(y_qc_valid) + eps)
         if rsd_qc > 30:
             logger.info(
-                f"Flagging feature {cid_value} due to too high QC RSD. (Feature not skipped). RSD: {rsd_qc}"
+                f"Flagging feature {feature_name} due to too high QC RSD. (Feature not skipped). RSD: {rsd_qc}"
             )  # RSD>20% suggests qc intensities reflect instrumental drift, not biology
 
         if len(y_qc_valid) < qc_min_threshold:
-            # Skip correction but preserve the row
-            logger.info("skipping correction due to few QCs:", cid_value)
-            corrected_df.loc[feature_idx] = y_all  # Insert the uncorrected values
-            correction_info[cid_value] = {
+            # Skip correction but preserve the column
+            logger.info(f"Skipping correction due to few QCs: {feature_name}")
+            corrected_df[feature_name] = y_all  # Insert the uncorrected values
+            correction_info[feature_name] = {
                 "alpha": None,
                 "drift_curve": None,
                 "y_qc": y_qc_valid.tolist(),
@@ -353,7 +347,8 @@ def run_loess_drift_correction(
                 x_qc_valid,
                 y_qc_valid,
                 x_all,
-                use_default=use_default,
+                always_use_default=always_use_default,
+                default=default,
             )  # Calculate curve and alpha value
 
             # Remove NaNs from y_all for indexing (just keep for drift correction) -> only if they are not nan in either data or drift curve
@@ -368,9 +363,9 @@ def run_loess_drift_correction(
                 y_all[valid_mask] / drift_curve[valid_mask]
             ) * median_qc  # Only valid positions get corrected; skipped samples retain original intensity
 
-            corrected_df.loc[feature_idx] = corrected
+            corrected_df[feature_name] = corrected
 
-            correction_info[cid_value] = {
+            correction_info[feature_name] = {
                 "alpha": best_alpha,
                 "drift_curve": drift_curve.tolist(),
                 "y_qc": y_qc_valid.tolist(),  # Store QC values
@@ -378,14 +373,15 @@ def run_loess_drift_correction(
                 "rsd_qc": rsd_qc,
                 "median": median_qc,
                 "y_all": y_all,
+                "new_values": corrected,
                 "status": "corrected",
             }
 
-            logger.info(f"Corrected {cid_value} with alpha {best_alpha}.")
+            logger.info(f"Corrected {feature_name} with alpha {best_alpha}.")
 
         except Exception as e:
-            corrected_df.loc[feature_idx] = y_all  # Preserve original values
-            correction_info[cid_value] = {
+            corrected_df[feature_name] = y_all  # Preserve original values
+            correction_info[feature_name] = {
                 "alpha": None,
                 "drift_curve": None,
                 "y_qc": y_qc_valid.tolist(),
@@ -394,15 +390,11 @@ def run_loess_drift_correction(
                 "status": f"error: {e}",
             }
 
-            logger.error(f"Skipping feature {cid_value} due to error: {e}")
+            logger.error(f"Skipping feature {feature_name} due to error: {e}")
             continue
 
-    # Add metadata back into output df, reindexing in case of filtering
-    meta_cols = df.columns.difference(all_cols)
-    corrected_df = corrected_df.join(df.reindex(corrected_df.index)[meta_cols])
-    corrected_df = corrected_df[df.columns]
-
+    df_out.loc[all_rows, corrected_df.columns] = corrected_df.values
     logger.info(
-        "\nAll done. For further information on the corrected values, check the second returned object. Also reordered rows!"
+        "\nAll done. For further information on the corrected values, check the second returned object."
     )
-    return corrected_df, correction_info
+    return df_out, correction_info
