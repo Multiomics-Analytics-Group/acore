@@ -262,9 +262,9 @@ def imputation_zeros(
     Replace missing values with zeros.
 
     :param data: DataFrame with samples as rows and features as columns.
-    :param list on_cols: columns to fill with zeros. If None, all numeric columns are filled.
+    :param list on_cols: columns to fill with zeros. If `None`, all numeric columns are filled.
                          Non-numeric columns in "on_cols" are skipped with a warning.
-    :param list on_rows: row index labels to restrict imputation to. If None, all rows are
+    :param list on_rows: row index labels to restrict imputation to. If `None`, all rows are
                          imputed. Useful for imputing only a subset of samples (e.g. QCs,
                          blanks, controls) while leaving others untouched.
     :param list drop_cols: columns to permanently drop before imputation. If a column
@@ -293,14 +293,14 @@ def imputation_zeros(
             if df[col].dtype == object:
                 df[col] = pd.to_numeric(df[col], errors="ignore")
         cols = df.select_dtypes(include="number").columns.tolist()
+        non_numeric = df.select_dtypes(exclude="number").columns.tolist()
+        if non_numeric:
+            logger.warning(f"Non-numeric columns ignored for imputation: {non_numeric}")
     else:
         cols = [c for c in on_cols if c in df.columns]
         non_numeric = [c for c in cols if not pd.api.types.is_numeric_dtype(df[c])]
         if non_numeric:
-            logger.warning(
-                f"Non-numeric columns skipped in zero imputation: {non_numeric}"
-            )
-        cols = [c for c in cols if c not in non_numeric]
+            raise TypeError(f"Non-numeric columns passed to `on_cols`: {non_numeric}")
 
     if on_rows is not None:
         rows = [r for r in on_rows if r in df.index]
@@ -353,17 +353,22 @@ def imputation_half_minimum(
             if df[col].dtype == object:
                 df[col] = pd.to_numeric(df[col], errors="ignore")
         cols = df.select_dtypes(include="number").columns.tolist()
+        non_numeric = df.select_dtypes(exclude="number").columns.tolist()
+        if non_numeric:
+            logger.warning(f"Non-numeric columns ignored for imputation: {non_numeric}")
     else:
         cols = [c for c in on_cols if c in df.columns]
         non_numeric = [c for c in cols if not pd.api.types.is_numeric_dtype(df[c])]
         if non_numeric:
-            logger.warning(
-                f"Non-numeric columns skipped in half-minimum imputation: {non_numeric}"
-            )
-        cols = [c for c in cols if c not in non_numeric]
+            raise TypeError(f"Non-numeric columns passed to `on_cols`: {non_numeric}")
 
     if on_rows is not None:
         rows = [r for r in on_rows if r in df.index]
+        if len(rows) != len(on_rows):
+            logger.warning(
+                f"Some rows in `on_rows` were not found in the DataFrame index and will be skipped: "
+                f"{set(on_rows) - set(rows)}"
+            )
         subset = df.loc[rows, cols]
         all_nan = [c for c in cols if subset[c].isna().all()]
         if all_nan:
