@@ -65,6 +65,8 @@
       * [`imputation_KNN()`](acore.imputation_analysis.md#acore.imputation_analysis.imputation_KNN)
       * [`imputation_mixed_norm_KNN()`](acore.imputation_analysis.md#acore.imputation_analysis.imputation_mixed_norm_KNN)
       * [`imputation_normal_distribution()`](acore.imputation_analysis.md#acore.imputation_analysis.imputation_normal_distribution)
+      * [`imputation_zeros()`](acore.imputation_analysis.md#acore.imputation_analysis.imputation_zeros)
+      * [`imputation_half_minimum()`](acore.imputation_analysis.md#acore.imputation_analysis.imputation_half_minimum)
     * [acore.io package](acore.io.md)
       * [`download_PRIDE_data()`](acore.io.md#acore.io.download_PRIDE_data)
       * [`unrar()`](acore.io.md#acore.io.unrar)
