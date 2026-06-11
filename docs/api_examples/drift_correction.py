@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.19.1
+#       jupytext_version: 1.19.3
 #   kernelspec:
 #     display_name: acore-dev
 #     language: python
@@ -44,10 +44,9 @@ from acore import drift_correction as dc
 def plot_loess_example_curve(
     df: pd.DataFrame,
     feature_idx: int,
-    sample_cols: list,
-    qc_cols: list,
+    samples: list,
+    qcs: list,
     sample_order: pd.DataFrame,
-    feature_name_col: str = None,
     show_corrected: bool = True,
     alpha: float = None,  # fixed smoothing span; if None, selected by LOOCV
 ):
@@ -64,19 +63,17 @@ def plot_loess_example_curve(
     Parameters
     ----------
     df : pd.DataFrame
-        Feature matrix with features as rows and samples/QCs as columns.
+        Feature matrix with samples as rows and features as columns.
+        Metadata columns should have been removed already.
     feature_idx : int
-        Row index of the feature to plot.
-    sample_cols : list of str
-        Column names of the biological samples.
-    qc_cols : list of str
-        Column names of the pooled QC samples.
+        Column index of the feature to plot.
+    samples : list of str
+        Row index labels of the biological samples.
+    qcs : list of str
+        Row index labels of the pooled QC samples.
     sample_order : pd.DataFrame
         Injection-order table with columns `File Name` and `Sample ID`
         (integer run order).
-    feature_name_col : str, optional
-        Column in df containing feature identifiers used in the plot title.
-        If None, the row index is used.
     show_corrected : bool, optional
         If True (default), overlays drift-corrected sample intensities as
         diamond markers.
@@ -86,14 +83,14 @@ def plot_loess_example_curve(
         α ∈ [0.40, 1.00]. The selected value is shown in the legend.
     """
 
-    feature_row = df.iloc[feature_idx]
-    all_cols = sample_cols + qc_cols
+    all_rows = samples + qcs
+    feature_col = df.iloc[:, feature_idx]
 
     order_dict = sample_order.set_index("File Name")["Sample ID"].to_dict()
-    x_all = np.array([order_dict.get(c, np.nan) for c in all_cols])
-    y_all = feature_row[all_cols].astype(float).values
+    x_all = np.array([order_dict.get(r, np.nan) for r in all_rows])
+    y_all = feature_col.loc[all_rows].astype(float).values
 
-    n_s = len(sample_cols)
+    n_s = len(samples)
     x_sample, y_sample = x_all[:n_s], y_all[:n_s]
     x_qc_arr, y_qc_arr = x_all[n_s:], y_all[n_s:]
 
@@ -102,10 +99,7 @@ def plot_loess_example_curve(
     x_s_v, y_s_v = x_sample[valid_sample], y_sample[valid_sample]
     x_qc_v, y_qc_v = x_qc_arr[valid_qc], y_qc_arr[valid_qc]
 
-    if feature_name_col and feature_name_col in df.columns:
-        feature_name = feature_row[feature_name_col]
-    else:
-        feature_name = f"index {feature_idx}"
+    feature_name = df.columns[feature_idx]
 
     fig, ax = plt.subplots(figsize=(11, 5))
     ax.scatter(x_s_v, y_s_v, label="Samples", color="steelblue", alpha=0.7, zorder=3)
@@ -118,7 +112,7 @@ def plot_loess_example_curve(
             # Pass a single-element candidate list to skip LOOCV and use the given alpha
             # directly
             drift_curve, best_alpha = dc.qc_rlsc_loess(
-                x_qc_v, y_qc_v, x_all, use_default=True, default=alpha
+                x_qc_v, y_qc_v, x_all, always_use_default=True, default=alpha
             )
         else:
             drift_curve, best_alpha = dc.qc_rlsc_loess(x_qc_v, y_qc_v, x_all)
@@ -162,8 +156,8 @@ def plot_loess_example_curve(
 
 def pca_for_cpca_drift(
     df: pd.DataFrame,
-    sample_cols,  # list of col names, OR dict {group_name: [col names]}
-    qc_cols: list,
+    samples,  # list of row index labels, OR dict {group_name: [row index labels]}
+    qcs: list,
     log_transform: bool = True,
     title: str = "PCA",
 ):
@@ -172,38 +166,39 @@ def pca_for_cpca_drift(
 
     Parameters
     ----------
-    df          : feature matrix with features as rows, samples as columns
-    sample_cols : list of sample column names (all one group),
-                  or dict {group_name: [col names]} for multiple groups
-    qc_cols     : list of QC column names
+    df      : feature matrix with samples as rows and features as columns.
+              Metadata columns should have been removed already.
+    samples : list of row index labels of the biological samples (all one group),
+              or dict {group_name: [row index labels]} for multiple groups
+    qcs     : list of row index labels of the pooled QC samples
     log_transform : apply log1p before scaling
-    title       : plot title
+    title   : plot title
     """
-    # Normalise sample_cols to a dict
-    if isinstance(sample_cols, list):
-        sample_groups = {"Samples": sample_cols}
+    # Normalise samples to a dict
+    if isinstance(samples, list):
+        sample_groups = {"Samples": samples}
     else:
-        sample_groups = sample_cols
+        sample_groups = samples
 
-    # Build ordered column + label arrays
-    all_cols, labels = [], []
-    for group, cols in sample_groups.items():
-        for c in cols:
-            if c in df.columns:
-                all_cols.append(c)
+    # Build ordered row + label arrays
+    all_rows, labels = [], []
+    for group, rows in sample_groups.items():
+        for r in rows:
+            if r in df.index:
+                all_rows.append(r)
                 labels.append(group)
-    for c in qc_cols:
-        if c in df.columns:
-            all_cols.append(c)
+    for r in qcs:
+        if r in df.index:
+            all_rows.append(r)
             labels.append("QC")
 
-    # Coerce to numeric, drop features with any NaN
-    X = df[all_cols].apply(pd.to_numeric, errors="coerce").dropna(axis=0)
+    # Coerce to numeric, drop features (columns) with any NaN
+    X = df.loc[all_rows].apply(pd.to_numeric, errors="coerce").dropna(axis=1)
 
     if log_transform:
         X = np.log1p(X.clip(lower=0))
 
-    X_scaled = StandardScaler().fit_transform(X.T.values.astype(float))
+    X_scaled = StandardScaler().fit_transform(X.values.astype(float))
 
     pca = PCA(n_components=2)
     coords = pca.fit_transform(X_scaled)
@@ -254,7 +249,7 @@ data_path = (
     "refs/heads/main/"
 )
 
-df = pd.read_csv(
+df_original = pd.read_csv(
     "../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled_imputed.csv",
     index_col=0,
 )
@@ -263,6 +258,19 @@ df = pd.read_csv(
 # This is what the data frame, an intensity table, looks like.
 
 # %% tags=["hide-inputs"]
+df_original
+
+# %% [markdown]
+# In order to run our further analysis, including the filtering functions,
+# we have to transform the data and remove metadata such as mass and retention time.
+
+# %%
+df = df_original.T
+df = df.drop(
+    ["Qidx", "SOIidx", "rtmed", "start", "end", "mass", "MaxInt", "formula", "anot"]
+)
+
+# %% tags=["hide-input"]
 df
 
 # %% [markdown]
@@ -305,7 +313,7 @@ sample_order
 # into groups, to make the upcoming function call easier.
 
 # %%
-column_list = list(df.columns.values)
+column_list = list(df_original.columns.values)
 sample_cols = []
 qc_cols = []
 for col in column_list:
@@ -327,8 +335,13 @@ sample_cols
 qc_cols
 
 # %% [markdown]
-# Now we can run the drift correction, using the acore run_loess_drift_correction
+# Now we can run the drift correction, using the acore `run_loess_drift_correction`
 # function.
+#
+# Note: For this demonstration, we will use the parameter `always_use_default`, so that the leave-one-out cross validation, during which the best smoothing parameter for the curve is determined, is skipped. This is just for efficiency purposes; so that this does not take too long to load. However, it is recommended to not use this option, so that the best parameter can be determined for the curve of every feature.
+
+# %% tags=["hide-input"]
+help(dc.run_loess_drift_correction)
 
 # %%
 corrected_df, correction_info = dc.run_loess_drift_correction(
@@ -336,19 +349,19 @@ corrected_df, correction_info = dc.run_loess_drift_correction(
     qc_cols,
     sample_cols,
     sample_order=sample_order,
-    feature_name_col=None,
     filter_percent=0.5,
+    always_use_default=True
 )
 
 # %% [markdown]
 # Explanation of the parameters chosen:
-#  - `feature_name_col` is the name of the column containing feature names, if there is
-#    one. This information is used for logging and showing outputs, it's not required
-#    for the functioning of the method. Here, there is no feature name column available,
-#    so `None` is used.
 # - `filter_percent` is  the minimum percentage of values that must be present for this
 #   feature to be retained. If the percentage of non-missing is below this, the feature
-#   will be filtered out. If this parameter is set to "None", no filtering will be done.
+#   will be filtered out. If this parameter is set to "None", no filtering will be done. In this case, the filter_percent parameter does not do anything, as the data is already imputed and there are no missing values in the QCs.
+# - `always_use_default` disables the leave-one-out cross validation which calculates
+#   the ideal smoothing parameter for the LOESS curve for every feature. It will speed up the computation, but the curve which decides the value correction is less optimal.
+# - `default`(not used here) changes the default smoothing value. If the parameter is    
+#   not used, the default is 0.75. The default smoothing value is either used if `always_use_default`=True, or if no better smoothing parameter can be found during leave-one-out cross validation.
 #
 
 # %% [markdown]
@@ -377,8 +390,8 @@ print(correction_info[200])
 plot_loess_example_curve(
     df=df,
     feature_idx=300,
-    sample_cols=sample_cols,
-    qc_cols=qc_cols,
+    samples=sample_cols,
+    qcs=qc_cols,
     sample_order=sample_order,
 )
 
@@ -396,8 +409,8 @@ plot_loess_example_curve(
 plot_loess_example_curve(
     df=df,
     feature_idx=300,
-    sample_cols=sample_cols,
-    qc_cols=qc_cols,
+    samples=sample_cols,
+    qcs=qc_cols,
     sample_order=sample_order,
     alpha=0.6,
 )
@@ -423,13 +436,18 @@ plot_loess_example_curve(
 
 # %%
 # Load data
-df = pd.read_csv(
+df_original = pd.read_csv(
     "../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled_imputed.csv",
     index_col=0,
 )
 
+df = df_original.T
+df = df.drop(
+    ["Qidx", "SOIidx", "rtmed", "start", "end", "mass", "MaxInt", "formula", "anot"]
+)
+
 # Define sample columns and qc columns
-collist = list(df.columns.values)
+collist = list(df_original.columns.values)
 sample_cols = []
 qc_cols = []
 for col in collist:
