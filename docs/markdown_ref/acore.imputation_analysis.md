@@ -105,7 +105,7 @@ Replace missing values with zeros.
 * **Parameters:**
   * **data** – DataFrame with samples as rows and features as columns.
   * **on_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – columns to fill with zeros. If None, all numeric columns are filled.
-    Non-numeric columns in “on_cols” are skipped with a warning.
+    Non-numeric columns in “on_cols” will raise a TypeError.
   * **on_rows** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
     imputed. Useful for imputing only a subset of samples (e.g. QCs,
     blanks, controls) while leaving others untouched.
@@ -127,7 +127,7 @@ Replace missing values with half the per-column minimum of observed values.
 * **Parameters:**
   * **data** – DataFrame with samples as rows and features as columns.
   * **on_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – columns to impute. If None, all numeric columns are used.
-    Non-numeric columns in `on_cols` are skipped with a warning.
+    Non-numeric columns in `on_cols` will raise a TypeError.
   * **on_rows** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
     imputed. When provided, the per-column minimum is also computed
     from only those rows, so each subset gets its own half-minimum
