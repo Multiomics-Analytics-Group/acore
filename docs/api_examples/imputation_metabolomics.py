@@ -25,10 +25,9 @@
 # %% tags=["hide-output"]
 # %pip install acore
 
+# %% tags=["hide-input"]
 import matplotlib.pyplot as plt
 import numpy as np
-
-# %% tags=["hide-input"]
 import pandas as pd
 
 from acore.imputation_analysis import (
@@ -134,9 +133,14 @@ def plot_intensity_distribution(data):
 # %% [markdown]
 # ### Data Loading
 #
-# Load in your data and inspect the resulting dataframe. The example data set can be found in example_data/DidacMauricio_hilic.
+# Load in your data and inspect the resulting dataframe. The example data set can be found
+# in `example_data/DidacMauricio_hilic`.
 #
-# The data set has been filtered already, using the [`acore.filter_metabolomics`](acore.filter_metabolomics) module. That means that features with a lot of missingness have been filtered out already, meaning that the features that are remaining have limited missingness and the data set is ready for the imputation step.
+# The data set has been filtered already, using the
+# [`acore.filter_metabolomics`](acore.filter_metabolomics) module. That means that
+# features with a lot of missingness have been filtered out already, meaning that the
+# features that are remaining have limited missingness and the data set is ready for the
+# imputation step.
 
 # %%
 data_path = (
@@ -145,26 +149,24 @@ data_path = (
 )
 data_path = "../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filtered.csv"
 data_original = pd.read_csv(data_path, index_col=0)
-
-# %%
 data_original
 
 # %% [markdown]
-# In order to run our further analysis, including the filtering functions, we have to transform the data and remove metadata such as mass and retention time.
+# In order to run our further analysis, including the filtering functions,
+# we have to transform the data and remove metadata such as mass and retention time.
 
 # %%
-data = data_original.T
-data = data.drop(
-    ["Qidx", "SOIidx", "rtmed", "start", "end", "mass", "MaxInt", "formula", "anot"]
-)
-
-# %% tags=["hide-input"]
+# first drop object columns, then transpose to keep columns numeric.
+data = data_original.drop(
+    ["Qidx", "SOIidx", "rtmed", "start", "end", "mass", "MaxInt", "formula", "anot"],
+    axis=1,
+).T
 data
 
 # %% [markdown]
 # Check how much missingness there is in the data.
 
-# %%
+# %% tags=["hide-input"]
 # Total missing count and percentage
 print(
     f"Total count of missing cells: {data.isnull().sum().sum()}"
@@ -177,16 +179,24 @@ plot_feature_missingness(data)
 plot_intensity_distribution(data)
 
 # %% [markdown]
-# As we can see, overall, 1.7% of the dataset is missing. There are some features that have a lot of missing values, whereas most have very few.
+# As we can see, overall, 1.7% of the dataset is missing. There are some features that
+# have a lot of missing values, whereas most have very few.
 #
 # Now that we have an overview, we can try two different methods of imputation.
 
 # %% [markdown]
 # ### Imputing with zeros
 #
-# In this method, which is commonly used in metabolomics and often automatically done by preprocessing softwared like MetaboIgniter, all missing values get filled in with zeros.
+# In this method, which is commonly used in metabolomics and often automatically done by
+# preprocessing software like `MetaboIgniter`, all missing values get filled in with zeros.
 #
-# Here, this method can be applied easily using the function [`imputation_zeros()`](acore.imputation_analysis.imputation_zeros).
+# This is done following the assumption of missing-not-at-random; that measurements may be
+# missing not because they are truly absent in the biological sample but because they are
+# for example below the limit of detection. Zero is then the lowest possible value
+# that can be measured, and thus a reasonable imputation value for missing values.
+#
+# Here, this method can be applied easily using the function
+# [`imputation_zeros()`](acore.imputation_analysis.imputation_zeros).
 
 # %% tags=["hide-input"]
 help(imputation_zeros)
@@ -194,7 +204,7 @@ help(imputation_zeros)
 # %%
 data_imputed_zeros = imputation_zeros(data=data)
 
-# %%
+# %% tags=["hide-input"]
 # Total missing count and percentage
 print(
     f"Total count of missing cells: {data_imputed_zeros.isnull().sum().sum()}"
@@ -213,11 +223,16 @@ plot_intensity_distribution(data_imputed_zeros)
 # %% [markdown]
 # ### Imputation with half minimum
 #
-# This method is also widely used across the metabolomics community. Here, missing values are imputed with half of the minimum value that has been recorded across the data set.
+# This method is also widely used across the metabolomics community. Here, missing values
+# are imputed with half of the minimum value that has been recorded across the data set.
 #
-# This is done following the assumption of missing-not-at-random; that measurements may be missing not because they are truly absent in the biological sample but because they are for example below the limit of detection.
+# This is done following the assumption of missing-not-at-random; that measurements may be
+# missing not because they are truly absent in the biological sample but because they are
+# for example below the limit of detection.
 #
-# Here, in acore, the function [`imputation_half_minimum()`](acore.imputation_analysis.imputation_half_minimum) is used for this.
+# Here, in acore, the function
+# [`imputation_half_minimum()`](acore.imputation_analysis.imputation_half_minimum) is used
+# for this.
 
 # %% tags=["hide-input"]
 help(imputation_half_minimum)
@@ -225,7 +240,7 @@ help(imputation_half_minimum)
 # %%
 data_imputed_hm = imputation_half_minimum(data)
 
-# %%
+# %% tags=["hide-input"]
 # Total missing count and percentage
 print(
     f"Total count of missing cells: {data_imputed_hm.isnull().sum().sum()}"
