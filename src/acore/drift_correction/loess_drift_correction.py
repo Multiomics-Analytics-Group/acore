@@ -373,6 +373,7 @@ def run_loess_drift_correction(
                 "rsd_qc": rsd_qc,
                 "median": median_qc,
                 "y_all": y_all,
+                "new_values": corrected,
                 "status": "corrected",
             }
 
