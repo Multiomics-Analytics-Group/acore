@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.19.1
+#       jupytext_version: 1.19.3
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: acore-dev
 #     language: python
 #     name: python3
 # ---
@@ -205,8 +205,8 @@ assert omics_and_y_imputed.isna().sum().sum() == 0
 omics_and_y_imputed
 
 # %% [markdown]
-# As we have increase the threshold `cutoff` for the fraction of non-misisng
-# values per feature, the more features will not be imputed and therefore have
+# As we have increased the threshold `cutoff` for the fraction of non-missing
+# values per feature, more features will not be imputed and therefore have
 # missing values.
 
 # %%
@@ -243,7 +243,7 @@ print("Shape of imputed data: ", omics_and_y_imputed.shape)
 # Do the imputation separately for each group (e.g. target vs control) and
 # then combine the results.
 #
-# Let's see the ratop of missing (left y-axis) and of non-missing (right y-axis) values
+# Let's see the ratio of missing (left y-axis) and of non-missing (right y-axis) values
 # per feature (e.g. protein group) for which no missing values for each group:
 
 # %% tags=["hide-input"]
@@ -312,8 +312,8 @@ omics_and_y_imputed.groupby(group).apply(
 
 
 # %% [markdown]
-# As we increase the threshold `cutoff` for the fraction of non-misisng
-# values per feature, the more features will not be imputed and therefore have
+# As we increase the threshold `cutoff` for the fraction of non-missing
+# values per feature, more features will not be imputed and therefore have
 # missing values.
 
 # %%
@@ -325,7 +325,7 @@ omics_and_y_imputed = imputation_KNN(
     alone=False,
 )
 n_still_missing = omics_and_y_imputed.isna().sum().sum()
-print("Still missing features with cutoff of {cutoff}: {n_still_missing}")
+print(f"Still missing features with cutoff of {cutoff}: {n_still_missing}")
 
 # %% [markdown]
 # ## Imputation from a shifted normal distribution per sample
@@ -374,21 +374,21 @@ imputation_normal_distribution(
 
 # %% [markdown]
 # Note that using this type of imputation before differential regulation can lead to
-# false positive and negativ results. If values are not due to assumed missing
-# mechanism (Missing not-at-random due to low abundance), but are due to technical noise
-# these values should not be replace.
+# false positive and negative results. If values are not due to assumed missing
+# mechanism (Missing not-at-random due to low abundance), but are due to technical noise,
+# these values should not be replaced.
 #
-# Therefore many use in proteomics a combined approach
+# Therefore, in proteomics, many use a combined approach
 # [Santos et al., 2020](https://www.nature.com/articles/s41587-021-01145-6):
 
 # %% [markdown]
-# ## Combining KNN based imputation and random imputation from a shifted random
-# distribution
+# ## Combining KNN based imputation and random imputation from a shifted random distribution
 # - For features (e.g. protein groups) that are present across groups in high enough
 #   frequency, use KNN-based imputation (which is deterministic)
-# - for the remaining missing values, use based on the distribution of observed values
-#   in a sample a shifted normal distribution to draw replacements (random,
-#   but deterministic due to the set seed)
+# - for the remaining missing values, use - based on the distribution of observed values
+#   in a sample - a shifted normal distribution to draw replacements (random,
+#   but deterministic due to the set seed).
+#
 # See the methods section of
 # [Santos et al., 2020](https://www.nature.com/articles/s41587-021-01145-6)
 # for more details.
