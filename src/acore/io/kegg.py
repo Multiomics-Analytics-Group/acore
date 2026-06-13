@@ -1,7 +1,6 @@
 # %%
 # region: Imports and constants
 import re
-from collections.abc import Iterable
 from typing import Iterable
 from urllib import error, request
 
@@ -11,6 +10,21 @@ import requests
 KEGG_API_BASE_URL = "https://rest.kegg.jp"
 _KO_TERM_PATTERN = re.compile(r"^(?:ko:)?(K\d{5})$", re.IGNORECASE)
 MAX_KEGG_BATCH_SIZE = 10
+
+__all__ = ["link_kegg_batch", "fetch_kegg_ko_descriptions", "cid_to_kegg_id"]
+
+
+def cid_to_kegg_id(pubchem_cid: int) -> str | None:
+    """Convert a single PubChem CID to a KEGG compound ID via KEGG conv API."""
+    r = requests.get(
+        f"https://rest.kegg.jp/conv/compound/pubchem:{pubchem_cid}", timeout=30
+    )
+    r.raise_for_status()
+    if not r.text.strip():
+        return None
+    # Response format: "pubchem:{cid}\tcpd:{kegg_id}"
+    kegg_id = r.text.strip().split("\t")[1].removeprefix("cpd:")
+    return kegg_id
 
 
 def link_kegg_batch(target_db: str, gene_ids: Iterable[str]) -> str:
@@ -27,8 +41,8 @@ def link_kegg_batch(target_db: str, gene_ids: Iterable[str]) -> str:
 
     Returns
     -------
-    _type_
-        _description_
+    str
+        A list of strings containing the fetched information.
     """
 
     results = []
@@ -171,4 +185,8 @@ if __name__ == "__main__":
     # %%
     df = fetch_kegg_ko_descriptions(["ko:K03007", "K02143", "ko:K00844"])
     df
-# %%
+
+    # %%
+    pubchem_id = 3323
+    kegg_id = cid_to_kegg_id(pubchem_id)
+    kegg_id
