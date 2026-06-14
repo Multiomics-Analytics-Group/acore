@@ -1,6 +1,7 @@
 # %%
 # region: Imports and constants
 import re
+from collections import defaultdict
 from pathlib import Path
 from typing import Iterable
 from urllib import error, request
@@ -12,7 +13,13 @@ KEGG_API_BASE_URL = "https://rest.kegg.jp"
 _KO_TERM_PATTERN = re.compile(r"^(?:ko:)?(K\d{5})$", re.IGNORECASE)
 MAX_KEGG_BATCH_SIZE = 10
 
-__all__ = ["link_kegg_batch", "fetch_kegg_ko_descriptions", "cid_to_kegg_id"]
+__all__ = [
+    "link_kegg_batch",
+    "fetch_kegg_ko_descriptions",
+    "cid_to_kegg_id",
+    "parse_compound_pathway_mapping",
+    "lookup_cid_to_kegg_id",
+]
 
 DUMP_CID_TO_KEGGID = Path(__file__).resolve().parent / "pubchem_to_kegg_ids.csv"
 
@@ -76,6 +83,49 @@ def link_kegg_batch(target_db: str, gene_ids: Iterable[str]) -> str:
         r.raise_for_status()
         results.append(r.text)
     return "".join(results)
+
+
+def parse_compound_pathway_mapping(raw_mapping: str) -> dict[str, list[str]]:
+    """Parse tab-delimited KEGG-style compound/pathway mappings into a dictionary."""
+    compound_to_pathways: defaultdict[str, list[str]] = defaultdict(list)
+
+    for line in raw_mapping.strip().strip("'").splitlines():
+        compound_id, pathway_id = line.split("\t", maxsplit=1)
+        compound_to_pathways[compound_id].append(pathway_id)
+
+    return dict(compound_to_pathways)
+
+
+def parse_kegg_name_description(raw_text: str) -> dict[str, dict[str, str]]:
+    """Parse KEGG pathway entries into ENTRY -> {NAME, DESCRIPTION}."""
+    entries: dict[str, dict[str, str]] = {}
+
+    for block in raw_text.split("///"):
+        block = block.strip()
+        if not block:
+            continue
+
+        entry_id = ""
+        name = ""
+        description = ""
+
+        for line in block.splitlines():
+            if line.startswith("ENTRY"):
+                parts = line.split()
+                if len(parts) >= 2:
+                    entry_id = parts[1]
+            elif line.startswith("NAME"):
+                name = line.removeprefix("NAME").strip()
+            elif line.startswith("DESCRIPTION"):
+                description = line.removeprefix("DESCRIPTION").strip()
+
+        if entry_id:
+            entries[entry_id] = {
+                "NAME": name,
+                "DESCRIPTION": description,
+            }
+
+    return entries
 
 
 def fetch_kegg_ko_descriptions(
