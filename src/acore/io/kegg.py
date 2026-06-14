@@ -1,6 +1,7 @@
 # %%
 # region: Imports and constants
 import re
+from pathlib import Path
 from typing import Iterable
 from urllib import error, request
 
@@ -12,6 +13,27 @@ _KO_TERM_PATTERN = re.compile(r"^(?:ko:)?(K\d{5})$", re.IGNORECASE)
 MAX_KEGG_BATCH_SIZE = 10
 
 __all__ = ["link_kegg_batch", "fetch_kegg_ko_descriptions", "cid_to_kegg_id"]
+
+DUMP_CID_TO_KEGGID = Path(__file__).resolve().parent / "pubchem_to_kegg_ids.csv"
+
+
+def lookup_cid_to_kegg_id(pubchem_cid: Iterable[int]) -> pd.Series | None:
+    """Look up KEGG IDs for a list of PubChem CIDs using a pre-downloaded mapping file.
+
+
+    Parameters
+    ----------
+    pubchem_cid : Iterable[int]
+        A list of PubChem CIDs to look up.
+
+    Returns
+    -------
+    pd.Series | None
+        A Series mapping PubChem CIDs to KEGG IDs, or None if no matches are found.
+    """
+    s_cid_to_kegg = pd.read_csv(DUMP_CID_TO_KEGGID, index_col=0).squeeze()
+    ret = s_cid_to_kegg.loc[s_cid_to_kegg.index.isin(pubchem_cid)]
+    return ret if not ret.empty else None
 
 
 def cid_to_kegg_id(pubchem_cid: int) -> str | None:
