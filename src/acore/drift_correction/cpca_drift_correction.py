@@ -85,8 +85,8 @@ def run_cpca_drift_correction(
     var_projected = np.sum((Xs @ cpcs) ** 2, axis=0)
     var_cpc = np.round(var_projected / np.sum(Xs**2), 3)[:n_comps]
     logger.info(
-        "CPC explained variance:",
-        dict(zip([f"CPC{i+1}" for i in range(n_comps)], var_cpc)),
+        "CPC explained variance: %s",
+        str(dict(zip([f"CPC{i+1}" for i in range(n_comps)], var_cpc))),
     )
 
     W = cpcs[:, :n_comps]
@@ -95,7 +95,7 @@ def run_cpca_drift_correction(
         Xs_corrected
     )  # shape: (n_samples, n_features)
 
-    df_out = df.copy()
+    df_out = df.astype(float)
     df_out.loc[intensity_rows] = X_corrected
     return df_out
 
