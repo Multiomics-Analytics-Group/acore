@@ -14,7 +14,8 @@
 
 
 # %% tags=["hide-output"]
-# %pip install acore vuecore
+# ToDo: Improve VueCore dependencies
+# %pip install acore vuecore python-louvain snfpy
 
 # %%
 from pathlib import Path
