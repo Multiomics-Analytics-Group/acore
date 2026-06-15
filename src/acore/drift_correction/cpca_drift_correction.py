@@ -33,7 +33,7 @@ def check_missingness(df: pd.DataFrame, rows_to_check: list):
     logger.debug(
         f"Features (cols) with at least one NA: {na_features} / {len(df.columns)}"
     )
-    logger.debug("Samples (rows) with at least one NA:", na_counts[na_counts > 0])
+    logger.debug("Samples (rows) with at least one NA: %s", na_counts[na_counts > 0])
 
     if na_counts.any():
         return True
