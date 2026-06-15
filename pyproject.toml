@@ -26,8 +26,7 @@ dependencies = [
   # pandas stuff
   "pandas",
   "dsp-pandas", # https://github.com/biosustain/dsp_pandas  (import dsp_pandas)
-  # Multi-Omics-Analysis group packages
-  "vuecore",
+  # scientific computing
   "scipy",
   "scikit-learn>=1.5",
   # enrichment analysis dependencies
@@ -55,6 +54,8 @@ docs = [
   "jupytext",
   "sphinx-copybutton",
   "sphinx-llms-txt",
+  # Multi-Omics-Analysis group package for visualisation of results in the documentation
+  "vuecore",
 ]
 dev = [
   "black[jupyter]",
