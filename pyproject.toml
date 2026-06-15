@@ -43,18 +43,6 @@ dependencies = [
   "rarfile",
   # types
   "pandera",
-  # Publication analysis dependencies
-  "biopython",
-  # Topological Data Analysis
-  # network analysis dependencies
-  "python-louvain", # community detection for network analysis (import community)
-  "PyWGCNA!=2.2.0", # to fix.
-  # Kaplan-Meier-analysis dependencies
-  "lifelines",
-  "kmapper",
-  # network_analysis dependencies
-  "snfpy",
-  "networkx",
 ]
 
 [project.optional-dependencies]
@@ -79,6 +67,20 @@ dev = [
   "wheel",
   "jupytext",
   "ipykernel",
+]
+
+all = [ # Publication analysis dependencies
+  "biopython",
+  # Topological Data Analysis
+  # network analysis dependencies
+  "python-louvain", # community detection for network analysis (import community)
+  "networkx",
+  # "PyWGCNA!=2.2.0", # not used?
+  # Kaplan-Meier-analysis dependencies
+  "lifelines",
+  "kmapper",
+  # network_analysis dependencies
+  "snfpy",
 ]
 
 [project.urls]

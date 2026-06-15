@@ -1,6 +1,14 @@
 import pandas as pd
-from lifelines import KaplanMeierFitter, NelsonAalenFitter
-from lifelines.statistics import multivariate_logrank_test
+
+try:
+    from lifelines import KaplanMeierFitter, NelsonAalenFitter
+    from lifelines.statistics import multivariate_logrank_test
+except ImportError as e:
+    raise ImportError(
+        "Error importing lifelines module. Make sure lifelines is installed. "
+        "Install it with: pip install 'acore[all]'"
+        "\n\n Error: {}".format(e)
+    )
 
 
 def get_data_ready_for_km(dfs_dict, args):

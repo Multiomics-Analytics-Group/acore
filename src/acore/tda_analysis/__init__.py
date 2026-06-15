@@ -1,4 +1,11 @@
-import kmapper as km
+try:
+    import kmapper as km
+except ImportError as e:
+    raise ImportError(
+        "Error importing kmapper module. Make sure kmapper is installed. "
+        "Install it with: pip install 'acore[all]'"
+        "\n\n Error: {}".format(e)
+    )
 import numpy as np
 from sklearn import cluster, ensemble
 

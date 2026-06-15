@@ -1,7 +1,16 @@
 from urllib import error
 
 import pandas as pd
-from Bio import Entrez, Medline
+
+try:
+    from Bio import Entrez, Medline
+except ImportError as e:
+    raise ImportError(
+        "Error importing Bio modules. Make sure biopython is installed. "
+        "Install it with: pip install biopython"
+        "\n\n Error: {}".format(e)
+    )
+
 
 # TODO: This should probably be changed to the email of the person installing ckg?
 Entrez.email = "kg@dtu.dk"

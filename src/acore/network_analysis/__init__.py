@@ -1,7 +1,15 @@
-import community
-import networkx as nx
+try:
+    import community
+    import networkx as nx
+    import snf
+except ImportError as e:
+    raise ImportError(
+        "Error importing community module. Make sure python-louvain is installed. "
+        "Install it with: pip install 'acore[all]'"
+        "\n\n Error: {}".format(e)
+    )
+
 import pandas as pd
-import snf
 from sklearn import cluster
 from sklearn.cluster import AffinityPropagation
 

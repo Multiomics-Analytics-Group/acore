@@ -13,6 +13,7 @@ from . import (
     multiple_testing,
     normalization,
     types,
+    utils,
 )
 
 __all__ = [
@@ -27,5 +28,6 @@ __all__ = [
     "multiple_testing",
     "normalization",
     "types",
+    "utils",
 ]
 __version__ = version("acore")
