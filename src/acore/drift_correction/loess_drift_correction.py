@@ -375,8 +375,8 @@ def run_loess_drift_correction(
                 "x_qc": x_qc_valid.tolist(),  # Store QC injection orders
                 "rsd_qc": rsd_qc,
                 "median": median_qc,
-                "y_all": y_all,
-                "new_values": corrected,
+                "y_all": y_all.tolist(),
+                "new_values": corrected.tolist(),
                 "status": "corrected",
             }
 
