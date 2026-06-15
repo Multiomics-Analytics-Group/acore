@@ -59,8 +59,10 @@ For each feature:
     must be present).
   * **qc_min_threshold** ([*int*](https://docs.python.org/3/library/functions.html#int) *,* *optional*) – Minimum number of QC values required to perform drift
     correction. Features with fewer QCs are returned uncorrected.
-  * **always_use_default** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – If True, the alpha value 0.75 is used for the smoothing span.
-    LOOCV is skipped. This option is less computationally heavy.
+  * **always_use_default** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – If True, LOOCV is skipped and default is used for the smoothing span.
+    This option is less computationally heavy.
+  * **default** ([*float*](https://docs.python.org/3/library/functions.html#float) *,* *optional*) – Default alpha to use when always_use_default=True or when LOOCV fails.
+    Defaults to 0.75.
 * **Returns:**
   * **corrected_df** (*pandas.DataFrame*) – Full input DataFrame with corrected values applied to
     sample_rows + qc_rows. Rows outside those arguments are
@@ -269,8 +271,10 @@ For each feature:
     must be present).
   * **qc_min_threshold** ([*int*](https://docs.python.org/3/library/functions.html#int) *,* *optional*) – Minimum number of QC values required to perform drift
     correction. Features with fewer QCs are returned uncorrected.
-  * **always_use_default** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – If True, the alpha value 0.75 is used for the smoothing span.
-    LOOCV is skipped. This option is less computationally heavy.
+  * **always_use_default** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – If True, LOOCV is skipped and default is used for the smoothing span.
+    This option is less computationally heavy.
+  * **default** ([*float*](https://docs.python.org/3/library/functions.html#float) *,* *optional*) – Default alpha to use when always_use_default=True or when LOOCV fails.
+    Defaults to 0.75.
 * **Returns:**
   * **corrected_df** (*pandas.DataFrame*) – Full input DataFrame with corrected values applied to
     sample_rows + qc_rows. Rows outside those arguments are
