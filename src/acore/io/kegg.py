@@ -107,26 +107,15 @@ def parse_kegg_name_description(raw_text: str) -> dict[str, dict[str, str]]:
         if not block:
             continue
 
-        entry_id = ""
-        name = ""
-        description = ""
+        fields = _parse_kegg_flat_file_entry(block)
+        entry_id = fields.get("ENTRY", "").split()[0]
+        if not entry_id:
+            continue
 
-        for line in block.splitlines():
-            if line.startswith("ENTRY"):
-                parts = line.split()
-                if len(parts) >= 2:
-                    entry_id = parts[1]
-            elif line.startswith("NAME"):
-                name = line.removeprefix("NAME").strip()
-            elif line.startswith("DESCRIPTION"):
-                description = line.removeprefix("DESCRIPTION").strip()
-
-        if entry_id:
-            entries[entry_id] = {
-                "NAME": name,
-                "DESCRIPTION": description,
-            }
-
+        entries[entry_id] = {
+            "NAME": fields.get("NAME", ""),
+            "DESCRIPTION": fields.get("DESCRIPTION", ""),
+        }
     return entries
 
 
