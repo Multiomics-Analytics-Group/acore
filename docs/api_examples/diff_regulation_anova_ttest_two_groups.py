@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.19.1
+#       jupytext_version: 1.19.3
 #   kernelspec:
 #     display_name: .venv
 #     language: python
@@ -29,7 +29,7 @@
 #
 
 # %% tags=["hide-output"]
-# %pip install acore
+# %pip install acore vuecore
 
 # %% tags=["hide-input"]
 import dsp_pandas

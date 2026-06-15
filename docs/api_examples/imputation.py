@@ -33,7 +33,7 @@
 
 
 # %% tags=["hide-output"]
-# %pip install acore
+# %pip install acore vuecore
 
 # %% tags=["hide-input"]
 from typing import Optional
