@@ -70,7 +70,8 @@ dev = [
   "ipykernel",
 ]
 
-all = [ # Publication analysis dependencies
+all = [ # Optional dependencies for all non-core analysis modules
+  # Publication analysis dependencies
   "biopython",
   # Topological Data Analysis
   # network analysis dependencies
