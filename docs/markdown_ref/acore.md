@@ -122,7 +122,6 @@
     * [`lookup_cid_to_kegg_id()`](acore.io.md#acore.io.kegg.lookup_cid_to_kegg_id)
   * [acore.io.pride module](acore.io.md#module-acore.io.pride)
     * [`download_PRIDE_data()`](acore.io.md#acore.io.pride.download_PRIDE_data)
-  * [acore.io.pubchem module](acore.io.md#acore-io-pubchem-module)
   * [acore.io.uncompress module](acore.io.md#module-acore.io.uncompress)
     * [`unrar()`](acore.io.md#acore.io.uncompress.unrar)
 * [acore.kaplan_meier_analysis package](acore.kaplan_meier_analysis.md)

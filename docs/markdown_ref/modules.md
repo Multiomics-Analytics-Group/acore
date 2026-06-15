@@ -77,7 +77,6 @@
       * [acore.io.ftp module](acore.io.md#module-acore.io.ftp)
       * [acore.io.kegg module](acore.io.md#module-acore.io.kegg)
       * [acore.io.pride module](acore.io.md#module-acore.io.pride)
-      * [acore.io.pubchem module](acore.io.md#acore-io-pubchem-module)
       * [acore.io.uncompress module](acore.io.md#module-acore.io.uncompress)
     * [acore.kaplan_meier_analysis package](acore.kaplan_meier_analysis.md)
       * [`get_data_ready_for_km()`](acore.kaplan_meier_analysis.md#acore.kaplan_meier_analysis.get_data_ready_for_km)

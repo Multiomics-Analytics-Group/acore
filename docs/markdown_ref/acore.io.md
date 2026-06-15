@@ -138,8 +138,6 @@ or EBI’s commandline tool pridepy
   * **date_field** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – projects deposited in PRIDE are search based on date, either
     submissionData or publicationDate (default)
 
-## acore.io.pubchem module
-
 ## acore.io.uncompress module
 
 ### unrar(filepath, to)
