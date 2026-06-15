@@ -350,7 +350,7 @@ corrected_df, correction_info = dc.run_loess_drift_correction(
     sample_cols,
     sample_order=sample_order,
     filter_percent=0.5,
-    always_use_default=True
+    always_use_default=True,
 )
 
 # %% [markdown]
@@ -360,7 +360,7 @@ corrected_df, correction_info = dc.run_loess_drift_correction(
 #   will be filtered out. If this parameter is set to "None", no filtering will be done. In this case, the filter_percent parameter does not do anything, as the data is already imputed and there are no missing values in the QCs.
 # - `always_use_default` disables the leave-one-out cross validation which calculates
 #   the ideal smoothing parameter for the LOESS curve for every feature. It will speed up the computation, but the curve which decides the value correction is less optimal.
-# - `default`(not used here) changes the default smoothing value. If the parameter is    
+# - `default`(not used here) changes the default smoothing value. If the parameter is
 #   not used, the default is 0.75. The default smoothing value is either used if `always_use_default`=True, or if no better smoothing parameter can be found during leave-one-out cross validation.
 #
 
