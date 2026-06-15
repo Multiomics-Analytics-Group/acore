@@ -52,7 +52,6 @@ def test_parse_kegg_name_description():
     """)
 
     parsed_entries = parse_kegg_name_description(raw_text)
-    print(parsed_entries)
     expected = {
         "map00030": {
             "NAME": "Pentose phosphate pathway",

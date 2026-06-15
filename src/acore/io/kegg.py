@@ -18,6 +18,7 @@ __all__ = [
     "fetch_kegg_ko_descriptions",
     "cid_to_kegg_id",
     "parse_compound_pathway_mapping",
+    "parse_kegg_name_description",
     "lookup_cid_to_kegg_id",
 ]
 
@@ -74,12 +75,13 @@ def link_kegg_batch(target_db: str, gene_ids: Iterable[str]) -> str:
         A list of strings containing the fetched information.
     """
 
-    results = []
+    gene_ids = list(gene_ids)
+    results: list[str] = []
     # maximum of 10 gene IDs per request, as per KEGG API documentation for GET requests
     # ! To Do: see if this is true also for link requests.
     for i in range(0, len(gene_ids), MAX_KEGG_BATCH_SIZE):
         batch = "+".join(gene_ids[i : i + MAX_KEGG_BATCH_SIZE])
-        r = requests.get(f"https://rest.kegg.jp/link/{target_db}/{batch}", timeout=30)
+        r = requests.get(f"{KEGG_API_BASE_URL}/link/{target_db}/{batch}", timeout=30)
         r.raise_for_status()
         results.append(r.text)
     return "".join(results)

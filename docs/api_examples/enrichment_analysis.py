@@ -114,7 +114,7 @@ diff_reg.query("rejected")
 # in our selection of the dataset.
 #
 # Check the `acore.io.uniprot` module for more details on how to fetch and process
-# annotations from UNIPROT, especially check the link given there on all the available
+# annotations from UniProt, especially check the link given there on all the available
 # fields: [return_fields](https://www.uniprot.org/help/return_fields)
 
 # %%
