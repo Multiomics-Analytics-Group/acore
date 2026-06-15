@@ -106,6 +106,10 @@ Convert a single PubChem CID to a KEGG compound ID via KEGG conv API.
 
 Parse tab-delimited KEGG-style compound/pathway mappings into a dictionary.
 
+### parse_kegg_name_description(raw_text: [str](https://docs.python.org/3/library/stdtypes.html#str)) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [str](https://docs.python.org/3/library/stdtypes.html#str)]]
+
+Parse KEGG pathway entries into ENTRY -> {NAME, DESCRIPTION}.
+
 ### lookup_cid_to_kegg_id(pubchem_cid: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[int](https://docs.python.org/3/library/functions.html#int)]) → Series | [None](https://docs.python.org/3/library/constants.html#None)
 
 Look up KEGG IDs for a list of PubChem CIDs using a pre-downloaded mapping file.

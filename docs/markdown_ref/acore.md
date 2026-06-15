@@ -119,6 +119,7 @@
     * [`fetch_kegg_ko_descriptions()`](acore.io.md#acore.io.kegg.fetch_kegg_ko_descriptions)
     * [`cid_to_kegg_id()`](acore.io.md#acore.io.kegg.cid_to_kegg_id)
     * [`parse_compound_pathway_mapping()`](acore.io.md#acore.io.kegg.parse_compound_pathway_mapping)
+    * [`parse_kegg_name_description()`](acore.io.md#acore.io.kegg.parse_kegg_name_description)
     * [`lookup_cid_to_kegg_id()`](acore.io.md#acore.io.kegg.lookup_cid_to_kegg_id)
   * [acore.io.pride module](acore.io.md#module-acore.io.pride)
     * [`download_PRIDE_data()`](acore.io.md#acore.io.pride.download_PRIDE_data)
