@@ -23,27 +23,38 @@ classifiers = [
 
 dependencies = [
   "numpy",
+  # pandas stuff
   "pandas",
-  "dsp-pandas",        # has only pandas related dependencies
+  "dsp-pandas", # https://github.com/biosustain/dsp_pandas  (import dsp_pandas)
+  # Multi-Omics-Analysis group packages
   "vuecore",
   "scipy",
   "scikit-learn>=1.5",
-  "networkx",
-  "biopython",
-  "combat",
+  # enrichment analysis dependencies
   "gseapy!=1.1.5",
-  "kmapper",
-  "lifelines",
-  "pingouin<0.6.0",    # ToDo: update column name changes, https://pingouin-stats.org/changelog.html#v0-6-0-february-2026
-  "python-louvain",
-  "PyWGCNA!=2.2.0",    # to fix.
-  "snfpy",
+  "pingouin<0.6.0", # ToDo: update column name changes, https://pingouin-stats.org/changelog.html#v0-6-0-february-2026
   "umap-learn",
   "statsmodels",
-  "inmoose",           # combat batch correction
+  # batch correction dependencies
+  "combat",
+  "inmoose", # combat batch correction
+  # io dependencies
   "requests",
   "rarfile",
+  # types
   "pandera",
+  # Publication analysis dependencies
+  "biopython",
+  # Topological Data Analysis
+  # network analysis dependencies
+  "python-louvain", # community detection for network analysis (import community)
+  "PyWGCNA!=2.2.0", # to fix.
+  # Kaplan-Meier-analysis dependencies
+  "lifelines",
+  "kmapper",
+  # network_analysis dependencies
+  "snfpy",
+  "networkx",
 ]
 
 [project.optional-dependencies]
