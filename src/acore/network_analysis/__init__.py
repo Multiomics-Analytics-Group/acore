@@ -4,10 +4,10 @@ try:
     import snf
 except ImportError as e:
     raise ImportError(
-        "Error importing community module. Make sure python-louvain is installed. "
-        "Install it with: pip install 'acore[all]'"
-        "\n\n Error: {}".format(e)
-    )
+        "Error importing network analysis dependencies (community/python-louvain, networkx, snf/snfpy). "
+        "Install them with: pip install 'acore[all]'"
+        f"\n\nError: {e}"
+    ) from e
 
 import pandas as pd
 from sklearn import cluster

@@ -7,8 +7,8 @@ except ImportError as e:
     raise ImportError(
         "Error importing lifelines module. Make sure lifelines is installed. "
         "Install it with: pip install 'acore[all]'"
-        "\n\n Error: {}".format(e)
-    )
+        f"\n\nError: {e}"
+    ) from e
 
 
 def get_data_ready_for_km(dfs_dict, args):

@@ -8,8 +8,8 @@ except ImportError as e:
     raise ImportError(
         "Error importing Bio modules. Make sure biopython is installed. "
         "Install it with: pip install biopython"
-        "\n\n Error: {}".format(e)
-    )
+        f"\n\nError: {e}"
+    ) from e
 
 
 # TODO: This should probably be changed to the email of the person installing ckg?
