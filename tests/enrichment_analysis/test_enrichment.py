@@ -1,5 +1,6 @@
 import unittest
 
+import numpy as np
 import pandas as pd
 import pytest
 from scipy import stats
@@ -588,3 +589,112 @@ def test_run_regulation_enrichment_with_duplicates():
             annotation=annotation,
             min_detected_in_set=1,
         )
+
+
+# ---------------------------------------------------------------------------
+# Tests for eFDR integration
+# ---------------------------------------------------------------------------
+
+
+def _make_enrichment_fixtures():
+    """Return annotation and regulation DataFrames for eFDR tests."""
+    annotation = pd.DataFrame(
+        {
+            "annotation": [
+                "path1",
+                "path1",
+                "path1",
+                "path2",
+                "path2",
+                "path3",
+                "path3",
+            ],
+            "identifier": [
+                "gene1",
+                "gene2",
+                "gene3",
+                "gene1",
+                "gene5",
+                "gene6",
+                "gene9",
+            ],
+            "source": ["GO", "GO", "GO", "GO_P", "GO_P", "GO_P", "GO_P"],
+        }
+    )
+    regulation_res = pd.DataFrame(
+        {
+            "identifier": ["gene1", "gene2", "gene3", "gene4", "gene5", "gene6"],
+            "rejected": [True, True, False, False, True, True],
+        }
+    )
+    return annotation, regulation_res
+
+
+def test_run_enrichment_efdr_raises_without_permutations():
+    """run_enrichment with correction='efdr' and permutations=0 should raise."""
+    annotation, regulation_res = _make_enrichment_fixtures()
+    with pytest.raises(ValueError, match="permutations"):
+        ea.run_regulation_enrichment(
+            regulation_data=regulation_res,
+            annotation=annotation,
+            min_detected_in_set=1,
+            correction="efdr",
+            permutations=0,
+        )
+
+
+def test_run_enrichment_efdr_returns_dataframe():
+    """run_regulation_enrichment with correction='efdr' should return a DataFrame
+    with the same columns as the standard correction."""
+    annotation, regulation_res = _make_enrichment_fixtures()
+    result = ea.run_regulation_enrichment(
+        regulation_data=regulation_res,
+        annotation=annotation,
+        min_detected_in_set=1,
+        correction="efdr",
+        permutations=20,
+    )
+    expected_cols = {
+        "terms",
+        "identifiers",
+        "foreground",
+        "background",
+        "foreground_pop",
+        "background_pop",
+        "pvalue",
+        "padj",
+        "rejected",
+    }
+    assert expected_cols.issubset(set(result.columns))
+    assert len(result) > 0
+
+
+def test_run_enrichment_efdr_padj_in_unit_interval():
+    """eFDR-corrected adjusted p-values (padj) must lie in [0, 1]."""
+    annotation, regulation_res = _make_enrichment_fixtures()
+    result = ea.run_regulation_enrichment(
+        regulation_data=regulation_res,
+        annotation=annotation,
+        min_detected_in_set=1,
+        correction="efdr",
+        permutations=20,
+    )
+    assert (result["padj"] >= 0.0).all() and (result["padj"] <= 1.0).all()
+
+
+def test_run_enrichment_efdr_monotone_padj():
+    """After sorting by pvalue, padj must be non-decreasing (monotonicity)."""
+    annotation, regulation_res = _make_enrichment_fixtures()
+    result = ea.run_regulation_enrichment(
+        regulation_data=regulation_res,
+        annotation=annotation,
+        min_detected_in_set=1,
+        correction="efdr",
+        permutations=50,
+    )
+    result_sorted = result.sort_values("pvalue")
+    padj = result_sorted["padj"].to_numpy()
+    assert np.all(np.diff(padj) >= -1e-12), (
+        f"padj is not monotonically non-decreasing: {padj}"
+    )
+
