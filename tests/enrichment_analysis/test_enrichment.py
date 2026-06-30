@@ -588,3 +588,78 @@ def test_run_regulation_enrichment_with_duplicates():
             annotation=annotation,
             min_detected_in_set=1,
         )
+
+
+def test_run_gsea_basic():
+    """Integration test for run_gsea: checks that the function returns
+    a DataFrame with the expected columns and one row per gene set."""
+    regulation_data = pd.DataFrame(
+        {
+            "identifier": ["gene1", "gene2", "gene3", "gene4", "gene5", "gene6"],
+            "log2FC": [3.0, 2.5, 1.0, -1.0, -2.5, -3.0],
+        }
+    )
+    annotation = pd.DataFrame(
+        {
+            "annotation": ["path1", "path1", "path1", "path2", "path2", "path2"],
+            "identifier": ["gene1", "gene2", "gene3", "gene4", "gene5", "gene6"],
+        }
+    )
+
+    result = ea.run_gsea(
+        regulation_data=regulation_data,
+        annotation=annotation,
+        identifier="identifier",
+        ranking_col="log2FC",
+        annotation_col="annotation",
+        identifier_col="identifier",
+        min_size=2,
+        permutation_num=10,
+        seed=42,
+    )
+
+    assert isinstance(result, pd.DataFrame)
+    assert not result.empty
+    expected_cols = {"Term", "ES", "NES", "NOM p-val", "FDR q-val", "Lead_genes"}
+    assert expected_cols.issubset(result.columns)
+    assert set(result["Term"]) == {"path1", "path2"}
+    # path1 genes are up-regulated -> positive NES
+    nes_path1 = result.loc[result["Term"] == "path1", "NES"].iloc[0]
+    nes_path2 = result.loc[result["Term"] == "path2", "NES"].iloc[0]
+    assert nes_path1 > 0, "path1 (up-regulated genes) should have a positive NES"
+    assert nes_path2 < 0, "path2 (down-regulated genes) should have a negative NES"
+
+
+def test_run_gsea_raises_on_empty_data():
+    """run_gsea should raise ValueError when regulation_data is empty."""
+    with pytest.raises(ValueError, match="regulation_data is empty"):
+        ea.run_gsea(
+            regulation_data=pd.DataFrame(),
+            annotation=pd.DataFrame({"annotation": [], "identifier": []}),
+        )
+
+
+def test_run_gsea_raises_on_missing_identifier_col():
+    """run_gsea should raise ValueError when identifier column is missing."""
+    regulation_data = pd.DataFrame({"gene": ["g1"], "log2FC": [1.0]})
+    annotation = pd.DataFrame({"annotation": ["path1"], "identifier": ["g1"]})
+    with pytest.raises(ValueError, match="identifier"):
+        ea.run_gsea(
+            regulation_data=regulation_data,
+            annotation=annotation,
+            identifier="identifier",  # not a column in regulation_data
+        )
+
+
+def test_run_gsea_raises_on_duplicate_identifiers():
+    """run_gsea should raise ValueError when identifier column has duplicates."""
+    regulation_data = pd.DataFrame(
+        {"identifier": ["gene1", "gene1"], "log2FC": [1.0, 2.0]}
+    )
+    annotation = pd.DataFrame({"annotation": ["path1"], "identifier": ["gene1"]})
+    with pytest.raises(ValueError, match="duplicate"):
+        ea.run_gsea(
+            regulation_data=regulation_data,
+            annotation=annotation,
+        )
+

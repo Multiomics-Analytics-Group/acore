@@ -358,6 +358,44 @@ figure = go.Figure(data=figure["data"], layout=figure["layout"])
 figure
 
 # %% [markdown]
+# # GSEA (Gene Set Enrichment Analysis)
+# GSEA ranks all measured features (e.g. proteins) by a continuous metric such as the
+# log2 fold-change from differential expression analysis and tests whether the members of
+# a gene set are enriched at the top or bottom of this ranked list.
+#
+# Unlike overrepresentation analysis (ORA), GSEA does **not** require a significance
+# cutoff to define a foreground set: it uses the full ranked list and is therefore less
+# sensitive to the choice of an arbitrary threshold.
+#
+# Here we use `gseapy.prerank` under the hood, which implements the classic weighted
+# Kolmogorov–Smirnov enrichment statistic described in Subramanian et al. (2005).
+#
+# See [`gseapy.prerank`](https://gseapy.readthedocs.io/en/latest/run.html#gseapy.prerank)
+# for more details.
+
+# %%
+gsea_results = acore.enrichment_analysis.run_gsea(
+    regulation_data=diff_reg,
+    annotation=annotations,
+    identifier="identifier",
+    ranking_col="log2FC",
+    annotation_col="annotation",
+    identifier_col="identifier",
+    min_size=1,
+    permutation_num=100,
+    seed=42,
+)
+gsea_results
+
+# %% [markdown]
+# The normalised enrichment score (NES) summarises the enrichment: positive values
+# indicate that the gene set is enriched among the **up**-regulated features and negative
+# values indicate enrichment among the **down**-regulated features.
+
+# %%
+ax = gsea_results["NES"].plot.hist(title="Distribution of NES", xlabel="NES")
+
+# %% [markdown]
 # # Compare two distributions - KS test
 #
 # The Kolmogorov-Smirnov test is a non-parametric test that compares two distributions.
