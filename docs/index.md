@@ -10,30 +10,35 @@
 
 ```{toctree}
 :maxdepth: 1
-:caption: Overview
-```
-
-```{toctree}
-:maxdepth: 1
-:caption: API usage examples
+:caption: Module examples
 :hidden:
 
-api_examples/filter_metabolomics
-api_examples/normalization_analysis
-api_examples/batch_correction
-api_examples/imputation
-api_examples/imputation_metabolomics
-api_examples/exploratory_analysis
-api_examples/drift_correction
-api_examples/diff_regulation_anova_ttest_two_groups
-api_examples/diff_regulation_anova_more_than_two_groups
-api_examples/diff_regulation_ancova
-api_examples/enrichment_analysis
+examples_module/index.md
+examples_module/0_inputs.ipynb
 ```
 
 ```{toctree}
 :maxdepth: 1
-:caption: Reanalysis
+:caption: Analysis examples
+:hidden:
+
+examples_single_analysis/index.md
+examples_single_analysis/filter_metabolomics
+examples_single_analysis/normalization_analysis
+examples_single_analysis/batch_correction
+examples_single_analysis/imputation
+examples_single_analysis/imputation_metabolomics
+examples_single_analysis/exploratory_analysis
+examples_single_analysis/drift_correction
+examples_single_analysis/diff_regulation_anova_ttest_two_groups
+examples_single_analysis/diff_regulation_anova_more_than_two_groups
+examples_single_analysis/diff_regulation_ancova
+examples_single_analysis/enrichment_analysis
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Entire Reanalysis
 :hidden:
 
 PXD040621 <downloaded/PXD040621_analysis>
