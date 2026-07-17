@@ -34,7 +34,8 @@ jobs:
         working-directory: docs
         run: |
           sphinx-apidoc --force --implicit-namespaces --module-first -o reference ../src/acore
-          rm -r api_examples
+          rm -r api_examples_module
+          rm -r examples_single_analysis
           rm -r example_data
           echo "# Test" > index.md
           sphinx-build --keep-going -b markdown ./ ./_build_markdown
