@@ -13,8 +13,8 @@
 :caption: Module examples
 :hidden:
 
-examples_module/index.md
-examples_module/0_inputs.ipynb
+api_examples_module/index.md
+api_examples_module/0_inputs.ipynb
 ```
 
 ```{toctree}
