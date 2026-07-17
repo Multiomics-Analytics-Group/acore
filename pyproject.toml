@@ -22,7 +22,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "numpy",
+  "numpy<2.5.0", # ToDo: update to remove upper limit. Related to pingouin?
   # pandas stuff
   "pandas",
   "dsp-pandas", # https://github.com/biosustain/dsp_pandas  (import dsp_pandas)
