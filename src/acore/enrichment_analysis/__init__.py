@@ -214,7 +214,7 @@ reference/api/pandas.DataFrame.groupby.html
 
         for rej_col, direction in zip(
             ("up_pairwise_regulation", "down_pairwise_regulation"),
-            ("upregulated", "downregulated"),
+            (f"upregulated in {g1}", f"upregulated in {g2}"),
         ):
             _enrichment = run_regulation_enrichment(
                 df,
