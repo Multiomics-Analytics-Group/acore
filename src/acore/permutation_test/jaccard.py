@@ -1,6 +1,7 @@
-import numpy as np
 import itertools
 from collections.abc import Iterable
+
+import numpy as np
 
 
 def jaccard_similarity(set1: set, set2: set) -> float:

@@ -1,5 +1,6 @@
 # using pydantic since these are just dictionary outputs no df
-from typing import Any, Optional, Callable, Union
+from typing import Any, Callable, Optional, Union
+
 from pydantic import BaseModel, Field
 
 

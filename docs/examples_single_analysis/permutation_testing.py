@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.17.3
+#       jupytext_version: 1.19.3
 #   kernelspec:
 #     display_name: .venv
 #     language: python
@@ -73,12 +73,13 @@ df_data.head()
 # The permutation test compares the actual observed chosen metric (e.g., t-statistic, mean difference) with metrics calculated when the dataset values are randomly shuffled permutations of the dataset.
 #
 # If we do 100 permutations of our data (although we should do a bunch more) and only 1 of those permutations falsely showed a larger effect size than the actual observed effect than it suggests there is a 1/100 chance (p value of 0.01) of the observed effect size having occurred by chance.
+#
+# optional choice of random number generator for repro
 
 # %%
-from acore.permutation_test import paired_permutation
-
-# optional choice of random number generator for repro
 import numpy as np
+
+from acore.permutation_test import paired_permutation
 
 rng = np.random.default_rng(12345)
 

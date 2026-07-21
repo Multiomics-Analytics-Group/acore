@@ -1,8 +1,8 @@
 # preprocessing
-from sklearn.preprocessing import FunctionTransformer
 import numpy as np
-from sklearn.pipeline import make_pipeline
 import pandas as pd
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import FunctionTransformer
 
 
 def calc_clr(x):

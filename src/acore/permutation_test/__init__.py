@@ -1,14 +1,16 @@
+import warnings
+
 import numpy as np
 from scipy.stats import (
     chi2_contingency,
-    ttest_rel,
-    ttest_ind,
     f_oneway,
+    ttest_ind,
+    ttest_rel,
 )
-from .internal_functions import _permute, _contingency_table, _check_degeneracy
-import warnings
 
 from acore.types.permutation_test import PermutationResult
+
+from .internal_functions import _check_degeneracy, _contingency_table, _permute
 
 warnings.simplefilter("always", UserWarning)
 
