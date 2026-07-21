@@ -1387,6 +1387,8 @@ Configuration for the model, should be a dictionary conforming to [ConfigDict][p
 
 Bases: [`BaseModel`](https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel)
 
+Schema for the output of a permutation test.
+
 #### metric *: [str](https://docs.python.org/3/library/stdtypes.html#str) | [Callable](https://docs.python.org/3/library/typing.html#typing.Callable) | [None](https://docs.python.org/3/library/constants.html#None)*
 
 #### observed *: [Any](https://docs.python.org/3/library/typing.html#typing.Any)*
