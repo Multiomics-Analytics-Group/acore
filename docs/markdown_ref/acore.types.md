@@ -1380,3 +1380,19 @@ Represents the annotation result from exploratory analysis.
 #### model_config *= {}*
 
 Configuration for the model, should be a dictionary conforming to [ConfigDict][pydantic.config.ConfigDict].
+
+## acore.types.permutation_test module
+
+### *class* PermutationResult(, metric: [str](https://docs.python.org/3/library/stdtypes.html#str) | [Callable](https://docs.python.org/3/library/typing.html#typing.Callable) | [None](https://docs.python.org/3/library/constants.html#None) = None, observed: [Any](https://docs.python.org/3/library/typing.html#typing.Any) = None, p_value: [float](https://docs.python.org/3/library/functions.html#float))
+
+Bases: [`BaseModel`](https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel)
+
+#### metric *: [str](https://docs.python.org/3/library/stdtypes.html#str) | [Callable](https://docs.python.org/3/library/typing.html#typing.Callable) | [None](https://docs.python.org/3/library/constants.html#None)*
+
+#### observed *: [Any](https://docs.python.org/3/library/typing.html#typing.Any)*
+
+#### p_value *: [float](https://docs.python.org/3/library/functions.html#float)*
+
+#### model_config *= {}*
+
+Configuration for the model, should be a dictionary conforming to [ConfigDict][pydantic.config.ConfigDict].
