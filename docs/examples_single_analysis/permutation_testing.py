@@ -26,22 +26,35 @@
 # ## Data preparation details
 #
 # ### Downloading
-# The analysed samples were downloaded via the [MGnify API](https://www.ebi.ac.uk/metagenomics/api/docs/). The inffluent (INF) and effluent (EFFF) datasets have paired samples and we also needed to download the sample metadata (also available via Mgnify API) to assign the correct pairing.
+# The analysed samples were downloaded via the [MGnify
+# API](https://www.ebi.ac.uk/metagenomics/api/docs/). The inffluent (INF) and effluent
+# (EFFF) datasets have paired samples and we also needed to download the sample metadata
+# (also available via Mgnify API) to assign the correct pairing.
 #
 # ### Preprocessing of abundances
-# - To account for technical variation due to sequencing technology limitations, we first transform the abundance values so they are relative to the total reads for the sample aka getting relative abundances.
-# - The relative abundances are compositional data (CoDa) so we map them to unconstrained vectors using centred log-ratio transformation [`acore.microbiome.internal_functions.calc_clr`](`acore.microbiome.internal_functions.calc_clr`) to not violate assumptions of any frequentist stats we do
+# - To account for technical variation due to sequencing technology limitations, we first
+#   transform the abundance values so they are relative to the total reads for the sample
+#   aka getting relative abundances.
+# - The relative abundances are compositional data (CoDa) so we map them to unconstrained
+#   vectors using centred log-ratio transformation
+#   [`acore.microbiome.internal_functions.calc_clr`](`acore.microbiome.internal_functions.calc_clr`)
+#   to not violate assumptions of any frequentist stats we do
 #
 # ### Preprocessing of the metadata
-# - the sample metadata needed for this demo (sampling location) were available in their "sample-desc"
-# - the sample-desc for each sample in both INF and EFF were parsed and used for pairing off
+# - the sample metadata needed for this demo (sampling location) were available in their
+#   "sample-desc"
+# - the sample-desc for each sample in both INF and EFF were parsed and used for pairing
+#   off
 #
 # ### Subset of data for demo
-# - For this demo we only look at [go term GO:0017001](https://www.ebi.ac.uk/QuickGO/term/GO:0017001)
+# - For this demo we only look at [go term
+#   GO:0017001](https://www.ebi.ac.uk/QuickGO/term/GO:0017001)
 # - It's expected that antibiotic catabolic processes to be higher in INF vs EFF
 #
 # ### Saving the demo dataset
-# This example subset of data was saved to a CSV, ./example_data/mgnify/Ju2018_GO0017001_enf_inf_paired.csv. The data dictionary is below:
+# This example subset of data was saved to a CSV,
+# [`./example_data/mgnify/Ju2018_GO0017001_enf_inf_paired.csv`]().
+# The data dictionary is below:
 #
 # | column            | description                                                                                                       | dtype |
 # |-------------------|-------------------------------------------------------------------------------------------------------------------|-------|
@@ -57,10 +70,14 @@
 # We will now proceed with reading in the prepared dataset.
 
 # %%
+import numpy as np
 import pandas as pd
 
+from acore.permutation_test import paired_permutation
+
 df_data = pd.read_csv(
-    "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/refs/heads/anglup-learning/example_data/mgnify/Ju2018_GO0017001_enf_inf_paired.csv"
+    "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/refs/heads/anglup-learning/"
+    "example_data/mgnify/Ju2018_GO0017001_enf_inf_paired.csv"
 )
 # sanity check
 df_data.head()
@@ -68,29 +85,28 @@ df_data.head()
 # %% [markdown]
 # ## The permutation test
 #
-# Since these are paird samples we will proceed with paired sample permutation test using `acore.perumutation_test.paired_permutation()`.
+# Since these are paird samples we will proceed with paired sample permutation test using
+# [`acore.perumutation_test.paired_permutation()`](acore.perumutation_test.paired_permutation).
 #
-# The permutation test compares the actual observed chosen metric (e.g., t-statistic, mean difference) with metrics calculated when the dataset values are randomly shuffled permutations of the dataset.
+# The permutation test compares the actual observed chosen metric (e.g., t-statistic, mean
+# difference) with metrics calculated when the dataset values are randomly shuffled
+# permutations of the dataset.
 #
-# If we do 100 permutations of our data (although we should do a bunch more) and only 1 of those permutations falsely showed a larger effect size than the actual observed effect than it suggests there is a 1/100 chance (p value of 0.01) of the observed effect size having occurred by chance.
+# If we do 100 permutations of our data (although we should do a bunch more) and only 1 of
+# those permutations falsely showed a larger effect size than the actual observed effect
+# than it suggests there is a 1/100 chance (p value of 0.01) of the observed effect size
+# having occurred by chance.
 #
-# optional choice of random number generator for repro
+# Optional choice of random number generator for reproducibility.
 
 # %%
-import numpy as np
-
-from acore.permutation_test import paired_permutation
-
 rng = np.random.default_rng(12345)
-
-# %%
-# trying diff metrics to demo functionality also
 for metric in ["t-statistic", "mean", np.mean]:
     result = paired_permutation(
-        df_data["inf_abundance"].to_numpy(),
-        df_data["eff_abundance"].to_numpy(),
+        df_data["inf_abundance"],
+        df_data["eff_abundance"],
         metric=metric,
-        n_permutations=10000,
+        n_permutations=1000,
         rng=rng,
     )
     # verbosity
@@ -99,4 +115,6 @@ for metric in ["t-statistic", "mean", np.mean]:
 # %% [markdown]
 # ## Result
 #
-# Based on the permutation tests by test statistic and mean difference, the probability of the observed metrics (t=6.739 and mean diff=0.535) occurring at random would be <0.00001.
+# Based on the permutation tests by test statistic and mean difference, the probability of
+# the observed metrics (t=6.739 and mean diff=0.535) occurring at random would be
+# <0.00001.
