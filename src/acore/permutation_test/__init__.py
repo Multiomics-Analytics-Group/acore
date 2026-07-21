@@ -49,8 +49,6 @@ def paired_permutation(
         - 'observed': Observed metric value.
         - 'p_value': Permutation test p-value (np.nan if degenerate).
     """  # Validate input
-    if not isinstance(cond1, np.ndarray) or not isinstance(cond2, np.ndarray):
-        raise TypeError("Input must be numpy arrays.")
     if cond1.shape != cond2.shape:
         raise ValueError("Input arrays must have the same shape.")
 
@@ -77,9 +75,10 @@ def paired_permutation(
 
     observed_metric = calculator(*args, **kwargs)
     if metric == "t-statistic":
-        abs_met = abs(observed_metric.statistic)
+        observed_value = float(observed_metric.statistic)
     else:
-        abs_met = abs(observed_metric)
+        observed_value = float(observed_metric)
+    abs_met = abs(observed_value)
 
     # Perform permutations
     permuted_f = []
@@ -97,6 +96,7 @@ def paired_permutation(
         if metric == "t-statistic":
             new_args = [new_cond1, new_cond2]
             new_result = abs(calculator(*new_args, **kwargs).statistic)
+            new_result = float(new_result)  # convert to float if needed
         else:
             new_args = [permuted_diff]
             new_result = abs(calculator(*new_args, **kwargs))
@@ -114,17 +114,21 @@ def paired_permutation(
         val_result = PermutationResult.model_validate(
             {
                 "metric": calculator,
-                "observed": observed_metric,
+                "observed": observed_value,
                 "p_value": np.nan,
             }
         )
 
     else:
         # Compute p-value
-        p_value = np.mean(permuted_f >= abs_met)
+        p_value = np.mean(np.asarray(permuted_f) >= abs_met)
 
         val_result = PermutationResult.model_validate(
-            {"metric": calculator, "observed": observed_metric, "p_value": p_value}
+            {
+                "metric": calculator,
+                "observed": observed_value,
+                "p_value": float(p_value),
+            }
         )
 
     return val_result.model_dump()
