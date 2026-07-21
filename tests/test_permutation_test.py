@@ -1,7 +1,7 @@
-from acore import permutation_test as pt
-import pytest
 import numpy as np
-from scipy.stats import ttest_rel, ttest_ind, mannwhitneyu, wilcoxon
+import pytest
+
+from acore import permutation_test as pt
 
 
 @pytest.fixture
