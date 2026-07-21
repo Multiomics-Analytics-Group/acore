@@ -23,7 +23,9 @@ def combat_batch_correction(
     :param data: pandas.DataFrame with samples as rows and protein identifiers as columns.
     :param batch_col: column with the batch identifiers
     :return: pandas.DataFrame with samples as rows and protein identifiers as columns.
+
     Example::
+
         result = combat_batch_correction(
                     data,
                     batch_col="batch",

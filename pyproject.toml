@@ -8,39 +8,39 @@ dynamic = ["version"]
 description = "A Python package with statistical functions to analyse multimodal molecular data"
 license = { text = "GNU General Public License v3" }
 readme = "README.rst"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
   "Natural Language :: English",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
 
 dependencies = [
   "numpy",
-  "pandas",
-  "dsp-pandas",        # has only pandas related dependencies
-  "vuecore",
+  # pandas stuff
+  "pandas<3.0.0", # ToDo: update to remove upper limit. Related to pinned pingouin version.
+  "dsp-pandas",   # https://github.com/biosustain/dsp_pandas  (import dsp_pandas)
+  # scientific computing
   "scipy",
   "scikit-learn>=1.5",
-  "networkx",
-  "biopython",
-  "combat",
+  # enrichment analysis dependencies
   "gseapy!=1.1.5",
-  "kmapper",
-  "lifelines",
-  "pingouin",
-  "python-louvain",
-  "PyWGCNA!=2.2.0",    # to fix.
-  "snfpy",
+  "pingouin<0.6.0", # ToDo: update column name changes, https://pingouin-stats.org/changelog.html#v0-6-0-february-2026
   "umap-learn",
   "statsmodels",
-  "inmoose",           # combat batch correction
+  # batch correction dependencies
+  "combat",
+  "inmoose", # combat batch correction
+  # io dependencies
   "requests",
   "rarfile",
+  # types
   "pandera",
 ]
 
@@ -53,6 +53,9 @@ docs = [
   "sphinx-new-tab-link!=0.2.2",
   "jupytext",
   "sphinx-copybutton",
+  "sphinx-llms-txt",
+  # Multi-Omics-Analysis group package for visualisation of results in the documentation
+  "vuecore",
 ]
 dev = [
   "black[jupyter]",
@@ -65,6 +68,21 @@ dev = [
   "wheel",
   "jupytext",
   "ipykernel",
+]
+
+all = [ # Optional dependencies for all non-core analysis modules
+  # Publication analysis dependencies
+  "biopython",
+  # Topological Data Analysis
+  # network analysis dependencies
+  "python-louvain", # community detection for network analysis (import community)
+  "networkx",
+  # "PyWGCNA!=2.2.0", # not used?
+  # Kaplan-Meier-analysis dependencies
+  "lifelines",
+  "kmapper",
+  # network_analysis dependencies
+  "snfpy",
 ]
 
 [project.urls]
