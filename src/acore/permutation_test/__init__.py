@@ -48,7 +48,8 @@ def paired_permutation(
         - 'metric': Metric function used.
         - 'observed': Observed metric value.
         - 'p_value': Permutation test p-value (np.nan if degenerate).
-    """  # Validate input
+    """
+    # Validate input
     if cond1.shape != cond2.shape:
         raise ValueError("Input arrays must have the same shape.")
 
@@ -72,18 +73,19 @@ def paired_permutation(
             "'t-statistic', 'mean', 'median', or a custom function "
             "that takes `cond1-cond2` as input."
         )
-
+    # ? t-test observed is the t-statistic incl. a single p-value.
+    # ? should this be save or rather the metric itself.
     observed_metric = calculator(*args, **kwargs)
     if metric == "t-statistic":
-        observed_value = float(observed_metric.statistic)
+        observed_value = observed_metric.statistic
     else:
-        observed_value = float(observed_metric)
+        observed_value = observed_metric
     abs_met = abs(observed_value)
 
     # Perform permutations
     permuted_f = []
     for _ in range(n_permutations):
-        # randomly flip direction of differences
+        # randomly flip direction of differences (sign)
         permuted_diff = diff * rng.choice([-1, 1], size=diff.shape)
         new_cond1 = np.where((permuted_diff == diff), cond1, cond2)
         new_cond2 = np.where((permuted_diff == diff), cond2, cond1)
@@ -92,15 +94,14 @@ def paired_permutation(
             raise ArithmeticError(
                 "Postcondition failed: Issue with permuted differences"
             )
-        # prep args
+        # prep args and compute permuted metric
         if metric == "t-statistic":
             new_args = [new_cond1, new_cond2]
             new_result = abs(calculator(*new_args, **kwargs).statistic)
-            new_result = float(new_result)  # convert to float if needed
         else:
             new_args = [permuted_diff]
             new_result = abs(calculator(*new_args, **kwargs))
-        # compute permuted metric
+
         permuted_f.append(new_result)
 
     if _check_degeneracy(diff):
@@ -114,7 +115,7 @@ def paired_permutation(
         val_result = PermutationResult.model_validate(
             {
                 "metric": calculator,
-                "observed": observed_value,
+                "observed": float(observed_value),
                 "p_value": np.nan,
             }
         )
@@ -126,7 +127,7 @@ def paired_permutation(
         val_result = PermutationResult.model_validate(
             {
                 "metric": calculator,
-                "observed": observed_value,
+                "observed": float(observed_value),
                 "p_value": float(p_value),
             }
         )
