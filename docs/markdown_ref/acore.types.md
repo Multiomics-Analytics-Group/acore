@@ -1383,7 +1383,7 @@ Configuration for the model, should be a dictionary conforming to [ConfigDict][p
 
 ## acore.types.permutation_test module
 
-### *class* PermutationResult(, metric: [str](https://docs.python.org/3/library/stdtypes.html#str) | [Callable](https://docs.python.org/3/library/typing.html#typing.Callable) | [None](https://docs.python.org/3/library/constants.html#None) = None, observed: [Any](https://docs.python.org/3/library/typing.html#typing.Any) = None, p_value: [float](https://docs.python.org/3/library/functions.html#float))
+### *class* PermutationResult(, metric: [str](https://docs.python.org/3/library/stdtypes.html#str) | [Callable](https://docs.python.org/3/library/typing.html#typing.Callable) | [None](https://docs.python.org/3/library/constants.html#None) = None, observed_statistic: [Any](https://docs.python.org/3/library/typing.html#typing.Any) = None, p_value: [float](https://docs.python.org/3/library/functions.html#float))
 
 Bases: [`BaseModel`](https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel)
 
@@ -1391,7 +1391,7 @@ Schema for the output of a permutation test.
 
 #### metric *: [str](https://docs.python.org/3/library/stdtypes.html#str) | [Callable](https://docs.python.org/3/library/typing.html#typing.Callable) | [None](https://docs.python.org/3/library/constants.html#None)*
 
-#### observed *: [Any](https://docs.python.org/3/library/typing.html#typing.Any)*
+#### observed_statistic *: [Any](https://docs.python.org/3/library/typing.html#typing.Any)*
 
 #### p_value *: [float](https://docs.python.org/3/library/functions.html#float)*
 

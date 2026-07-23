@@ -353,7 +353,7 @@
   * [acore.types.permutation_test module](acore.types.md#module-acore.types.permutation_test)
     * [`PermutationResult`](acore.types.md#acore.types.permutation_test.PermutationResult)
       * [`PermutationResult.metric`](acore.types.md#acore.types.permutation_test.PermutationResult.metric)
-      * [`PermutationResult.observed`](acore.types.md#acore.types.permutation_test.PermutationResult.observed)
+      * [`PermutationResult.observed_statistic`](acore.types.md#acore.types.permutation_test.PermutationResult.observed_statistic)
       * [`PermutationResult.p_value`](acore.types.md#acore.types.permutation_test.PermutationResult.p_value)
       * [`PermutationResult.model_config`](acore.types.md#acore.types.permutation_test.PermutationResult.model_config)
 
