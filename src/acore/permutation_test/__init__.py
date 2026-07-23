@@ -179,7 +179,7 @@ def chi2_permutation(
     p_value = np.mean(permuted_chi2 >= observed_chi2)
 
     val_result = PermutationResult.model_validate(
-        {"observed": observed_test, "p_value": p_value}
+        {"observed": float(observed_chi2), "p_value": float(p_value)}
     )
 
     return val_result.model_dump(exclude_none=True)
@@ -265,7 +265,7 @@ def indep_permutation(
     p_value = np.mean(permuted_f >= abs_met)
 
     val_result = PermutationResult.model_validate(
-        {"metric": calculator, "observed": observed_metric, "p_value": p_value}
+        {"metric": calculator, "observed": float(abs_met), "p_value": float(p_value)}
     )
 
     return val_result.model_dump()
