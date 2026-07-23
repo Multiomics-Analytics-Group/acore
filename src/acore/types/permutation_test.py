@@ -10,7 +10,7 @@ class PermutationResult(BaseModel):
     metric: Optional[Union[str, Callable]] = Field(
         default=None, description="Name of the metric used in the permutation test"
     )
-    observed: Any = Field(
+    observed_statistic: Any = Field(
         default=None,
         description="Observed value of the metric, test statistic or scipy result object",
     )

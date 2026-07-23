@@ -1,3 +1,42 @@
+"""Permutation test functions for statistical analysis.
+
+Nonparametric approaches are attractive because they make no assumptions about the
+underlying distribution of the data — the significance is derived empirically from the
+data itself.
+
+Core idea: Permutation tests are a non-parametric method for hypothesis testing that
+involves randomly shuffling the data to create a null distribution of the test statistic:
+We test whether an observed difference/effect between groups is larger than what you'd
+expect by chance, without assuming any particular data distribution.
+
+Concretely, the logic is:
+
+Observe a statistic (e.g., difference of means, t-statistic, chi-squared) computed on the
+real, correctly-labeled data — this is your reference value. Assume the null hypothesis is
+true: that group labels (or pairings) are arbitrary and don't matter — i.e., there's no
+real difference between conditions. Shuffle/permute the data under that null assumption
+many times (e.g., 10,000 times) — reassigning which values belong to which group/condition
+— and recompute the same statistic each time. This produces a distribution of statistic
+values that could arise purely by chance. Compare the observed statistic to this
+permuted/null distribution. The p-value is the proportion of permuted statistics that are
+as extreme or more extreme than the observed one using all the data and/or correct labels.
+ If the observed effect is unusually
+large compared to the shuffled versions, that's evidence it's not just random noise.
+
+paired_permutation: For paired samples. Since pairing must be preserved, it doesn't
+shuffle group membership directly — instead it randomly flips the sign of each paired
+difference (cond1 - cond2), simulating the null hypothesis that within each pair, which
+value is "cond1" vs "cond2" is arbitrary.
+
+chi2_permutation: For categorical data. It shuffles group membership (via _permute) and
+recomputes the chi-squared statistic on the resulting contingency table each time.
+indep_permutation: For independent samples. It pools and reshuffles values between group1
+and group2 (via _permute) since under the null there's no real distinction between the
+groups. In all three, the p-value is computed as the fraction of permuted statistics whose
+absolute value is ≥ ≥ the observed absolute statistic — i.e., p_value = mean(permuted >=
+observed).
+"""
+
 import warnings
 
 import numpy as np
@@ -77,10 +116,10 @@ def paired_permutation(
     # ? should this be save or rather the metric itself.
     observed_metric = calculator(*args, **kwargs)
     if metric == "t-statistic":
-        observed_value = observed_metric.statistic
+        observed_statistic = observed_metric.statistic
     else:
-        observed_value = observed_metric
-    abs_met = abs(observed_value)
+        observed_statistic = observed_metric
+    abs_met = abs(observed_statistic)
 
     # Perform permutations
     permuted_f = []
@@ -114,8 +153,8 @@ def paired_permutation(
 
         val_result = PermutationResult.model_validate(
             {
-                "metric": calculator,
-                "observed": float(observed_value),
+                "metric": metric,
+                "observed_statistic": float(observed_statistic),
                 "p_value": np.nan,
             }
         )
@@ -126,8 +165,8 @@ def paired_permutation(
 
         val_result = PermutationResult.model_validate(
             {
-                "metric": calculator,
-                "observed": float(observed_value),
+                "metric": metric,
+                "observed_statistic": float(observed_statistic),
                 "p_value": float(p_value),
             }
         )
@@ -156,9 +195,10 @@ def chi2_permutation(
     -------
     dict
         Dictionary with keys:
-        - 'observed': Observed chi-squared test result.
+        - 'observed_statistic': Observed chi-squared test result.
         - 'p_value': Permutation test p-value.
     """
+
     # generate contingency table
     cont_table = _contingency_table(*groups, to_np=True)
 
@@ -179,7 +219,11 @@ def chi2_permutation(
     p_value = np.mean(permuted_chi2 >= observed_chi2)
 
     val_result = PermutationResult.model_validate(
-        {"observed": float(observed_chi2), "p_value": float(p_value)}
+        {
+            "metric": "Chi-squared",
+            "observed_statistic": float(observed_chi2),
+            "p_value": float(p_value),
+        }
     )
 
     return val_result.model_dump(exclude_none=True)
@@ -216,7 +260,7 @@ def indep_permutation(
     dict
         Dictionary with keys:
         - 'metric': Metric function used.
-        - 'observed': Observed metric value.
+        - 'observed_statistic': Observed metric value.
         - 'p_value': Permutation test p-value.
     """
 
@@ -243,9 +287,11 @@ def indep_permutation(
 
     # compute observed metric
     if stat:
-        observed_metric = calculator(group1, group2, **kwargs)
+        observed_statistic = calculator(group1, group2, **kwargs).statistic
+        # observed_statistic = observed_statistic.statistic
     else:
-        observed_metric = abs(calculator(group1) - calculator(group2))
+        observed_statistic = calculator(group1) - calculator(group2)
+    observed_statistic = abs(observed_statistic)
 
     # Perform permutations
     permuted_f = []
@@ -253,19 +299,22 @@ def indep_permutation(
         new_group1, new_group2 = _permute(group1, group2, rng=rng)
         # prep args
         if stat:
-            new_result = abs(calculator(new_group1, new_group2, **kwargs).statistic)
-            abs_met = abs(observed_metric.statistic)
+            new_result = calculator(new_group1, new_group2, **kwargs).statistic
         else:
-            new_result = abs(calculator(new_group1) - calculator(new_group2))
-            abs_met = abs(observed_metric)
+            new_result = calculator(new_group1) - calculator(new_group2)
+        abs_met = abs(new_result)
         # compute permuted metric
-        permuted_f.append(new_result)
+        permuted_f.append(abs_met)
 
     # Compute p-value
-    p_value = np.mean(permuted_f >= abs_met)
+    p_value = np.mean(permuted_f >= observed_statistic)
 
     val_result = PermutationResult.model_validate(
-        {"metric": calculator, "observed": float(abs_met), "p_value": float(p_value)}
+        {
+            "metric": metric,
+            "observed_statistic": float(observed_statistic),
+            "p_value": float(p_value),
+        }
     )
 
     return val_result.model_dump()

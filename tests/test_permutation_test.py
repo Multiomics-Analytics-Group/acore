@@ -38,7 +38,7 @@ def test_paired_permutation_same(set_array):
     cond2 = set_array
     result = pt.paired_permutation(cond1, cond2, metric=np.mean)
     assert result["metric"] == np.mean
-    assert result["observed"] == 0.0
+    assert result["observed_statistic"] == 0.0
     assert result["p_value"] is np.nan
 
 
