@@ -149,8 +149,8 @@ for metric in ["t-statistic", "mean", np.mean]:
 read1_mask = df_data["sampling_read"] == "READ1 Taxonomy ID:256318"
 read2_mask = df_data["sampling_read"] == "READ2 Taxonomy ID:256318"
 
-read1_abundance = df_data.loc[read1_mask, "eff_abundance"].to_numpy()
-read2_abundance = df_data.loc[read2_mask, "eff_abundance"].to_numpy()
+read1_abundance = df_data.loc[read1_mask, "eff_abundance"]
+read2_abundance = df_data.loc[read2_mask, "eff_abundance"]
 
 rng = np.random.default_rng(12345)
 for metric in ["t-statistic", "anova", "mean", "median"]:

@@ -220,10 +220,6 @@ def indep_permutation(
         - 'p_value': Permutation test p-value.
     """
 
-    ## PRECONDITIONS
-    if not isinstance(group1, np.ndarray) or not isinstance(group2, np.ndarray):
-        raise TypeError("Input must be numpy arrays.")
-
     stat = False
     # what metric to use
     if metric == "t-statistic":
