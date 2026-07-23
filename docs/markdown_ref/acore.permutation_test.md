@@ -1,6 +1,6 @@
 # acore.permutation_test package
 
-### paired_permutation(cond1: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), cond2: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), metric: [str](https://docs.python.org/3/library/stdtypes.html#str) = 't-statistic', n_permutations: [int](https://docs.python.org/3/library/functions.html#int) = 10000, rng: [Generator](https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator) = Generator(PCG64) at 0x7F7FEBA37680, \*\*kwargs) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)
+### paired_permutation(cond1: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), cond2: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), metric: [str](https://docs.python.org/3/library/stdtypes.html#str) = 't-statistic', n_permutations: [int](https://docs.python.org/3/library/functions.html#int) = 10000, rng: [Generator](https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator) = Generator(PCG64) at 0x7FE677C8F680, \*\*kwargs) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)
 
 Perform a permutation test for paired samples.
 
@@ -19,7 +19,7 @@ Perform a permutation test for paired samples.
 * **Return type:**
   [dict](https://docs.python.org/3/library/stdtypes.html#dict)
 
-### chi2_permutation(\*groups, n_permutations: [int](https://docs.python.org/3/library/functions.html#int) = 10000, rng: [Generator](https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator) = Generator(PCG64) at 0x7F7FEBA37A00) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)
+### chi2_permutation(\*groups, n_permutations: [int](https://docs.python.org/3/library/functions.html#int) = 10000, rng: [Generator](https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator) = Generator(PCG64) at 0x7FE677C8FA00) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)
 
 Perform a permutation test for categorical data using the chi-squared statistic.
 
@@ -34,7 +34,7 @@ Perform a permutation test for categorical data using the chi-squared statistic.
 * **Return type:**
   [dict](https://docs.python.org/3/library/stdtypes.html#dict)
 
-### indep_permutation(group1: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), group2: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), metric: [str](https://docs.python.org/3/library/stdtypes.html#str) = 't-statistic', n_permutations: [int](https://docs.python.org/3/library/functions.html#int) = 10000, rng: [Generator](https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator) = Generator(PCG64) at 0x7F7FEBA37AE0, \*\*kwargs) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)
+### indep_permutation(group1: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), group2: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), metric: [str](https://docs.python.org/3/library/stdtypes.html#str) = 't-statistic', n_permutations: [int](https://docs.python.org/3/library/functions.html#int) = 10000, rng: [Generator](https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator) = Generator(PCG64) at 0x7FE677C8FAE0, \*\*kwargs) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)
 
 Perform a permutation test for independent samples.
 
