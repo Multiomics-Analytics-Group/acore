@@ -26,14 +26,12 @@
 # The values in the table are the absolute abundance of selected GO terms for each sample,
 # which we then transform to relative abundances and centred-log ratios.
 #
-
-# %% [markdown]
 # ## Data preparation details
 #
 # ### Downloading
 # The analysed samples were downloaded via the [MGnify
 # API](https://www.ebi.ac.uk/metagenomics/api/docs/). The inffluent (INF) and effluent
-# (EFFF) datasets have paired samples and we also needed to download the sample metadata
+# (EFF) datasets have paired samples and we also needed to download the sample metadata
 # (also available via Mgnify API) to assign the correct pairing.
 #
 # ### Preprocessing of abundances
@@ -42,7 +40,7 @@
 #   aka getting relative abundances.
 # - The relative abundances are compositional data (CoDa) so we map them to unconstrained
 #   vectors using centred log-ratio transformation
-#   [`acore.microbiome.internal_functions.calc_clr`](`acore.microbiome.internal_functions.calc_clr`)
+#   [`acore.transform.compositional.calc_clr`](`acore.transform.compositional.calc_clr`)
 #   to not violate assumptions of any frequentist stats we do
 #
 # ### Preprocessing of the metadata
@@ -51,14 +49,15 @@
 # - the sample-desc for each sample in both INF and EFF were parsed and used for pairing
 #   off
 #
-# ### Subset of data for demo
+# ## Subset of data for demo
 # - For this demo we only look at [go term
 #   GO:0017001](https://www.ebi.ac.uk/QuickGO/term/GO:0017001)
-# - It's expected that antibiotic catabolic processes to be higher in INF vs EFF
+# - It's expected that antibiotic catabolic processes to be higher in influent (INF) vs
+#   effluent (EFF) samples.
 #
-# ### Saving the demo dataset
+# ### Saved the demo dataset
 # This example subset of data was saved to a CSV,
-# [`./example_data/mgnify/Ju2018_GO0017001_enf_inf_paired.csv`]().
+# [`./example_data/mgnify/Ju2018_GO0017001_enf_inf_paired.csv`](/../../example_data/mgnify/Ju2018_GO0017001_enf_inf_paired.csv).
 # The data dictionary is below:
 #
 # | column            | description                                                                                                       | dtype |
