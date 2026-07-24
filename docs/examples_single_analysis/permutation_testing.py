@@ -40,7 +40,7 @@
 #   aka getting relative abundances.
 # - The relative abundances are compositional data (CoDa) so we map them to unconstrained
 #   vectors using centred log-ratio transformation
-#   [`acore.transform.compositional.calc_clr`](`acore.transform.compositional.calc_clr`)
+#   [`acore.transform.compositional.calc_clr`](acore.transform.compositional)
 #   to not violate assumptions of any frequentist stats we do
 #
 # ### Preprocessing of the metadata
@@ -57,7 +57,7 @@
 #
 # ### Saved the demo dataset
 # This example subset of data was saved to a CSV,
-# [`./example_data/mgnify/Ju2018_GO0017001_enf_inf_paired.csv`](/../../example_data/mgnify/Ju2018_GO0017001_enf_inf_paired.csv).
+# [`Ju2018_GO0017001_enf_inf_paired.csv`](example_data/mgnify/Ju2018_GO0017001_enf_inf_paired.csv).
 # The data dictionary is below:
 #
 # | column            | description                                                                                                       | dtype |
@@ -73,7 +73,7 @@
 #
 # We will now proceed with reading in the prepared dataset.
 
-# %%
+# %% [tags="hide-input"]
 from pprint import pprint
 
 import numpy as np
@@ -120,7 +120,7 @@ for metric in ["t-statistic", "mean", np.mean]:
         rng=rng,
     )
     # verbosity
-    print(result)
+    pprint(result)
 
 # %% [markdown]
 # Based on the permutation tests by test statistic and mean difference, the probability of
