@@ -36,9 +36,9 @@ def getMedlineAbstracts(idList):
         results = []
         for record in records:
             aux = {}
-            for field in fields:
+            for field, col in fields.items():
                 if field in record:
-                    aux[fields[field]] = record[field]
+                    aux[col] = record[field]
 
             if "PMID" in aux:
                 aux["url"] = pubmedUrl + aux["PMID"]
@@ -48,11 +48,11 @@ def getMedlineAbstracts(idList):
 
         abstracts = pd.DataFrame.from_dict(results)
     except error.URLError as e:
-        print("URLError: Request to Bio.Entrez failed. Error: {}".format(e))
+        print(f"URLError: Request to Bio.Entrez failed. Error: {e}")
     except error.HTTPError as e:
-        print("HTTPError: Request to Bio.Entrez failed. Error: {}".format(e))
-    except Exception as e:
-        print("Request to Bio.Entrez failed. Error: {}".format(e))
+        print(f"HTTPError: Request to Bio.Entrez failed. Error: {e}")
+    except Exception as e:  # noqa: BLE001
+        print(f"Request to Bio.Entrez failed. Error: {e}")
 
     return abstracts
 
@@ -60,7 +60,7 @@ def getMedlineAbstracts(idList):
 def get_publications_abstracts(
     data,
     publication_col="publication",
-    join_by=["publication", "Proteins", "Diseases"],
+    join_by=None,
     index="PMID",
 ):
     """
@@ -82,6 +82,8 @@ def get_publications_abstracts(
                     join_by=['publication','Proteins','Diseases'],
                     index='PMID')
     """
+    if join_by is None:
+        join_by = ["publication", "Proteins", "Diseases"]
     abstracts = pd.DataFrame()
     if not data.empty:
         abstracts = getMedlineAbstracts(

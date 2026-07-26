@@ -277,7 +277,7 @@ def calculate_anova(df, column, group="group"):
     return (column, df1, df2, t, pvalue)
 
 
-def calculate_ancova(data, column, group="group", covariates=[]):
+def calculate_ancova(data, column, group="group", covariates=None):
     """
     Calculates one-way ANCOVA using pingouin.
 
@@ -287,6 +287,8 @@ def calculate_ancova(data, column, group="group", covariates=[]):
     :param list covariates: list of covariates (columns in df)
     :return: Tuple with column, F-statistics and p-value.
     """
+    if covariates is None:
+        covariates = []
     ancova_result = pg.ancova(data=data, dv=column, between=group, covar=covariates)
     t, df, pvalue = (
         ancova_result.loc[ancova_result["Source"] == group, ["F", "DF", "p-unc"]]
@@ -331,7 +333,7 @@ def calculate_repeated_measures_anova(df, column, subject="subject", within="gro
         )
         t, pvalue = aov_result.loc[0, ["F", "p-unc"]].values.tolist()
         df1, df2 = aov_result["DF"]
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(
             f"Repeated measurements Anova for column: {column} could not be calculated."
             f" Error {e}"
@@ -373,7 +375,7 @@ def calculate_mixed_anova(
             correction=True,
         )
         aov_result["identifier"] = column
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"Mixed Anova for column: {column} could not be calculated. Error {e}")
 
     return aov_result[["identifier", "DF1", "DF2", "F", "p-unc", "Source"]]
@@ -456,8 +458,7 @@ def format_anova_table(
     if permutations > 0:
         max_perm = get_max_permutations(df, group=group)
         if max_perm >= 10:
-            if max_perm < permutations:
-                permutations = max_perm
+            permutations = min(permutations, max_perm)
             observed_pvalues = scores.pvalue
             count = apply_pvalue_permutation_fdrcorrection(
                 df,
