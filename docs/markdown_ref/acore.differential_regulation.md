@@ -2,47 +2,6 @@
 
 Differential regulation module.
 
-### run_anova(df: DataFrame, alpha: [float](https://docs.python.org/3/library/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, subject: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'subject', group: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'group', permutations: [int](https://docs.python.org/3/library/functions.html#int) = 0, correction: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'fdr_bh', is_logged: [bool](https://docs.python.org/3/library/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/library/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AnovaSchema](acore.types.md#acore.types.differential_analysis.AnovaSchema)] | [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AnovaSchemaMultiGroup](acore.types.md#acore.types.differential_analysis.AnovaSchemaMultiGroup)]
-
-Performs statistical test for each protein in a dataset.
-Checks what type of data is the input (paired, unpaired or repeated measurements) and
-performs posthoc tests for multiclass data (i.e., when there are more than two groups,
-posthoc tests such as pairwise t-tests or Tukey’s HSD are used to determine which specific
-groups differ after finding a significant overall effect).
-Multiple hypothesis correction uses permutation-based
-if permutations>0 and Benjamini/Hochberg if permutations=0.
-
-* **Parameters:**
-  * **df** (*pd.DataFrame*) – pandas dataframe with samples as rows and protein identifiers as columns
-    (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – error rate for multiple hypothesis correction
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the dataframe. Pass `None` or `[]`
-    to drop no columns.
-  * **subject** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with subject identifiers
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with group identifiers
-  * **permutations** ([*int*](https://docs.python.org/3/library/functions.html#int)) – number of permutations used to estimate false discovery rates.
-  * **correction** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
-    use methods available in acore.multiple_testing
-  * **is_logged** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – whether data is log-transformed
-  * **non_par** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – if True, normality and variance equality assumptions are checked
-    and non-parametric test Mann Whitney U test if not passed
-* **Returns:**
-  DataFrame adhering to AnovaSchema or AnovaSchemaMultiGroup.
-* **Return type:**
-  DataFrame[[AnovaSchema](acore.types.md#acore.types.differential_analysis.AnovaSchema)] | DataFrame[[AnovaSchemaMultiGroup](acore.types.md#acore.types.differential_analysis.AnovaSchemaMultiGroup)]
-
-Example:
-
-```default
-result = run_anova(df,
-                   alpha=0.05,
-                   drop_cols=["sample",'subject'],
-                   subject='subject',
-                   group='group',
-                   permutations=50
-        )
-```
-
 ### run_ancova(df: DataFrame, covariates: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)], alpha: [float](https://docs.python.org/3/library/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, subject: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'subject', group: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'group', permutations: [int](https://docs.python.org/3/library/functions.html#int) = 0, correction: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'fdr_bh', is_logged: [bool](https://docs.python.org/3/library/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/library/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AncovaSchema](acore.types.md#acore.types.differential_analysis.AncovaSchema)]
 
 Performs statistical test for each protein in a dataset.
@@ -81,6 +40,47 @@ result = run_ancova(df,
                     subject='subject',
                     group='group',
                     permutations=50
+        )
+```
+
+### run_anova(df: DataFrame, alpha: [float](https://docs.python.org/3/library/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, subject: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'subject', group: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'group', permutations: [int](https://docs.python.org/3/library/functions.html#int) = 0, correction: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'fdr_bh', is_logged: [bool](https://docs.python.org/3/library/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/library/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AnovaSchema](acore.types.md#acore.types.differential_analysis.AnovaSchema)] | [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AnovaSchemaMultiGroup](acore.types.md#acore.types.differential_analysis.AnovaSchemaMultiGroup)]
+
+Performs statistical test for each protein in a dataset.
+Checks what type of data is the input (paired, unpaired or repeated measurements) and
+performs posthoc tests for multiclass data (i.e., when there are more than two groups,
+posthoc tests such as pairwise t-tests or Tukey’s HSD are used to determine which specific
+groups differ after finding a significant overall effect).
+Multiple hypothesis correction uses permutation-based
+if permutations>0 and Benjamini/Hochberg if permutations=0.
+
+* **Parameters:**
+  * **df** (*pd.DataFrame*) – pandas dataframe with samples as rows and protein identifiers as columns
+    (with additional columns ‘group’, ‘sample’ and ‘subject’).
+  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – error rate for multiple hypothesis correction
+  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the dataframe. Pass `None` or `[]`
+    to drop no columns.
+  * **subject** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with subject identifiers
+  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with group identifiers
+  * **permutations** ([*int*](https://docs.python.org/3/library/functions.html#int)) – number of permutations used to estimate false discovery rates.
+  * **correction** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
+    use methods available in acore.multiple_testing
+  * **is_logged** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – whether data is log-transformed
+  * **non_par** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – if True, normality and variance equality assumptions are checked
+    and non-parametric test Mann Whitney U test if not passed
+* **Returns:**
+  DataFrame adhering to AnovaSchema or AnovaSchemaMultiGroup.
+* **Return type:**
+  DataFrame[[AnovaSchema](acore.types.md#acore.types.differential_analysis.AnovaSchema)] | DataFrame[[AnovaSchemaMultiGroup](acore.types.md#acore.types.differential_analysis.AnovaSchemaMultiGroup)]
+
+Example:
+
+```default
+result = run_anova(df,
+                   alpha=0.05,
+                   drop_cols=["sample",'subject'],
+                   subject='subject',
+                   group='group',
+                   permutations=50
         )
 ```
 
@@ -204,7 +204,7 @@ result = run_ttest(df,
         )
 ```
 
-### run_two_way_anova(df, drop_cols=None, subject='subject', group=['group', 'secondary_group'])
+### run_two_way_anova(df, drop_cols=None, subject='subject', group=None)
 
 Run a 2-way ANOVA when data[‘secondary_group’] is not empty
 
@@ -337,7 +337,7 @@ Calculates one-way ANOVA using pingouin.
 * **Returns:**
   Tuple with t-statistics and p-value.
 
-### calculate_ancova(data, column, group='group', covariates=[])
+### calculate_ancova(data, column, group='group', covariates=None)
 
 Calculates one-way ANCOVA using pingouin.
 

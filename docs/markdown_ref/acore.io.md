@@ -17,15 +17,15 @@ or EBI’s commandline tool pridepy
   * **date_field** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – projects deposited in PRIDE are search based on date, either
     submissionData or publicationDate (default)
 
+### download_file(url: [str](https://docs.python.org/3/library/stdtypes.html#str), local_filename: [str](https://docs.python.org/3/library/stdtypes.html#str)) → [None](https://docs.python.org/3/library/constants.html#None)
+
+Download a file from the internet.
+
 ### unrar(filepath, to)
 
 Decompress RAR file
 :param str filepath: path to rar file
 :param str to: where to extract all files
-
-### download_file(url: [str](https://docs.python.org/3/library/stdtypes.html#str), local_filename: [str](https://docs.python.org/3/library/stdtypes.html#str)) → [None](https://docs.python.org/3/library/constants.html#None)
-
-Download a file from the internet.
 
 ## Subpackages
 
@@ -66,21 +66,11 @@ Download a file from an FTP server.
 
 ## acore.io.kegg module
 
-### link_kegg_batch(target_db: [str](https://docs.python.org/3/library/stdtypes.html#str), gene_ids: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)]) → [str](https://docs.python.org/3/library/stdtypes.html#str)
+### cid_to_kegg_id(pubchem_cid: [int](https://docs.python.org/3/library/functions.html#int)) → [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None)
 
-Fetch from KEGG in batches informations.
+Convert a single PubChem CID to a KEGG compound ID via KEGG conv API.
 
-Docs: [https://www.kegg.jp/kegg/rest/keggapi.html](https://www.kegg.jp/kegg/rest/keggapi.html)
-
-* **Parameters:**
-  * **target_db** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Target endpoint of KEGG API, e.g. “ko” or “pathway”.
-  * **gene_ids** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* [*str*](https://docs.python.org/3/library/stdtypes.html#str)) – List of KEGG gene IDs to query.
-* **Returns:**
-  A list of strings containing the fetched information.
-* **Return type:**
-  [str](https://docs.python.org/3/library/stdtypes.html#str)
-
-### fetch_kegg_ko_descriptions(ko_terms: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)], timeout: [float](https://docs.python.org/3/library/functions.html#float) = 30.0) → DataFrame
+### fetch_kegg_ko_descriptions(ko_terms: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)], timeout: [float](https://docs.python.org/3/library/functions.html#float) = 30.0) → DataFrame
 
 Fetch common descriptions for KEGG KO terms.
 
@@ -98,19 +88,21 @@ Fetch common descriptions for KEGG KO terms.
 The KEGG API accepts up to 10 entry identifiers per request. This helper
 batches larger inputs automatically.
 
-### cid_to_kegg_id(pubchem_cid: [int](https://docs.python.org/3/library/functions.html#int)) → [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None)
+### link_kegg_batch(target_db: [str](https://docs.python.org/3/library/stdtypes.html#str), gene_ids: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)]) → [str](https://docs.python.org/3/library/stdtypes.html#str)
 
-Convert a single PubChem CID to a KEGG compound ID via KEGG conv API.
+Fetch from KEGG in batches informations.
 
-### parse_compound_pathway_mapping(raw_mapping: [str](https://docs.python.org/3/library/stdtypes.html#str)) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)]]
+Docs: [https://www.kegg.jp/kegg/rest/keggapi.html](https://www.kegg.jp/kegg/rest/keggapi.html)
 
-Parse tab-delimited KEGG-style compound/pathway mappings into a dictionary.
+* **Parameters:**
+  * **target_db** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Target endpoint of KEGG API, e.g. “ko” or “pathway”.
+  * **gene_ids** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* [*str*](https://docs.python.org/3/library/stdtypes.html#str)) – List of KEGG gene IDs to query.
+* **Returns:**
+  A list of strings containing the fetched information.
+* **Return type:**
+  [str](https://docs.python.org/3/library/stdtypes.html#str)
 
-### parse_kegg_name_description(raw_text: [str](https://docs.python.org/3/library/stdtypes.html#str)) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [str](https://docs.python.org/3/library/stdtypes.html#str)]]
-
-Parse KEGG pathway entries into ENTRY -> {NAME, DESCRIPTION}.
-
-### lookup_cid_to_kegg_id(pubchem_cid: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[int](https://docs.python.org/3/library/functions.html#int)]) → Series | [None](https://docs.python.org/3/library/constants.html#None)
+### lookup_cid_to_kegg_id(pubchem_cid: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[int](https://docs.python.org/3/library/functions.html#int)]) → Series | [None](https://docs.python.org/3/library/constants.html#None)
 
 Look up KEGG IDs for a list of PubChem CIDs using a pre-downloaded mapping file.
 
@@ -120,6 +112,14 @@ Look up KEGG IDs for a list of PubChem CIDs using a pre-downloaded mapping file.
   A Series mapping PubChem CIDs to KEGG IDs, or None if no matches are found.
 * **Return type:**
   pd.Series | None
+
+### parse_compound_pathway_mapping(raw_mapping: [str](https://docs.python.org/3/library/stdtypes.html#str)) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)]]
+
+Parse tab-delimited KEGG-style compound/pathway mappings into a dictionary.
+
+### parse_kegg_name_description(raw_text: [str](https://docs.python.org/3/library/stdtypes.html#str)) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [str](https://docs.python.org/3/library/stdtypes.html#str)]]
+
+Parse KEGG pathway entries into ENTRY -> {NAME, DESCRIPTION}.
 
 ## acore.io.pride module
 

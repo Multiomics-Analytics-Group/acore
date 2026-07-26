@@ -2,7 +2,7 @@
 
 ### getMedlineAbstracts(idList)
 
-### get_publications_abstracts(data, publication_col='publication', join_by=['publication', 'Proteins', 'Diseases'], index='PMID')
+### get_publications_abstracts(data, publication_col='publication', join_by=None, index='PMID')
 
 Accesses NCBI PubMed over the WWW and retrieves the abstracts corresponding
 to a list of one or more PubMed IDs.

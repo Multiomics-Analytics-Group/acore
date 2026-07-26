@@ -69,7 +69,7 @@ Example:
 result = get_coefficient_variation(data, drop_columns=['sample', 'subject'], group='group')
 ```
 
-### extract_number_missing(data, min_valid, drop_cols=['sample'], group='group')
+### extract_number_missing(data, min_valid, drop_cols=None, group='group')
 
 Counts how many valid values exist in each column and filters column labels with more
 valid values than the minimum threshold defined.
@@ -90,7 +90,7 @@ Example:
 result = extract_number_missing(data, min_valid=3, drop_cols=['sample'], group='group')
 ```
 
-### extract_percentage_missing(data, missing_max, drop_cols=['sample'], group='group', how='all')
+### extract_percentage_missing(data, missing_max, drop_cols=None, group='group', how='all')
 
 Extracts ratio of missing/valid values in each column and filters column labels with
 lower ratio than the minimum threshold defined.
@@ -110,7 +110,7 @@ Example::
 : result = extract_percentage_missing(data, missing_max=0.3,
   : drop_cols=[‘sample’], group=’group’)
 
-### run_pca(data, drop_cols=['sample', 'subject'], group='group', annotation_cols=['sample'], components=2, dropna=True)
+### run_pca(data, drop_cols=None, group='group', annotation_cols=None, components=2, dropna=True)
 
 Performs principal component analysis and returns the values of each component for each sample
 and each protein, and the loadings for each protein.
@@ -137,7 +137,7 @@ result = run_pca(data, drop_cols=['sample', 'subject'], group='group',
                  components=2, dropna=True)
 ```
 
-### run_tsne(data, drop_cols=['sample', 'subject'], group='group', annotation_cols=['sample'], components=2, perplexity=40, max_iter=1000, init='pca', dropna=True)
+### run_tsne(data, drop_cols=None, group='group', annotation_cols=None, components=2, perplexity=40, max_iter=1000, init='pca', dropna=True)
 
 Performs t-distributed Stochastic Neighbor Embedding analysis.
 
@@ -177,7 +177,7 @@ result = run_tsne(data,
                 )
 ```
 
-### run_umap(data, drop_cols=['sample', 'subject'], group='group', annotation_cols=['sample'], n_neighbors=10, min_dist=0.3, metric='cosine', dropna=True)
+### run_umap(data, drop_cols=None, group='group', annotation_cols=None, n_neighbors=10, min_dist=0.3, metric='cosine', dropna=True)
 
 Performs Uniform Manifold Approximation and Projection.
 

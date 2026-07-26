@@ -74,7 +74,7 @@ result = run_correlation(df, alpha=0.05, subject='subject', group='group',
             method='pearson', correction='fdr_bh')
 ```
 
-### run_multi_correlation(df_dict, alpha=0.05, subject='subject', on=['subject', 'biological_sample'], group='group', method='pearson', correction='fdr_bh')
+### run_multi_correlation(df_dict, alpha=0.05, subject='subject', on=None, group='group', method='pearson', correction='fdr_bh')
 
 This function merges all input dataframes and calculates pairwise correlations for all columns.
 
