@@ -136,7 +136,8 @@ def run_multi_correlation(
     :param dict df_dict: dictionary of pandas dataframes with samples as rows and features as columns.
     :param str subject: name of the column containing subject identifiers.
     :param str group: name of the column containing group identifiers.
-    :param list on: column names to join dataframes on (must be found in all dataframes).
+    :param list on: column names to join dataframes on (must be found in all dataframes),
+                    defaults to ['subject', 'biological_sample'] for `None`.
     :param str method: method to use for correlation calculation ('pearson', 'spearman').
     :param float alpha: error rate. Values velow alpha are considered significant.
     :param str correction: type of correction see apply_pvalue_correction for methods

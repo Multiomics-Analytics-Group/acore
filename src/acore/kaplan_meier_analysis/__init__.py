@@ -38,7 +38,12 @@ def get_data_ready_for_km(dfs_dict, args):
 
 def group_data_based_on_marker(df, marker, index_col, how, value):
     mdf = pd.DataFrame()
-    if index_col is not None and marker is not None and index_col in df and marker in df:
+    if (
+        index_col is not None
+        and marker is not None
+        and index_col in df
+        and marker in df
+    ):
         mdf = df[[marker, index_col]]
         if how == "cutoff":
             mdf["new_grouping"] = mdf.apply(
@@ -60,9 +65,7 @@ def group_data_based_on_marker(df, marker, index_col, how, value):
                 )
             mdf["new_grouping"] = labels
         else:
-            print(
-                f"Grouping method {how} not implemented. Try with 'cutoff' or 'top'"
-            )
+            print(f"Grouping method {how} not implemented. Try with 'cutoff' or 'top'")
 
     return mdf
 
@@ -111,7 +114,10 @@ def get_km_results(df, group_col, time_col, event_col):
         )
 
     if summary_ is not None:
-        summary_result = f"Multivariate logrank test: pval={summary_.p_value}, t_statistic={summary_._test_statistic}"
+        summary_result = (
+            f"Multivariate logrank test: pval={summary_.p_value}, "
+            f"t_statistic={summary_._test_statistic}"
+        )
 
     return models, summary_result
 

@@ -159,10 +159,12 @@ def extract_percentage_missing(
     lower ratio than the minimum threshold defined.
 
     :param data: pandas dataframe with group as rows and protein identifier as column.
+    :param float missing_max: maximum ratio of missing/valid values to be filtered.
+    :param list drop_cols: column labels to be dropped from the dataframe.
+                           Default is ['sample'] if None.
     :param str group: column label containing group identifiers.
                       If None, ratio is calculated across all samples,
                       otherwise is calculated per unique group identifier.
-    :param float missing_max: maximum ratio of missing/valid values to be filtered.
     :param str how: define if labels with a higher percentage of missing values than the threshold
                     in any group ('any') or in all groups ('all') should be filtered
     :return: List of column labels below the threshold.
@@ -210,8 +212,10 @@ def run_pca(
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
                  (with additional columns 'group', 'sample' and 'subject').
     :param list drop_cols: column labels to be dropped from the dataframe.
+                           Default is ['sample', 'subject'] if None.
     :param str group: column label containing group identifiers.
-    :param list annotation_cols: list of columns to be added in the scatter plot annotation
+    :param list annotation_cols: list of columns to be added in the scatter plot annotation.
+                                 Default is ['sample'] if None.
     :param int components: number of components to keep.
     :param bool dropna: if True removes all columns with any missing values.
     :return: tuple: 1) three pandas dataframes: components, loadings and variance; 2)
@@ -235,7 +239,10 @@ def run_pca(
 
     df = data.copy()
     annotations = pd.DataFrame()
-    if annotation_cols is not None and len(list(set(annotation_cols).intersection(data.columns))) > 0:
+    if (
+        annotation_cols is not None
+        and len(list(set(annotation_cols).intersection(data.columns))) > 0
+    ):
         annotations = data.set_index(group)[annotation_cols]
     drop_cols_int = list(set(drop_cols).intersection(df.columns))
     if len(drop_cols_int) > 0:
@@ -309,9 +316,11 @@ def run_tsne(
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
                  (with additional columns 'group', 'sample' and 'subject').
     :param list drop_cols: column labels to be dropped from the dataframe.
+    Default is ['sample', 'subject'] if None.
     :param str group: column label containing group identifiers.
     :param int components: dimension of the embedded space.
-    :param list annotation_cols: list of columns to be added in the scatter plot annotation
+    :param list annotation_cols: list of columns to be added in the scatter plot annotation.
+                                 Default is ['sample'] if None.
     :param int perplexity: related to the number of nearest neighbors that is used
                            in other manifold learning algorithms.
                            Consider selecting a value between 5 and 50.
@@ -351,7 +360,10 @@ def run_tsne(
     X = df.values
     y = df.index
     annotations = pd.DataFrame()
-    if annotation_cols is not None and len(list(set(annotation_cols).intersection(data.columns))) > 0:
+    if (
+        annotation_cols is not None
+        and len(list(set(annotation_cols).intersection(data.columns))) > 0
+    ):
         annotations = data[annotation_cols]
     if X.size > 0:
         tsne = TSNE(
@@ -398,8 +410,10 @@ def run_umap(
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
                  (with additional columns 'group', 'sample' and 'subject').
     :param list drop_cols: column labels to be dropped from the dataframe.
+                           Default is ['sample', 'subject'] if None.
     :param str group: column label containing group identifiers.
-    :param list annotation_cols: list of columns to be added in the scatter plot annotation
+    :param list annotation_cols: list of columns to be added in the scatter plot annotation.
+                                 Default is ['sample'] if None.
     :param int n_neighbors: number of neighboring points used
                             in local approximations of manifold structure.
     :param float min_dist: controls how tightly the embedding is allowed compress points together.
@@ -438,7 +452,10 @@ def run_umap(
     y = df.index
 
     annotations = pd.DataFrame()
-    if annotation_cols is not None and len(list(set(annotation_cols).intersection(data.columns))) > 0:
+    if (
+        annotation_cols is not None
+        and len(list(set(annotation_cols).intersection(data.columns))) > 0
+    ):
         annotations = data[annotation_cols]
 
     if not X.size:

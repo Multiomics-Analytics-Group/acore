@@ -277,7 +277,9 @@ def calculate_anova(df, column, group="group"):
     return (column, df1, df2, t, pvalue)
 
 
-def calculate_ancova(data, column, group="group", covariates=None):
+def calculate_ancova(
+    data, column, group: str = "group", covariates: list[str] | None = None
+):
     """
     Calculates one-way ANCOVA using pingouin.
 

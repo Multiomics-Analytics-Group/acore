@@ -71,6 +71,7 @@ def get_publications_abstracts(
                 proteins (columns: 'Diseases', 'Proteins', 'linkout' and 'publication').
     :param str publication_col: column label containing PubMed ids.
     :param list join_by: column labels to be kept from the input dataframe.
+                         Default is ['publication','Proteins','Diseases'] if None.
     :param str index: column label containing PubMed ids from the NCBI retrieved data.
     :return: Pandas dataframe with publication information and columns 'PMID', 'abstract',
      'authors', 'date', 'journal', 'keywords', 'title', 'url', 'Proteins' and 'Diseases'.

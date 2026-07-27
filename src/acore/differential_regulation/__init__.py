@@ -566,7 +566,8 @@ def run_two_way_anova(
     :param list drop_cols: column names to drop from DataFrame. Pass ``None`` or ``[]``
                            to drop no columns.
     :param str subject: column name containing subject identifiers.
-    :param list group: column names corresponding to independent variable groups
+    :param list group: column names corresponding to independent variable groups.
+                       Defaults to ['group', 'secondary_group'] if None.
     :return: Two DataFrames, anova results and residuals.
 
     Example::
