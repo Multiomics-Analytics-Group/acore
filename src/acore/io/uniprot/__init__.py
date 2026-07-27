@@ -69,10 +69,9 @@ def process_annotations(annotations: pd.DataFrame, fields: str) -> pd.DataFrame:
     }
 
     # expand go terms
-    to_expand = list()
-    for field in d_fields_to_col:
+    to_expand = []
+    for field, col in d_fields_to_col.items():
         if "go_" in field:
-            col = d_fields_to_col[field]
             annotations[col] = annotations[col].str.split(";")
             to_expand.append(col)
     for col in to_expand:

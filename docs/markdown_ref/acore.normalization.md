@@ -7,7 +7,7 @@ Combat normalization was added using the inmoose package.
 
 The actual normalization functions are in strategies.py.
 
-### normalize_data(data: DataFrame, method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'median', normalize: [str](https://docs.python.org/3/library/stdtypes.html#str) = None)
+### normalize_data(data: DataFrame, method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'median', normalize: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None)
 
 This function normalizes the data using the selected method. Normalizes only nummeric
 data, but keeps the non-numeric columns in the output DataFrame.
@@ -27,7 +27,7 @@ Example:
 result = normalize_data(data, method='median_polish')
 ```
 
-### normalize_data_per_group(data: DataFrame, group: [str](https://docs.python.org/3/library/stdtypes.html#str) | [int](https://docs.python.org/3/library/functions.html#int) | [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str) | [int](https://docs.python.org/3/library/functions.html#int)], method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'median', normalize: [str](https://docs.python.org/3/library/stdtypes.html#str) = None) → DataFrame
+### normalize_data_per_group(data: DataFrame, group: [str](https://docs.python.org/3/library/stdtypes.html#str) | [int](https://docs.python.org/3/library/functions.html#int) | [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str) | [int](https://docs.python.org/3/library/functions.html#int)], method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'median', normalize: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None) → DataFrame
 
 This function normalizes the data by group using the selected method
 

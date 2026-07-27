@@ -16,6 +16,46 @@ This function checks for NAs in the data frame inside some user-provided rows.
 
 ### cpca_centroid(df: DataFrame, sample_rows, qc_rows: [list](https://docs.python.org/3/library/stdtypes.html#list), log_transform: [bool](https://docs.python.org/3/library/functions.html#bool) = True)
 
+### qc_rlsc_loess(x_qc, y_qc, x_all, always_use_default=False, default=0.75, alpha_candidates=None)
+
+Estimate a QC-based drift curve using LOESS smoothing with
+leave-one-out cross-validation (LOOCV) to select the optimal
+smoothing span (alpha).
+
+This function:
+1. Tests multiple LOESS spans (alpha values).
+2. Fits LOESS to QC points for each candidate span.
+3. Performs LOOCV to compute prediction error for each span.
+4. Selects the alpha producing the lowest LOOCV error.
+5. Fits LOESS once more using the best alpha.
+6. Interpolates the LOESS fit to all sample injection orders
+
+> using a cubic spline, with clamping outside the QC range.
+* **Parameters:**
+  * **x_qc** (*array-like*) – Injection order of QC samples (numeric).
+  * **y_qc** (*array-like*) – Intensity values of QC samples corresponding to x_qc.
+  * **x_all** (*array-like*) – Injection order of all samples (QCs + regular samples) in
+    the same order as data rows.
+  * **always_use_default** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – If True, the alpha value 0.75 is used for all values.
+    LOOCV is skipped. This option is less computationally heavy.
+  * **alpha_candidates** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* [*float*](https://docs.python.org/3/library/functions.html#float) *,* *optional*) – List of LOESS smoothing parameters (fractions of data used
+    in local regression) to evaluate during optimization.
+    Default is [0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0].
+* **Returns:**
+  * **drift_curve** (*ndarray*) – The estimated drift correction curve evaluated at each
+    injection order in x_all. Values outside the QC range
+    are clamped to the nearest in-range LOESS value.
+  * **best_alpha** (*float*) – The alpha value producing the lowest LOOCV error.
+
+### Notes
+
+- LOESS fits enforce a minimum fraction of (λ + 1) / n, with λ=1
+  for linear LOESS.
+- CubicSpline is used for interpolation without extrapolation.
+  Out-of-range values are manually clamped.
+- Drift curve values are clipped to be strictly positive
+  (minimum 1e-6) to prevent division instability.
+
 ### run_cpca_drift_correction(df: DataFrame, sample_rows, qc_rows, n_comps: [int](https://docs.python.org/3/library/functions.html#int) = 1) → DataFrame
 
 Corrects technical drift using Common Principal Components Analysis (CPCA).
@@ -30,7 +70,7 @@ Adapted from [https://github.com/m-baralt/metabolomics_incident_diabetes](https:
   * *Full input DataFrame with corrected values applied to the intensity rows*
   *  *(sample_rows + qc_rows). Rows outside those arguments are returned unchanged.*
 
-### run_loess_drift_correction(data, qc_rows, sample_rows, sample_order: DataFrame, filter_percent: [float](https://docs.python.org/3/library/functions.html#float) = None, qc_min_threshold: [int](https://docs.python.org/3/library/functions.html#int) = 4, always_use_default=False, default=0.75)
+### run_loess_drift_correction(data, qc_rows, sample_rows, sample_order: DataFrame, filter_percent: [float](https://docs.python.org/3/library/functions.html#float) | [None](https://docs.python.org/3/library/constants.html#None) = None, qc_min_threshold: [int](https://docs.python.org/3/library/functions.html#int) = 4, always_use_default=False, default=0.75)
 
 Perform QC-based drift correction across multiple features using
 LOESS regression and spline interpolation.
@@ -85,46 +125,6 @@ For each feature:
 - Drift correction rescales intensities so that QC medians remain
   unchanged.
 - Sample names in data and sample_order must match exactly.
-
-### qc_rlsc_loess(x_qc, y_qc, x_all, always_use_default=False, default=0.75, alpha_candidates=array([0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.]))
-
-Estimate a QC-based drift curve using LOESS smoothing with
-leave-one-out cross-validation (LOOCV) to select the optimal
-smoothing span (alpha).
-
-This function:
-1. Tests multiple LOESS spans (alpha values).
-2. Fits LOESS to QC points for each candidate span.
-3. Performs LOOCV to compute prediction error for each span.
-4. Selects the alpha producing the lowest LOOCV error.
-5. Fits LOESS once more using the best alpha.
-6. Interpolates the LOESS fit to all sample injection orders
-
-> using a cubic spline, with clamping outside the QC range.
-* **Parameters:**
-  * **x_qc** (*array-like*) – Injection order of QC samples (numeric).
-  * **y_qc** (*array-like*) – Intensity values of QC samples corresponding to x_qc.
-  * **x_all** (*array-like*) – Injection order of all samples (QCs + regular samples) in
-    the same order as data rows.
-  * **always_use_default** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – If True, the alpha value 0.75 is used for all values.
-    LOOCV is skipped. This option is less computationally heavy.
-  * **alpha_candidates** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* [*float*](https://docs.python.org/3/library/functions.html#float) *,* *optional*) – List of LOESS smoothing parameters (fractions of data used
-    in local regression) to evaluate during optimization.
-    Default is [0.4, 0.6, 0.8, 1.0].
-* **Returns:**
-  * **drift_curve** (*ndarray*) – The estimated drift correction curve evaluated at each
-    injection order in x_all. Values outside the QC range
-    are clamped to the nearest in-range LOESS value.
-  * **best_alpha** (*float*) – The alpha value producing the lowest LOOCV error.
-
-### Notes
-
-- LOESS fits enforce a minimum fraction of (λ + 1) / n, with λ=1
-  for linear LOESS.
-- CubicSpline is used for interpolation without extrapolation.
-  Out-of-range values are manually clamped.
-- Drift curve values are clipped to be strictly positive
-  (minimum 1e-6) to prevent division instability.
 
 ## Submodules
 
@@ -202,7 +202,7 @@ ceil(n_qc \* (1 - threshold)), where n_qc is the number of QC rows.
 > print(filtered)
 > # Output: columns with at least 2 valid QC values (since ceil(3 \* (1 - 0.5)) = 2)
 
-### qc_rlsc_loess(x_qc, y_qc, x_all, always_use_default=False, default=0.75, alpha_candidates=array([0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.]))
+### qc_rlsc_loess(x_qc, y_qc, x_all, always_use_default=False, default=0.75, alpha_candidates=None)
 
 Estimate a QC-based drift curve using LOESS smoothing with
 leave-one-out cross-validation (LOOCV) to select the optimal
@@ -226,7 +226,7 @@ This function:
     LOOCV is skipped. This option is less computationally heavy.
   * **alpha_candidates** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* [*float*](https://docs.python.org/3/library/functions.html#float) *,* *optional*) – List of LOESS smoothing parameters (fractions of data used
     in local regression) to evaluate during optimization.
-    Default is [0.4, 0.6, 0.8, 1.0].
+    Default is [0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0].
 * **Returns:**
   * **drift_curve** (*ndarray*) – The estimated drift correction curve evaluated at each
     injection order in x_all. Values outside the QC range
@@ -242,7 +242,7 @@ This function:
 - Drift curve values are clipped to be strictly positive
   (minimum 1e-6) to prevent division instability.
 
-### run_loess_drift_correction(data, qc_rows, sample_rows, sample_order: DataFrame, filter_percent: [float](https://docs.python.org/3/library/functions.html#float) = None, qc_min_threshold: [int](https://docs.python.org/3/library/functions.html#int) = 4, always_use_default=False, default=0.75)
+### run_loess_drift_correction(data, qc_rows, sample_rows, sample_order: DataFrame, filter_percent: [float](https://docs.python.org/3/library/functions.html#float) | [None](https://docs.python.org/3/library/constants.html#None) = None, qc_min_threshold: [int](https://docs.python.org/3/library/functions.html#int) = 4, always_use_default=False, default=0.75)
 
 Perform QC-based drift correction across multiple features using
 LOESS regression and spline interpolation.

@@ -1,6 +1,6 @@
 # acore.imputation_analysis package
 
-### imputation_KNN(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, group: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None, cutoff=0.6, alone=True, n_neighbors=3)
+### imputation_KNN(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, group: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None, cutoff=0.6, alone=True, n_neighbors=3)
 
 K-Nearest Neighbors imputation for pandas dataframes with missing data. For more
 information visit [fancyimpute](https://github.com/iskandr/fancyimpute/blob/HEAD/fancyimpute/knn.py).
@@ -28,7 +28,7 @@ result = imputation_KNN(data,
 )
 ```
 
-### imputation_mixed_norm_KNN(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, shift: [float](https://docs.python.org/3/library/functions.html#float) = 1.8, nstd: [float](https://docs.python.org/3/library/functions.html#float) = 0.3, group: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'group', cutoff: [float](https://docs.python.org/3/library/functions.html#float) = 0.6, random_state: [int](https://docs.python.org/3/library/functions.html#int) = 112736, n_neighbors: [int](https://docs.python.org/3/library/functions.html#int) = 3)
+### imputation_mixed_norm_KNN(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, shift: [float](https://docs.python.org/3/library/functions.html#float) = 1.8, nstd: [float](https://docs.python.org/3/library/functions.html#float) = 0.3, group: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'group', cutoff: [float](https://docs.python.org/3/library/functions.html#float) = 0.6, random_state: [int](https://docs.python.org/3/library/functions.html#int) = 112736, n_neighbors: [int](https://docs.python.org/3/library/functions.html#int) = 3)
 
 Missing values are replaced in two steps:
 
@@ -63,7 +63,7 @@ result = imputation_mixed_norm_KNN(data,
 )
 ```
 
-### imputation_normal_distribution(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, shift: [float](https://docs.python.org/3/library/functions.html#float) = 1.8, nstd: [float](https://docs.python.org/3/library/functions.html#float) = 0.3, random_state: [int](https://docs.python.org/3/library/functions.html#int) = 112736)
+### imputation_normal_distribution(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, shift: [float](https://docs.python.org/3/library/functions.html#float) = 1.8, nstd: [float](https://docs.python.org/3/library/functions.html#float) = 0.3, random_state: [int](https://docs.python.org/3/library/functions.html#int) = 112736)
 
 Missing values will be replaced by random numbers that are drawn from a normal
 distribution. The imputation is done for each sample (across all proteins)
@@ -98,7 +98,7 @@ result = imputation_normal_distribution(data,
 )
 ```
 
-### imputation_zeros(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, drop_cols: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None)
+### imputation_zeros(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None)
 
 Replace missing values with zeros.
 
@@ -120,7 +120,7 @@ Replace missing values with zeros.
 result = imputation_zeros(data, on_cols=[‘featureA’, ‘featureB’])
 result = imputation_zeros(data, on_rows=[‘QC1’, ‘QC2’, ‘blank1’])
 
-### imputation_half_minimum(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, drop_cols: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None)
+### imputation_half_minimum(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None)
 
 Replace missing values with half the per-column minimum of observed values.
 

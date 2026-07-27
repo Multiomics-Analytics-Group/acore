@@ -2,8 +2,8 @@
 # region: Imports and constants
 import re
 from collections import defaultdict
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 from urllib import error, request
 
 import pandas as pd
@@ -14,12 +14,12 @@ _KO_TERM_PATTERN = re.compile(r"^(?:ko:)?(K\d{5})$", re.IGNORECASE)
 MAX_KEGG_BATCH_SIZE = 10
 
 __all__ = [
-    "link_kegg_batch",
-    "fetch_kegg_ko_descriptions",
     "cid_to_kegg_id",
+    "fetch_kegg_ko_descriptions",
+    "link_kegg_batch",
+    "lookup_cid_to_kegg_id",
     "parse_compound_pathway_mapping",
     "parse_kegg_name_description",
-    "lookup_cid_to_kegg_id",
 ]
 
 DUMP_CID_TO_KEGGID = Path(__file__).resolve().parent / "pubchem_to_kegg_ids.csv"
@@ -247,9 +247,9 @@ if __name__ == "__main__":
     # curl -fsSL https://rest.kegg.jp/get/path:yli00592
     # %%
     df = fetch_kegg_ko_descriptions(["ko:K03007", "K02143", "ko:K00844"])
-    df
+    print(df)
 
     # %%
     pubchem_id = 3323
     kegg_id = cid_to_kegg_id(pubchem_id)
-    kegg_id
+    print(kegg_id)

@@ -67,13 +67,16 @@ def filter_features_by_qc(
     return df.loc[:, valid_counts >= min_valid]
 
 
+_DEFAULT_ALPHA_CANDIDATES = np.arange(0.4, 1.01, 0.05)
+
+
 def qc_rlsc_loess(
     x_qc,
     y_qc,
     x_all,
     always_use_default=False,
     default=0.75,
-    alpha_candidates=np.arange(0.4, 1.01, 0.05),
+    alpha_candidates=None,
 ):
     """
     Estimate a QC-based drift curve using LOESS smoothing with
@@ -104,7 +107,7 @@ def qc_rlsc_loess(
     alpha_candidates : list of float, optional
         List of LOESS smoothing parameters (fractions of data used
         in local regression) to evaluate during optimization.
-        Default is [0.4, 0.6, 0.8, 1.0].
+        Default is [0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0].
 
     Returns
     -------
@@ -124,6 +127,8 @@ def qc_rlsc_loess(
     - Drift curve values are clipped to be strictly positive
       (minimum 1e-6) to prevent division instability.
     """
+    if alpha_candidates is None:
+        alpha_candidates = _DEFAULT_ALPHA_CANDIDATES
 
     best_alpha = None
     best_loocv_error = np.inf
@@ -192,7 +197,7 @@ def run_loess_drift_correction(
     qc_rows,
     sample_rows,
     sample_order: pd.DataFrame,
-    filter_percent: float = None,
+    filter_percent: float | None = None,
     qc_min_threshold: int = 4,
     always_use_default=False,
     default=0.75,
@@ -382,7 +387,7 @@ def run_loess_drift_correction(
 
             logger.info(f"Corrected {feature_name} with alpha {best_alpha}.")
 
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             corrected_df[feature_name] = y_all  # Preserve original values
             correction_info[feature_name] = {
                 "alpha": None,

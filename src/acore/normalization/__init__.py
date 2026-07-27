@@ -26,7 +26,7 @@ def normalize_data_per_group(
     data: pd.DataFrame,
     group: str | int | list[str | int],
     method: str = "median",
-    normalize: str = None,
+    normalize: str | None = None,
 ) -> pd.DataFrame:
     """
     This function normalizes the data by group using the selected method
@@ -53,7 +53,7 @@ def normalize_data_per_group(
 def normalize_data(
     data: pd.DataFrame,
     method: str = "median",
-    normalize: str = None,
+    normalize: str | None = None,
 ):
     """
     This function normalizes the data using the selected method. Normalizes only nummeric
