@@ -2,11 +2,11 @@ name: Python package
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   release:
-    types: [ published ]
+    types: [published]
 
 jobs:
   format:
@@ -32,10 +32,10 @@ jobs:
           # stop the build if there are Python syntax errors or undefined names
           ruff check src
   test:
-    runs-on: ubuntu-latest
+    runs-on: ["ubuntu-latest", "macOS-latest", "windows-latest"]
     strategy:
       matrix:
-        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
+        python-version: ["3.10", "3.14"]
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
