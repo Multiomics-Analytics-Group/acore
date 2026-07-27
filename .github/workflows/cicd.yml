@@ -32,10 +32,11 @@ jobs:
           # stop the build if there are Python syntax errors or undefined names
           ruff check src
   test:
-    runs-on: ["ubuntu-latest", "macos-latest", "windows-latest"]
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python-version: ["3.10", "3.14"]
+        os: ["ubuntu-latest", "macOS-latest", "windows-latest"]
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
