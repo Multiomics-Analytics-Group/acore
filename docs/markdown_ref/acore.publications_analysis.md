@@ -12,6 +12,7 @@ to a list of one or more PubMed IDs.
     proteins (columns: ‘Diseases’, ‘Proteins’, ‘linkout’ and ‘publication’).
   * **publication_col** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing PubMed ids.
   * **join_by** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be kept from the input dataframe.
+    Default is [‘publication’,’Proteins’,’Diseases’] if None.
   * **index** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing PubMed ids from the NCBI retrieved data.
 * **Returns:**
   Pandas dataframe with publication information and columns ‘PMID’, ‘abstract’,

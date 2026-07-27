@@ -214,7 +214,8 @@ Run a 2-way ANOVA when data[‘secondary_group’] is not empty
   * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column names to drop from DataFrame. Pass `None` or `[]`
     to drop no columns.
   * **subject** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column name containing subject identifiers.
-  * **group** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column names corresponding to independent variable groups
+  * **group** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column names corresponding to independent variable groups.
+    Defaults to [‘group’, ‘secondary_group’] if None.
 * **Returns:**
   Two DataFrames, anova results and residuals.
 
@@ -337,7 +338,7 @@ Calculates one-way ANOVA using pingouin.
 * **Returns:**
   Tuple with t-statistics and p-value.
 
-### calculate_ancova(data, column, group='group', covariates=None)
+### calculate_ancova(data, column, group: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'group', covariates: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None)
 
 Calculates one-way ANCOVA using pingouin.
 
