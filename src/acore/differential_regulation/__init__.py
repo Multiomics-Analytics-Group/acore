@@ -1,7 +1,5 @@
 """Differential regulation module."""
 
-from typing import Union
-
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
@@ -37,8 +35,8 @@ from .tests import (  # calculate_thsd, complement_posthoc,
 )
 
 __all__ = [
-    "run_anova",
     "run_ancova",
+    "run_anova",
     "run_diff_analysis",
     "run_mixed_anova",
     "run_repeated_measurements_anova",
@@ -76,7 +74,7 @@ def run_anova(
     correction: str = "fdr_bh",
     is_logged: bool = True,
     non_par: bool = False,
-) -> Union[DataFrame[AnovaSchema], DataFrame[AnovaSchemaMultiGroup]]:
+) -> DataFrame[AnovaSchema] | DataFrame[AnovaSchemaMultiGroup]:
     """
     Performs statistical test for each protein in a dataset.
     Checks what type of data is the input (paired, unpaired or repeated measurements) and
@@ -511,8 +509,7 @@ def run_ttest(
     if permutations > 0:
         max_perm = get_max_permutations(df, group=group)
         if max_perm >= 10:
-            if max_perm < permutations:
-                permutations = max_perm
+            permutations = min(permutations, max_perm)
             observed_pvalues = scores.pvalue
             count = apply_pvalue_permutation_fdrcorrection(
                 df,
@@ -559,7 +556,7 @@ def run_two_way_anova(
     df,
     drop_cols=None,
     subject="subject",
-    group=["group", "secondary_group"],
+    group=None,
 ):
     """
     Run a 2-way ANOVA when data['secondary_group'] is not empty
@@ -569,7 +566,8 @@ def run_two_way_anova(
     :param list drop_cols: column names to drop from DataFrame. Pass ``None`` or ``[]``
                            to drop no columns.
     :param str subject: column name containing subject identifiers.
-    :param list group: column names corresponding to independent variable groups
+    :param list group: column names corresponding to independent variable groups.
+                       Defaults to ['group', 'secondary_group'] if None.
     :return: Two DataFrames, anova results and residuals.
 
     Example::
@@ -580,6 +578,8 @@ def run_two_way_anova(
                                    group=['group', 'secondary_group']
                 )
     """
+    if group is None:
+        group = ["group", "secondary_group"]
     drop_cols = drop_cols or []
     data = df.copy()
     factor_a, factor_b = group

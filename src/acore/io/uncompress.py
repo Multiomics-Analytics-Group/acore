@@ -11,8 +11,8 @@ def unrar(filepath, to):
     """
     try:
         with rarfile.RarFile(filepath) as opened_rar:
-            print("Extracting files: {}".format(opened_rar.namelist()))
+            print(f"Extracting files: {opened_rar.namelist()}")
             opened_rar.extractall(to)
     except Exception as err:
-        print("Error: {}. Could not unrar file {}".format(filepath, err))
+        print(f"Error: {filepath}. Could not unrar file {err}")
         raise

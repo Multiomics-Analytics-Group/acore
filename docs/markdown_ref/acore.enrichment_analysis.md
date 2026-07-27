@@ -6,6 +6,46 @@ analysis.
 Most things in this module are covered in [https://www.youtube.com/watch?v=2NC1QOXmc5o](https://www.youtube.com/watch?v=2NC1QOXmc5o)
 by Lars Juhl Jensen.
 
+### run_fisher(group1: [list](https://docs.python.org/3/library/stdtypes.html#list)[[int](https://docs.python.org/3/library/functions.html#int)], group2: [list](https://docs.python.org/3/library/stdtypes.html#list)[[int](https://docs.python.org/3/library/functions.html#int)], alternative: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'two-sided') → [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[float](https://docs.python.org/3/library/functions.html#float), [float](https://docs.python.org/3/library/functions.html#float)]
+
+Run fisher’s exact test on two groups using [scipy.stats.fisher_exact](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fisher_exact.html).
+
+Example:
+
+```default
+# annotated   not-annotated
+# group1      a               b
+# group2      c               d
+
+
+odds, pvalue = stats.fisher_exact(group1=[a, b],
+                                  group2 =[c, d]
+                )
+```
+
+### run_kolmogorov_smirnov(dist1: [list](https://docs.python.org/3/library/stdtypes.html#list)[[float](https://docs.python.org/3/library/functions.html#float)], dist2: [list](https://docs.python.org/3/library/stdtypes.html#list)[[float](https://docs.python.org/3/library/functions.html#float)], alternative: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'two-sided') → [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[float](https://docs.python.org/3/library/functions.html#float), [float](https://docs.python.org/3/library/functions.html#float)]
+
+Compute the Kolmogorov-Smirnov statistic on 2 samples.
+See [scipy.stats.ks_2samp](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_2samp.html)
+
+* **Parameters:**
+  * **dist1** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – sequence of 1-D ndarray (first distribution to compare)
+    drawn from a continuous distribution
+  * **dist2** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – sequence of 1-D ndarray (second distribution to compare)
+    drawn from a continuous distribution
+  * **alternative** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – defines the alternative hypothesis (default is ‘two-sided’):
+    \* **‘two-sided’**
+    \* **‘less’**
+    \* **‘greater’**
+* **Returns:**
+  statistic float and KS statistic pvalue float Two-tailed p-value.
+
+Example:
+
+```default
+result = run_kolmogorov_smirnov(dist1, dist2, alternative='two-sided')
+```
+
 ### run_site_regulation_enrichment(regulation_data: DataFrame, annotation: DataFrame, identifier: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'identifier', groups: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] = ('group1', 'group2'), annotation_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'annotation', rejected_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'rejected', group_col: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'group', method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'fisher', regex: [str](https://docs.python.org/3/library/stdtypes.html#str) = '(\\\\w+~.+)_\\\\w\\\\d+\\\\-\\\\w+', correction: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'fdr_bh', remove_duplicates: [bool](https://docs.python.org/3/library/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[EnrichmentAnalysisSchema](acore.types.md#acore.types.enrichment_analysis.EnrichmentAnalysisSchema)]
 
 This function runs a simple enrichment analysis for significantly
@@ -97,46 +137,6 @@ result = run_up_down_regulation_enrichment(
     alpha=0.05,
     lfc_cutoff=1,
 )
-```
-
-### run_fisher(group1: [list](https://docs.python.org/3/library/stdtypes.html#list)[[int](https://docs.python.org/3/library/functions.html#int)], group2: [list](https://docs.python.org/3/library/stdtypes.html#list)[[int](https://docs.python.org/3/library/functions.html#int)], alternative: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'two-sided') → [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[float](https://docs.python.org/3/library/functions.html#float), [float](https://docs.python.org/3/library/functions.html#float)]
-
-Run fisher’s exact test on two groups using [scipy.stats.fisher_exact](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fisher_exact.html).
-
-Example:
-
-```default
-# annotated   not-annotated
-# group1      a               b
-# group2      c               d
-
-
-odds, pvalue = stats.fisher_exact(group1=[a, b],
-                                  group2 =[c, d]
-                )
-```
-
-### run_kolmogorov_smirnov(dist1: [list](https://docs.python.org/3/library/stdtypes.html#list)[[float](https://docs.python.org/3/library/functions.html#float)], dist2: [list](https://docs.python.org/3/library/stdtypes.html#list)[[float](https://docs.python.org/3/library/functions.html#float)], alternative: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'two-sided') → [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[float](https://docs.python.org/3/library/functions.html#float), [float](https://docs.python.org/3/library/functions.html#float)]
-
-Compute the Kolmogorov-Smirnov statistic on 2 samples.
-See [scipy.stats.ks_2samp](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_2samp.html)
-
-* **Parameters:**
-  * **dist1** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – sequence of 1-D ndarray (first distribution to compare)
-    drawn from a continuous distribution
-  * **dist2** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – sequence of 1-D ndarray (second distribution to compare)
-    drawn from a continuous distribution
-  * **alternative** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – defines the alternative hypothesis (default is ‘two-sided’):
-    \* **‘two-sided’**
-    \* **‘less’**
-    \* **‘greater’**
-* **Returns:**
-  statistic float and KS statistic pvalue float Two-tailed p-value.
-
-Example:
-
-```default
-result = run_kolmogorov_smirnov(dist1, dist2, alternative='two-sided')
 ```
 
 ## Subpackages

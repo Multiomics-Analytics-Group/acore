@@ -4,7 +4,7 @@
 
 ### group_data_based_on_marker(df, marker, index_col, how, value)
 
-### run_km(data, time_col, event_col, group_col, args={})
+### run_km(data, time_col, event_col, group_col, args=None)
 
 ### get_km_results(df, group_col, time_col, event_col)
 

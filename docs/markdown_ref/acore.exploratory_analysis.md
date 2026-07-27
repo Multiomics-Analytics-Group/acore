@@ -69,7 +69,7 @@ Example:
 result = get_coefficient_variation(data, drop_columns=['sample', 'subject'], group='group')
 ```
 
-### extract_number_missing(data, min_valid, drop_cols=['sample'], group='group')
+### extract_number_missing(data, min_valid, drop_cols=None, group='group')
 
 Counts how many valid values exist in each column and filters column labels with more
 valid values than the minimum threshold defined.
@@ -90,17 +90,19 @@ Example:
 result = extract_number_missing(data, min_valid=3, drop_cols=['sample'], group='group')
 ```
 
-### extract_percentage_missing(data, missing_max, drop_cols=['sample'], group='group', how='all')
+### extract_percentage_missing(data, missing_max, drop_cols=None, group='group', how='all')
 
 Extracts ratio of missing/valid values in each column and filters column labels with
 lower ratio than the minimum threshold defined.
 
 * **Parameters:**
   * **data** – pandas dataframe with group as rows and protein identifier as column.
+  * **missing_max** ([*float*](https://docs.python.org/3/library/functions.html#float)) – maximum ratio of missing/valid values to be filtered.
+  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the dataframe.
+    Default is [‘sample’] if None.
   * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing group identifiers.
     If None, ratio is calculated across all samples,
     otherwise is calculated per unique group identifier.
-  * **missing_max** ([*float*](https://docs.python.org/3/library/functions.html#float)) – maximum ratio of missing/valid values to be filtered.
   * **how** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – define if labels with a higher percentage of missing values than the threshold
     in any group (‘any’) or in all groups (‘all’) should be filtered
 * **Returns:**
@@ -110,7 +112,7 @@ Example::
 : result = extract_percentage_missing(data, missing_max=0.3,
   : drop_cols=[‘sample’], group=’group’)
 
-### run_pca(data, drop_cols=['sample', 'subject'], group='group', annotation_cols=['sample'], components=2, dropna=True)
+### run_pca(data, drop_cols=None, group='group', annotation_cols=None, components=2, dropna=True)
 
 Performs principal component analysis and returns the values of each component for each sample
 and each protein, and the loadings for each protein.
@@ -122,8 +124,10 @@ For information visit
   * **data** – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the dataframe.
+    Default is [‘sample’, ‘subject’] if None.
   * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing group identifiers.
-  * **annotation_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation
+  * **annotation_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation.
+    Default is [‘sample’] if None.
   * **components** ([*int*](https://docs.python.org/3/library/functions.html#int)) – number of components to keep.
   * **dropna** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – if True removes all columns with any missing values.
 * **Returns:**
@@ -137,7 +141,7 @@ result = run_pca(data, drop_cols=['sample', 'subject'], group='group',
                  components=2, dropna=True)
 ```
 
-### run_tsne(data, drop_cols=['sample', 'subject'], group='group', annotation_cols=['sample'], components=2, perplexity=40, max_iter=1000, init='pca', dropna=True)
+### run_tsne(data, drop_cols=None, group='group', annotation_cols=None, components=2, perplexity=40, max_iter=1000, init='pca', dropna=True)
 
 Performs t-distributed Stochastic Neighbor Embedding analysis.
 
@@ -148,9 +152,14 @@ For more information visit
   * **data** – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the dataframe.
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing group identifiers.
-  * **components** ([*int*](https://docs.python.org/3/library/functions.html#int)) – dimension of the embedded space.
-  * **annotation_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation
+
+Default is [‘sample’, ‘subject’] if None.
+:param str group: column label containing group identifiers.
+:param int components: dimension of the embedded space.
+:param list annotation_cols: list of columns to be added in the scatter plot annotation.
+
+> Default is [‘sample’] if None.
+* **Parameters:**
   * **perplexity** ([*int*](https://docs.python.org/3/library/functions.html#int)) – related to the number of nearest neighbors that is used
     in other manifold learning algorithms.
     Consider selecting a value between 5 and 50.
@@ -177,7 +186,7 @@ result = run_tsne(data,
                 )
 ```
 
-### run_umap(data, drop_cols=['sample', 'subject'], group='group', annotation_cols=['sample'], n_neighbors=10, min_dist=0.3, metric='cosine', dropna=True)
+### run_umap(data, drop_cols=None, group='group', annotation_cols=None, n_neighbors=10, min_dist=0.3, metric='cosine', dropna=True)
 
 Performs Uniform Manifold Approximation and Projection.
 
@@ -187,8 +196,10 @@ For more information vist [https://umap-learn.readthedocs.io](https://umap-learn
   * **data** – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the dataframe.
+    Default is [‘sample’, ‘subject’] if None.
   * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing group identifiers.
-  * **annotation_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation
+  * **annotation_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation.
+    Default is [‘sample’] if None.
   * **n_neighbors** ([*int*](https://docs.python.org/3/library/functions.html#int)) – number of neighboring points used
     in local approximations of manifold structure.
   * **min_dist** ([*float*](https://docs.python.org/3/library/functions.html#float)) – controls how tightly the embedding is allowed compress points together.
