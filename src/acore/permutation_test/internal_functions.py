@@ -1,8 +1,10 @@
+from collections.abc import Iterable
+
 import numpy as np
 import pandas as pd
 
 
-def _permute(*groups, rng=np.random.default_rng(seed=12345)):
+def _permute(*groups: Iterable, rng: np.random.Generator | None = None):
     """
     Perform a single permutation of the groups.
 
@@ -19,6 +21,8 @@ def _permute(*groups, rng=np.random.default_rng(seed=12345)):
     list
         The permuted groups.
     """
+    if rng is None:
+        rng = np.random.default_rng()
     # shuffle the combined array
     combined = np.concatenate(groups)
     rng.shuffle(combined)
@@ -32,7 +36,7 @@ def _permute(*groups, rng=np.random.default_rng(seed=12345)):
     return new_groups
 
 
-def _contingency_table(*groups, to_np: bool = True) -> np.array:
+def _contingency_table(*groups: Iterable, to_np: bool = True) -> np.array:
     """
     Create a contingency table from the provided groups.
 

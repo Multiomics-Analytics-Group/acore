@@ -1,5 +1,6 @@
 # using pydantic since these are just dictionary outputs no df
-from typing import Any, Callable, Optional, Union
+from collections.abc import Callable
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -7,7 +8,7 @@ from pydantic import BaseModel, Field
 class PermutationResult(BaseModel):
     """Schema for the output of a permutation test."""
 
-    metric: Optional[Union[str, Callable]] = Field(
+    metric: str | Callable | None = Field(
         default=None, description="Name of the metric used in the permutation test"
     )
     observed_statistic: Any = Field(

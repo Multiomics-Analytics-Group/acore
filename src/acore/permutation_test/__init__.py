@@ -59,7 +59,7 @@ def paired_permutation(
     cond2: np.ndarray,
     metric: str = "t-statistic",
     n_permutations: int = 10000,
-    rng: np.random.Generator = np.random.default_rng(seed=12345),
+    rng: np.random.Generator = None,
     **kwargs,
 ) -> dict:
     """
@@ -76,7 +76,7 @@ def paired_permutation(
     n_permutations : int, optional
         Number of permutations to perform (default is 10000).
     rng : np.random.Generator, optional
-        Random number generator (default is np.random.default_rng(seed=12345)).
+        Random number generator (default None triggers np.random.default_rng(seed=12345)).
     **kwargs
         Additional arguments passed to the metric function.
 
@@ -91,6 +91,9 @@ def paired_permutation(
     # Validate input
     if cond1.shape != cond2.shape:
         raise ValueError("Input arrays must have the same shape.")
+
+    if rng is None:
+        rng = np.random.default_rng(seed=12345)
 
     # paired differences
     diff = cond1 - cond2
@@ -177,7 +180,7 @@ def paired_permutation(
 def chi2_permutation(
     *groups,
     n_permutations: int = 10000,
-    rng: np.random.Generator = np.random.default_rng(seed=12345),
+    rng: np.random.Generator = None,
 ) -> dict:
     """
     Perform a permutation test for categorical data using the chi-squared statistic.
@@ -189,7 +192,7 @@ def chi2_permutation(
     n_permutations : int, optional
         Number of permutations to perform (default is 10000).
     rng : np.random.Generator, optional
-        Random number generator (default is np.random.default_rng(seed=12345)).
+        Random number generator (default None triggers np.random.default_rng(seed=12345)).
 
     Returns
     -------
@@ -198,6 +201,9 @@ def chi2_permutation(
         - 'observed_statistic': Observed chi-squared test result.
         - 'p_value': Permutation test p-value.
     """
+
+    if rng is None:
+        rng = np.random.default_rng(seed=12345)
 
     # generate contingency table
     cont_table = _contingency_table(*groups, to_np=True)
@@ -234,7 +240,7 @@ def indep_permutation(
     group2: np.ndarray,
     metric: str = "t-statistic",
     n_permutations: int = 10000,
-    rng: np.random.Generator = np.random.default_rng(seed=12345),
+    rng: np.random.Generator = None,
     **kwargs,
 ) -> dict:
     """
@@ -251,7 +257,7 @@ def indep_permutation(
     n_permutations : int, optional
         Number of permutations to perform (default is 10000).
     rng : np.random.Generator, optional
-        Random number generator (default is np.random.default_rng(seed=12345)).
+        Random number generator (default None triggers np.random.default_rng(seed=12345)).
     **kwargs
         Additional arguments passed to the metric function.
 
@@ -263,6 +269,9 @@ def indep_permutation(
         - 'observed_statistic': Observed metric value.
         - 'p_value': Permutation test p-value.
     """
+
+    if rng is None:
+        rng = np.random.default_rng(seed=12345)
 
     stat = False
     # what metric to use
