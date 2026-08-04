@@ -40,7 +40,7 @@ groups. In all three, the p-value is computed as the fraction of permuted statis
 absolute value is ≥ ≥ the observed absolute statistic — i.e., p_value = mean(permuted >=
 observed).
 
-### paired_permutation(cond1: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), cond2: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), metric: [str](https://docs.python.org/3/library/stdtypes.html#str) = 't-statistic', n_permutations: [int](https://docs.python.org/3/library/functions.html#int) = 10000, rng: [Generator](https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator) = Generator(PCG64) at 0x7FE13985F060, \*\*kwargs) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)
+### paired_permutation(cond1: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), cond2: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), metric: [str](https://docs.python.org/3/library/stdtypes.html#str) = 't-statistic', n_permutations: [int](https://docs.python.org/3/library/functions.html#int) = 10000, rng: [Generator](https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator) = None, \*\*kwargs) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)
 
 Perform a permutation test for paired samples.
 
@@ -49,7 +49,7 @@ Perform a permutation test for paired samples.
   * **cond2** (*np.ndarray*) – Second condition (paired samples).
   * **metric** ([*str*](https://docs.python.org/3/library/stdtypes.html#str) *or* *callable* *,* *optional*) – Metric to compute (‘t-statistic’, ‘mean’, ‘median’, or a custom function).
   * **n_permutations** ([*int*](https://docs.python.org/3/library/functions.html#int) *,* *optional*) – Number of permutations to perform (default is 10000).
-  * **rng** (*np.random.Generator* *,* *optional*) – Random number generator (default is np.random.default_rng(seed=12345)).
+  * **rng** (*np.random.Generator* *,* *optional*) – Random number generator (default None triggers np.random.default_rng(seed=12345)).
   * **\*\*kwargs** – Additional arguments passed to the metric function.
 * **Returns:**
   Dictionary with keys:
@@ -59,14 +59,14 @@ Perform a permutation test for paired samples.
 * **Return type:**
   [dict](https://docs.python.org/3/library/stdtypes.html#dict)
 
-### chi2_permutation(\*groups, n_permutations: [int](https://docs.python.org/3/library/functions.html#int) = 10000, rng: [Generator](https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator) = Generator(PCG64) at 0x7FE13985F3E0) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)
+### chi2_permutation(\*groups, n_permutations: [int](https://docs.python.org/3/library/functions.html#int) = 10000, rng: [Generator](https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator) = None) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)
 
 Perform a permutation test for categorical data using the chi-squared statistic.
 
 * **Parameters:**
   * **\*groups** (*array-like*) – Arrays representing categorical groups.
   * **n_permutations** ([*int*](https://docs.python.org/3/library/functions.html#int) *,* *optional*) – Number of permutations to perform (default is 10000).
-  * **rng** (*np.random.Generator* *,* *optional*) – Random number generator (default is np.random.default_rng(seed=12345)).
+  * **rng** (*np.random.Generator* *,* *optional*) – Random number generator (default None triggers np.random.default_rng(seed=12345)).
 * **Returns:**
   Dictionary with keys:
   - ‘observed_statistic’: Observed chi-squared test result.
@@ -74,7 +74,7 @@ Perform a permutation test for categorical data using the chi-squared statistic.
 * **Return type:**
   [dict](https://docs.python.org/3/library/stdtypes.html#dict)
 
-### indep_permutation(group1: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), group2: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), metric: [str](https://docs.python.org/3/library/stdtypes.html#str) = 't-statistic', n_permutations: [int](https://docs.python.org/3/library/functions.html#int) = 10000, rng: [Generator](https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator) = Generator(PCG64) at 0x7FE13985F4C0, \*\*kwargs) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)
+### indep_permutation(group1: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), group2: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), metric: [str](https://docs.python.org/3/library/stdtypes.html#str) = 't-statistic', n_permutations: [int](https://docs.python.org/3/library/functions.html#int) = 10000, rng: [Generator](https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator) = None, \*\*kwargs) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)
 
 Perform a permutation test for independent samples.
 
@@ -83,7 +83,7 @@ Perform a permutation test for independent samples.
   * **group2** (*np.ndarray*) – Second group of samples.
   * **metric** ([*str*](https://docs.python.org/3/library/stdtypes.html#str) *or* *callable* *,* *optional*) – Metric to compute (‘t-statistic’, ‘anova’, ‘mean’, ‘median’, or a custom function).
   * **n_permutations** ([*int*](https://docs.python.org/3/library/functions.html#int) *,* *optional*) – Number of permutations to perform (default is 10000).
-  * **rng** (*np.random.Generator* *,* *optional*) – Random number generator (default is np.random.default_rng(seed=12345)).
+  * **rng** (*np.random.Generator* *,* *optional*) – Random number generator (default None triggers np.random.default_rng(seed=12345)).
   * **\*\*kwargs** – Additional arguments passed to the metric function.
 * **Returns:**
   Dictionary with keys:
