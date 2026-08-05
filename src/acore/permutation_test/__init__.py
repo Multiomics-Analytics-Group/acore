@@ -40,11 +40,13 @@ observed).
 import warnings
 
 import numpy as np
+from typing import Callable
 from scipy.stats import (
     chi2_contingency,
     f_oneway,
     ttest_ind,
     ttest_rel,
+    wilcoxon,
 )
 
 from acore.types.permutation_test import PermutationResult
@@ -53,11 +55,13 @@ from .internal_functions import _check_degeneracy, _contingency_table, _permute
 
 warnings.simplefilter("always", UserWarning)
 
+STATS_PAIRED: list[str] = [ttest_rel.__name__, wilcoxon.__name__]
+
 
 def paired_permutation(
     cond1: np.ndarray,
     cond2: np.ndarray,
-    metric: str = "t-statistic",
+    metric: str | Callable = "t-statistic",
     n_permutations: int = 10000,
     rng: np.random.Generator = None,
     **kwargs,
@@ -72,7 +76,8 @@ def paired_permutation(
     cond2 : np.ndarray
         Second condition (paired samples).
     metric : str or callable, optional
-        Metric to compute ('t-statistic', 'mean', 'median', or a custom function).
+        Metric to compute ('t-statistic', 'mean', 'median', or
+        a custom function that takes `cond1-cond2` as input).
     n_permutations : int, optional
         Number of permutations to perform (default is 10000).
     rng : np.random.Generator, optional
@@ -103,12 +108,17 @@ def paired_permutation(
     if metric == "t-statistic":
         calculator = ttest_rel
         args = [cond1, cond2]
+    elif metric == "wilcoxon":
+        calculator = wilcoxon
+        args = [cond1, cond2]
     elif metric == "mean":
         calculator = np.mean
     elif metric == "median":
         calculator = np.median
     elif callable(metric):
         calculator = metric
+        if calculator.__name__ in STATS_PAIRED:
+            args = [cond1, cond2]
     else:
         raise ValueError(
             "Invalid metric specified. Acceptable metrics are: "
@@ -118,7 +128,7 @@ def paired_permutation(
     # ? t-test observed is the t-statistic incl. a single p-value.
     # ? should this be save or rather the metric itself.
     observed_metric = calculator(*args, **kwargs)
-    if metric == "t-statistic":
+    if calculator.__name__ in STATS_PAIRED:
         observed_statistic = observed_metric.statistic
     else:
         observed_statistic = observed_metric
@@ -137,12 +147,10 @@ def paired_permutation(
                 "Postcondition failed: Issue with permuted differences"
             )
         # prep args and compute permuted metric
-        if metric == "t-statistic":
-            new_args = [new_cond1, new_cond2]
-            new_result = abs(calculator(*new_args, **kwargs).statistic)
+        if calculator.__name__ in STATS_PAIRED:
+            new_result = abs(calculator(*[new_cond1, new_cond2], **kwargs).statistic)
         else:
-            new_args = [permuted_diff]
-            new_result = abs(calculator(*new_args, **kwargs))
+            new_result = abs(calculator(*[permuted_diff], **kwargs))
 
         permuted_f.append(new_result)
 
@@ -238,7 +246,7 @@ def chi2_permutation(
 def indep_permutation(
     group1: np.ndarray,
     group2: np.ndarray,
-    metric: str = "t-statistic",
+    metric: str | Callable = "t-statistic",
     n_permutations: int = 10000,
     rng: np.random.Generator = None,
     **kwargs,
@@ -253,7 +261,9 @@ def indep_permutation(
     group2 : np.ndarray
         Second group of samples.
     metric : str or callable, optional
-        Metric to compute ('t-statistic', 'anova', 'mean', 'median', or a custom function).
+        Metric to compute ('t-statistic', 'anova', 'mean', 'median',
+        or a function that would take groups 1 and 2
+        as positional arguments 1 and 2 such as those in scipy.stats).
     n_permutations : int, optional
         Number of permutations to perform (default is 10000).
     rng : np.random.Generator, optional
@@ -287,6 +297,7 @@ def indep_permutation(
         calculator = np.median
     elif callable(metric):
         calculator = metric
+        stat = True
     else:
         raise ValueError(
             "Invalid metric specified. Acceptable metrics are: "
