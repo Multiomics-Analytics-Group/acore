@@ -3,7 +3,9 @@
 Contributions are welcome, and they are greatly appreciated! Every little bit
 helps, and credit will always be given.
 
-You can contribute in many ways:
+You can contribute in many ways, as you can see below. For a general introduction
+to our package outline see the description in the python package template we use
+([link](https://python-package-template-biosustain.readthedocs.io/developing.html)).
 
 ## Report Bugs
 
