@@ -52,7 +52,7 @@ advanced editor to help you with some of the common steps described below, e.g.
 1. Fork the `acore` repo on GitHub.
 2. Clone your fork locally:
 
-```sh
+```bash
 git clone https://github.com/Multiomics-Analytics-Group/acore.git
 ```
 
@@ -60,38 +60,38 @@ git clone https://github.com/Multiomics-Analytics-Group/acore.git
    on your system, this can be done using `venv`. Alternatives are conda environments
    or uv to create and manage virtual environments.
 
-```sh
+```bash
 cd acore/
 python -m venv .env
 source .env/bin/activate
-pip install -e .[dev]
+pip install -e ".[dev]"
 ```
 
-If you work on Windows, see the docs: https://docs.python.org/3/library/venv.html#how-venvs-work
+If you work on Windows, see the docs: [venvs](https://docs.python.org/3/library/venv.html#how-venvs-work)
 
 4. Create a branch for local development:
 
-```sh
+```bash
 git checkout -b name-of-your-bugfix-or-feature
 ```
 
 5. When you're done making changes, check formatting and run tests locally:
 
-```sh
+```bash
 black .
 ruff check src
-pytest .
+pytest tests
 ```
 
 Some `ruff` fixes can be applied automatically with `--fix`:
 
-```sh
+```bash
 ruff check src --fix
 ```
 
 6. Commit your changes and push your branch to GitHub:
 
-```sh
+```bash
 git add .
 git commit -m "Your detailed description of your changes."
 git push origin name-of-your-bugfix-or-feature
