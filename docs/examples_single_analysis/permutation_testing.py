@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.17.3
+#       jupytext_version: 1.19.5
 #   kernelspec:
 #     display_name: .venv (3.11.0)
 #     language: python
@@ -193,7 +193,7 @@ plt.show()
 # generate dummy categorical data
 first_group = rng.choice(["Happy", "Sad", "Neutral"], size=size, p=[0.5, 0.3, 0.2])
 second_group = rng.choice(["Happy", "Sad", "Neutral"], size=size, p=[0.01, 0.19, 0.8])
-third_group = rng.choice(["Happy", "Sad", "Neutral"], size=size, p=[0.6, 0.2, 0.2])
+third_group = rng.choice(["Happy", "Sad", "Neutral"], size=size, p=[0.5, 0.3, 0.2])
 
 # display contingency table
 df = pd.DataFrame(
@@ -226,8 +226,9 @@ plt.show()
 # We first use the first and second distributions (different)
 
 # %%
-from acore.permutation_test import indep_permutation
 from scipy.stats import ks_2samp, ttest_ind
+
+from acore.permutation_test import indep_permutation
 
 metrics = ["t-statistic", ttest_ind, "mean", "median", ks_2samp]
 
