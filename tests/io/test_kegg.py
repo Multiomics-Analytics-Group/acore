@@ -36,7 +36,8 @@ def test_parse_compound_pathway_mapping():
 
 def test_parse_kegg_name_description():
     # https://rest.kegg.jp/get/path:map00030+path:map00010
-    raw_text = textwrap.dedent("""
+    raw_text = textwrap.dedent(
+        """
     ENTRY       map00030                    Pathway
     NAME        Pentose phosphate pathway
     DESCRIPTION The pentose phosphate pathway is a process of glucose turnover that produces NADPH as reducing equivalents and pentoses as essential parts of nucleotides.
@@ -49,7 +50,8 @@ def test_parse_kegg_name_description():
     DESCRIPTION Glycolysis is the process of converting glucose into pyruvate and generating small amounts of ATP (energy) and NADH (reducing power).
 
     (...)
-    """)
+    """
+    )
 
     parsed_entries = parse_kegg_name_description(raw_text)
     expected = {
