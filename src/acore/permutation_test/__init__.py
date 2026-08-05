@@ -38,9 +38,9 @@ observed).
 """
 
 import warnings
+from collections.abc import Callable
 
 import numpy as np
-from typing import Callable
 from scipy.stats import (
     chi2_contingency,
     f_oneway,
