@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.19.5
+#       jupytext_version: 1.19.3
 #   kernelspec:
 #     display_name: .venv (3.11.0)
 #     language: python
@@ -19,8 +19,9 @@
 #
 # ## Intro to permutation testing
 #
-# A hypothesis test, permutation tests compare an observed metric of your chosing (e.g., t-statistic, mean
-# difference) with metrics calculated when the dataset values are randomly shuffled permutations of the dataset.
+# A hypothesis test, permutation tests compare an observed metric of your chosing (e.g.,
+# t-statistic, mean difference) with metrics calculated when the dataset values are
+# randomly shuffled permutations of the dataset.
 #
 # If we do 100 permutations of our data (although we should do a bunch more) and only 1 of
 # those permutations falsely showed a larger effect size than the actual observed effect
@@ -31,12 +32,23 @@
 #
 # ## The Dataset
 #
-# [Ju and colleagues (2018)](https://doi.org/10.1038/s41396-018-0277-8) collected microbiome samples from wastewater treatment plant (WWTP) influent
-# ([MGYS00005056](https://www.ebi.ac.uk/metagenomics/studies/MGYS00005056/overview)) and effluent ([MGYS00005058](https://www.ebi.ac.uk/metagenomics/studies/MGYS00005058/overview)) from 12 WWTPs in Switzerland.
+# [Ju and colleagues (2018)](https://doi.org/10.1038/s41396-018-0277-8) collected
+# microbiome samples from wastewater treatment plant (WWTP) influent
+# ([MGYS00005056](https://www.ebi.ac.uk/metagenomics/studies/MGYS00005056/overview)) and
+# effluent
+# ([MGYS00005058](https://www.ebi.ac.uk/metagenomics/studies/MGYS00005058/overview)) from
+# 12 WWTPs in Switzerland.
 #
-# In this demo we use a subset of the [GO term](https://geneontology.org/docs/go-annotations/) abundance data annotated by the [MGnify](https://www.ebi.ac.uk/metagenomics/) pipeline version 4.1. Specifically we look at [go term GO:0017001](https://www.ebi.ac.uk/QuickGO/term/GO:0017001) where it's expected that antibiotic catabolic processes to be higher in influent (INF) vs effluent (EFF) samples.
+# In this demo we use a subset of the [GO
+# term](https://geneontology.org/docs/go-annotations/) abundance data annotated by the
+# [MGnify](https://www.ebi.ac.uk/metagenomics/) pipeline version 4.1. Specifically we look
+# at [go term GO:0017001](https://www.ebi.ac.uk/QuickGO/term/GO:0017001) where it's
+# expected that antibiotic catabolic processes to be higher in influent (INF) vs effluent
+# (EFF) samples.
 #
-# The original datasets contained absolute abundance of selected GO terms for each sample, which we then transform to relative abundances and centred-log ratios. The [Data Preparation Details](#data-preparation-details) are in the dropdown below.
+# The original datasets contained absolute abundance of selected GO terms for each sample,
+# which we then transform to relative abundances and centred-log ratios. The [Data
+# Preparation Details](#data-preparation-details) are in the dropdown below.
 #
 # The preprocessed and subsetted data for this example is provided in CSV,
 # [`Ju2018_GO0017001_enf_inf_paired_demo_only.csv`](example_data/mgnify/Ju2018_GO0017001_enf_inf_paired_demo_only.csv).
@@ -77,8 +89,12 @@
 # - We will only look at [go term GO:0017001](https://www.ebi.ac.uk/QuickGO/term/GO:0017001)
 #
 # #### Edit: A quick "fix" (not recommended)
-# - Paired end sequences were treated as if separate observations/samples and annotated using MGnify separately (e.g., analysed as if Read 1 is Sample 1, Read 2 is Sample 2 BUT this is incorrect because Read 1 and 2 are for the same sample and these reads should have been combined prior to annotation)
-# - Since this dataset is only for demonstrative purposes we crudely take a mean of the already preprocessed read 1 and 2 abundances.
+# - Paired end sequences were treated as if separate observations/samples and annotated
+#   using MGnify separately (e.g., analysed as if Read 1 is Sample 1, Read 2 is Sample 2
+#   BUT this is incorrect because Read 1 and 2 are for the same sample and these reads
+#   should have been combined prior to annotation)
+# - Since this dataset is only for demonstrative purposes we crudely take a mean of the
+#   already preprocessed read 1 and 2 abundances.
 #
 # <br>
 # </details>
@@ -102,18 +118,19 @@ df_data
 # %% [markdown]
 # ---
 #
-# ## Our Hypothesis test
+# # Paired permutation test
 #
 # **Our null hypothesis:** The abundance of GO:0017001 is not different between INF and EFF samples.
 #
 # **Our alternative hypothesis:** The abundance of GO:0017001 is higher in INF than EFF samples.
 #
-# ### Paired permutation test
 #
 # Since these are paired samples we will proceed with paired sample permutation test using
-# [`acore.permutation_test.paired_permutation()`](acore.permutation_test.paired_permutation). Optional choice of random number generator for reproducibility.
+# [`acore.permutation_test.paired_permutation()`](acore.permutation_test.paired_permutation).
+# Optional choice of random number generator for reproducibility.
 #
-# Here we will repeat the permutation test with 3 different metrics but this is for demonstrative purposes.
+# Here we will repeat the permutation test with 3 different metrics but this is for
+# demonstrative purposes.
 
 # %%
 import numpy as np
@@ -160,7 +177,21 @@ for metric in [
 # %% [markdown]
 # ## The other tests
 #
-# Now for demonstrative purposes we create observations by sampling from different (reject the null) and then the same distribution (fail to reject the null). We also use non-normal distributions to highlight the versality of permutation testing
+
+
+# %% [markdown]
+#
+# # Independent sample permutation test
+#
+# `paired_permutation` only makes sense when observations have a one-to-one
+# correspondence, as our INF and EFF samples do. When two groups are unrelated
+# (no pairing), we use
+# [`acore.permutation_test.indep_permutation()`](acore.permutation_test.indep_permutation)
+# instead. `indep_permutation` requires its inputs as numpy arrays.
+#
+# Now for demonstrative purposes we create observations by sampling from different (reject
+# the null) and then the same distribution (fail to reject the null). We also use
+# non-normal distributions to highlight the versality of permutation testing
 
 # %% tags=["hide-input"]
 # generating dummy continuous data
@@ -180,6 +211,9 @@ print(
 third_dist = rng.uniform(low=1, high=10, size=size)
 print(f"Third distribution: mean = {np.mean(third_dist)}, std = {np.std(third_dist)}")
 
+df_dist = pd.DataFrame([first_dist, second_dist, third_dist]).T
+df_dist.columns = ["First", "Second", "Third"]
+
 # plot the distributions
 plt.figure(figsize=(10, 4))
 sns.set_palette("colorblind")
@@ -189,8 +223,52 @@ sns.histplot(third_dist, label="third distribution", alpha=0.4, linestyle="dotte
 plt.legend()
 plt.show()
 
+# %% ] [markdown]
+# We first use the first and second distributions (different)
+
+# %%
+from scipy.stats import ks_2samp, ttest_ind
+
+from acore.permutation_test import indep_permutation
+
+metrics = ["t-statistic", ttest_ind, "mean", "median", ks_2samp]
+
+for metric in metrics:
+    result = indep_permutation(
+        df_dist["First"],
+        df_dist["Second"],
+        metric=metric,
+        n_permutations=1000,
+        rng=rng,
+    )
+    # verbosity
+    print(result)
+
+# %% [markdown]
+# and for example if testing 2 groups from similar distributions (first and third):
+
+# %%
+for metric in metrics:
+    result = indep_permutation(
+        df_dist["First"],
+        df_dist["Third"],
+        metric=metric,
+        n_permutations=1000,
+        rng=rng,
+    )
+    # verbosity
+    print(result)
+
+# %% [markdown]
+# # Chi-squared permutation test
+#
+# [`acore.permutation_test.chi2_permutation()`](acore.permutation_test.chi2_permutation)
+# tests whether the distribution of *categorical* observations differs between groups,
+# using a permuted chi-squared statistic on a contingency table.
+#
+# Generate dummy categorical data:
+
 # %% tags=["hide-input"]
-# generate dummy categorical data
 first_group = rng.choice(["Happy", "Sad", "Neutral"], size=size, p=[0.5, 0.3, 0.2])
 second_group = rng.choice(["Happy", "Sad", "Neutral"], size=size, p=[0.01, 0.19, 0.8])
 third_group = rng.choice(["Happy", "Sad", "Neutral"], size=size, p=[0.5, 0.3, 0.2])
@@ -214,56 +292,7 @@ plt.legend()
 plt.show()
 
 # %% [markdown]
-#
-# ### Independent sample permutation test
-#
-# `paired_permutation` only makes sense when observations have a one-to-one
-# correspondence, as our INF and EFF samples do. When two groups are unrelated
-# (no pairing), we use
-# [`acore.permutation_test.indep_permutation()`](acore.permutation_test.indep_permutation)
-# instead. `indep_permutation` requires its inputs as numpy arrays.
-#
-# We first use the first and second distributions (different)
-
-# %%
-from scipy.stats import ks_2samp, ttest_ind
-
-from acore.permutation_test import indep_permutation
-
-metrics = ["t-statistic", ttest_ind, "mean", "median", ks_2samp]
-
-for metric in metrics:
-    result = indep_permutation(
-        first_dist,
-        second_dist,
-        metric=metric,
-        n_permutations=1000,
-        rng=rng,
-    )
-    # verbosity
-    print(result)
-
-# %% [markdown]
-# and for example if testing 2 groups from similar distributions (first and third):
-
-# %%
-for metric in metrics:
-    result = indep_permutation(
-        first_dist,
-        third_dist,
-        metric=metric,
-        n_permutations=1000,
-        rng=rng,
-    )
-    # verbosity
-    print(result)
-
-# %% [markdown]
-# ### Chi-squared permutation test
-#
-# [`acore.permutation_test.chi2_permutation()`](acore.permutation_test.chi2_permutation)
-# tests whether the distribution of *categorical* observations differs between groups,
-# using a permuted chi-squared statistic on a contingency table.
+# Run test
 
 # %%
 from acore.permutation_test import chi2_permutation
@@ -275,3 +304,6 @@ print("Results on dissimilar groups (1 and 2): ", result)
 # now on similar groups (1 and 3)
 result2 = chi2_permutation(first_group, third_group, n_permutations=1000, rng=rng)
 print("Results on similar groups (1 and 3): ", result2)
+
+# %% [markdown]
+# Done.
