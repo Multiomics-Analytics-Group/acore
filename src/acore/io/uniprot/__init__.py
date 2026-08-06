@@ -3,12 +3,19 @@ the results as a pandas.DataFrame."""
 
 import pandas as pd
 
+from .filter import filter_annotations
 from .uniprot import (
     check_id_mapping_results_ready,
     get_id_mapping_results_link,
     get_id_mapping_results_search,
     submit_id_mapping,
 )
+
+__all__ = [
+    "fetch_annotations",
+    "process_annotations",
+    "filter_annotations",
+]
 
 
 # function for outside usage
