@@ -77,7 +77,7 @@ def paired_permutation(
         Second condition (paired samples).
     metric : str or callable, optional
         Metric to compute ('t-statistic', 'mean', 'median', or
-        a custom function that takes `cond1-cond2` as input).
+        a custom function that takes `cond1` and `cond2` as input).
     n_permutations : int, optional
         Number of permutations to perform (default is 10000).
     rng : np.random.Generator, optional
@@ -123,7 +123,7 @@ def paired_permutation(
         raise ValueError(
             "Invalid metric specified. Acceptable metrics are: "
             "'t-statistic', 'mean', 'median', or a custom function "
-            "that takes `cond1-cond2` as input."
+            "that takes `cond1` and `cond2` as input."
         )
     # ? t-test observed is the t-statistic incl. a single p-value.
     # ? should this be save or rather the metric itself.
