@@ -29,51 +29,50 @@ def get_data_ready_for_km(dfs_dict, args):
                     df, args["marker"], args["index_col"], how, value
                 )
 
-    if kmdf is not None:
-        if "index_col" in args and args["index_col"] in kmdf:
-            index_col = args["index_col"]
-            kmdf = kmdf.set_index(index_col).join(mdf.set_index(index_col), how="inner")
+    if kmdf is not None and "index_col" in args and args["index_col"] in kmdf:
+        index_col = args["index_col"]
+        kmdf = kmdf.set_index(index_col).join(mdf.set_index(index_col), how="inner")
 
     return kmdf
 
 
 def group_data_based_on_marker(df, marker, index_col, how, value):
     mdf = pd.DataFrame()
-    if index_col is not None and marker is not None:
-        if index_col in df and marker in df:
-            mdf = df[[marker, index_col]]
-            if how == "cutoff":
-                mdf["new_grouping"] = mdf.apply(
-                    lambda row: (
-                        str(marker) + "+" if row[marker] >= value else str(marker) + "-"
-                    )
+    if (
+        index_col is not None
+        and marker is not None
+        and index_col in df
+        and marker in df
+    ):
+        mdf = df[[marker, index_col]]
+        if how == "cutoff":
+            mdf["new_grouping"] = mdf.apply(
+                lambda row: (
+                    str(marker) + "+" if row[marker] >= value else str(marker) + "-"
                 )
-            elif how == "top" or how == "top%":
-                mdf = mdf.sort_values(by=marker, ascending=False)
-                num_values = len(mdf[marker].values.tolist())
-                if how == "top%":
-                    value = int(num_values * value / 100)
-                if value < num_values:
-                    labels = [str(marker) + "+"] * value
-                    labels.extend([str(marker) + "-"] * (num_values - value))
-                else:
-                    print(
-                        "Invalid value provided. Exceeded maximum number of samples {}".format(
-                            num_values
-                        )
-                    )
-                mdf["new_grouping"] = labels
+            )
+        elif how == "top" or how == "top%":
+            mdf = mdf.sort_values(by=marker, ascending=False)
+            num_values = len(mdf[marker].values.tolist())
+            if how == "top%":
+                value = int(num_values * value / 100)
+            if value < num_values:
+                labels = [str(marker) + "+"] * value
+                labels.extend([str(marker) + "-"] * (num_values - value))
             else:
                 print(
-                    "Grouping method {} not implemented. Try with 'cutoff' or 'top'".format(
-                        how
-                    )
+                    f"Invalid value provided. Exceeded maximum number of samples {num_values}"
                 )
+            mdf["new_grouping"] = labels
+        else:
+            print(f"Grouping method {how} not implemented. Try with 'cutoff' or 'top'")
 
     return mdf
 
 
-def run_km(data, time_col, event_col, group_col, args={}):
+def run_km(data, time_col, event_col, group_col, args=None):
+    if args is None:
+        args = {}
     kmdf = None
     kmf = pd.DataFrame()
     summary = None
@@ -115,8 +114,9 @@ def get_km_results(df, group_col, time_col, event_col):
         )
 
     if summary_ is not None:
-        summary_result = "Multivariate logrank test: pval={}, t_statistic={}".format(
-            summary_.p_value, summary_._test_statistic
+        summary_result = (
+            f"Multivariate logrank test: pval={summary_.p_value}, "
+            f"t_statistic={summary_._test_statistic}"
         )
 
     return models, summary_result

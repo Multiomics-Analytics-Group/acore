@@ -26,8 +26,8 @@
   * [acore.decomposition.umap module](acore.decomposition.md#module-acore.decomposition.umap)
     * [`run_umap()`](acore.decomposition.md#acore.decomposition.umap.run_umap)
 * [acore.differential_regulation package](acore.differential_regulation.md)
-  * [`run_anova()`](acore.differential_regulation.md#acore.differential_regulation.run_anova)
   * [`run_ancova()`](acore.differential_regulation.md#acore.differential_regulation.run_ancova)
+  * [`run_anova()`](acore.differential_regulation.md#acore.differential_regulation.run_anova)
   * [`run_diff_analysis()`](acore.differential_regulation.md#acore.differential_regulation.run_diff_analysis)
   * [`run_mixed_anova()`](acore.differential_regulation.md#acore.differential_regulation.run_mixed_anova)
   * [`run_repeated_measurements_anova()`](acore.differential_regulation.md#acore.differential_regulation.run_repeated_measurements_anova)
@@ -54,9 +54,9 @@
 * [acore.drift_correction package](acore.drift_correction.md)
   * [`check_missingness()`](acore.drift_correction.md#acore.drift_correction.check_missingness)
   * [`cpca_centroid()`](acore.drift_correction.md#acore.drift_correction.cpca_centroid)
+  * [`qc_rlsc_loess()`](acore.drift_correction.md#acore.drift_correction.qc_rlsc_loess)
   * [`run_cpca_drift_correction()`](acore.drift_correction.md#acore.drift_correction.run_cpca_drift_correction)
   * [`run_loess_drift_correction()`](acore.drift_correction.md#acore.drift_correction.run_loess_drift_correction)
-  * [`qc_rlsc_loess()`](acore.drift_correction.md#acore.drift_correction.qc_rlsc_loess)
   * [Submodules](acore.drift_correction.md#submodules)
   * [acore.drift_correction.cpca_drift_correction module](acore.drift_correction.md#module-acore.drift_correction.cpca_drift_correction)
     * [`check_missingness()`](acore.drift_correction.md#acore.drift_correction.cpca_drift_correction.check_missingness)
@@ -67,10 +67,10 @@
     * [`qc_rlsc_loess()`](acore.drift_correction.md#acore.drift_correction.loess_drift_correction.qc_rlsc_loess)
     * [`run_loess_drift_correction()`](acore.drift_correction.md#acore.drift_correction.loess_drift_correction.run_loess_drift_correction)
 * [acore.enrichment_analysis package](acore.enrichment_analysis.md)
-  * [`run_site_regulation_enrichment()`](acore.enrichment_analysis.md#acore.enrichment_analysis.run_site_regulation_enrichment)
-  * [`run_up_down_regulation_enrichment()`](acore.enrichment_analysis.md#acore.enrichment_analysis.run_up_down_regulation_enrichment)
   * [`run_fisher()`](acore.enrichment_analysis.md#acore.enrichment_analysis.run_fisher)
   * [`run_kolmogorov_smirnov()`](acore.enrichment_analysis.md#acore.enrichment_analysis.run_kolmogorov_smirnov)
+  * [`run_site_regulation_enrichment()`](acore.enrichment_analysis.md#acore.enrichment_analysis.run_site_regulation_enrichment)
+  * [`run_up_down_regulation_enrichment()`](acore.enrichment_analysis.md#acore.enrichment_analysis.run_up_down_regulation_enrichment)
   * [Subpackages](acore.enrichment_analysis.md#subpackages)
     * [acore.enrichment_analysis.statistical_tests namespace](acore.enrichment_analysis.statistical_tests.md)
       * [Submodules](acore.enrichment_analysis.statistical_tests.md#submodules)
@@ -90,9 +90,9 @@
   * [`run_tsne()`](acore.exploratory_analysis.md#acore.exploratory_analysis.run_tsne)
   * [`run_umap()`](acore.exploratory_analysis.md#acore.exploratory_analysis.run_umap)
 * [acore.filter_metabolomics package](acore.filter_metabolomics.md)
+  * [`filter_blanks()`](acore.filter_metabolomics.md#acore.filter_metabolomics.filter_blanks)
   * [`filter_by_missingness()`](acore.filter_metabolomics.md#acore.filter_metabolomics.filter_by_missingness)
   * [`filter_cv()`](acore.filter_metabolomics.md#acore.filter_metabolomics.filter_cv)
-  * [`filter_blanks()`](acore.filter_metabolomics.md#acore.filter_metabolomics.filter_blanks)
 * [acore.imputation_analysis package](acore.imputation_analysis.md)
   * [`imputation_KNN()`](acore.imputation_analysis.md#acore.imputation_analysis.imputation_KNN)
   * [`imputation_mixed_norm_KNN()`](acore.imputation_analysis.md#acore.imputation_analysis.imputation_mixed_norm_KNN)
@@ -101,8 +101,8 @@
   * [`imputation_half_minimum()`](acore.imputation_analysis.md#acore.imputation_analysis.imputation_half_minimum)
 * [acore.io package](acore.io.md)
   * [`download_PRIDE_data()`](acore.io.md#acore.io.download_PRIDE_data)
-  * [`unrar()`](acore.io.md#acore.io.unrar)
   * [`download_file()`](acore.io.md#acore.io.download_file)
+  * [`unrar()`](acore.io.md#acore.io.unrar)
   * [Subpackages](acore.io.md#subpackages)
     * [acore.io.uniprot package](acore.io.uniprot.md)
       * [`fetch_annotations()`](acore.io.uniprot.md#acore.io.uniprot.fetch_annotations)
@@ -115,12 +115,12 @@
   * [acore.io.ftp module](acore.io.md#module-acore.io.ftp)
     * [`download_from_ftp()`](acore.io.md#acore.io.ftp.download_from_ftp)
   * [acore.io.kegg module](acore.io.md#module-acore.io.kegg)
-    * [`link_kegg_batch()`](acore.io.md#acore.io.kegg.link_kegg_batch)
-    * [`fetch_kegg_ko_descriptions()`](acore.io.md#acore.io.kegg.fetch_kegg_ko_descriptions)
     * [`cid_to_kegg_id()`](acore.io.md#acore.io.kegg.cid_to_kegg_id)
+    * [`fetch_kegg_ko_descriptions()`](acore.io.md#acore.io.kegg.fetch_kegg_ko_descriptions)
+    * [`link_kegg_batch()`](acore.io.md#acore.io.kegg.link_kegg_batch)
+    * [`lookup_cid_to_kegg_id()`](acore.io.md#acore.io.kegg.lookup_cid_to_kegg_id)
     * [`parse_compound_pathway_mapping()`](acore.io.md#acore.io.kegg.parse_compound_pathway_mapping)
     * [`parse_kegg_name_description()`](acore.io.md#acore.io.kegg.parse_kegg_name_description)
-    * [`lookup_cid_to_kegg_id()`](acore.io.md#acore.io.kegg.lookup_cid_to_kegg_id)
   * [acore.io.pride module](acore.io.md#module-acore.io.pride)
     * [`download_PRIDE_data()`](acore.io.md#acore.io.pride.download_PRIDE_data)
   * [acore.io.uncompress module](acore.io.md#module-acore.io.uncompress)
@@ -157,6 +157,16 @@
     * [`median_polish_normalization()`](acore.normalization.md#acore.normalization.strategies.median_polish_normalization)
     * [`quantile_normalization()`](acore.normalization.md#acore.normalization.strategies.quantile_normalization)
     * [`linear_normalization()`](acore.normalization.md#acore.normalization.strategies.linear_normalization)
+* [acore.permutation_test package](acore.permutation_test.md)
+  * [`paired_permutation()`](acore.permutation_test.md#acore.permutation_test.paired_permutation)
+  * [`chi2_permutation()`](acore.permutation_test.md#acore.permutation_test.chi2_permutation)
+  * [`indep_permutation()`](acore.permutation_test.md#acore.permutation_test.indep_permutation)
+  * [Submodules](acore.permutation_test.md#submodules)
+  * [acore.permutation_test.internal_functions module](acore.permutation_test.md#module-acore.permutation_test.internal_functions)
+  * [acore.permutation_test.jaccard module](acore.permutation_test.md#module-acore.permutation_test.jaccard)
+    * [`jaccard_similarity()`](acore.permutation_test.md#acore.permutation_test.jaccard.jaccard_similarity)
+    * [`avg_jaccard()`](acore.permutation_test.md#acore.permutation_test.jaccard.avg_jaccard)
+    * [`btwn_jaccard()`](acore.permutation_test.md#acore.permutation_test.jaccard.btwn_jaccard)
 * [acore.power_analysis package](acore.power_analysis.md)
   * [`power_analysis()`](acore.power_analysis.md#acore.power_analysis.power_analysis)
 * [acore.publications_analysis package](acore.publications_analysis.md)
@@ -166,6 +176,11 @@
   * [`transform_DataFrame()`](acore.sklearn.md#acore.sklearn.transform_DataFrame)
 * [acore.tda_analysis package](acore.tda_analysis.md)
   * [`run_mapper()`](acore.tda_analysis.md#acore.tda_analysis.run_mapper)
+* [acore.transform namespace](acore.transform.md)
+  * [Submodules](acore.transform.md#submodules)
+  * [acore.transform.compositional module](acore.transform.md#module-acore.transform.compositional)
+    * [`calc_clr()`](acore.transform.md#acore.transform.compositional.calc_clr)
+    * [`coda_clr()`](acore.transform.md#acore.transform.compositional.coda_clr)
 * [acore.types package](acore.types.md)
   * [`check_numeric_dataframe()`](acore.types.md#acore.types.check_numeric_dataframe)
   * [`select_numeric_columns()`](acore.types.md#acore.types.select_numeric_columns)
@@ -335,6 +350,12 @@
       * [`AnnotationResult.y_title`](acore.types.md#acore.types.exploratory_analysis.AnnotationResult.y_title)
       * [`AnnotationResult.group`](acore.types.md#acore.types.exploratory_analysis.AnnotationResult.group)
       * [`AnnotationResult.model_config`](acore.types.md#acore.types.exploratory_analysis.AnnotationResult.model_config)
+  * [acore.types.permutation_test module](acore.types.md#module-acore.types.permutation_test)
+    * [`PermutationResult`](acore.types.md#acore.types.permutation_test.PermutationResult)
+      * [`PermutationResult.metric`](acore.types.md#acore.types.permutation_test.PermutationResult.metric)
+      * [`PermutationResult.observed_statistic`](acore.types.md#acore.types.permutation_test.PermutationResult.observed_statistic)
+      * [`PermutationResult.p_value`](acore.types.md#acore.types.permutation_test.PermutationResult.p_value)
+      * [`PermutationResult.model_config`](acore.types.md#acore.types.permutation_test.PermutationResult.model_config)
 
 ## Submodules
 
@@ -363,7 +384,7 @@ Check if samples are paired.
 * **Return type:**
   [bool](https://docs.python.org/3/library/functions.html#bool)
 
-### transform_into_wide_format(data, index, columns, values, extra=[])
+### transform_into_wide_format(data, index, columns, values, extra=None)
 
 This function converts a Pandas DataFrame from long to wide format using
 pandas pivot_table() function.
@@ -383,7 +404,7 @@ Example:
 result = transform_into_wide_format(df, index='index', columns='x', values='y', extra='group')
 ```
 
-### transform_into_long_format(data, drop_columns, group, columns=['name', 'y'])
+### transform_into_long_format(data, drop_columns, group, columns=None)
 
 Converts a Pandas DataDrame from wide to long format using pd.melt()
 function.
@@ -479,7 +500,7 @@ Returns the unit vector of the vector.
 :param tuple vector: vector
 :return tuple unit_vector: unit vector
 
-### flatten(t, my_list=[])
+### flatten(t, my_list=None)
 
 Code from: [https://gist.github.com/shaxbee/0ada767debf9eefbdb6e](https://gist.github.com/shaxbee/0ada767debf9eefbdb6e)
 Acknowledgements: Zbigniew Mandziejewicz (shaxbee)

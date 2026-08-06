@@ -76,7 +76,7 @@ def get_snf_clusters(data_tuples, num_clusters=None, metric="euclidean", k=5, mu
         affinities += [snf.make_affinity(d, metric=m, K=k, mu=mu)]
     fused_aff = snf.snf(affinities, K=k)
     if num_clusters is None:
-        num_clusters, second = snf.get_n_clusters(fused_aff)
+        num_clusters, _second = snf.get_n_clusters(fused_aff)
     fused_labels = cluster.spectral_clustering(fused_aff, n_clusters=num_clusters)
     fused_labels = [i + 1 for i in fused_labels]
     silhouette = snf.metrics.silhouette_score(fused_aff, fused_labels)
@@ -162,13 +162,11 @@ def run_snf(
 
     feature_df = pd.DataFrame(columns=["MIscore"])
     indexes = [df.columns for df in datasets]
-    i = 0
-    for dtype in snf_features:
+    for i, dtype in enumerate(snf_features):
         df = pd.DataFrame(dtype, index=indexes[i], columns=["MIscore"]).sort_values(
             by="MIscore", ascending=False
         )
         df["dataset"] = dataset_labels[i]
-        i += 1
         feature_df = feature_df.append(df)
 
     feature_df = feature_df.sort_values(by="MIscore", ascending=False)

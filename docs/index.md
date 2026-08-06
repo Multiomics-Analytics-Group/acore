@@ -34,6 +34,7 @@ examples_single_analysis/diff_regulation_anova_ttest_two_groups
 examples_single_analysis/diff_regulation_anova_more_than_two_groups
 examples_single_analysis/diff_regulation_ancova
 examples_single_analysis/enrichment_analysis
+examples_single_analysis/permutation_testing
 ```
 
 ```{toctree}

@@ -32,10 +32,10 @@ columns: 'terms', 'identifiers', 'foreground',
 """
 
 __all__ = [
-    "run_site_regulation_enrichment",
-    "run_up_down_regulation_enrichment",
     "run_fisher",
     "run_kolmogorov_smirnov",
+    "run_site_regulation_enrichment",
+    "run_up_down_regulation_enrichment",
 ]
 
 
@@ -191,7 +191,7 @@ reference/api/pandas.DataFrame.groupby.html
     if len(groups) != 2:
         raise ValueError("groups should contains exactly two columns.")
 
-    ret = list()
+    ret = []
     # In case of multiple comparisons this is used to get all possible combinations
     for g1, g2 in regulation_data.groupby(groups).groups:
 
@@ -462,7 +462,7 @@ def run_enrichment(
 def run_ssgsea(
     data: pd.DataFrame,
     annotation: str,
-    set_index: list[str] = None,
+    set_index: list[str] | None = None,
     annotation_col: str = "annotation",
     identifier_col: str = "identifier",
     outdir: str = "tmp",

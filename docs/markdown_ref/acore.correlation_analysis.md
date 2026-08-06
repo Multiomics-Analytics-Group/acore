@@ -74,7 +74,7 @@ result = run_correlation(df, alpha=0.05, subject='subject', group='group',
             method='pearson', correction='fdr_bh')
 ```
 
-### run_multi_correlation(df_dict, alpha=0.05, subject='subject', on=['subject', 'biological_sample'], group='group', method='pearson', correction='fdr_bh')
+### run_multi_correlation(df_dict, alpha=0.05, subject='subject', on=None, group='group', method='pearson', correction='fdr_bh')
 
 This function merges all input dataframes and calculates pairwise correlations for all columns.
 
@@ -82,7 +82,8 @@ This function merges all input dataframes and calculates pairwise correlations f
   * **df_dict** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – dictionary of pandas dataframes with samples as rows and features as columns.
   * **subject** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – name of the column containing subject identifiers.
   * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – name of the column containing group identifiers.
-  * **on** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column names to join dataframes on (must be found in all dataframes).
+  * **on** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column names to join dataframes on (must be found in all dataframes),
+    defaults to [‘subject’, ‘biological_sample’] for None.
   * **method** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – method to use for correlation calculation (‘pearson’, ‘spearman’).
   * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – error rate. Values velow alpha are considered significant.
   * **correction** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – type of correction see apply_pvalue_correction for methods

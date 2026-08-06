@@ -84,7 +84,7 @@ def apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method="bh"):
 
         result = apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method='bh')
     """
-    rejected, padj, num_hyp, alpha_stages = multitest.fdrcorrection_twostage(
+    rejected, padj, _num_hyp, _alpha_stages = multitest.fdrcorrection_twostage(
         pvalues, alpha, method
     )
 
@@ -203,7 +203,7 @@ def get_max_permutations(df, group="group"):
 
 
 def correct_pairwise_ttest(df, alpha, correction="fdr_bh"):
-    posthoc_df = list()
+    posthoc_df = []
 
     required_col = ["group1", "group2", "posthoc pvalue"]
     for _col in required_col:

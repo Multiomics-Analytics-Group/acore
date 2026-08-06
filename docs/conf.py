@@ -28,7 +28,6 @@ language = "en"
 extensions = [
     # "sphinx.ext.autosectionlabel",
     "sphinx.ext.autodoc",
-    "sphinx.ext.autodoc.typehints",
     "sphinx.ext.napoleon",
     # "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
