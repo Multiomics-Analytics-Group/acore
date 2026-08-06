@@ -142,7 +142,7 @@ def run_up_down_regulation_enrichment(
 ) -> DataFrame[EnrichmentAnalysisSchema]:
     """
     This function runs a simple enrichment analysis for significantly regulated proteins
-    distinguishing between up- and down-regulated.
+    distinguishing between upregulation per group defined by the `groups`.
 
     :param pandas.DataFrame regulation_data: pandas.DataFrame resulting from differential regulation
         analysis (CKG's regulation table).

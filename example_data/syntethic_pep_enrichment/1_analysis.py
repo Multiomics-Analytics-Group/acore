@@ -78,7 +78,7 @@ res = fisher_exact(
 print(f"Fisher exact test p-value: {res.pvalue:.4f}")
 
 # %% [markdown]
-# We have a population of M peptides of which n are up-regulated (or down-regulated)
+# We have a population of M peptides of which n are upregulated in a condition
 # defining the foreground.
 # We find N peptides in a pathway of interest, of which x are in the foreground.
 # - fixed for a certain foreground and background population (constant)
