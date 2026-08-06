@@ -187,7 +187,7 @@ for metric in [
 # correspondence, as our INF and EFF samples do. When two groups are unrelated
 # (no pairing), we use
 # [`acore.permutation_test.indep_permutation()`](acore.permutation_test.indep_permutation)
-# instead. `indep_permutation` requires its inputs as numpy arrays.
+# instead.
 #
 # Now for demonstrative purposes we create observations by sampling from different (reject
 # the null) and then the same distribution (fail to reject the null). We also use
