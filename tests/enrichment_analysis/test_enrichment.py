@@ -74,7 +74,7 @@ def test_run_regulation_enrichment():
         }
     ).convert_dtypes(convert_boolean=False)
 
-    assert expected.equals(actual)
+    pd.testing.assert_frame_equal(actual, expected)
 
 
 def test_run_regulation_enrichment_pep():
@@ -155,7 +155,7 @@ def test_run_regulation_enrichment_pep():
             "rejected": [False, False],
         }
     ).convert_dtypes(convert_boolean=False)
-    assert expected.equals(actual)
+    pd.testing.assert_frame_equal(actual, expected)
 
 
 def test_run_up_down_regulation_enrichment_large():
@@ -375,14 +375,18 @@ def test_run_up_down_regulation_enrichment_large():
     )
     annotations_extended
 
-    actual = ea.run_up_down_regulation_enrichment(
-        regulation_data=reg_df,
-        annotation=annotations_extended,
-        identifier="identifier",
-        pval_col="padj",
-        min_detected_in_set=1,  # ! default is 2, so more conservative
-        lfc_cutoff=0.1,  # ! the default is 1
-    ).reset_index(drop=True)
+    actual = (
+        ea.run_up_down_regulation_enrichment(
+            regulation_data=reg_df,
+            annotation=annotations_extended,
+            identifier="identifier",
+            pval_col="padj",
+            min_detected_in_set=1,  # ! default is 2, so more conservative
+            lfc_cutoff=0.1,  # ! the default is 1
+        )
+        .reset_index(drop=True)
+        .convert_dtypes()
+    )
     expected = pd.DataFrame.from_dict(
         {
             "terms": [
@@ -533,9 +537,8 @@ def test_run_up_down_regulation_enrichment_large():
                 "timepoint1~timepoint2",
             ],
         }
-    )
-
-    actual.equals(expected)
+    ).convert_dtypes()
+    pd.testing.assert_frame_equal(actual, expected)
 
 
 def test_run_regulation_enrichment_with_duplicates():
