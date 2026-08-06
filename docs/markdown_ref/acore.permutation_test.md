@@ -48,7 +48,7 @@ Perform a permutation test for paired samples.
   * **cond1** (*np.ndarray*) – First condition (paired samples).
   * **cond2** (*np.ndarray*) – Second condition (paired samples).
   * **metric** ([*str*](https://docs.python.org/3/library/stdtypes.html#str) *or* *callable* *,* *optional*) – Metric to compute (‘t-statistic’, ‘mean’, ‘median’, or
-    a custom function that takes cond1-cond2 as input).
+    a custom function that takes cond1 and cond2 as input).
   * **n_permutations** ([*int*](https://docs.python.org/3/library/functions.html#int) *,* *optional*) – Number of permutations to perform (default is 10000).
   * **rng** (*np.random.Generator* *,* *optional*) – Random number generator (default None triggers np.random.default_rng(seed=12345)).
   * **\*\*kwargs** – Additional arguments passed to the metric function.
