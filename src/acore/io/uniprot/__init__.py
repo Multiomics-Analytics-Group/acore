@@ -97,4 +97,14 @@ def process_annotations(annotations: pd.DataFrame, fields: str) -> pd.DataFrame:
         .replace("", pd.NA)
         .dropna()
     )
+    if annotations["annotation"].str.contains(";").any():
+        annotations["annotation"] = annotations["annotation"].str.split(";")
+        annotations = annotations.explode("annotation").reset_index(drop=True)
+        annotations = annotations.dropna(subset=["annotation"])
+    assert (
+        annotations["annotation"].isna().sum() == 0
+    ), "There are still NaN values in the annotation column."
+    assert (
+        annotations["annotation"].str.contains(";").sum() == 0
+    ), "There are still semicolon-separated values in the annotation column."
     return annotations
