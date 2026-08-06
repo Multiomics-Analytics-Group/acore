@@ -30,7 +30,95 @@ Process annotations fetched from UniProt API.
 * **Return type:**
   pd.DataFrame
 
+### filter_annotations(annotations: DataFrame, keywords: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)], case_sensitive: [bool](https://docs.python.org/3/library/functions.html#bool) = False) → DataFrame
+
+Filter a long-format annotations DataFrame to rows whose `annotation`
+column contains **any** of the given keywords.
+
+* **Parameters:**
+  * **annotations** (*pd.DataFrame*) – Long-format DataFrame with at least an `annotation` column (as
+    returned by `query_uniprot()`).
+  * **keywords** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *[*[*str*](https://docs.python.org/3/library/stdtypes.html#str) *]*) – Keywords to search for.  A row is kept when at least one keyword
+    appears in the annotation string.  Empty strings are ignored.
+  * **case_sensitive** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – Whether the search is case-sensitive.  Default `False`.
+* **Returns:**
+  Filtered copy of *annotations* where at least one keyword matched.
+  Returns an empty DataFrame with the same columns when no keywords
+  are provided or none match.
+* **Return type:**
+  pd.DataFrame
+
+### Examples
+
+```pycon
+>>> import pandas as pd
+>>> df = pd.DataFrame({
+...     "identifier": ["P1", "P1", "P2"],
+...     "source": ["go_p", "go_p", "go_p"],
+...     "annotation": [
+...         "cell apoptosis [GO:0042981]",
+...         "cell division",
+...         "mitochondria",
+...     ],
+... })
+>>> result = filter_annotations(df, keywords=["apoptosis", "mitochondr"])
+>>> list(result["annotation"])
+['cell apoptosis [GO:0042981]', 'mitochondria']
+>>> filter_annotations(df, keywords=[]).shape[0]
+0
+```
+
 ## Submodules
+
+## acore.io.uniprot.filter module
+
+Filtering annotations by keywords.
+
+from acore.io.uniprot import fetch_annotations, process_annotations, filter_annotations
+fields = “accession,go_p,go_c,go_f”
+uniprot_ids = [“P12345”, “Q67890”, “P05067”, “A1B2C3”]
+df = fetch_annotations(uniprot_ids, fields=fields)
+df = process_annotations(df, fields=fields)
+# first keyword does not exist
+filtered = filter_annotations(df, keywords=[“apoptosis”, “mitochondr”, “synapse”])
+
+### filter_annotations(annotations: DataFrame, keywords: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)], case_sensitive: [bool](https://docs.python.org/3/library/functions.html#bool) = False) → DataFrame
+
+Filter a long-format annotations DataFrame to rows whose `annotation`
+column contains **any** of the given keywords.
+
+* **Parameters:**
+  * **annotations** (*pd.DataFrame*) – Long-format DataFrame with at least an `annotation` column (as
+    returned by `query_uniprot()`).
+  * **keywords** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *[*[*str*](https://docs.python.org/3/library/stdtypes.html#str) *]*) – Keywords to search for.  A row is kept when at least one keyword
+    appears in the annotation string.  Empty strings are ignored.
+  * **case_sensitive** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – Whether the search is case-sensitive.  Default `False`.
+* **Returns:**
+  Filtered copy of *annotations* where at least one keyword matched.
+  Returns an empty DataFrame with the same columns when no keywords
+  are provided or none match.
+* **Return type:**
+  pd.DataFrame
+
+### Examples
+
+```pycon
+>>> import pandas as pd
+>>> df = pd.DataFrame({
+...     "identifier": ["P1", "P1", "P2"],
+...     "source": ["go_p", "go_p", "go_p"],
+...     "annotation": [
+...         "cell apoptosis [GO:0042981]",
+...         "cell division",
+...         "mitochondria",
+...     ],
+... })
+>>> result = filter_annotations(df, keywords=["apoptosis", "mitochondr"])
+>>> list(result["annotation"])
+['cell apoptosis [GO:0042981]', 'mitochondria']
+>>> filter_annotations(df, keywords=[]).shape[0]
+0
+```
 
 ## acore.io.uniprot.uniprot module
 
