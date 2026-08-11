@@ -102,12 +102,12 @@ def process_annotations(annotations: pd.DataFrame, fields: str) -> pd.DataFrame:
         annotations = annotations.explode("annotation").reset_index(drop=True)
         annotations = annotations.dropna(subset=["annotation"])
         annotations["annotation"] = annotations["annotation"].str.strip()
-    assert (
-        annotations["annotation"].isna().sum() == 0
-    ), "There are still NaN values in the annotation column."
-    assert (
-        annotations["annotation"].str.contains(";").sum() == 0
-    ), "There are still semicolon-separated values in the annotation column."
+    if annotations["annotation"].isna().sum() == 0:
+        raise ValueError("There are still NaN values in the annotation column.")
+    if not annotations["annotation"].str.contains(";").sum() == 0:
+        raise ValueError(
+            "There are still semicolon-separated values in the annotation column."
+        )
     # if go, go_f, go_c, go_p are all fetched, there will be duplicates. Only keep one.
     annotations = annotations.drop_duplicates(
         subset=["identifier", "annotation"]
