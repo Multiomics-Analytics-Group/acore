@@ -107,4 +107,8 @@ def process_annotations(annotations: pd.DataFrame, fields: str) -> pd.DataFrame:
     assert (
         annotations["annotation"].str.contains(";").sum() == 0
     ), "There are still semicolon-separated values in the annotation column."
+    # if go, go_f, go_c, go_p are all fetched, there will be duplicates. Only keep one.
+    annotations = annotations.drop_duplicates(
+        subset=["identifier", "annotation"]
+    ).reset_index(drop=True)
     return annotations
