@@ -16,8 +16,12 @@ def test_process_annotations():
     )
 
     sort_cols = ["identifier", "source", "annotation"]
-    annotations_actual = annotations_actual.sort_values(sort_cols).reset_index(drop=True)
-    annotations_expected = annotations_expected.sort_values(sort_cols).reset_index(drop=True)
+    annotations_actual = annotations_actual.sort_values(sort_cols).reset_index(
+        drop=True
+    )
+    annotations_expected = annotations_expected.sort_values(sort_cols).reset_index(
+        drop=True
+    )
 
     pd.testing.assert_frame_equal(annotations_actual, annotations_expected)
 
