@@ -37,7 +37,7 @@ column contains **any** of the given keywords.
 
 * **Parameters:**
   * **annotations** (*pd.DataFrame*) – Long-format DataFrame with at least an `annotation` column (as
-    returned by `query_uniprot()`).
+    returned by [`process_annotations()`](#acore.io.uniprot.process_annotations)).
   * **keywords** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *[*[*str*](https://docs.python.org/3/library/stdtypes.html#str) *]*) – Keywords to search for.  A row is kept when at least one keyword
     appears in the annotation string.  Empty strings are ignored.
   * **case_sensitive** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – Whether the search is case-sensitive.  Default `False`.
@@ -89,7 +89,7 @@ column contains **any** of the given keywords.
 
 * **Parameters:**
   * **annotations** (*pd.DataFrame*) – Long-format DataFrame with at least an `annotation` column (as
-    returned by `query_uniprot()`).
+    returned by `process_annotations()`).
   * **keywords** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *[*[*str*](https://docs.python.org/3/library/stdtypes.html#str) *]*) – Keywords to search for.  A row is kept when at least one keyword
     appears in the annotation string.  Empty strings are ignored.
   * **case_sensitive** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – Whether the search is case-sensitive.  Default `False`.
