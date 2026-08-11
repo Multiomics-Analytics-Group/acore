@@ -32,7 +32,7 @@ def filter_annotations(
     ----------
     annotations : pd.DataFrame
         Long-format DataFrame with at least an ``annotation`` column (as
-        returned by :func:`query_uniprot`).
+        returned by :func:`process_annotations`).
     keywords : list[str]
         Keywords to search for.  A row is kept when at least one keyword
         appears in the annotation string.  Empty strings are ignored.
