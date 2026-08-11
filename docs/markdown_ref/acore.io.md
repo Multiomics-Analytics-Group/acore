@@ -31,8 +31,8 @@ Decompress RAR file
 
 * [acore.io.uniprot package](acore.io.uniprot.md)
   * [`fetch_annotations()`](acore.io.uniprot.md#acore.io.uniprot.fetch_annotations)
-  * [`process_annotations()`](acore.io.uniprot.md#acore.io.uniprot.process_annotations)
   * [`filter_annotations()`](acore.io.uniprot.md#acore.io.uniprot.filter_annotations)
+  * [`process_annotations()`](acore.io.uniprot.md#acore.io.uniprot.process_annotations)
   * [Submodules](acore.io.uniprot.md#submodules)
   * [acore.io.uniprot.filter module](acore.io.uniprot.md#module-acore.io.uniprot.filter)
     * [`filter_annotations()`](acore.io.uniprot.md#acore.io.uniprot.filter.filter_annotations)

@@ -17,19 +17,6 @@ knowledgebase (KB).
 * **Return type:**
   pd.DataFrame
 
-### process_annotations(annotations: DataFrame, fields: [str](https://docs.python.org/3/library/stdtypes.html#str)) → DataFrame
-
-Process annotations fetched from UniProt API.
-
-* **Parameters:**
-  * **annotations** (*pd.DataFrame*) – DataFrame with annotations fetched from UniProt API.
-  * **fields** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Fields that were fetched from the API. Comma-separated string. Fields
-    needs to match number of columns in annotations.
-* **Returns:**
-  Processed DataFrame with annotations in long-format.
-* **Return type:**
-  pd.DataFrame
-
 ### filter_annotations(annotations: DataFrame, keywords: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)], case_sensitive: [bool](https://docs.python.org/3/library/functions.html#bool) = False) → DataFrame
 
 Filter a long-format annotations DataFrame to rows whose `annotation`
@@ -67,6 +54,19 @@ column contains **any** of the given keywords.
 >>> filter_annotations(df, keywords=[]).shape[0]
 0
 ```
+
+### process_annotations(annotations: DataFrame, fields: [str](https://docs.python.org/3/library/stdtypes.html#str)) → DataFrame
+
+Process annotations fetched from UniProt API.
+
+* **Parameters:**
+  * **annotations** (*pd.DataFrame*) – DataFrame with annotations fetched from UniProt API.
+  * **fields** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Fields that were fetched from the API. Comma-separated string. Fields
+    needs to match number of columns in annotations.
+* **Returns:**
+  Processed DataFrame with annotations in long-format.
+* **Return type:**
+  pd.DataFrame
 
 ## Submodules
 
