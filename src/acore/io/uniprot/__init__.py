@@ -13,8 +13,8 @@ from .uniprot import (
 
 __all__ = [
     "fetch_annotations",
-    "process_annotations",
     "filter_annotations",
+    "process_annotations",
 ]
 
 
