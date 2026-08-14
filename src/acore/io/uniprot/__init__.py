@@ -101,8 +101,8 @@ def process_annotations(annotations: pd.DataFrame, fields: str) -> pd.DataFrame:
         annotations["annotation"] = annotations["annotation"].str.split(";")
         annotations = annotations.explode("annotation").reset_index(drop=True)
         annotations = annotations.dropna(subset=["annotation"])
-        annotations["annotation"] = annotations["annotation"].str.strip()
-    if annotations["annotation"].isna().sum() == 0:
+        annotations["annotation"] = annotations["annotation"].str.strip().dropna()
+    if annotations["annotation"].isna().sum() > 0:
         raise ValueError("There are still NaN values in the annotation column.")
     if not annotations["annotation"].str.contains(";").sum() == 0:
         raise ValueError(
