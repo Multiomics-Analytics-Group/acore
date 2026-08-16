@@ -33,9 +33,10 @@ spray assay. In this study, comparative transcriptomic and energy metabolomic an
 showed that the differentially expressed genes and differentially accumulated metabolites
 from WRP and rapZE227Stop were mostly enriched in metabolic pathways, mainly in GlcN6P
 biosynthesis. Additionally, GlcN6P biosynthesis-related gene expression was significantly
-upregulated or downregulated in phage-resistant mutants compared to that in wild type (WT).
-Some metabolites involved in GlcN6P metabolic pathways, such as GlcN6P, GlcNAc-6P,
-GlcNAc-1P and UDP-GlcNAc were upregulated in phage-resistant mutants. Furthermore,
+upregulated or downregulated (upregulated in WT) in phage-resistant mutants compared to
+that in wild type (WT). Some metabolites involved in GlcN6P metabolic pathways, such as
+GlcN6P, GlcNAc-6P, GlcNAc-1P and UDP-GlcNAc were upregulated in phage-resistant mutants.
+Furthermore,
 the reduction in LPS content and the resensitization to antibiotics reveal the
 important role of the GlcN6P metabolic pathway in RapZ mediated phage resistance.
 These results suggest that GlcN6P metabolic pathways play important roles in ETEC
