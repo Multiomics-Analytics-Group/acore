@@ -129,7 +129,8 @@ try:
     print(f"Loaded annotations from {fname}")
 except FileNotFoundError:
     print(f"Fetching annotations for {df_omics.columns.size} UniProt IDs.")
-    FIELDS = "go_p,go_c,go_f"
+    # adding 'go' leads to duplicates which are filtered out by `process_annotations`
+    FIELDS = "go_p,go_c,go_f,go"
     annotations = fetch_annotations(df_omics.columns, fields=FIELDS)
     annotations = process_annotations(annotations, fields=FIELDS)
     # cache the annotations

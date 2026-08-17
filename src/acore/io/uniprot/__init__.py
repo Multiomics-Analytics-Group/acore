@@ -3,12 +3,19 @@ the results as a pandas.DataFrame."""
 
 import pandas as pd
 
+from .filter import filter_annotations
 from .uniprot import (
     check_id_mapping_results_ready,
     get_id_mapping_results_link,
     get_id_mapping_results_search,
     submit_id_mapping,
 )
+
+__all__ = [
+    "fetch_annotations",
+    "filter_annotations",
+    "process_annotations",
+]
 
 
 # function for outside usage
@@ -90,4 +97,19 @@ def process_annotations(annotations: pd.DataFrame, fields: str) -> pd.DataFrame:
         .replace("", pd.NA)
         .dropna()
     )
+    if annotations["annotation"].str.contains(";").any():
+        annotations["annotation"] = annotations["annotation"].str.split(";")
+        annotations = annotations.explode("annotation").reset_index(drop=True)
+        annotations = annotations.dropna(subset=["annotation"])
+        annotations["annotation"] = annotations["annotation"].str.strip().dropna()
+    if annotations["annotation"].isna().sum() > 0:
+        raise ValueError("There are still NaN values in the annotation column.")
+    if not annotations["annotation"].str.contains(";").sum() == 0:
+        raise ValueError(
+            "There are still semicolon-separated values in the annotation column."
+        )
+    # if go, go_f, go_c, go_p are all fetched, there will be duplicates. Only keep one.
+    annotations = annotations.drop_duplicates(
+        subset=["identifier", "annotation"]
+    ).reset_index(drop=True)
     return annotations
