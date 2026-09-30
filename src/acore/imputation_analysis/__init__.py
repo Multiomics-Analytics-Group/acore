@@ -265,8 +265,6 @@ def _select_imputation_targets(
              is `None`).
     :raises TypeError: if `on_cols` contains non-numeric columns.
     """
-    df = data.copy()
-
     if drop_cols:
         if on_cols is not None:
             overlap = set(on_cols) & set(drop_cols)
@@ -274,7 +272,9 @@ def _select_imputation_targets(
                 logger.warning(
                     f"Columns in both on_cols and drop_cols will be dropped, not filled: {overlap}"
                 )
-        df = df.drop(columns=drop_cols)
+        df = data.drop(columns=drop_cols)  # already a copy
+    else:
+        df = data.copy()
 
     if on_cols is None:
         for col in df.columns[df.dtypes == object]:
