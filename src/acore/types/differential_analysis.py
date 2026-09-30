@@ -48,7 +48,7 @@ class AnovaSchemaMultiGroup(AnovaSchema):
     posthoc_parametric: bool = Field(alias="posthoc Parametric", ge=0, le=1)
     posthoc_dof: float = Field(alias="posthoc dof", ge=0)
     posthoc_tail: str = Field(alias="posthoc tail")
-    posthoc_BF10: str = Field(alias="posthoc BF10")
+    posthoc_BF10: float = Field(alias="posthoc BF10")
     posthoc_effsize: float = Field(alias="posthoc effsize")
     efftype: str = Field(alias="efftype")
 
