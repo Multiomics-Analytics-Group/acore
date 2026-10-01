@@ -29,92 +29,92 @@ Bases: [`DataFrameModel`](https://pandera.readthedocs.io/en/stable/reference/gen
 
 Schema for the enrichment analysis results DataFrame.
 
-#### group1 *: str* *= 'group1'*
+#### group1 *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'group1'*
 
-#### group2 *: str* *= 'group2'*
+#### group2 *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'group2'*
 
-#### mean_group1 *: float* *= 'mean(group1)'*
+#### mean_group1 *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'mean(group1)'*
 
-#### std_group1 *: float* *= 'std(group1)'*
+#### std_group1 *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'std(group1)'*
 
-#### mean_group2 *: float* *= 'mean(group2)'*
+#### mean_group2 *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'mean(group2)'*
 
-#### std_group2 *: float* *= 'std(group2)'*
+#### std_group2 *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'std(group2)'*
 
-#### t_statistics *: float* *= 'T-Statistics'*
+#### t_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'T-Statistics'*
 
-#### pvalue *: float* *= 'pvalue'*
+#### pvalue *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'pvalue'*
 
-#### log2FC *: float* *= 'log2FC'*
+#### log2FC *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'log2FC'*
 
-#### FC *: float* *= 'FC'*
+#### FC *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'FC'*
 
-#### padj *: float* *= 'padj'*
+#### padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'padj'*
 
-#### correction *: str* *= 'correction'*
+#### correction *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'correction'*
 
-#### rejected *: bool* *= 'rejected'*
+#### rejected *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= 'rejected'*
 
-#### neg_log10_p_value *: float* *= '-log10 pvalue'*
+#### neg_log10_p_value *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= '-log10 pvalue'*
 
-#### Method *: str* *= 'Method'*
+#### Method *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'Method'*
 
 #### *class* Config
 
 Bases: [`BaseConfig`](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.model_config.BaseConfig.html#pandera.api.pandas.model_config.BaseConfig)
 
-#### add_missing_columns *: bool* *= False*
+#### add_missing_columns *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 add columns to dataframe if they are missing
 
-#### coerce *: bool* *= False*
+#### coerce *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 coerce types of all schema components
 
-#### description *: str | None* *= None*
+#### description *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 arbitrary textual description
 
-#### drop_invalid_rows *: bool* *= False*
+#### drop_invalid_rows *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 drop invalid rows on validation
 
-#### dtype *: str | type | [DataType](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.dtypes.DataType.html#pandera.dtypes.DataType) | ExtensionDtype | [dtype](https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype) | None* *= None*
+#### dtype *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [type](https://docs.python.org/3/builtins/functions.html#type) | [DataType](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.dtypes.DataType.html#pandera.dtypes.DataType) | ExtensionDtype | [dtype](https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 datatype of the dataframe. This overrides the data types specified in
 any of the fields.
 
-#### from_format *: Literal[Formats.csv] | Literal[Formats.dict] | Literal[Formats.json] | Literal[Formats.feather] | Literal[Formats.parquet] | Literal[Formats.pickle] | Literal[Formats.json_normalize] | Callable | None* *= None*
+#### from_format *: [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.csv] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.dict] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.feather] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.parquet] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.pickle] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json_normalize] | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 data format before validation. This option only applies to
 schemas used in the context of the pandera type constructor
 `pa.typing.DataFrame[Schema](data)`. If None, assumes a data structure
 compatible with the `pandas.DataFrame` constructor.
 
-#### from_format_kwargs *: dict[str, Any] | None* *= None*
+#### from_format_kwargs *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary keyword arguments to pass into the reader function that
 converts the object of type `from_format` to a pandera-validate-able
 data structure. The reader function is implemented in the pandera.typing
 generic types via the `from_format` and `to_format` methods.
 
-#### metadata *: dict | None* *= None*
+#### metadata *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary object to store key-value data at schema level
 
-#### multiindex_coerce *: bool* *= False*
+#### multiindex_coerce *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 coerce types of all MultiIndex components
 
-#### multiindex_name *: str | None* *= None*
+#### multiindex_name *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 name of multiindex
 
-#### multiindex_ordered *: bool* *= True*
+#### multiindex_ordered *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= True*
 
 validate MultiIndex in order
 
-#### multiindex_strict *: bool | Literal['filter']* *= False*
+#### multiindex_strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in validated MultiIndex -
 if `"filter"`, removes indexes not specified in the schema
@@ -123,63 +123,63 @@ if `"filter"`, removes indexes not specified in the schema
 
 make sure the MultiIndex is unique along the list of columns
 
-#### name *: str | None* *= 'AnovaSchema'*
+#### name *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= 'AnovaSchema'*
 
 name of schema
 
-#### on_missing_columns *: str | None* *= None*
+#### on_missing_columns *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 action to take when an optional column is missing from the dataframe.
 `None` (default) passes silently, `"warn"` emits a
 `SchemaWarning`. Overridable per field via
 `Field(on_missing=...)`.
 
-#### ordered *: bool* *= False*
+#### ordered *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 validate columns order
 
-#### strict *: bool | Literal['filter']* *= False*
+#### strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in the validated dataframe -
 if `"filter"`, removes columns not specified in the schema
 
-#### title *: str | None* *= None*
+#### title *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 human-readable label for schema
 
-#### to_format *: Literal[Formats.csv] | Literal[Formats.dict] | Literal[Formats.json] | Literal[Formats.feather] | Literal[Formats.parquet] | Literal[Formats.pickle] | Literal[Formats.json_normalize] | Callable | None* *= None*
+#### to_format *: [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.csv] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.dict] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.feather] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.parquet] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.pickle] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json_normalize] | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 data format to serialize into after validation. This option only applies
 to  schemas used in the context of the pandera type constructor
 `pa.typing.DataFrame[Schema](data)`. If None, returns a dataframe.
 
-#### to_format_buffer *: str | Callable | None* *= None*
+#### to_format_buffer *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 Buffer to be provided when to_format is a custom callable. See docs for
 example of how to implement an example of a to format function.
 
-#### to_format_kwargs *: dict[str, Any] | None* *= None*
+#### to_format_kwargs *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary keyword arguments to pass into the writer function that
 converts the pandera-validate-able object to type `to_format`.
 The writer function is implemented in the pandera.typing
 generic types via the `from_format` and `to_format` methods.
 
-#### unique *: str | list[str] | None* *= None*
+#### unique *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 make sure certain column combinations are unique
 
-#### unique_column_names *: bool* *= False*
+#### unique_column_names *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 make sure dataframe column names are unique
 
 #### *classmethod* build_schema_(\*\*kwargs) → [DataFrameSchema](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.container.DataFrameSchema.html#pandera.api.pandas.container.DataFrameSchema)
 
-#### *classmethod* empty(\*\_args) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[Self]
+#### *classmethod* empty(\*\_args) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Create an empty DataFrame with the schema of this model.
 
-#### *classmethod* example(\*\*kwargs) → DataFrameBase[Self]
+#### *classmethod* example(\*\*kwargs) → DataFrameBase[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Generate an example of this data model specification.
 
@@ -201,11 +201,11 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → dict | None
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
 
 Provide metadata for columns and schema level
 
-#### *classmethod* pydantic_validate(schema_model: Any) → [DataFrameModel](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.dataframe.model.DataFrameModel.html#pandera.api.dataframe.model.DataFrameModel)
+#### *classmethod* pydantic_validate(schema_model: [Any](https://docs.python.org/3/library/typing.html#typing.Any)) → [DataFrameModel](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.dataframe.model.DataFrameModel.html#pandera.api.dataframe.model.DataFrameModel)
 
 Verify that the input is a compatible dataframe model.
 
@@ -213,7 +213,7 @@ Verify that the input is a compatible dataframe model.
 
 Create a data synthesis strategy.
 
-#### *classmethod* to_json(target: PathLike | None = None, \*\*kwargs)
+#### *classmethod* to_json(target: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, \*\*kwargs)
 
 Convert this model’s schema to JSON.
 
@@ -233,11 +233,11 @@ FastAPI integration.
 
 Create `DataFrameSchema` from the `DataFrameModel`.
 
-#### *classmethod* to_yaml(stream: PathLike | None = None)
+#### *classmethod* to_yaml(stream: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Convert this model’s schema to YAML.
 
-#### *classmethod* validate(check_obj: DataFrame, head: int | None = None, tail: int | None = None, sample: int | None = None, random_state: int | None = None, lazy: bool = False, inplace: bool = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[Self]
+#### *classmethod* validate(check_obj: DataFrame, head: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, tail: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, sample: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, random_state: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, lazy: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, inplace: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Validate a DataFrame based on the schema specification.
 
@@ -267,84 +267,84 @@ Bases: [`AnovaSchema`](#acore.types.differential_analysis.AnovaSchema)
 
 Schema for more than two groups
 
-#### t_statistics *: float* *= 'posthoc T-Statistics'*
+#### t_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc T-Statistics'*
 
-#### posthoc_pvalue *: float* *= 'posthoc pvalue'*
+#### posthoc_pvalue *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue'*
 
-#### f_statistics *: float* *= 'F-statistics'*
+#### f_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'F-statistics'*
 
-#### posthoc_padj *: float* *= 'posthoc padj'*
+#### posthoc_padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue adj'*
 
-#### posthoc_paired *: bool* *= 'posthoc Paired'*
+#### posthoc_paired *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= 'posthoc Paired'*
 
-#### posthoc_parametric *: bool* *= 'posthoc Parametric'*
+#### posthoc_parametric *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= 'posthoc Parametric'*
 
-#### posthoc_dof *: float* *= 'posthoc dof'*
+#### posthoc_dof *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc dof'*
 
-#### posthoc_tail *: str* *= 'posthoc tail'*
+#### posthoc_tail *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'posthoc tail'*
 
-#### posthoc_BF10 *: float* *= 'posthoc BF10'*
+#### posthoc_BF10 *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc BF10'*
 
-#### posthoc_effsize *: float* *= 'posthoc effsize'*
+#### posthoc_effsize *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc effsize'*
 
-#### efftype *: str* *= 'efftype'*
+#### efftype *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'efftype'*
 
 #### *class* Config
 
 Bases: [`Config`](#acore.types.exploratory_analysis.TwoLoadingsSchema.Config)
 
-#### add_missing_columns *: bool* *= False*
+#### add_missing_columns *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 add columns to dataframe if they are missing
 
-#### coerce *: bool* *= False*
+#### coerce *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 coerce types of all schema components
 
-#### description *: str | None* *= None*
+#### description *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 arbitrary textual description
 
-#### drop_invalid_rows *: bool* *= False*
+#### drop_invalid_rows *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 drop invalid rows on validation
 
-#### dtype *: str | type | [DataType](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.dtypes.DataType.html#pandera.dtypes.DataType) | ExtensionDtype | [dtype](https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype) | None* *= None*
+#### dtype *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [type](https://docs.python.org/3/builtins/functions.html#type) | [DataType](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.dtypes.DataType.html#pandera.dtypes.DataType) | ExtensionDtype | [dtype](https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 datatype of the dataframe. This overrides the data types specified in
 any of the fields.
 
-#### from_format *: Literal[Formats.csv] | Literal[Formats.dict] | Literal[Formats.json] | Literal[Formats.feather] | Literal[Formats.parquet] | Literal[Formats.pickle] | Literal[Formats.json_normalize] | Callable | None* *= None*
+#### from_format *: [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.csv] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.dict] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.feather] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.parquet] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.pickle] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json_normalize] | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 data format before validation. This option only applies to
 schemas used in the context of the pandera type constructor
 `pa.typing.DataFrame[Schema](data)`. If None, assumes a data structure
 compatible with the `pandas.DataFrame` constructor.
 
-#### from_format_kwargs *: dict[str, Any] | None* *= None*
+#### from_format_kwargs *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary keyword arguments to pass into the reader function that
 converts the object of type `from_format` to a pandera-validate-able
 data structure. The reader function is implemented in the pandera.typing
 generic types via the `from_format` and `to_format` methods.
 
-#### metadata *: dict | None* *= None*
+#### metadata *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary object to store key-value data at schema level
 
-#### multiindex_coerce *: bool* *= False*
+#### multiindex_coerce *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 coerce types of all MultiIndex components
 
-#### multiindex_name *: str | None* *= None*
+#### multiindex_name *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 name of multiindex
 
-#### multiindex_ordered *: bool* *= True*
+#### multiindex_ordered *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= True*
 
 validate MultiIndex in order
 
-#### multiindex_strict *: bool | Literal['filter']* *= False*
+#### multiindex_strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in validated MultiIndex -
 if `"filter"`, removes indexes not specified in the schema
@@ -353,69 +353,69 @@ if `"filter"`, removes indexes not specified in the schema
 
 make sure the MultiIndex is unique along the list of columns
 
-#### name *: str | None* *= 'AnovaSchemaMultiGroup'*
+#### name *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= 'AnovaSchemaMultiGroup'*
 
 name of schema
 
-#### on_missing_columns *: str | None* *= None*
+#### on_missing_columns *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 action to take when an optional column is missing from the dataframe.
 `None` (default) passes silently, `"warn"` emits a
 `SchemaWarning`. Overridable per field via
 `Field(on_missing=...)`.
 
-#### ordered *: bool* *= False*
+#### ordered *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 validate columns order
 
-#### strict *: bool | Literal['filter']* *= False*
+#### strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in the validated dataframe -
 if `"filter"`, removes columns not specified in the schema
 
-#### title *: str | None* *= None*
+#### title *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 human-readable label for schema
 
-#### to_format *: Literal[Formats.csv] | Literal[Formats.dict] | Literal[Formats.json] | Literal[Formats.feather] | Literal[Formats.parquet] | Literal[Formats.pickle] | Literal[Formats.json_normalize] | Callable | None* *= None*
+#### to_format *: [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.csv] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.dict] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.feather] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.parquet] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.pickle] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json_normalize] | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 data format to serialize into after validation. This option only applies
 to  schemas used in the context of the pandera type constructor
 `pa.typing.DataFrame[Schema](data)`. If None, returns a dataframe.
 
-#### to_format_buffer *: str | Callable | None* *= None*
+#### to_format_buffer *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 Buffer to be provided when to_format is a custom callable. See docs for
 example of how to implement an example of a to format function.
 
-#### to_format_kwargs *: dict[str, Any] | None* *= None*
+#### to_format_kwargs *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary keyword arguments to pass into the writer function that
 converts the pandera-validate-able object to type `to_format`.
 The writer function is implemented in the pandera.typing
 generic types via the `from_format` and `to_format` methods.
 
-#### unique *: str | list[str] | None* *= None*
+#### unique *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 make sure certain column combinations are unique
 
-#### unique_column_names *: bool* *= False*
+#### unique_column_names *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 make sure dataframe column names are unique
 
-#### FC *: float* *= 'FC'*
+#### FC *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'FC'*
 
-#### Method *: str* *= 'Method'*
+#### Method *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'Method'*
 
 #### *classmethod* build_schema_(\*\*kwargs) → [DataFrameSchema](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.container.DataFrameSchema.html#pandera.api.pandas.container.DataFrameSchema)
 
-#### correction *: str* *= 'correction'*
+#### correction *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'correction'*
 
-#### *classmethod* empty(\*\_args) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[Self]
+#### *classmethod* empty(\*\_args) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Create an empty DataFrame with the schema of this model.
 
-#### *classmethod* example(\*\*kwargs) → DataFrameBase[Self]
+#### *classmethod* example(\*\*kwargs) → DataFrameBase[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Generate an example of this data model specification.
 
@@ -437,41 +437,41 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → dict | None
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
 
 Provide metadata for columns and schema level
 
-#### group1 *: str* *= 'group1'*
+#### group1 *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'group1'*
 
-#### group2 *: str* *= 'group2'*
+#### group2 *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'group2'*
 
-#### log2FC *: float* *= 'log2FC'*
+#### log2FC *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'log2FC'*
 
-#### mean_group1 *: float* *= 'mean(group1)'*
+#### mean_group1 *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'mean(group1)'*
 
-#### mean_group2 *: float* *= 'mean(group2)'*
+#### mean_group2 *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'mean(group2)'*
 
-#### neg_log10_p_value *: float* *= '-log10 pvalue'*
+#### neg_log10_p_value *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= '-log10 pvalue'*
 
-#### padj *: float* *= 'padj'*
+#### padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'padj'*
 
-#### pvalue *: float* *= 'pvalue'*
+#### pvalue *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'pvalue'*
 
-#### *classmethod* pydantic_validate(schema_model: Any) → [DataFrameModel](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.dataframe.model.DataFrameModel.html#pandera.api.dataframe.model.DataFrameModel)
+#### *classmethod* pydantic_validate(schema_model: [Any](https://docs.python.org/3/library/typing.html#typing.Any)) → [DataFrameModel](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.dataframe.model.DataFrameModel.html#pandera.api.dataframe.model.DataFrameModel)
 
 Verify that the input is a compatible dataframe model.
 
-#### rejected *: bool* *= 'rejected'*
+#### rejected *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= 'rejected'*
 
-#### std_group1 *: float* *= 'std(group1)'*
+#### std_group1 *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'std(group1)'*
 
-#### std_group2 *: float* *= 'std(group2)'*
+#### std_group2 *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'std(group2)'*
 
 #### *classmethod* strategy(\*\*kwargs)
 
 Create a data synthesis strategy.
 
-#### *classmethod* to_json(target: PathLike | None = None, \*\*kwargs)
+#### *classmethod* to_json(target: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, \*\*kwargs)
 
 Convert this model’s schema to JSON.
 
@@ -491,11 +491,11 @@ FastAPI integration.
 
 Create `DataFrameSchema` from the `DataFrameModel`.
 
-#### *classmethod* to_yaml(stream: PathLike | None = None)
+#### *classmethod* to_yaml(stream: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Convert this model’s schema to YAML.
 
-#### *classmethod* validate(check_obj: DataFrame, head: int | None = None, tail: int | None = None, sample: int | None = None, random_state: int | None = None, lazy: bool = False, inplace: bool = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[Self]
+#### *classmethod* validate(check_obj: DataFrame, head: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, tail: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, sample: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, random_state: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, lazy: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, inplace: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Validate a DataFrame based on the schema specification.
 
@@ -525,78 +525,78 @@ Bases: [`DataFrameModel`](https://pandera.readthedocs.io/en/stable/reference/gen
 
 Schema for the enrichment analysis results DataFrame.
 
-#### t_statistics *: float* *= 'posthoc T-Statistics'*
+#### t_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc T-Statistics'*
 
-#### posthoc_pvalue *: float* *= 'posthoc pvalue'*
+#### posthoc_pvalue *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue'*
 
-#### coef *: float* *= 'coef'*
+#### coef *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'coef'*
 
-#### std_err *: float* *= 'std err'*
+#### std_err *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'std err'*
 
-#### conf_int_low *: float* *= 'Conf. Int. Low'*
+#### conf_int_low *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'Conf. Int. Low'*
 
-#### conf_int_upp *: float* *= 'Conf. Int. Upp.'*
+#### conf_int_upp *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'Conf. Int. Upp.'*
 
-#### f_statistics *: float* *= 'F-statistics'*
+#### f_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'F-statistics'*
 
-#### posthoc_padj *: float* *= 'posthoc padj'*
+#### posthoc_padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc padj'*
 
 #### *class* Config
 
 Bases: [`BaseConfig`](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.model_config.BaseConfig.html#pandera.api.pandas.model_config.BaseConfig)
 
-#### add_missing_columns *: bool* *= False*
+#### add_missing_columns *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 add columns to dataframe if they are missing
 
-#### coerce *: bool* *= False*
+#### coerce *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 coerce types of all schema components
 
-#### description *: str | None* *= None*
+#### description *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 arbitrary textual description
 
-#### drop_invalid_rows *: bool* *= False*
+#### drop_invalid_rows *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 drop invalid rows on validation
 
-#### dtype *: str | type | [DataType](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.dtypes.DataType.html#pandera.dtypes.DataType) | ExtensionDtype | [dtype](https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype) | None* *= None*
+#### dtype *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [type](https://docs.python.org/3/builtins/functions.html#type) | [DataType](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.dtypes.DataType.html#pandera.dtypes.DataType) | ExtensionDtype | [dtype](https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 datatype of the dataframe. This overrides the data types specified in
 any of the fields.
 
-#### from_format *: Literal[Formats.csv] | Literal[Formats.dict] | Literal[Formats.json] | Literal[Formats.feather] | Literal[Formats.parquet] | Literal[Formats.pickle] | Literal[Formats.json_normalize] | Callable | None* *= None*
+#### from_format *: [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.csv] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.dict] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.feather] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.parquet] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.pickle] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json_normalize] | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 data format before validation. This option only applies to
 schemas used in the context of the pandera type constructor
 `pa.typing.DataFrame[Schema](data)`. If None, assumes a data structure
 compatible with the `pandas.DataFrame` constructor.
 
-#### from_format_kwargs *: dict[str, Any] | None* *= None*
+#### from_format_kwargs *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary keyword arguments to pass into the reader function that
 converts the object of type `from_format` to a pandera-validate-able
 data structure. The reader function is implemented in the pandera.typing
 generic types via the `from_format` and `to_format` methods.
 
-#### metadata *: dict | None* *= None*
+#### metadata *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary object to store key-value data at schema level
 
-#### multiindex_coerce *: bool* *= False*
+#### multiindex_coerce *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 coerce types of all MultiIndex components
 
-#### multiindex_name *: str | None* *= None*
+#### multiindex_name *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 name of multiindex
 
-#### multiindex_ordered *: bool* *= True*
+#### multiindex_ordered *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= True*
 
 validate MultiIndex in order
 
-#### multiindex_strict *: bool | Literal['filter']* *= False*
+#### multiindex_strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in validated MultiIndex -
 if `"filter"`, removes indexes not specified in the schema
@@ -605,63 +605,63 @@ if `"filter"`, removes indexes not specified in the schema
 
 make sure the MultiIndex is unique along the list of columns
 
-#### name *: str | None* *= 'AncovaSchema'*
+#### name *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= 'AncovaSchema'*
 
 name of schema
 
-#### on_missing_columns *: str | None* *= None*
+#### on_missing_columns *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 action to take when an optional column is missing from the dataframe.
 `None` (default) passes silently, `"warn"` emits a
 `SchemaWarning`. Overridable per field via
 `Field(on_missing=...)`.
 
-#### ordered *: bool* *= False*
+#### ordered *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 validate columns order
 
-#### strict *: bool | Literal['filter']* *= False*
+#### strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in the validated dataframe -
 if `"filter"`, removes columns not specified in the schema
 
-#### title *: str | None* *= None*
+#### title *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 human-readable label for schema
 
-#### to_format *: Literal[Formats.csv] | Literal[Formats.dict] | Literal[Formats.json] | Literal[Formats.feather] | Literal[Formats.parquet] | Literal[Formats.pickle] | Literal[Formats.json_normalize] | Callable | None* *= None*
+#### to_format *: [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.csv] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.dict] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.feather] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.parquet] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.pickle] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json_normalize] | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 data format to serialize into after validation. This option only applies
 to  schemas used in the context of the pandera type constructor
 `pa.typing.DataFrame[Schema](data)`. If None, returns a dataframe.
 
-#### to_format_buffer *: str | Callable | None* *= None*
+#### to_format_buffer *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 Buffer to be provided when to_format is a custom callable. See docs for
 example of how to implement an example of a to format function.
 
-#### to_format_kwargs *: dict[str, Any] | None* *= None*
+#### to_format_kwargs *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary keyword arguments to pass into the writer function that
 converts the pandera-validate-able object to type `to_format`.
 The writer function is implemented in the pandera.typing
 generic types via the `from_format` and `to_format` methods.
 
-#### unique *: str | list[str] | None* *= None*
+#### unique *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 make sure certain column combinations are unique
 
-#### unique_column_names *: bool* *= False*
+#### unique_column_names *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 make sure dataframe column names are unique
 
 #### *classmethod* build_schema_(\*\*kwargs) → [DataFrameSchema](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.container.DataFrameSchema.html#pandera.api.pandas.container.DataFrameSchema)
 
-#### *classmethod* empty(\*\_args) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[Self]
+#### *classmethod* empty(\*\_args) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Create an empty DataFrame with the schema of this model.
 
-#### *classmethod* example(\*\*kwargs) → DataFrameBase[Self]
+#### *classmethod* example(\*\*kwargs) → DataFrameBase[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Generate an example of this data model specification.
 
@@ -683,11 +683,11 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → dict | None
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
 
 Provide metadata for columns and schema level
 
-#### *classmethod* pydantic_validate(schema_model: Any) → [DataFrameModel](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.dataframe.model.DataFrameModel.html#pandera.api.dataframe.model.DataFrameModel)
+#### *classmethod* pydantic_validate(schema_model: [Any](https://docs.python.org/3/library/typing.html#typing.Any)) → [DataFrameModel](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.dataframe.model.DataFrameModel.html#pandera.api.dataframe.model.DataFrameModel)
 
 Verify that the input is a compatible dataframe model.
 
@@ -695,7 +695,7 @@ Verify that the input is a compatible dataframe model.
 
 Create a data synthesis strategy.
 
-#### *classmethod* to_json(target: PathLike | None = None, \*\*kwargs)
+#### *classmethod* to_json(target: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, \*\*kwargs)
 
 Convert this model’s schema to JSON.
 
@@ -715,11 +715,11 @@ FastAPI integration.
 
 Create `DataFrameSchema` from the `DataFrameModel`.
 
-#### *classmethod* to_yaml(stream: PathLike | None = None)
+#### *classmethod* to_yaml(stream: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Convert this model’s schema to YAML.
 
-#### *classmethod* validate(check_obj: DataFrame, head: int | None = None, tail: int | None = None, sample: int | None = None, random_state: int | None = None, lazy: bool = False, inplace: bool = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[Self]
+#### *classmethod* validate(check_obj: DataFrame, head: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, tail: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, sample: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, random_state: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, lazy: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, inplace: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Validate a DataFrame based on the schema specification.
 
@@ -751,84 +751,84 @@ Bases: [`DataFrameModel`](https://pandera.readthedocs.io/en/stable/reference/gen
 
 Schema for the enrichment analysis results DataFrame.
 
-#### terms *: str* *= 'terms'*
+#### terms *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'terms'*
 
-#### identifiers *: str* *= 'identifiers'*
+#### identifiers *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'identifiers'*
 
-#### foreground *: int* *= 'foreground'*
+#### foreground *: [int](https://docs.python.org/3/builtins/functions.html#int)* *= 'foreground'*
 
-#### background *: int* *= 'background'*
+#### background *: [int](https://docs.python.org/3/builtins/functions.html#int)* *= 'background'*
 
-#### foreground_pop *: int* *= 'foreground_pop'*
+#### foreground_pop *: [int](https://docs.python.org/3/builtins/functions.html#int)* *= 'foreground_pop'*
 
-#### background_pop *: int* *= 'background_pop'*
+#### background_pop *: [int](https://docs.python.org/3/builtins/functions.html#int)* *= 'background_pop'*
 
-#### pvalue *: float* *= 'pvalue'*
+#### pvalue *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'pvalue'*
 
-#### padj *: float* *= 'padj'*
+#### padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'padj'*
 
-#### rejected *: bool* *= 'rejected'*
+#### rejected *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= 'rejected'*
 
-#### direction *: str* *= 'direction'*
+#### direction *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'direction'*
 
-#### comparison *: str* *= 'comparison'*
+#### comparison *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'comparison'*
 
 #### *class* Config
 
 Bases: [`BaseConfig`](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.model_config.BaseConfig.html#pandera.api.pandas.model_config.BaseConfig)
 
-#### add_missing_columns *: bool* *= False*
+#### add_missing_columns *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 add columns to dataframe if they are missing
 
-#### coerce *: bool* *= False*
+#### coerce *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 coerce types of all schema components
 
-#### description *: str | None* *= None*
+#### description *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 arbitrary textual description
 
-#### drop_invalid_rows *: bool* *= False*
+#### drop_invalid_rows *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 drop invalid rows on validation
 
-#### dtype *: str | type | [DataType](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.dtypes.DataType.html#pandera.dtypes.DataType) | ExtensionDtype | [dtype](https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype) | None* *= None*
+#### dtype *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [type](https://docs.python.org/3/builtins/functions.html#type) | [DataType](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.dtypes.DataType.html#pandera.dtypes.DataType) | ExtensionDtype | [dtype](https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 datatype of the dataframe. This overrides the data types specified in
 any of the fields.
 
-#### from_format *: Literal[Formats.csv] | Literal[Formats.dict] | Literal[Formats.json] | Literal[Formats.feather] | Literal[Formats.parquet] | Literal[Formats.pickle] | Literal[Formats.json_normalize] | Callable | None* *= None*
+#### from_format *: [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.csv] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.dict] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.feather] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.parquet] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.pickle] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json_normalize] | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 data format before validation. This option only applies to
 schemas used in the context of the pandera type constructor
 `pa.typing.DataFrame[Schema](data)`. If None, assumes a data structure
 compatible with the `pandas.DataFrame` constructor.
 
-#### from_format_kwargs *: dict[str, Any] | None* *= None*
+#### from_format_kwargs *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary keyword arguments to pass into the reader function that
 converts the object of type `from_format` to a pandera-validate-able
 data structure. The reader function is implemented in the pandera.typing
 generic types via the `from_format` and `to_format` methods.
 
-#### metadata *: dict | None* *= None*
+#### metadata *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary object to store key-value data at schema level
 
-#### multiindex_coerce *: bool* *= False*
+#### multiindex_coerce *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 coerce types of all MultiIndex components
 
-#### multiindex_name *: str | None* *= None*
+#### multiindex_name *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 name of multiindex
 
-#### multiindex_ordered *: bool* *= True*
+#### multiindex_ordered *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= True*
 
 validate MultiIndex in order
 
-#### multiindex_strict *: bool | Literal['filter']* *= False*
+#### multiindex_strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in validated MultiIndex -
 if `"filter"`, removes indexes not specified in the schema
@@ -837,63 +837,63 @@ if `"filter"`, removes indexes not specified in the schema
 
 make sure the MultiIndex is unique along the list of columns
 
-#### name *: str | None* *= 'EnrichmentAnalysisSchema'*
+#### name *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= 'EnrichmentAnalysisSchema'*
 
 name of schema
 
-#### on_missing_columns *: str | None* *= None*
+#### on_missing_columns *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 action to take when an optional column is missing from the dataframe.
 `None` (default) passes silently, `"warn"` emits a
 `SchemaWarning`. Overridable per field via
 `Field(on_missing=...)`.
 
-#### ordered *: bool* *= False*
+#### ordered *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 validate columns order
 
-#### strict *: bool | Literal['filter']* *= False*
+#### strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in the validated dataframe -
 if `"filter"`, removes columns not specified in the schema
 
-#### title *: str | None* *= None*
+#### title *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 human-readable label for schema
 
-#### to_format *: Literal[Formats.csv] | Literal[Formats.dict] | Literal[Formats.json] | Literal[Formats.feather] | Literal[Formats.parquet] | Literal[Formats.pickle] | Literal[Formats.json_normalize] | Callable | None* *= None*
+#### to_format *: [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.csv] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.dict] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.feather] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.parquet] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.pickle] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json_normalize] | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 data format to serialize into after validation. This option only applies
 to  schemas used in the context of the pandera type constructor
 `pa.typing.DataFrame[Schema](data)`. If None, returns a dataframe.
 
-#### to_format_buffer *: str | Callable | None* *= None*
+#### to_format_buffer *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 Buffer to be provided when to_format is a custom callable. See docs for
 example of how to implement an example of a to format function.
 
-#### to_format_kwargs *: dict[str, Any] | None* *= None*
+#### to_format_kwargs *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary keyword arguments to pass into the writer function that
 converts the pandera-validate-able object to type `to_format`.
 The writer function is implemented in the pandera.typing
 generic types via the `from_format` and `to_format` methods.
 
-#### unique *: str | list[str] | None* *= None*
+#### unique *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 make sure certain column combinations are unique
 
-#### unique_column_names *: bool* *= False*
+#### unique_column_names *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 make sure dataframe column names are unique
 
 #### *classmethod* build_schema_(\*\*kwargs) → [DataFrameSchema](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.container.DataFrameSchema.html#pandera.api.pandas.container.DataFrameSchema)
 
-#### *classmethod* empty(\*\_args) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[Self]
+#### *classmethod* empty(\*\_args) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Create an empty DataFrame with the schema of this model.
 
-#### *classmethod* example(\*\*kwargs) → DataFrameBase[Self]
+#### *classmethod* example(\*\*kwargs) → DataFrameBase[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Generate an example of this data model specification.
 
@@ -915,11 +915,11 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → dict | None
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
 
 Provide metadata for columns and schema level
 
-#### *classmethod* pydantic_validate(schema_model: Any) → [DataFrameModel](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.dataframe.model.DataFrameModel.html#pandera.api.dataframe.model.DataFrameModel)
+#### *classmethod* pydantic_validate(schema_model: [Any](https://docs.python.org/3/library/typing.html#typing.Any)) → [DataFrameModel](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.dataframe.model.DataFrameModel.html#pandera.api.dataframe.model.DataFrameModel)
 
 Verify that the input is a compatible dataframe model.
 
@@ -927,7 +927,7 @@ Verify that the input is a compatible dataframe model.
 
 Create a data synthesis strategy.
 
-#### *classmethod* to_json(target: PathLike | None = None, \*\*kwargs)
+#### *classmethod* to_json(target: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, \*\*kwargs)
 
 Convert this model’s schema to JSON.
 
@@ -947,11 +947,11 @@ FastAPI integration.
 
 Create `DataFrameSchema` from the `DataFrameModel`.
 
-#### *classmethod* to_yaml(stream: PathLike | None = None)
+#### *classmethod* to_yaml(stream: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Convert this model’s schema to YAML.
 
-#### *classmethod* validate(check_obj: DataFrame, head: int | None = None, tail: int | None = None, sample: int | None = None, random_state: int | None = None, lazy: bool = False, inplace: bool = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[Self]
+#### *classmethod* validate(check_obj: DataFrame, head: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, tail: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, sample: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, random_state: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, lazy: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, inplace: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Validate a DataFrame based on the schema specification.
 
@@ -983,68 +983,68 @@ Bases: [`DataFrameModel`](https://pandera.readthedocs.io/en/stable/reference/gen
 
 Schema for the PCA components DataFrame.
 
-#### group *: str | None* *= 'group'*
+#### group *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= 'group'*
 
-#### x *: float* *= 'x'*
+#### x *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'x'*
 
-#### y *: float* *= 'y'*
+#### y *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'y'*
 
 #### *class* Config
 
 Bases: [`BaseConfig`](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.model_config.BaseConfig.html#pandera.api.pandas.model_config.BaseConfig)
 
-#### add_missing_columns *: bool* *= False*
+#### add_missing_columns *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 add columns to dataframe if they are missing
 
-#### coerce *: bool* *= False*
+#### coerce *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 coerce types of all schema components
 
-#### description *: str | None* *= None*
+#### description *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 arbitrary textual description
 
-#### drop_invalid_rows *: bool* *= False*
+#### drop_invalid_rows *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 drop invalid rows on validation
 
-#### dtype *: str | type | [DataType](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.dtypes.DataType.html#pandera.dtypes.DataType) | ExtensionDtype | [dtype](https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype) | None* *= None*
+#### dtype *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [type](https://docs.python.org/3/builtins/functions.html#type) | [DataType](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.dtypes.DataType.html#pandera.dtypes.DataType) | ExtensionDtype | [dtype](https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 datatype of the dataframe. This overrides the data types specified in
 any of the fields.
 
-#### from_format *: Literal[Formats.csv] | Literal[Formats.dict] | Literal[Formats.json] | Literal[Formats.feather] | Literal[Formats.parquet] | Literal[Formats.pickle] | Literal[Formats.json_normalize] | Callable | None* *= None*
+#### from_format *: [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.csv] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.dict] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.feather] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.parquet] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.pickle] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json_normalize] | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 data format before validation. This option only applies to
 schemas used in the context of the pandera type constructor
 `pa.typing.DataFrame[Schema](data)`. If None, assumes a data structure
 compatible with the `pandas.DataFrame` constructor.
 
-#### from_format_kwargs *: dict[str, Any] | None* *= None*
+#### from_format_kwargs *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary keyword arguments to pass into the reader function that
 converts the object of type `from_format` to a pandera-validate-able
 data structure. The reader function is implemented in the pandera.typing
 generic types via the `from_format` and `to_format` methods.
 
-#### metadata *: dict | None* *= None*
+#### metadata *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary object to store key-value data at schema level
 
-#### multiindex_coerce *: bool* *= False*
+#### multiindex_coerce *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 coerce types of all MultiIndex components
 
-#### multiindex_name *: str | None* *= None*
+#### multiindex_name *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 name of multiindex
 
-#### multiindex_ordered *: bool* *= True*
+#### multiindex_ordered *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= True*
 
 validate MultiIndex in order
 
-#### multiindex_strict *: bool | Literal['filter']* *= False*
+#### multiindex_strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in validated MultiIndex -
 if `"filter"`, removes indexes not specified in the schema
@@ -1053,63 +1053,63 @@ if `"filter"`, removes indexes not specified in the schema
 
 make sure the MultiIndex is unique along the list of columns
 
-#### name *: str | None* *= 'TwoComponentSchema'*
+#### name *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= 'TwoComponentSchema'*
 
 name of schema
 
-#### on_missing_columns *: str | None* *= None*
+#### on_missing_columns *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 action to take when an optional column is missing from the dataframe.
 `None` (default) passes silently, `"warn"` emits a
 `SchemaWarning`. Overridable per field via
 `Field(on_missing=...)`.
 
-#### ordered *: bool* *= False*
+#### ordered *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 validate columns order
 
-#### strict *: bool | Literal['filter']* *= False*
+#### strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in the validated dataframe -
 if `"filter"`, removes columns not specified in the schema
 
-#### title *: str | None* *= None*
+#### title *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 human-readable label for schema
 
-#### to_format *: Literal[Formats.csv] | Literal[Formats.dict] | Literal[Formats.json] | Literal[Formats.feather] | Literal[Formats.parquet] | Literal[Formats.pickle] | Literal[Formats.json_normalize] | Callable | None* *= None*
+#### to_format *: [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.csv] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.dict] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.feather] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.parquet] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.pickle] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json_normalize] | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 data format to serialize into after validation. This option only applies
 to  schemas used in the context of the pandera type constructor
 `pa.typing.DataFrame[Schema](data)`. If None, returns a dataframe.
 
-#### to_format_buffer *: str | Callable | None* *= None*
+#### to_format_buffer *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 Buffer to be provided when to_format is a custom callable. See docs for
 example of how to implement an example of a to format function.
 
-#### to_format_kwargs *: dict[str, Any] | None* *= None*
+#### to_format_kwargs *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary keyword arguments to pass into the writer function that
 converts the pandera-validate-able object to type `to_format`.
 The writer function is implemented in the pandera.typing
 generic types via the `from_format` and `to_format` methods.
 
-#### unique *: str | list[str] | None* *= None*
+#### unique *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 make sure certain column combinations are unique
 
-#### unique_column_names *: bool* *= False*
+#### unique_column_names *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 make sure dataframe column names are unique
 
 #### *classmethod* build_schema_(\*\*kwargs) → [DataFrameSchema](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.container.DataFrameSchema.html#pandera.api.pandas.container.DataFrameSchema)
 
-#### *classmethod* empty(\*\_args) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[Self]
+#### *classmethod* empty(\*\_args) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Create an empty DataFrame with the schema of this model.
 
-#### *classmethod* example(\*\*kwargs) → DataFrameBase[Self]
+#### *classmethod* example(\*\*kwargs) → DataFrameBase[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Generate an example of this data model specification.
 
@@ -1131,11 +1131,11 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → dict | None
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
 
 Provide metadata for columns and schema level
 
-#### *classmethod* pydantic_validate(schema_model: Any) → [DataFrameModel](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.dataframe.model.DataFrameModel.html#pandera.api.dataframe.model.DataFrameModel)
+#### *classmethod* pydantic_validate(schema_model: [Any](https://docs.python.org/3/library/typing.html#typing.Any)) → [DataFrameModel](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.dataframe.model.DataFrameModel.html#pandera.api.dataframe.model.DataFrameModel)
 
 Verify that the input is a compatible dataframe model.
 
@@ -1143,7 +1143,7 @@ Verify that the input is a compatible dataframe model.
 
 Create a data synthesis strategy.
 
-#### *classmethod* to_json(target: PathLike | None = None, \*\*kwargs)
+#### *classmethod* to_json(target: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, \*\*kwargs)
 
 Convert this model’s schema to JSON.
 
@@ -1163,11 +1163,11 @@ FastAPI integration.
 
 Create `DataFrameSchema` from the `DataFrameModel`.
 
-#### *classmethod* to_yaml(stream: PathLike | None = None)
+#### *classmethod* to_yaml(stream: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Convert this model’s schema to YAML.
 
-#### *classmethod* validate(check_obj: DataFrame, head: int | None = None, tail: int | None = None, sample: int | None = None, random_state: int | None = None, lazy: bool = False, inplace: bool = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[Self]
+#### *classmethod* validate(check_obj: DataFrame, head: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, tail: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, sample: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, random_state: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, lazy: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, inplace: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Validate a DataFrame based on the schema specification.
 
@@ -1197,64 +1197,64 @@ Bases: [`TwoComponentSchema`](#acore.types.exploratory_analysis.TwoComponentSche
 
 Schema for the PCA loadings DataFrame.
 
-#### value *: float | None* *= 'value'*
+#### value *: [float](https://docs.python.org/3/builtins/functions.html#float) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= 'value'*
 
 #### *class* Config
 
 Bases: [`Config`](#acore.types.exploratory_analysis.TwoLoadingsSchema.Config)
 
-#### add_missing_columns *: bool* *= False*
+#### add_missing_columns *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 add columns to dataframe if they are missing
 
-#### coerce *: bool* *= False*
+#### coerce *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 coerce types of all schema components
 
-#### description *: str | None* *= None*
+#### description *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 arbitrary textual description
 
-#### drop_invalid_rows *: bool* *= False*
+#### drop_invalid_rows *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 drop invalid rows on validation
 
-#### dtype *: str | type | [DataType](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.dtypes.DataType.html#pandera.dtypes.DataType) | ExtensionDtype | [dtype](https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype) | None* *= None*
+#### dtype *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [type](https://docs.python.org/3/builtins/functions.html#type) | [DataType](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.dtypes.DataType.html#pandera.dtypes.DataType) | ExtensionDtype | [dtype](https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 datatype of the dataframe. This overrides the data types specified in
 any of the fields.
 
-#### from_format *: Literal[Formats.csv] | Literal[Formats.dict] | Literal[Formats.json] | Literal[Formats.feather] | Literal[Formats.parquet] | Literal[Formats.pickle] | Literal[Formats.json_normalize] | Callable | None* *= None*
+#### from_format *: [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.csv] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.dict] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.feather] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.parquet] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.pickle] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json_normalize] | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 data format before validation. This option only applies to
 schemas used in the context of the pandera type constructor
 `pa.typing.DataFrame[Schema](data)`. If None, assumes a data structure
 compatible with the `pandas.DataFrame` constructor.
 
-#### from_format_kwargs *: dict[str, Any] | None* *= None*
+#### from_format_kwargs *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary keyword arguments to pass into the reader function that
 converts the object of type `from_format` to a pandera-validate-able
 data structure. The reader function is implemented in the pandera.typing
 generic types via the `from_format` and `to_format` methods.
 
-#### metadata *: dict | None* *= None*
+#### metadata *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary object to store key-value data at schema level
 
-#### multiindex_coerce *: bool* *= False*
+#### multiindex_coerce *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 coerce types of all MultiIndex components
 
-#### multiindex_name *: str | None* *= None*
+#### multiindex_name *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 name of multiindex
 
-#### multiindex_ordered *: bool* *= True*
+#### multiindex_ordered *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= True*
 
 validate MultiIndex in order
 
-#### multiindex_strict *: bool | Literal['filter']* *= False*
+#### multiindex_strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in validated MultiIndex -
 if `"filter"`, removes indexes not specified in the schema
@@ -1263,63 +1263,63 @@ if `"filter"`, removes indexes not specified in the schema
 
 make sure the MultiIndex is unique along the list of columns
 
-#### name *: str | None* *= 'TwoLoadingsSchema'*
+#### name *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= 'TwoLoadingsSchema'*
 
 name of schema
 
-#### on_missing_columns *: str | None* *= None*
+#### on_missing_columns *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 action to take when an optional column is missing from the dataframe.
 `None` (default) passes silently, `"warn"` emits a
 `SchemaWarning`. Overridable per field via
 `Field(on_missing=...)`.
 
-#### ordered *: bool* *= False*
+#### ordered *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 validate columns order
 
-#### strict *: bool | Literal['filter']* *= False*
+#### strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in the validated dataframe -
 if `"filter"`, removes columns not specified in the schema
 
-#### title *: str | None* *= None*
+#### title *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 human-readable label for schema
 
-#### to_format *: Literal[Formats.csv] | Literal[Formats.dict] | Literal[Formats.json] | Literal[Formats.feather] | Literal[Formats.parquet] | Literal[Formats.pickle] | Literal[Formats.json_normalize] | Callable | None* *= None*
+#### to_format *: [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.csv] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.dict] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.feather] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.parquet] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.pickle] | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)[Formats.json_normalize] | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 data format to serialize into after validation. This option only applies
 to  schemas used in the context of the pandera type constructor
 `pa.typing.DataFrame[Schema](data)`. If None, returns a dataframe.
 
-#### to_format_buffer *: str | Callable | None* *= None*
+#### to_format_buffer *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 Buffer to be provided when to_format is a custom callable. See docs for
 example of how to implement an example of a to format function.
 
-#### to_format_kwargs *: dict[str, Any] | None* *= None*
+#### to_format_kwargs *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 a dictionary keyword arguments to pass into the writer function that
 converts the pandera-validate-able object to type `to_format`.
 The writer function is implemented in the pandera.typing
 generic types via the `from_format` and `to_format` methods.
 
-#### unique *: str | list[str] | None* *= None*
+#### unique *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
 make sure certain column combinations are unique
 
-#### unique_column_names *: bool* *= False*
+#### unique_column_names *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 make sure dataframe column names are unique
 
 #### *classmethod* build_schema_(\*\*kwargs) → [DataFrameSchema](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.container.DataFrameSchema.html#pandera.api.pandas.container.DataFrameSchema)
 
-#### *classmethod* empty(\*\_args) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[Self]
+#### *classmethod* empty(\*\_args) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Create an empty DataFrame with the schema of this model.
 
-#### *classmethod* example(\*\*kwargs) → DataFrameBase[Self]
+#### *classmethod* example(\*\*kwargs) → DataFrameBase[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Generate an example of this data model specification.
 
@@ -1341,13 +1341,13 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → dict | None
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
 
 Provide metadata for columns and schema level
 
-#### group *: str | None* *= 'group'*
+#### group *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= 'group'*
 
-#### *classmethod* pydantic_validate(schema_model: Any) → [DataFrameModel](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.dataframe.model.DataFrameModel.html#pandera.api.dataframe.model.DataFrameModel)
+#### *classmethod* pydantic_validate(schema_model: [Any](https://docs.python.org/3/library/typing.html#typing.Any)) → [DataFrameModel](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.dataframe.model.DataFrameModel.html#pandera.api.dataframe.model.DataFrameModel)
 
 Verify that the input is a compatible dataframe model.
 
@@ -1355,7 +1355,7 @@ Verify that the input is a compatible dataframe model.
 
 Create a data synthesis strategy.
 
-#### *classmethod* to_json(target: PathLike | None = None, \*\*kwargs)
+#### *classmethod* to_json(target: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, \*\*kwargs)
 
 Convert this model’s schema to JSON.
 
@@ -1375,11 +1375,11 @@ FastAPI integration.
 
 Create `DataFrameSchema` from the `DataFrameModel`.
 
-#### *classmethod* to_yaml(stream: PathLike | None = None)
+#### *classmethod* to_yaml(stream: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Convert this model’s schema to YAML.
 
-#### *classmethod* validate(check_obj: DataFrame, head: int | None = None, tail: int | None = None, sample: int | None = None, random_state: int | None = None, lazy: bool = False, inplace: bool = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[Self]
+#### *classmethod* validate(check_obj: DataFrame, head: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, tail: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, sample: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, random_state: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, lazy: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, inplace: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
 
 Validate a DataFrame based on the schema specification.
 
@@ -1403,21 +1403,21 @@ Validate a DataFrame based on the schema specification.
   **SchemaError** – when `DataFrame` violates built-in or custom
   checks.
 
-#### x *: float* *= 'x'*
+#### x *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'x'*
 
-#### y *: float* *= 'y'*
+#### y *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'y'*
 
-### *class* AnnotationResult(, x_title: str, y_title: str, group: str | None = None)
+### *class* AnnotationResult(, x_title: [str](https://docs.python.org/3/builtins/stdtypes.html#str), y_title: [str](https://docs.python.org/3/builtins/stdtypes.html#str), group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Bases: [`BaseModel`](https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel)
 
 Represents the annotation result from exploratory analysis.
 
-#### x_title *: str*
+#### x_title *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
 
-#### y_title *: str*
+#### y_title *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
 
-#### group *: str | None*
+#### group *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)*
 
 #### model_config *= {}*
 
@@ -1425,17 +1425,17 @@ Configuration for the model, should be a dictionary conforming to [ConfigDict][p
 
 ## acore.types.permutation_test module
 
-### *class* PermutationResult(, metric: str | Callable | None = None, observed_statistic: Any = None, p_value: float)
+### *class* PermutationResult(, metric: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, observed_statistic: [Any](https://docs.python.org/3/library/typing.html#typing.Any) = None, p_value: [float](https://docs.python.org/3/builtins/functions.html#float))
 
 Bases: [`BaseModel`](https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel)
 
 Schema for the output of a permutation test.
 
-#### metric *: str | Callable | None*
+#### metric *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [Callable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) | [None](https://docs.python.org/3/builtins/constants.html#None)*
 
-#### observed_statistic *: Any*
+#### observed_statistic *: [Any](https://docs.python.org/3/library/typing.html#typing.Any)*
 
-#### p_value *: float*
+#### p_value *: [float](https://docs.python.org/3/builtins/functions.html#float)*
 
 #### model_config *= {}*
 

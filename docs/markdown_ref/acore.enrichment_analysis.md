@@ -6,7 +6,7 @@ analysis.
 Most things in this module are covered in [https://www.youtube.com/watch?v=2NC1QOXmc5o](https://www.youtube.com/watch?v=2NC1QOXmc5o)
 by Lars Juhl Jensen.
 
-### run_fisher(group1: list[int], group2: list[int], alternative: str = 'two-sided') → tuple[float, float]
+### run_fisher(group1: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[int](https://docs.python.org/3/builtins/functions.html#int)], group2: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[int](https://docs.python.org/3/builtins/functions.html#int)], alternative: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'two-sided') → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[float](https://docs.python.org/3/builtins/functions.html#float), [float](https://docs.python.org/3/builtins/functions.html#float)]
 
 Run fisher’s exact test on two groups using [scipy.stats.fisher_exact](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fisher_exact.html).
 
@@ -23,17 +23,17 @@ odds, pvalue = stats.fisher_exact(group1=[a, b],
                 )
 ```
 
-### run_kolmogorov_smirnov(dist1: list[float], dist2: list[float], alternative: str = 'two-sided') → tuple[float, float]
+### run_kolmogorov_smirnov(dist1: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[float](https://docs.python.org/3/builtins/functions.html#float)], dist2: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[float](https://docs.python.org/3/builtins/functions.html#float)], alternative: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'two-sided') → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[float](https://docs.python.org/3/builtins/functions.html#float), [float](https://docs.python.org/3/builtins/functions.html#float)]
 
 Compute the Kolmogorov-Smirnov statistic on 2 samples.
 See [scipy.stats.ks_2samp](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_2samp.html)
 
 * **Parameters:**
-  * **dist1** (*list*) – sequence of 1-D ndarray (first distribution to compare)
+  * **dist1** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – sequence of 1-D ndarray (first distribution to compare)
     drawn from a continuous distribution
-  * **dist2** (*list*) – sequence of 1-D ndarray (second distribution to compare)
+  * **dist2** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – sequence of 1-D ndarray (second distribution to compare)
     drawn from a continuous distribution
-  * **alternative** (*str*) – defines the alternative hypothesis (default is ‘two-sided’):
+  * **alternative** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – defines the alternative hypothesis (default is ‘two-sided’):
     \* **‘two-sided’**
     \* **‘less’**
     \* **‘greater’**
@@ -46,7 +46,7 @@ Example:
 result = run_kolmogorov_smirnov(dist1, dist2, alternative='two-sided')
 ```
 
-### run_site_regulation_enrichment(regulation_data: DataFrame, annotation: DataFrame, identifier: str = 'identifier', groups: list[str] = ('group1', 'group2'), annotation_col: str = 'annotation', rejected_col: str = 'rejected', group_col: str = 'group', method: str = 'fisher', regex: str = '(\\\\w+~.+)_\\\\w\\\\d+\\\\-\\\\w+', correction: str = 'fdr_bh', remove_duplicates: bool = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[EnrichmentAnalysisSchema](acore.types.md#acore.types.enrichment_analysis.EnrichmentAnalysisSchema)]
+### run_site_regulation_enrichment(regulation_data: DataFrame, annotation: DataFrame, identifier: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', groups: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] = ('group1', 'group2'), annotation_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'annotation', rejected_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'rejected', group_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fisher', regex: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = '(\\\\w+~.+)_\\\\w\\\\d+\\\\-\\\\w+', correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', remove_duplicates: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[EnrichmentAnalysisSchema](acore.types.md#acore.types.enrichment_analysis.EnrichmentAnalysisSchema)]
 
 This function runs a simple enrichment analysis for significantly
 regulated protein sites in a dataset.
@@ -56,24 +56,24 @@ regulated protein sites in a dataset.
     regulation analysis.
   * **annotation** – pandas.DataFrame with annotations for features
     (columns: ‘annotation’, ‘identifier’ (feature identifiers), and ‘source’).
-  * **identifier** (*str*) – name of the column from annotation containing
+  * **identifier** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column from annotation containing
     feature identifiers.
-  * **groups** (*list*) – column names from regulation_data containing
+  * **groups** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column names from regulation_data containing
     group identifiers.
-  * **annotation_col** (*str*) – name of the column from annotation containing
+  * **annotation_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column from annotation containing
     annotation terms.
-  * **rejected_col** (*str*) – name of the column from regulation_data containing
+  * **rejected_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column from regulation_data containing
     boolean for rejected null hypothesis.
-  * **group_col** (*str*) – column name for new column in annotation dataframe
+  * **group_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column name for new column in annotation dataframe
     determining if feature belongs to foreground or background.
-  * **method** (*str*) – method used to compute enrichment
+  * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method used to compute enrichment
     (only ‘fisher’ is supported currently).
-  * **regex** (*str*) – how to extract the annotated identifier from the site identifier
+  * **regex** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – how to extract the annotated identifier from the site identifier
 * **Returns:**
   pandas.DataFrame with columns: ‘terms’, ‘identifiers’, ‘foreground’,
   ‘background’, foreground_pop, background_pop, ‘pvalue’, ‘padj’ and ‘rejected’.
 * **Raises:**
-  **ValueError** – if regulation_data is None or empty.
+  [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – if regulation_data is None or empty.
 
 Example:
 
@@ -90,7 +90,7 @@ result = run_site_regulation_enrichment(regulation_data,
 )
 ```
 
-### run_up_down_regulation_enrichment(regulation_data: DataFrame, annotation: DataFrame, identifier: str = 'identifier', groups: list[str] = ('group1', 'group2'), annotation_col: str = 'annotation', pval_col: str = 'pval', group_col: str = 'group', log2fc_col: str = 'log2FC', method: str = 'fisher', min_detected_in_set: int = 2, correction: str = 'fdr_bh', correction_alpha: float = 0.05, lfc_cutoff: float = 1) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[EnrichmentAnalysisSchema](acore.types.md#acore.types.enrichment_analysis.EnrichmentAnalysisSchema)]
+### run_up_down_regulation_enrichment(regulation_data: DataFrame, annotation: DataFrame, identifier: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', groups: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] = ('group1', 'group2'), annotation_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'annotation', pval_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'pval', group_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', log2fc_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'log2FC', method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fisher', min_detected_in_set: [int](https://docs.python.org/3/builtins/functions.html#int) = 2, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', correction_alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, lfc_cutoff: [float](https://docs.python.org/3/builtins/functions.html#float) = 1) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[EnrichmentAnalysisSchema](acore.types.md#acore.types.enrichment_analysis.EnrichmentAnalysisSchema)]
 
 This function runs a simple enrichment analysis for significantly regulated proteins
 distinguishing between upregulation per group defined by the groups.
@@ -100,21 +100,21 @@ distinguishing between upregulation per group defined by the groups.
     analysis (CKG’s regulation table).
   * **annotation** ([*pandas.DataFrame*](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame)) – pandas.DataFrame with annotations for features
     (columns: ‘annotation’, ‘identifier’ (feature identifiers), and ‘source’).
-  * **identifier** (*str*) – name of the column from annotation containing feature identifiers.
-  * **groups** (*list* *[**str* *]*) – 
+  * **identifier** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column from annotation containing feature identifiers.
+  * **groups** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list) *[*[*str*](https://docs.python.org/3/builtins/stdtypes.html#str) *]*) – 
 
     column names from regulation_data containing group identifiers.
     See [pandas.DataFrame.groupby](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.groupby.html) for more information.
-  * **annotation_col** (*str*) – name of the column from annotation containing annotation terms.
-  * **rejected_col** (*str*) – name of the column from regulation_data containing boolean for
+  * **annotation_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column from annotation containing annotation terms.
+  * **rejected_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column from regulation_data containing boolean for
     rejected null hypothesis.
-  * **group_col** (*str*) – column name for new column in annotation dataframe determining
+  * **group_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column name for new column in annotation dataframe determining
     if feature belongs to foreground or background.
-  * **method** (*str*) – method used to compute enrichment
+  * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method used to compute enrichment
     (only ‘fisher’ is supported currently).
-  * **correction** (*str*) – method to be used for multiple-testing correction
-  * **alpha** (*float*) – adjusted p-value cutoff to define significance
-  * **lfc_cutoff** (*float*) – log fold-change cutoff to define practical significance
+  * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method to be used for multiple-testing correction
+  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – adjusted p-value cutoff to define significance
+  * **lfc_cutoff** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – log fold-change cutoff to define practical significance
 * **Returns:**
   DataFrame adhering to EnrichmentAnalysisSchema
 * **Return type:**
@@ -154,15 +154,15 @@ result = run_up_down_regulation_enrichment(
 
 Put unique features into foreground, background or assign nan.
 
-### annotate_features(features: Series, in_foreground: set[str] | list[str], in_background: set[str] | list[str]) → Series
+### annotate_features(features: Series, in_foreground: [set](https://docs.python.org/3/builtins/stdtypes.html#set)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)], in_background: [set](https://docs.python.org/3/builtins/stdtypes.html#set)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)]) → Series
 
 Annotate features as foreground or background based on their presence in the
 foreground and background lists.
 
 * **Parameters:**
   * **features** – pandas.Series with features and their annotations.
-  * **in_foreground** (*set* *or* *list-like*) – list of features identifiers in the foreground.
-  * **in_background** (*set* *or* *list-like*) – list of features identifiers in the background.
+  * **in_foreground** ([*set*](https://docs.python.org/3/builtins/stdtypes.html#set) *or* *list-like*) – list of features identifiers in the foreground.
+  * **in_background** ([*set*](https://docs.python.org/3/builtins/stdtypes.html#set) *or* *list-like*) – list of features identifiers in the background.
 * **Returns:**
   pandas.Series containing ‘foreground’ or ‘background’.
   missing values are preserved.
