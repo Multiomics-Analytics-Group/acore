@@ -122,7 +122,7 @@ ancova = (
         covariates=covariates,
     )
     .set_index("identifier")
-    .sort_values(by="posthoc padj")
+    .sort_values(by="posthoc pvalue adj")
 )  # need to be floats?
 ancova_acore = ancova
 ancova

@@ -480,7 +480,7 @@ def format_anova_table(
         scores["correction"] = "FDR correction BH"
         scores["padj"] = padj
         corrected = True
-
+    # ! scores is omnibus result
     res = pd.DataFrame(pairwise_results, columns=pairwise_cols).set_index("identifier")
     if not res.empty:
         res = res.join(scores[["F-statistics", "pvalue", "padj"]].astype("float"))
@@ -491,10 +491,12 @@ def format_anova_table(
 
     res = res.reset_index()
     res["rejected"] = res["padj"] < alpha
-
+    # ! double check this
     if "posthoc pvalue" in res.columns:
-        res["-log10 pvalue"] = [-np.log10(x) for x in res["posthoc pvalue"].values]
-    else:
+        res["-log10 posthoc pvalue"] = [
+            -np.log10(x) for x in res["posthoc pvalue"].values
+        ]
+    if "pvalue" in res.columns:
         res["-log10 pvalue"] = [-np.log10(x) for x in res["pvalue"].values]
 
     return res
