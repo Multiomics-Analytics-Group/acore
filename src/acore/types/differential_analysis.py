@@ -65,4 +65,4 @@ class AncovaSchema(DataFrameModel):
     conf_int_low: float = Field(alias="Conf. Int. Low")
     conf_int_upp: float = Field(alias="Conf. Int. Upp.")
     f_statistics: float = Field(alias="F-statistics")
-    posthoc_padj: float = Field(alias="posthoc padj", ge=0, le=1)
+    posthoc_padj: float = Field(alias="posthoc pvalue adj", ge=0, le=1)
