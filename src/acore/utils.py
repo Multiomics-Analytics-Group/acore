@@ -38,7 +38,7 @@ def check_is_paired(df, subject, group):
     return is_pair
 
 
-def transform_into_wide_format(data, index, columns, values, extra=[]):
+def transform_into_wide_format(data, index, columns, values, extra=None):
     """
     This function converts a Pandas DataFrame from long to wide format using
     pandas pivot_table() function.
@@ -55,6 +55,8 @@ def transform_into_wide_format(data, index, columns, values, extra=[]):
         result = transform_into_wide_format(df, index='index', columns='x', values='y', extra='group')
 
     """
+    if extra is None:
+        extra = []
     df = pd.DataFrame()
     extra_cols = None
     if data is not None:
@@ -87,7 +89,7 @@ def transform_into_wide_format(data, index, columns, values, extra=[]):
     return df
 
 
-def transform_into_long_format(data, drop_columns, group, columns=["name", "y"]):
+def transform_into_long_format(data, drop_columns, group, columns=None):
     """
     Converts a Pandas DataDrame from wide to long format using pd.melt()
     function.
@@ -103,6 +105,8 @@ def transform_into_long_format(data, drop_columns, group, columns=["name", "y"])
 
         result = transform_into_long_format(df, drop_columns=['sample', 'subject'], group='group', columns=['name','y'])
     """
+    if columns is None:
+        columns = ["name", "y"]
     long_data = pd.DataFrame()
     if data is not None:
         data = data.drop(drop_columns, axis=1)
@@ -257,7 +261,7 @@ def unit_vector(vector):
     return vector / np.linalg.norm(vector)
 
 
-def flatten(t, my_list=[]):
+def flatten(t, my_list=None):
     """
     Code from: https://gist.github.com/shaxbee/0ada767debf9eefbdb6e
     Acknowledgements: Zbigniew Mandziejewicz (shaxbee)
@@ -267,6 +271,8 @@ def flatten(t, my_list=[]):
     [2, 2, 4, 5, 7, 2, 6, 2, 6, 6, 4, 6]
     """
 
+    if my_list is None:
+        my_list = []
     for x in t:
         if not isinstance(x, Iterable) or isinstance(x, str):
             my_list.append(x)

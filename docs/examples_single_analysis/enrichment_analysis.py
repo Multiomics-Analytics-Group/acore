@@ -1,7 +1,7 @@
 # %% [markdown]
 # # Enrichment analysis
 # requires
-# - some cluster of proteins/genes (e.g. up- and downregulated proteins/genes)
+# - some cluster of proteins/genes (e.g. upregulated proteins/genes in a certain condition)
 # - functional annotations, i.e. a category summarizing a set of proteins/genes.
 #
 # You can start with watching Lars Juhl Jensen's brief introduction to enrichment analysis
@@ -93,8 +93,9 @@ df_meta
 
 
 # %% [markdown]
-# # ANOVA: Compute up and downregulated genes
-# These will be used to find enrichments in the set of both up and downregulated genes.
+# # ANOVA: Compute upregulated genes for each condition
+# These will be used to find enrichments in the set of both upregulated pathways in
+# deceased and alive patients.
 
 # %%
 group = "Status"
@@ -128,7 +129,8 @@ try:
     print(f"Loaded annotations from {fname}")
 except FileNotFoundError:
     print(f"Fetching annotations for {df_omics.columns.size} UniProt IDs.")
-    FIELDS = "go_p,go_c,go_f"
+    # adding 'go' leads to duplicates which are filtered out by `process_annotations`
+    FIELDS = "go_p,go_c,go_f,go"
     annotations = fetch_annotations(df_omics.columns, fields=FIELDS)
     annotations = process_annotations(annotations, fields=FIELDS)
     # cache the annotations
@@ -158,8 +160,8 @@ annotations.groupby("annotation").size().value_counts(ascending=False)
 
 # %% [markdown]
 # # Enrichment analysis
-# Is done separately for up- and downregulated genes as it's assumed that biological
-# processes are regulated in one direction.
+# Is done separately for upregulated genes in each group as it's assumed that biological
+# processes are regulated in one direction together.
 
 # %% tags=["hide-input"]
 diff_reg.query("rejected")[

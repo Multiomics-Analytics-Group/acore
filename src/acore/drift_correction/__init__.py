@@ -13,7 +13,7 @@ from .loess_drift_correction import qc_rlsc_loess, run_loess_drift_correction
 __all__ = [
     "check_missingness",
     "cpca_centroid",
+    "qc_rlsc_loess",
     "run_cpca_drift_correction",
     "run_loess_drift_correction",
-    "qc_rlsc_loess",
 ]

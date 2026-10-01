@@ -172,5 +172,144 @@ class TestCalculateTtest(unittest.TestCase):
         self.assertEqual(result.values.tolist(), expected_result.values.tolist())
 
 
+class TestDropColsOptional(unittest.TestCase):
+    """Tests that drop_cols=None and drop_cols=[] are handled correctly in all functions."""
+
+    def setUp(self):
+        # Two-group dataset without extra non-protein columns
+        # (demonstrating that drop_cols=None works when the df is already clean)
+        self.data_2groups = {
+            "subject": [1, 2, 3, 4, 1, 2, 3, 4],
+            "group": ["A", "A", "A", "A", "B", "B", "B", "B"],
+            "protein": [1.4, 2.3, 4.5, 7.5, 6.2, 7.4, 9.6, 11.6],
+        }
+        self.df_2groups = pd.DataFrame(self.data_2groups)
+
+        # Three-group dataset without extra non-protein columns
+        self.data_3groups = {
+            "subject": [1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4],
+            "group": ["A", "A", "A", "A", "B", "B", "B", "B", "C", "C", "C", "C"],
+            "protein": [1.4, 2.3, 4.5, 7.5, 6.2, 7.4, 9.6, 11.6, 9.0, 14.0, 10.4, 16.4],
+        }
+        self.df_3groups = pd.DataFrame(self.data_3groups)
+
+    def test_run_ttest_drop_cols_none(self):
+        """run_ttest should not crash when drop_cols=None."""
+        result = dr.run_ttest(
+            self.df_2groups,
+            condition1="A",
+            condition2="B",
+            drop_cols=None,
+            group="group",
+            subject="subject",
+        )
+        self.assertIsInstance(result, pd.DataFrame)
+        self.assertIn("identifier", result.columns)
+
+    def test_run_ttest_drop_cols_empty(self):
+        """run_ttest should not crash when drop_cols=[]."""
+        result = dr.run_ttest(
+            self.df_2groups,
+            condition1="A",
+            condition2="B",
+            drop_cols=[],
+            group="group",
+            subject="subject",
+        )
+        self.assertIsInstance(result, pd.DataFrame)
+        self.assertIn("identifier", result.columns)
+
+    def test_run_ttest_drop_cols_none_matches_empty(self):
+        """run_ttest results with drop_cols=None and drop_cols=[] should be identical."""
+        result_none = dr.run_ttest(
+            self.df_2groups,
+            condition1="A",
+            condition2="B",
+            drop_cols=None,
+            group="group",
+            subject="subject",
+        )
+        result_empty = dr.run_ttest(
+            self.df_2groups,
+            condition1="A",
+            condition2="B",
+            drop_cols=[],
+            group="group",
+            subject="subject",
+        )
+        pd.testing.assert_frame_equal(result_none, result_empty)
+
+    def test_run_anova_two_groups_drop_cols_none(self):
+        """run_anova should not crash when drop_cols=None (2-group case)."""
+        result = dr.run_anova(
+            self.df_2groups,
+            drop_cols=None,
+            subject="subject",
+            group="group",
+        )
+        self.assertIsInstance(result, pd.DataFrame)
+        self.assertIn("identifier", result.columns)
+
+    def test_run_anova_two_groups_drop_cols_empty(self):
+        """run_anova should not crash when drop_cols=[] (2-group case)."""
+        result = dr.run_anova(
+            self.df_2groups,
+            drop_cols=[],
+            subject="subject",
+            group="group",
+        )
+        self.assertIsInstance(result, pd.DataFrame)
+        self.assertIn("identifier", result.columns)
+
+    def test_run_anova_three_groups_drop_cols_none(self):
+        """run_anova should not crash when drop_cols=None (>2-group case, unpaired)."""
+        result = dr.run_anova(
+            self.df_3groups,
+            drop_cols=None,
+            subject=None,
+            group="group",
+        )
+        self.assertIsInstance(result, pd.DataFrame)
+        self.assertIn("identifier", result.columns)
+
+    def test_run_anova_three_groups_drop_cols_empty(self):
+        """run_anova should not crash when drop_cols=[] (>2-group case, unpaired)."""
+        result = dr.run_anova(
+            self.df_3groups,
+            drop_cols=[],
+            subject=None,
+            group="group",
+        )
+        self.assertIsInstance(result, pd.DataFrame)
+        self.assertIn("identifier", result.columns)
+
+    def test_run_anova_paired_three_groups_drop_cols_none(self):
+        """run_anova should not crash when drop_cols=None (>2-group paired case).
+
+        This also verifies the fix for the inconsistency where subject was passed
+        in drop_cols to run_repeated_measurements_anova (which still needs subject).
+        """
+        result = dr.run_anova(
+            self.df_3groups,
+            drop_cols=None,
+            subject="subject",
+            group="group",
+        )
+        self.assertIsInstance(result, pd.DataFrame)
+        self.assertIn("identifier", result.columns)
+
+    def test_run_repeated_measurements_anova_drop_cols_none(self):
+        """run_repeated_measurements_anova should not crash when drop_cols=None."""
+        result = dr.run_repeated_measurements_anova(
+            self.df_3groups,
+            drop_cols=None,
+            subject="subject",
+            within="group",
+            permutations=0,
+        )
+        self.assertIsInstance(result, pd.DataFrame)
+        self.assertIn("identifier", result.columns)
+
+
 if __name__ == "__main__":
     unittest.main()

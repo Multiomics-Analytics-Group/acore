@@ -45,7 +45,7 @@ def power_analysis(
     samples = []
     for ii, es in enumerate(summary_eff):
         p = analysis.power(es, sample_sizes, alpha, k_groups)
-        labels.extend(["%s = %4.2F" % (quantiles[ii], es)] * len(p))
+        labels.extend([f"{quantiles[ii]} = {es:4.2F}"] * len(p))
         power_list.extend(p)
         samples.extend(sample_sizes)
 

@@ -58,7 +58,7 @@ def check_id_mapping_results_ready(job_id):
                 print(f"Retrying in {POLLING_INTERVAL}s")
                 time.sleep(POLLING_INTERVAL)
             else:
-                raise Exception(j["jobStatus"])
+                raise RuntimeError(j["jobStatus"])
         else:
             return bool(j["results"] or j["failedIds"])
 
@@ -75,7 +75,7 @@ def get_batch(batch_response, file_format, compressed):
 def combine_batches(all_results, batch_results, file_format):
     if file_format == "json":
         for key in ("results", "failedIds"):
-            if key in batch_results and batch_results[key]:
+            if batch_results.get(key):
                 all_results[key] += batch_results[key]
     elif file_format == "tsv":
         return all_results + batch_results[1:]
