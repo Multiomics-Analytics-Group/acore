@@ -1,6 +1,6 @@
 # acore.imputation_analysis package
 
-### imputation_KNN(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, group: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None, cutoff=0.6, alone=True, n_neighbors=3)
+### imputation_KNN(data: DataFrame, drop_cols: Iterable[str] | None = None, group: str | None = None, cutoff=0.6, alone=True, n_neighbors=3)
 
 K-Nearest Neighbors imputation for pandas dataframes with missing data. For more
 information visit [fancyimpute](https://github.com/iskandr/fancyimpute/blob/HEAD/fancyimpute/knn.py).
@@ -8,13 +8,13 @@ information visit [fancyimpute](https://github.com/iskandr/fancyimpute/blob/HEAD
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing group identifiers, restricted to be one
+  * **group** (*str*) – column label containing group identifiers, restricted to be one
     single column for now.
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped. Final dataframe should only
+  * **drop_cols** (*list*) – column labels to be dropped. Final dataframe should only
     have gene/protein/etc identifiers as columns.
-  * **cutoff** ([*float*](https://docs.python.org/3/library/functions.html#float)) – minimum fraction of valid values required to impute
+  * **cutoff** (*float*) – minimum fraction of valid values required to impute
     a each column.
-  * **alone** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – if True removes all columns with any missing values after initial
+  * **alone** (*bool*) – if True removes all columns with any missing values after initial
     imputation.
 * **Returns:**
   Pandas dataframe with samples as rows and protein identifiers as columns.
@@ -28,7 +28,7 @@ result = imputation_KNN(data,
 )
 ```
 
-### imputation_mixed_norm_KNN(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, shift: [float](https://docs.python.org/3/library/functions.html#float) = 1.8, nstd: [float](https://docs.python.org/3/library/functions.html#float) = 0.3, group: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'group', cutoff: [float](https://docs.python.org/3/library/functions.html#float) = 0.6, random_state: [int](https://docs.python.org/3/library/functions.html#int) = 112736, n_neighbors: [int](https://docs.python.org/3/library/functions.html#int) = 3)
+### imputation_mixed_norm_KNN(data: DataFrame, drop_cols: Iterable[str] | None = None, shift: float = 1.8, nstd: float = 0.3, group: str = 'group', cutoff: float = 0.6, random_state: int = 112736, n_neighbors: int = 3)
 
 Missing values are replaced in two steps:
 
@@ -40,16 +40,16 @@ Missing values are replaced in two steps:
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing group identifiers.
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – list of column labels to be set as dataframe index.
-  * **shift** ([*float*](https://docs.python.org/3/library/functions.html#float)) – specifies the amount by which the distribution used for the
+  * **group** (*str*) – column label containing group identifiers.
+  * **drop_cols** (*list*) – list of column labels to be set as dataframe index.
+  * **shift** (*float*) – specifies the amount by which the distribution used for the
     random numbers is shifted downwards. This is in units of the
     standard deviation of the valid data.
-  * **nstd** ([*float*](https://docs.python.org/3/library/functions.html#float)) – defines the width of the Gaussian distribution relative to the
+  * **nstd** (*float*) – defines the width of the Gaussian distribution relative to the
     standard deviation of measured values. A value of 0.5 would mean
     that the width of the distribution used for drawing random
     numbers is half of the standard deviation of the data.
-  * **cutoff** ([*float*](https://docs.python.org/3/library/functions.html#float)) – minimum ratio of missing/valid values required to
+  * **cutoff** (*float*) – minimum ratio of missing/valid values required to
     impute in each column.
 * **Returns:**
   Pandas dataframe with samples as rows and protein identifiers as columns.
@@ -63,7 +63,7 @@ result = imputation_mixed_norm_KNN(data,
 )
 ```
 
-### imputation_normal_distribution(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, shift: [float](https://docs.python.org/3/library/functions.html#float) = 1.8, nstd: [float](https://docs.python.org/3/library/functions.html#float) = 0.3, random_state: [int](https://docs.python.org/3/library/functions.html#int) = 112736)
+### imputation_normal_distribution(data: DataFrame, drop_cols: Iterable[str] | None = None, shift: float = 1.8, nstd: float = 0.3, random_state: int = 112736)
 
 Missing values will be replaced by random numbers that are drawn from a normal
 distribution. The imputation is done for each sample (across all proteins)
@@ -78,11 +78,11 @@ negatives in differential expression analysis that considers imputed values.
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – list of column labels to be dropped from the imputation.
-  * **shift** ([*float*](https://docs.python.org/3/library/functions.html#float)) – specifies the amount by which the distribution used for the
+  * **drop_cols** (*list*) – list of column labels to be dropped from the imputation.
+  * **shift** (*float*) – specifies the amount by which the distribution used for the
     random numbers is shifted downwards. This is in units of the
     standard deviation of the valid data.
-  * **nstd** ([*float*](https://docs.python.org/3/library/functions.html#float)) – defines the width of the Gaussian distribution relative to the
+  * **nstd** (*float*) – defines the width of the Gaussian distribution relative to the
     standard deviation of measured values. A value of 0.5 would mean
     that the width of the distribution used for drawing random
     numbers is half of the standard deviation of the data.
@@ -98,18 +98,18 @@ result = imputation_normal_distribution(data,
 )
 ```
 
-### imputation_zeros(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None)
+### imputation_zeros(data: DataFrame, on_cols: Iterable[str] | None = None, on_rows: Iterable[str] | None = None, drop_cols: Iterable[str] | None = None)
 
 Replace missing values with zeros.
 
 * **Parameters:**
   * **data** – DataFrame with samples as rows and features as columns.
-  * **on_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – columns to fill with zeros. If None, all numeric columns are filled.
+  * **on_cols** (*list*) – columns to fill with zeros. If None, all numeric columns are filled.
     Non-numeric columns in “on_cols” will raise a TypeError.
-  * **on_rows** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
+  * **on_rows** (*list*) – row index labels to restrict imputation to. If None, all rows are
     imputed. Useful for imputing only a subset of samples (e.g. QCs,
     blanks, controls) while leaving others untouched.
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
+  * **drop_cols** (*list*) – columns to permanently drop before imputation. If a column
     appears in both “on_cols” and “drop_cols” it will be dropped
     and a warning is emitted.
 * **Returns:**
@@ -120,19 +120,19 @@ Replace missing values with zeros.
 result = imputation_zeros(data, on_cols=[‘featureA’, ‘featureB’])
 result = imputation_zeros(data, on_rows=[‘QC1’, ‘QC2’, ‘blank1’])
 
-### imputation_half_minimum(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None)
+### imputation_half_minimum(data: DataFrame, on_cols: Iterable[str] | None = None, on_rows: Iterable[str] | None = None, drop_cols: Iterable[str] | None = None)
 
 Replace missing values with half the per-column minimum of observed values.
 
 * **Parameters:**
   * **data** – DataFrame with samples as rows and features as columns.
-  * **on_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – columns to impute. If None, all numeric columns are used.
+  * **on_cols** (*list*) – columns to impute. If None, all numeric columns are used.
     Non-numeric columns in `on_cols` will raise a TypeError.
-  * **on_rows** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
+  * **on_rows** (*list*) – row index labels to restrict imputation to. If None, all rows are
     imputed. When provided, the per-column minimum is also computed
     from only those rows, so each subset gets its own half-minimum
     (e.g. blanks are imputed with half the blank-minimum).
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
+  * **drop_cols** (*list*) – columns to permanently drop before imputation. If a column
     appears in both `on_cols` and `drop_cols` it will be dropped
     and a warning is emitted.
 * **Returns:**

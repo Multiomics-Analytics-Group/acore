@@ -3,21 +3,21 @@
 Uniprot API user functions for fetching annotations for UniProt IDs and providing
 the results as a pandas.DataFrame.
 
-### fetch_annotations(ids: Index | [list](https://docs.python.org/3/library/stdtypes.html#list), fields: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'accession,go_p,go_c,go_f') → DataFrame
+### fetch_annotations(ids: Index | list, fields: str = 'accession,go_p,go_c,go_f') → DataFrame
 
 Fetch annotations for UniProt IDs. Combines several calls to the API of UniProt’s
 knowledgebase (KB).
 
 * **Parameters:**
-  * **ids** (*pd.Index* *|* [*list*](https://docs.python.org/3/library/stdtypes.html#list)) – Iterable of UniProt IDs. Fetches annotations as speecified by the specified fields.
-  * **fields** ([*str*](https://docs.python.org/3/library/stdtypes.html#str) *,* *optional*) – Fields to fetch, by default “accession,go_p,go_c. See for availble fields:
+  * **ids** (*pd.Index* *|* *list*) – Iterable of UniProt IDs. Fetches annotations as speecified by the specified fields.
+  * **fields** (*str* *,* *optional*) – Fields to fetch, by default “accession,go_p,go_c. See for availble fields:
     [https://www.uniprot.org/help/return_fields](https://www.uniprot.org/help/return_fields)
 * **Returns:**
   DataFrame with annotations of the UniProt IDs.
 * **Return type:**
   pd.DataFrame
 
-### filter_annotations(annotations: DataFrame, keywords: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)], case_sensitive: [bool](https://docs.python.org/3/library/functions.html#bool) = False) → DataFrame
+### filter_annotations(annotations: DataFrame, keywords: list[str], case_sensitive: bool = False) → DataFrame
 
 Filter a long-format annotations DataFrame to rows whose `annotation`
 column contains **any** of the given keywords.
@@ -25,9 +25,9 @@ column contains **any** of the given keywords.
 * **Parameters:**
   * **annotations** (*pd.DataFrame*) – Long-format DataFrame with at least an `annotation` column (as
     returned by [`process_annotations()`](#acore.io.uniprot.process_annotations)).
-  * **keywords** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *[*[*str*](https://docs.python.org/3/library/stdtypes.html#str) *]*) – Keywords to search for.  A row is kept when at least one keyword
+  * **keywords** (*list* *[**str* *]*) – Keywords to search for.  A row is kept when at least one keyword
     appears in the annotation string.  Empty strings are ignored.
-  * **case_sensitive** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – Whether the search is case-sensitive.  Default `False`.
+  * **case_sensitive** (*bool* *,* *optional*) – Whether the search is case-sensitive.  Default `False`.
 * **Returns:**
   Filtered copy of *annotations* where at least one keyword matched.
   Returns an empty DataFrame with the same columns when no keywords
@@ -55,13 +55,13 @@ column contains **any** of the given keywords.
 0
 ```
 
-### process_annotations(annotations: DataFrame, fields: [str](https://docs.python.org/3/library/stdtypes.html#str)) → DataFrame
+### process_annotations(annotations: DataFrame, fields: str) → DataFrame
 
 Process annotations fetched from UniProt API.
 
 * **Parameters:**
   * **annotations** (*pd.DataFrame*) – DataFrame with annotations fetched from UniProt API.
-  * **fields** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Fields that were fetched from the API. Comma-separated string. Fields
+  * **fields** (*str*) – Fields that were fetched from the API. Comma-separated string. Fields
     needs to match number of columns in annotations.
 * **Returns:**
   Processed DataFrame with annotations in long-format.
@@ -82,7 +82,7 @@ df = process_annotations(df, fields=fields)
 # first keyword does not exist
 filtered = filter_annotations(df, keywords=[“apoptosis”, “mitochondr”, “synapse”])
 
-### filter_annotations(annotations: DataFrame, keywords: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)], case_sensitive: [bool](https://docs.python.org/3/library/functions.html#bool) = False) → DataFrame
+### filter_annotations(annotations: DataFrame, keywords: list[str], case_sensitive: bool = False) → DataFrame
 
 Filter a long-format annotations DataFrame to rows whose `annotation`
 column contains **any** of the given keywords.
@@ -90,9 +90,9 @@ column contains **any** of the given keywords.
 * **Parameters:**
   * **annotations** (*pd.DataFrame*) – Long-format DataFrame with at least an `annotation` column (as
     returned by `process_annotations()`).
-  * **keywords** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *[*[*str*](https://docs.python.org/3/library/stdtypes.html#str) *]*) – Keywords to search for.  A row is kept when at least one keyword
+  * **keywords** (*list* *[**str* *]*) – Keywords to search for.  A row is kept when at least one keyword
     appears in the annotation string.  Empty strings are ignored.
-  * **case_sensitive** ([*bool*](https://docs.python.org/3/library/functions.html#bool) *,* *optional*) – Whether the search is case-sensitive.  Default `False`.
+  * **case_sensitive** (*bool* *,* *optional*) – Whether the search is case-sensitive.  Default `False`.
 * **Returns:**
   Filtered copy of *annotations* where at least one keyword matched.
   Returns an empty DataFrame with the same columns when no keywords

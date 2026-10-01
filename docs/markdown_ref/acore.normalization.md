@@ -7,16 +7,16 @@ Combat normalization was added using the inmoose package.
 
 The actual normalization functions are in strategies.py.
 
-### normalize_data(data: DataFrame, method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'median', normalize: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None)
+### normalize_data(data: DataFrame, method: str = 'median', normalize: str | None = None)
 
 This function normalizes the data using the selected method. Normalizes only nummeric
 data, but keeps the non-numeric columns in the output DataFrame.
 
 * **Parameters:**
   * **data** – DataFrame with the data to be normalized (samples x features)
-  * **method** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – normalization method to choose among: median (default),
+  * **method** (*str*) – normalization method to choose among: median (default),
     median_polish, median_zero, quantile, linear, zscore
-  * **normalize** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – whether the normalization should be done by ‘features’ (columns)
+  * **normalize** (*str*) – whether the normalization should be done by ‘features’ (columns)
     or ‘samples’ (rows) (default None)
 * **Returns:**
   pandas.DataFrame.
@@ -27,16 +27,16 @@ Example:
 result = normalize_data(data, method='median_polish')
 ```
 
-### normalize_data_per_group(data: DataFrame, group: [str](https://docs.python.org/3/library/stdtypes.html#str) | [int](https://docs.python.org/3/library/functions.html#int) | [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str) | [int](https://docs.python.org/3/library/functions.html#int)], method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'median', normalize: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None) → DataFrame
+### normalize_data_per_group(data: DataFrame, group: str | int | list[str | int], method: str = 'median', normalize: str | None = None) → DataFrame
 
 This function normalizes the data by group using the selected method
 
 * **Parameters:**
   * **data** – DataFrame with the data to be normalized (samples x features)
   * **group_col** – Column containing the groups, passed to pandas.DataFrame.groupby
-  * **method** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – normalization method to choose among: median_polish, median,
+  * **method** (*str*) – normalization method to choose among: median_polish, median,
     quantile, linear
-  * **normalize** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – whether the normalization should be done by ‘features’ (columns) or ‘samples’ (rows) (default None)
+  * **normalize** (*str*) – whether the normalization should be done by ‘features’ (columns) or ‘samples’ (rows) (default None)
 * **Returns:**
   pandas.DataFrame.
 
@@ -58,7 +58,7 @@ This function normalizes each sample by using its median.
 
 * **Parameters:**
   * **data**
-  * **normalize** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – whether the normalization should be done by ‘features’ (columns)
+  * **normalize** (*str*) – whether the normalization should be done by ‘features’ (columns)
     or ‘samples’ (rows)
 * **Returns:**
   pandas.DataFrame.
@@ -83,7 +83,7 @@ This function normalizes each sample by using its median.
 
 * **Parameters:**
   * **data**
-  * **normalize** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – whether the normalization should be done by ‘features’ (columns)
+  * **normalize** (*str*) – whether the normalization should be done by ‘features’ (columns)
     or ‘samples’ (rows)
 * **Returns:**
   pandas.DataFrame.
@@ -109,7 +109,7 @@ This function normalizes each sample by using its mean and standard deviation
 
 * **Parameters:**
   * **data**
-  * **normalize** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – whether the normalization should be done by ‘features’ (columns)
+  * **normalize** (*str*) – whether the normalization should be done by ‘features’ (columns)
     or ‘samples’ (rows)
 * **Returns:**
   pandas.DataFrame.
@@ -135,7 +135,7 @@ median until medians converge.
 
 * **Parameters:**
   * **data**
-  * **max_iter** ([*int*](https://docs.python.org/3/library/functions.html#int)) – number of maximum iterations to prevent infinite loop.
+  * **max_iter** (*int*) – number of maximum iterations to prevent infinite loop.
 * **Returns:**
   pandas.DataFrame.
 
@@ -183,9 +183,9 @@ This function scales input data to a unit norm. For more information visit:
 
 * **Parameters:**
   * **data** – pandas.DataFrame with samples as rows and features as columns.
-  * **method** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – norm to use to normalize each non-zero sample or non-zero feature
+  * **method** (*str*) – norm to use to normalize each non-zero sample or non-zero feature
     (depends on axis).
-  * **normalize** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – axis used to normalize the data along. If ‘samples’,
+  * **normalize** (*str*) – axis used to normalize the data along. If ‘samples’,
     independently normalize each sample, if ‘features’ normalize each feature.
 * **Returns:**
   pandas.DataFrame

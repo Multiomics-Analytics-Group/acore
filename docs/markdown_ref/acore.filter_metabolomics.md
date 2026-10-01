@@ -2,7 +2,7 @@
 
 Module for filtering metabolomics feature table.
 
-### filter_blanks(data: DataFrame, blanks: [list](https://docs.python.org/3/library/stdtypes.html#list), samples: [list](https://docs.python.org/3/library/stdtypes.html#list), threshold: [float](https://docs.python.org/3/library/functions.html#float) = 0.5)
+### filter_blanks(data: DataFrame, blanks: list, samples: list, threshold: float = 0.5)
 
 Filtering out features that show up in the blanks control.
 
@@ -22,7 +22,7 @@ the measurements in the samples cannot be trusted to be biologically relevant.
     intensities in blanks are too high in comparison with sample intensities.
     Defaults to 0.5, but can be adjusted based on data and stringency.
 
-### filter_by_missingness(data: DataFrame, percent: [int](https://docs.python.org/3/library/functions.html#int) = 80, method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'classic', samples: [list](https://docs.python.org/3/library/stdtypes.html#list) | [None](https://docs.python.org/3/library/constants.html#None) = None, groups: [dict](https://docs.python.org/3/library/stdtypes.html#dict) | [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None)
+### filter_by_missingness(data: DataFrame, percent: int = 80, method: str = 'classic', samples: list | None = None, groups: dict | str | None = None)
 
 Implementation of the 80%-rule.
 
@@ -62,7 +62,7 @@ this feature will get removed.
       with that value. When using this option, make sure to not include any other metadata
       columns in the data frame.
 
-### filter_cv(data: DataFrame, samples: [list](https://docs.python.org/3/library/stdtypes.html#list), qcs: [list](https://docs.python.org/3/library/stdtypes.html#list))
+### filter_cv(data: DataFrame, samples: list, qcs: list)
 
 Implementation of coefficient of variation (CV)-based filtering.
 
