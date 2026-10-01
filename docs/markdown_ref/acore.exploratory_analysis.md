@@ -48,7 +48,7 @@ the mean calculated on both log2 and linear scale.
 * **Return type:**
   pd.DataFrame
 
-### get_coefficient_variation(data: DataFrame, drop_columns: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, group: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'group')
+### get_coefficient_variation(data: DataFrame, drop_columns: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group')
 
 Extracts the coefficients of variation in each group.
 
@@ -57,8 +57,8 @@ Extracts the coefficients of variation in each group.
     (with additional columns ‘group’, ‘sample’ and ‘subject’). The values
     should be the original intensities for massspectrometry-based
     measurements.
-  * **drop_columns** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the dataframe
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing group identifiers.
+  * **drop_columns** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
 * **Returns:**
   Pandas dataframe with columns ‘name’ (protein identifier),
   ‘x’ (coefficient of variation), ‘y’ (mean) and ‘group’.
@@ -76,11 +76,11 @@ valid values than the minimum threshold defined.
 
 * **Parameters:**
   * **data** – pandas DataFrame with group as rows and protein identifier as column.
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing group identifiers.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
     If None, number of valid values is counted across all samples,
     otherwise is counted per unique group identifier.
-  * **min_valid** ([*int*](https://docs.python.org/3/library/functions.html#int)) – minimum number of valid values to be filtered.
-  * **drop_columns** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped.
+  * **min_valid** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – minimum number of valid values to be filtered.
+  * **drop_columns** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped.
 * **Returns:**
   List of column labels above the threshold.
 
@@ -97,13 +97,13 @@ lower ratio than the minimum threshold defined.
 
 * **Parameters:**
   * **data** – pandas dataframe with group as rows and protein identifier as column.
-  * **missing_max** ([*float*](https://docs.python.org/3/library/functions.html#float)) – maximum ratio of missing/valid values to be filtered.
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the dataframe.
+  * **missing_max** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – maximum ratio of missing/valid values to be filtered.
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe.
     Default is [‘sample’] if None.
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing group identifiers.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
     If None, ratio is calculated across all samples,
     otherwise is calculated per unique group identifier.
-  * **how** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – define if labels with a higher percentage of missing values than the threshold
+  * **how** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – define if labels with a higher percentage of missing values than the threshold
     in any group (‘any’) or in all groups (‘all’) should be filtered
 * **Returns:**
   List of column labels below the threshold.
@@ -123,13 +123,13 @@ For information visit
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the dataframe.
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe.
     Default is [‘sample’, ‘subject’] if None.
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing group identifiers.
-  * **annotation_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
+  * **annotation_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation.
     Default is [‘sample’] if None.
-  * **components** ([*int*](https://docs.python.org/3/library/functions.html#int)) – number of components to keep.
-  * **dropna** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – if True removes all columns with any missing values.
+  * **components** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of components to keep.
+  * **dropna** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if True removes all columns with any missing values.
 * **Returns:**
   tuple: 1) three pandas dataframes: components, loadings and variance; 2)
   xaxis and yaxis titles with components loadings for plotly.
@@ -151,7 +151,7 @@ For more information visit
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the dataframe.
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe.
 
 Default is [‘sample’, ‘subject’] if None.
 :param str group: column label containing group identifiers.
@@ -160,13 +160,13 @@ Default is [‘sample’, ‘subject’] if None.
 
 > Default is [‘sample’] if None.
 * **Parameters:**
-  * **perplexity** ([*int*](https://docs.python.org/3/library/functions.html#int)) – related to the number of nearest neighbors that is used
+  * **perplexity** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – related to the number of nearest neighbors that is used
     in other manifold learning algorithms.
     Consider selecting a value between 5 and 50.
-  * **max_iter** ([*int*](https://docs.python.org/3/library/functions.html#int)) – maximum number of iterations for the optimization (at least 250).
-  * **init** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – initialization of embedding (‘random’, ‘pca’ or
+  * **max_iter** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – maximum number of iterations for the optimization (at least 250).
+  * **init** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – initialization of embedding (‘random’, ‘pca’ or
     numpy array of shape n_samples x n_components).
-  * **dropna** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – if True removes all columns with any missing values.
+  * **dropna** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if True removes all columns with any missing values.
 * **Returns:**
   Two dictionaries:
   1) pandas dataframe with embedding vectors,
@@ -195,16 +195,16 @@ For more information vist [https://umap-learn.readthedocs.io](https://umap-learn
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the dataframe.
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe.
     Default is [‘sample’, ‘subject’] if None.
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing group identifiers.
-  * **annotation_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
+  * **annotation_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation.
     Default is [‘sample’] if None.
-  * **n_neighbors** ([*int*](https://docs.python.org/3/library/functions.html#int)) – number of neighboring points used
+  * **n_neighbors** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of neighboring points used
     in local approximations of manifold structure.
-  * **min_dist** ([*float*](https://docs.python.org/3/library/functions.html#float)) – controls how tightly the embedding is allowed compress points together.
-  * **metric** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – metric used to measure distance in the input space.
-  * **dropna** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – if True removes all columns with any missing values.
+  * **min_dist** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – controls how tightly the embedding is allowed compress points together.
+  * **metric** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – metric used to measure distance in the input space.
+  * **dropna** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if True removes all columns with any missing values.
 * **Returns:**
   Two dictionaries:
   1) pandas dataframe with embedding of the training data in low-dimensional space,

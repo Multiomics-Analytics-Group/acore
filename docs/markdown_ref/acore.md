@@ -140,6 +140,7 @@
   * [`apply_pvalue_permutation_fdrcorrection()`](acore.multiple_testing.md#acore.multiple_testing.apply_pvalue_permutation_fdrcorrection)
   * [`calculate_anova()`](acore.multiple_testing.md#acore.multiple_testing.calculate_anova)
   * [`get_counts_permutation_fdr()`](acore.multiple_testing.md#acore.multiple_testing.get_counts_permutation_fdr)
+  * [`compute_efdr()`](acore.multiple_testing.md#acore.multiple_testing.compute_efdr)
   * [`get_max_permutations()`](acore.multiple_testing.md#acore.multiple_testing.get_max_permutations)
   * [`correct_pairwise_ttest()`](acore.multiple_testing.md#acore.multiple_testing.correct_pairwise_ttest)
 * [acore.network_analysis package](acore.network_analysis.md)
@@ -369,7 +370,7 @@ This function converts a pandas dataframe to an edge list where index becomes th
 
 * **Parameters:**
   * **data** – pandas dataframe.
-  * **cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – names for dataframe columns.
+  * **cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – names for dataframe columns.
 * **Returns:**
   Pandas dataframe with columns cols.
 
@@ -379,12 +380,12 @@ Check if samples are paired.
 
 * **Parameters:**
   * **df** – pandas dataframe with samples as rows and protein identifiers as columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **subject** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with subject identifiers
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with group identifiers
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers
 * **Returns:**
   True if paired samples.
 * **Return type:**
-  [bool](https://docs.python.org/3/library/functions.html#bool)
+  [bool](https://docs.python.org/3/builtins/functions.html#bool)
 
 ### transform_into_wide_format(data, index, columns, values, extra=None)
 
@@ -393,10 +394,10 @@ pandas pivot_table() function.
 
 * **Parameters:**
   * **data** – long-format Pandas DataFrame
-  * **index** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – columns that will be converted into the index
-  * **columns** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column name whose unique values will become the new column names
-  * **values** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column to aggregate
-  * **extra** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – additional columns to be kept as columns
+  * **index** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns that will be converted into the index
+  * **columns** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column name whose unique values will become the new column names
+  * **values** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column to aggregate
+  * **extra** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – additional columns to be kept as columns
 * **Returns:**
   Wide-format pandas DataFrame
 
@@ -413,9 +414,9 @@ function.
 
 * **Parameters:**
   * **data** – wide-format Pandas DataFrame
-  * **drop_columns** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – columns to be deleted
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str) *or* [*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column(s) to use as identifier variables
-  * **columns** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – names to use for the 1)variable column, and for the 2)value column
+  * **drop_columns** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to be deleted
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str) *or* [*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column(s) to use as identifier variables
+  * **columns** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – names to use for the 1)variable column, and for the 2)value column
 * **Returns:**
   Long-format Pandas DataFrame.
 
@@ -446,8 +447,8 @@ Calculates fold-changes between two groups for all proteins in a dataframe.
 
 * **Parameters:**
   * **df** – pandas dataframe with samples as rows and protein identifiers as columns.
-  * **condition1** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – identifier of first group.
-  * **condition2** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – identifier of second group.
+  * **condition1** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – identifier of first group.
+  * **condition2** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – identifier of second group.
 * **Returns:**
   Numpy array.
 
@@ -465,7 +466,7 @@ For more information visit [https://www.hackdeploy.com/learn-what-is-statistical
 * **Parameters:**
   * **sample1** (*array*) – numpy array with values for first group
   * **sample2** (*array*) – numpy array with values for second group
-  * **ddof** ([*int*](https://docs.python.org/3/library/functions.html#int)) – degrees of freedom
+  * **ddof** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – degrees of freedom
 
 ### cohens_d(sample1, sample2, ddof)
 
@@ -475,7 +476,7 @@ For more information visit [https://www.hackdeploy.com/learn-what-is-statistical
 * **Parameters:**
   * **sample1** (*array*) – numpy array with values for first group
   * **sample2** (*array*) – numpy array with values for second group
-  * **ddof** ([*int*](https://docs.python.org/3/library/functions.html#int)) – degrees of freedom
+  * **ddof** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – degrees of freedom
 
 ### hedges_g(df, condition1, condition2, ddof=0)
 
@@ -484,9 +485,9 @@ For more information visit [https://docs.scipy.org/doc/numpy/reference/generated
 
 * **Parameters:**
   * **df** – pandas dataframe with samples as rows and protein identifiers as columns.
-  * **condition1** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – identifier of first group.
-  * **condition2** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – identifier of second group.
-  * **ddof** ([*int*](https://docs.python.org/3/library/functions.html#int)) – means Delta Degrees of Freedom.
+  * **condition1** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – identifier of first group.
+  * **condition2** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – identifier of second group.
+  * **ddof** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – means Delta Degrees of Freedom.
 * **Returns:**
   Numpy array.
 
@@ -518,8 +519,8 @@ Generator flattening the structure
 Returns the angle in radians between vectors ‘v1’ and ‘v2’
 
 * **Parameters:**
-  * **v1** ([*tuple*](https://docs.python.org/3/library/stdtypes.html#tuple)) – vector 1
-  * **v2** ([*tuple*](https://docs.python.org/3/library/stdtypes.html#tuple)) – vector 2
+  * **v1** ([*tuple*](https://docs.python.org/3/builtins/stdtypes.html#tuple)) – vector 1
+  * **v2** ([*tuple*](https://docs.python.org/3/builtins/stdtypes.html#tuple)) – vector 2
 * **Return float angle:**
   angle between two vectors in radians
 
