@@ -539,7 +539,7 @@ Schema for the enrichment analysis results DataFrame.
 
 #### f_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'F-statistics'*
 
-#### posthoc_padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc padj'*
+#### posthoc_padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue adj'*
 
 #### *class* Config
 
