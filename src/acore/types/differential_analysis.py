@@ -42,13 +42,13 @@ class AnovaSchemaMultiGroup(AnovaSchema):
     t_statistics: float = Field(alias="posthoc T-Statistics")
     posthoc_pvalue: float = Field(alias="posthoc pvalue")
     f_statistics: float = Field(alias="F-statistics")
-    posthoc_padj: float = Field(alias="posthoc padj", ge=0, le=1)
+    posthoc_padj: float = Field(alias="posthoc pvalue adj", ge=0, le=1)
 
     posthoc_paired: bool = Field(alias="posthoc Paired", ge=0, le=1)
     posthoc_parametric: bool = Field(alias="posthoc Parametric", ge=0, le=1)
     posthoc_dof: float = Field(alias="posthoc dof", ge=0)
     posthoc_tail: str = Field(alias="posthoc tail")
-    posthoc_BF10: str = Field(alias="posthoc BF10")
+    posthoc_BF10: float = Field(alias="posthoc BF10", coerce=True)
     posthoc_effsize: float = Field(alias="posthoc effsize")
     efftype: str = Field(alias="efftype")
 
@@ -65,4 +65,4 @@ class AncovaSchema(DataFrameModel):
     conf_int_low: float = Field(alias="Conf. Int. Low")
     conf_int_upp: float = Field(alias="Conf. Int. Upp.")
     f_statistics: float = Field(alias="F-statistics")
-    posthoc_padj: float = Field(alias="posthoc padj", ge=0, le=1)
+    posthoc_padj: float = Field(alias="posthoc pvalue adj", ge=0, le=1)
