@@ -1,14 +1,14 @@
 # acore.multiple_testing package
 
-### apply_pvalue_correction(pvalues: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), alpha: [float](https://docs.python.org/3/library/functions.html#float) = 0.05, method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'bonferroni') → [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)]
+### apply_pvalue_correction(pvalues: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'bonferroni') → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)]
 
 Performs p-value correction using the specified method as in
 [statsmodels.stats.multitest.multipletests](https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multipletests.html).
 
 * **Parameters:**
   * **pvalues** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – et of p-values of the individual tests.
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – error rate.
-  * **method** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – 
+  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate.
+  * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – 
 
     method of p-value correction:
     - ’bonferroni’ : one-step correction
@@ -38,8 +38,8 @@ Performs p-value correction for false discovery rate. For more information visit
 
 * **Parameters:**
   * **pvalues** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – et of p-values of the individual tests.
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – error rate.
-  * **method** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – method of p-value correction (‘indep’, ‘negcorr’).
+  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate.
+  * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of p-value correction (‘indep’, ‘negcorr’).
 * **Returns:**
   Tuple with two arrays, boolen for rejecting H0 hypothesis and float for adjusted p-value.
 
@@ -55,8 +55,8 @@ Iterated two stage linear step-up procedure with estimation of number of true hy
 
 * **Parameters:**
   * **pvalues** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – et of p-values of the individual tests.
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – error rate.
-  * **method** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – method of p-value correction (‘bky’, ‘bh’).
+  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate.
+  * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of p-value correction (‘bky’, ‘bh’).
 * **Returns:**
   Tuple with two arrays, boolen for rejecting H0 hypothesis and float for adjusted p-value.
 
@@ -73,9 +73,9 @@ This function applies multiple hypothesis testing correction using a permutation
 * **Parameters:**
   * **df** – pandas dataframe with samples as rows and features as columns.
   * **oberved_pvalues** – pandas Series with p-values calculated on the originally measured data.
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – name of the column containing group identifiers.
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – error rate. Values velow alpha are considered significant.
-  * **permutations** ([*int*](https://docs.python.org/3/library/functions.html#int)) – number of permutations to be applied.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column containing group identifiers.
+  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate. Values velow alpha are considered significant.
+  * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations to be applied.
 * **Returns:**
   Pandas dataframe with adjusted p-values and rejected columns.
 
@@ -91,8 +91,8 @@ Calculates one-way ANOVA using pingouin.
 
 * **Parameters:**
   * **df** – pandas dataframe with group as rows and protein identifier as column
-  * **column** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – name of the column in df to run ANOVA on
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with group identifiers
+  * **column** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column in df to run ANOVA on
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers
 * **Returns:**
   Tuple with t-statistics and p-value.
 
@@ -101,11 +101,11 @@ Calculates one-way ANOVA using pingouin.
 Calculates local FDR values (q-values) by computing the fraction of accepted hits from the permuted data over accepted hits from the measured data normalized by the total number of permutations.
 
 * **Parameters:**
-  * **value** ([*float*](https://docs.python.org/3/library/functions.html#float)) – computed p-value on measured data for a feature.
+  * **value** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – computed p-value on measured data for a feature.
   * **random** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – p-values computed on the permuted data.
   * **observed** – pandas Series with p-values calculated on the originally measured data.
-  * **n** ([*int*](https://docs.python.org/3/library/functions.html#int)) – number of permutations to be applied.
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – error rate. Values velow alpha are considered significant.
+  * **n** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations to be applied.
+  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate. Values velow alpha are considered significant.
 * **Returns:**
   Tuple with q-value and boolean for H0 rejected.
 
@@ -121,10 +121,10 @@ Get maximum number of permutations according to number of samples.
 
 * **Parameters:**
   * **df** – pandas dataframe with samples as rows and protein identifiers as columns
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with group identifiers
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers
 * **Returns:**
   Maximum number of permutations.
 * **Return type:**
-  [int](https://docs.python.org/3/library/functions.html#int)
+  [int](https://docs.python.org/3/builtins/functions.html#int)
 
-### correct_pairwise_ttest(df, alpha, correction='fdr_bh')
+### correct_pairwise_ttest(df, alpha, correction='fdr_bh', pvalue_col='posthoc pvalue')

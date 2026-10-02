@@ -1,6 +1,6 @@
 # acore.io package
 
-### download_PRIDE_data(pxd_id, file_name, to='.', user='', password='', date_field='publicationDate') → [dict](https://docs.python.org/3/library/stdtypes.html#dict)
+### download_PRIDE_data(pxd_id, file_name, to='.', user='', password='', date_field='publicationDate') → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
 This function downloads a project file from the PRIDE repository. To see more of the
 pride API, have a look at
@@ -9,13 +9,17 @@ or EBI’s commandline tool pridepy
 [https://github.com/PRIDE-Archive/pridepy](https://github.com/PRIDE-Archive/pridepy)
 
 * **Parameters:**
-  * **pxd_id** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – PRIDE project identifier (id. PXD013599).
-  * **file_name** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – name of the file to dowload
-  * **to** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – local directory where the file should be downloaded
-  * **user** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – username to access biomedical database server if required.
-  * **password** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – password to access biomedical database server if required.
-  * **date_field** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – projects deposited in PRIDE are search based on date, either
+  * **pxd_id** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – PRIDE project identifier (id. PXD013599).
+  * **file_name** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the file to dowload
+  * **to** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – local directory where the file should be downloaded
+  * **user** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – username to access biomedical database server if required.
+  * **password** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – password to access biomedical database server if required.
+  * **date_field** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – projects deposited in PRIDE are search based on date, either
     submissionData or publicationDate (default)
+
+### download_file(url: [str](https://docs.python.org/3/builtins/stdtypes.html#str), local_filename: [str](https://docs.python.org/3/builtins/stdtypes.html#str)) → [None](https://docs.python.org/3/builtins/constants.html#None)
+
+Download a file from the internet.
 
 ### unrar(filepath, to)
 
@@ -23,16 +27,15 @@ Decompress RAR file
 :param str filepath: path to rar file
 :param str to: where to extract all files
 
-### download_file(url: [str](https://docs.python.org/3/library/stdtypes.html#str), local_filename: [str](https://docs.python.org/3/library/stdtypes.html#str)) → [None](https://docs.python.org/3/library/constants.html#None)
-
-Download a file from the internet.
-
 ## Subpackages
 
 * [acore.io.uniprot package](acore.io.uniprot.md)
   * [`fetch_annotations()`](acore.io.uniprot.md#acore.io.uniprot.fetch_annotations)
+  * [`filter_annotations()`](acore.io.uniprot.md#acore.io.uniprot.filter_annotations)
   * [`process_annotations()`](acore.io.uniprot.md#acore.io.uniprot.process_annotations)
   * [Submodules](acore.io.uniprot.md#submodules)
+  * [acore.io.uniprot.filter module](acore.io.uniprot.md#module-acore.io.uniprot.filter)
+    * [`filter_annotations()`](acore.io.uniprot.md#acore.io.uniprot.filter.filter_annotations)
   * [acore.io.uniprot.uniprot module](acore.io.uniprot.md#module-acore.io.uniprot.uniprot)
     * [`check_response()`](acore.io.uniprot.md#acore.io.uniprot.uniprot.check_response)
     * [`submit_id_mapping()`](acore.io.uniprot.md#acore.io.uniprot.uniprot.submit_id_mapping)
@@ -54,39 +57,29 @@ Download a file from the internet.
 
 Download files from the internet.
 
-### download_file(url: [str](https://docs.python.org/3/library/stdtypes.html#str), local_filename: [str](https://docs.python.org/3/library/stdtypes.html#str)) → [None](https://docs.python.org/3/library/constants.html#None)
+### download_file(url: [str](https://docs.python.org/3/builtins/stdtypes.html#str), local_filename: [str](https://docs.python.org/3/builtins/stdtypes.html#str)) → [None](https://docs.python.org/3/builtins/constants.html#None)
 
 Download a file from the internet.
 
 ## acore.io.ftp module
 
-### download_from_ftp(ftp_url: [str](https://docs.python.org/3/library/stdtypes.html#str), user: [str](https://docs.python.org/3/library/stdtypes.html#str), password: [str](https://docs.python.org/3/library/stdtypes.html#str), to: [str](https://docs.python.org/3/library/stdtypes.html#str), file_name) → [str](https://docs.python.org/3/library/stdtypes.html#str)
+### download_from_ftp(ftp_url: [str](https://docs.python.org/3/builtins/stdtypes.html#str), user: [str](https://docs.python.org/3/builtins/stdtypes.html#str), password: [str](https://docs.python.org/3/builtins/stdtypes.html#str), to: [str](https://docs.python.org/3/builtins/stdtypes.html#str), file_name) → [str](https://docs.python.org/3/builtins/stdtypes.html#str)
 
 Download a file from an FTP server.
 
 ## acore.io.kegg module
 
-### link_kegg_batch(target_db: [str](https://docs.python.org/3/library/stdtypes.html#str), gene_ids: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)]) → [str](https://docs.python.org/3/library/stdtypes.html#str)
+### cid_to_kegg_id(pubchem_cid: [int](https://docs.python.org/3/builtins/functions.html#int)) → [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)
 
-Fetch from KEGG in batches informations.
+Convert a single PubChem CID to a KEGG compound ID via KEGG conv API.
 
-Docs: [https://www.kegg.jp/kegg/rest/keggapi.html](https://www.kegg.jp/kegg/rest/keggapi.html)
-
-* **Parameters:**
-  * **target_db** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – Target endpoint of KEGG API, e.g. “ko” or “pathway”.
-  * **gene_ids** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *of* [*str*](https://docs.python.org/3/library/stdtypes.html#str)) – List of KEGG gene IDs to query.
-* **Returns:**
-  A list of strings containing the fetched information.
-* **Return type:**
-  [str](https://docs.python.org/3/library/stdtypes.html#str)
-
-### fetch_kegg_ko_descriptions(ko_terms: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[str](https://docs.python.org/3/library/stdtypes.html#str)], timeout: [float](https://docs.python.org/3/library/functions.html#float) = 30.0) → DataFrame
+### fetch_kegg_ko_descriptions(ko_terms: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)], timeout: [float](https://docs.python.org/3/builtins/functions.html#float) = 30.0) → DataFrame
 
 Fetch common descriptions for KEGG KO terms.
 
 * **Parameters:**
-  * **ko_terms** (*Iterable* *[*[*str*](https://docs.python.org/3/library/stdtypes.html#str) *]*) – KEGG KO identifiers such as `K03007` or `ko:K03007`.
-  * **timeout** ([*float*](https://docs.python.org/3/library/functions.html#float) *,* *optional*) – Timeout in seconds for each KEGG API request.
+  * **ko_terms** (*Iterable* *[*[*str*](https://docs.python.org/3/builtins/stdtypes.html#str) *]*) – KEGG KO identifiers such as `K03007` or `ko:K03007`.
+  * **timeout** ([*float*](https://docs.python.org/3/builtins/functions.html#float) *,* *optional*) – Timeout in seconds for each KEGG API request.
 * **Returns:**
   A DataFrame with columns `ko_term`, `symbol` and
   `common_description`.
@@ -98,34 +91,44 @@ Fetch common descriptions for KEGG KO terms.
 The KEGG API accepts up to 10 entry identifiers per request. This helper
 batches larger inputs automatically.
 
-### cid_to_kegg_id(pubchem_cid: [int](https://docs.python.org/3/library/functions.html#int)) → [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None)
+### link_kegg_batch(target_db: [str](https://docs.python.org/3/builtins/stdtypes.html#str), gene_ids: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)]) → [str](https://docs.python.org/3/builtins/stdtypes.html#str)
 
-Convert a single PubChem CID to a KEGG compound ID via KEGG conv API.
+Fetch from KEGG in batches informations.
 
-### parse_compound_pathway_mapping(raw_mapping: [str](https://docs.python.org/3/library/stdtypes.html#str)) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)]]
+Docs: [https://www.kegg.jp/kegg/rest/keggapi.html](https://www.kegg.jp/kegg/rest/keggapi.html)
 
-Parse tab-delimited KEGG-style compound/pathway mappings into a dictionary.
+* **Parameters:**
+  * **target_db** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – Target endpoint of KEGG API, e.g. “ko” or “pathway”.
+  * **gene_ids** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list) *of* [*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – List of KEGG gene IDs to query.
+* **Returns:**
+  A list of strings containing the fetched information.
+* **Return type:**
+  [str](https://docs.python.org/3/builtins/stdtypes.html#str)
 
-### parse_kegg_name_description(raw_text: [str](https://docs.python.org/3/library/stdtypes.html#str)) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [str](https://docs.python.org/3/library/stdtypes.html#str)]]
-
-Parse KEGG pathway entries into ENTRY -> {NAME, DESCRIPTION}.
-
-### lookup_cid_to_kegg_id(pubchem_cid: [Iterable](https://docs.python.org/3/library/typing.html#typing.Iterable)[[int](https://docs.python.org/3/library/functions.html#int)]) → Series | [None](https://docs.python.org/3/library/constants.html#None)
+### lookup_cid_to_kegg_id(pubchem_cid: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[int](https://docs.python.org/3/builtins/functions.html#int)]) → Series | [None](https://docs.python.org/3/builtins/constants.html#None)
 
 Look up KEGG IDs for a list of PubChem CIDs using a pre-downloaded mapping file.
 
 * **Parameters:**
-  **pubchem_cid** (*Iterable* *[*[*int*](https://docs.python.org/3/library/functions.html#int) *]*) – A list of PubChem CIDs to look up.
+  **pubchem_cid** (*Iterable* *[*[*int*](https://docs.python.org/3/builtins/functions.html#int) *]*) – A list of PubChem CIDs to look up.
 * **Returns:**
   A Series mapping PubChem CIDs to KEGG IDs, or None if no matches are found.
 * **Return type:**
   pd.Series | None
 
+### parse_compound_pathway_mapping(raw_mapping: [str](https://docs.python.org/3/builtins/stdtypes.html#str)) → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)]]
+
+Parse tab-delimited KEGG-style compound/pathway mappings into a dictionary.
+
+### parse_kegg_name_description(raw_text: [str](https://docs.python.org/3/builtins/stdtypes.html#str)) → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [str](https://docs.python.org/3/builtins/stdtypes.html#str)]]
+
+Parse KEGG pathway entries into ENTRY -> {NAME, DESCRIPTION}.
+
 ## acore.io.pride module
 
 Downlaod data from PRIDE database.
 
-### download_PRIDE_data(pxd_id, file_name, to='.', user='', password='', date_field='publicationDate') → [dict](https://docs.python.org/3/library/stdtypes.html#dict)
+### download_PRIDE_data(pxd_id, file_name, to='.', user='', password='', date_field='publicationDate') → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
 This function downloads a project file from the PRIDE repository. To see more of the
 pride API, have a look at
@@ -134,12 +137,12 @@ or EBI’s commandline tool pridepy
 [https://github.com/PRIDE-Archive/pridepy](https://github.com/PRIDE-Archive/pridepy)
 
 * **Parameters:**
-  * **pxd_id** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – PRIDE project identifier (id. PXD013599).
-  * **file_name** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – name of the file to dowload
-  * **to** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – local directory where the file should be downloaded
-  * **user** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – username to access biomedical database server if required.
-  * **password** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – password to access biomedical database server if required.
-  * **date_field** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – projects deposited in PRIDE are search based on date, either
+  * **pxd_id** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – PRIDE project identifier (id. PXD013599).
+  * **file_name** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the file to dowload
+  * **to** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – local directory where the file should be downloaded
+  * **user** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – username to access biomedical database server if required.
+  * **password** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – password to access biomedical database server if required.
+  * **date_field** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – projects deposited in PRIDE are search based on date, either
     submissionData or publicationDate (default)
 
 ## acore.io.uncompress module

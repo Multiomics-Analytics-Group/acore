@@ -32,6 +32,8 @@ columns: 'terms', 'identifiers', 'foreground',
 """
 
 __all__ = [
+    "run_fisher",
+    "run_kolmogorov_smirnov",
     "run_site_regulation_enrichment",
     "run_up_down_regulation_enrichment",
     "run_gsea",
@@ -143,7 +145,7 @@ def run_up_down_regulation_enrichment(
 ) -> DataFrame[EnrichmentAnalysisSchema]:
     """
     This function runs a simple enrichment analysis for significantly regulated proteins
-    distinguishing between up- and down-regulated.
+    distinguishing between upregulation per group defined by the `groups`.
 
     :param pandas.DataFrame regulation_data: pandas.DataFrame resulting from differential regulation
         analysis (CKG's regulation table).
@@ -192,7 +194,7 @@ reference/api/pandas.DataFrame.groupby.html
     if len(groups) != 2:
         raise ValueError("groups should contains exactly two columns.")
 
-    ret = list()
+    ret = []
     # In case of multiple comparisons this is used to get all possible combinations
     for g1, g2 in regulation_data.groupby(groups).groups:
 
@@ -215,7 +217,7 @@ reference/api/pandas.DataFrame.groupby.html
 
         for rej_col, direction in zip(
             ("up_pairwise_regulation", "down_pairwise_regulation"),
-            ("upregulated", "downregulated"),
+            (f"upregulated in {g1}", f"upregulated in {g2}"),
         ):
             _enrichment = run_regulation_enrichment(
                 df,
@@ -469,7 +471,7 @@ def run_enrichment(
 def run_ssgsea(
     data: pd.DataFrame,
     annotation: str,
-    set_index: list[str] = None,
+    set_index: list[str] | None = None,
     annotation_col: str = "annotation",
     identifier_col: str = "identifier",
     outdir: str = "tmp",

@@ -35,10 +35,7 @@ def check_missingness(df: pd.DataFrame, rows_to_check: list):
     )
     logger.debug("Samples (rows) with at least one NA: %s", na_counts[na_counts > 0])
 
-    if na_counts.any():
-        return True
-    else:
-        return False
+    return bool(na_counts.any())
 
 
 def run_cpca_drift_correction(

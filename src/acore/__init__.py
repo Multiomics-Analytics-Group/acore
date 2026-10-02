@@ -17,14 +17,14 @@ from . import (
 )
 
 __all__ = [
-    "dsp_pandas",
+    "batch_correction",
     "decomposition",
+    "dsp_pandas",
+    "enrichment_analysis",
+    "exploratory_analysis",
+    "filter_metabolomics",
     "imputation_analysis",
     "io",
-    "enrichment_analysis",
-    "filter_metabolomics",
-    "batch_correction",
-    "exploratory_analysis",
     "multiple_testing",
     "normalization",
     "types",

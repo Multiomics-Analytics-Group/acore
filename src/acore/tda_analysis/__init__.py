@@ -12,7 +12,7 @@ from sklearn import cluster, ensemble
 
 def run_mapper(
     data,
-    lenses=["l2norm"],
+    lenses=None,
     n_cubes=15,
     overlap=0.5,
     n_clusters=3,
@@ -32,6 +32,8 @@ def run_mapper(
 
     """
 
+    if lenses is None:
+        lenses = ["l2norm"]
     X = data._get_numeric_data()
     labels = {i: data.index[i] for i in range(len(data.index))}
 

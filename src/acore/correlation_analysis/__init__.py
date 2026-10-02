@@ -7,7 +7,7 @@ import pingouin as pg
 from scipy import stats
 from scipy.special import betainc
 
-import acore.utils as utils
+from acore import utils
 from acore.multiple_testing import apply_pvalue_correction
 
 
@@ -92,11 +92,10 @@ def run_correlation(
     # The Repeated measurements correlation calculation is too time consuming so it
     # only runs if the number of features is less than 200
     if subject is not None and utils.check_is_paired(df, subject, group):
-        if len(df[subject].unique()) > 2:
-            if len(df.columns) < 200:
-                correlation = run_rm_correlation(
-                    df, alpha=alpha, subject=subject, correction=correction
-                )
+        if len(df[subject].unique()) > 2 and len(df.columns) < 200:
+            correlation = run_rm_correlation(
+                df, alpha=alpha, subject=subject, correction=correction
+            )
         return correlation
     if dropna:
         df = df.dropna(axis=1, how="any")
@@ -126,7 +125,7 @@ def run_multi_correlation(
     df_dict,
     alpha=0.05,
     subject="subject",
-    on=["subject", "biological_sample"],
+    on=None,
     group="group",
     method="pearson",
     correction="fdr_bh",
@@ -137,7 +136,8 @@ def run_multi_correlation(
     :param dict df_dict: dictionary of pandas dataframes with samples as rows and features as columns.
     :param str subject: name of the column containing subject identifiers.
     :param str group: name of the column containing group identifiers.
-    :param list on: column names to join dataframes on (must be found in all dataframes).
+    :param list on: column names to join dataframes on (must be found in all dataframes),
+                    defaults to ['subject', 'biological_sample'] for `None`.
     :param str method: method to use for correlation calculation ('pearson', 'spearman').
     :param float alpha: error rate. Values velow alpha are considered significant.
     :param str correction: type of correction see apply_pvalue_correction for methods
@@ -149,6 +149,8 @@ def run_multi_correlation(
             on=['subject', 'biological_sample'],
             group='group', method='pearson', correction='fdr_bh')
     """
+    if on is None:
+        on = ["subject", "biological_sample"]
     multidf = pd.DataFrame()
     correlation = None
     for dtype in df_dict:

@@ -107,7 +107,7 @@ omics_and_meta
 # > If there is more than two groups, the code still runs, but then the results are
 # > to be interpreted as an omnibus test across groups.
 # See for details
-# [`pingouin.ancova`](https://pingouin-stats.org/build/html/generated/pingouin.ancova.html)
+# [`pingouin.ancova`](https://pingouin-stats.org/generated/pingouin.ancova.html)
 #  documentation.
 
 # %%
@@ -122,7 +122,7 @@ ancova = (
         covariates=covariates,
     )
     .set_index("identifier")
-    .sort_values(by="posthoc padj")
+    .sort_values(by="posthoc pvalue adj")
 )  # need to be floats?
 ancova_acore = ancova
 ancova

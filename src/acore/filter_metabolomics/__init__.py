@@ -6,7 +6,7 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["filter_by_missingness", "filter_cv", "filter_blanks"]
+__all__ = ["filter_blanks", "filter_by_missingness", "filter_cv"]
 
 
 def filter_by_missingness(

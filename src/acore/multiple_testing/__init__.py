@@ -84,7 +84,7 @@ def apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method="bh"):
 
         result = apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method='bh')
     """
-    rejected, padj, num_hyp, alpha_stages = multitest.fdrcorrection_twostage(
+    rejected, padj, _num_hyp, _alpha_stages = multitest.fdrcorrection_twostage(
         pvalues, alpha, method
     )
 
@@ -202,22 +202,22 @@ def get_max_permutations(df, group="group"):
     return max_perm
 
 
-def correct_pairwise_ttest(df, alpha, correction="fdr_bh"):
-    posthoc_df = list()
+def correct_pairwise_ttest(df, alpha, correction="fdr_bh", pvalue_col="posthoc pvalue"):
+    posthoc_df = []
 
-    required_col = ["group1", "group2", "posthoc pvalue"]
+    required_col = ["group1", "group2", pvalue_col]
     for _col in required_col:
         if _col not in df:
             raise KeyError(f"Did not find '{_col}' in columns of data.")
 
     for comparison in df.groupby(["group1", "group2"]).groups:
         index = df.groupby(["group1", "group2"]).groups.get(comparison)
-        posthoc_pvalues = df.loc[index, "posthoc pvalue"].tolist()
-        _, posthoc_padj = apply_pvalue_correction(
+        posthoc_pvalues = df.loc[index, pvalue_col].tolist()
+        _, _padj = apply_pvalue_correction(
             posthoc_pvalues, alpha=alpha, method=correction
         )
 
-        _posthoc_df = pd.DataFrame({"index": index, "posthoc padj": posthoc_padj})
+        _posthoc_df = pd.DataFrame({"index": index, f"{pvalue_col} adj": _padj})
         posthoc_df.append(_posthoc_df)
     posthoc_df = pd.concat(posthoc_df)
     posthoc_df = posthoc_df.set_index("index")

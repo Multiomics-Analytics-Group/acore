@@ -1,5 +1,5 @@
 import logging
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 import numpy as np
 import pandas as pd
@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 def imputation_KNN(
     data: pd.DataFrame,
-    drop_cols: Optional[Iterable[str]] = None,
-    group: Optional[str] = None,
+    drop_cols: Iterable[str] | None = None,
+    group: str | None = None,
     cutoff=0.6,
     alone=True,
     n_neighbors=3,
@@ -100,7 +100,7 @@ def imputation_KNN(
 
 def imputation_mixed_norm_KNN(
     data: pd.DataFrame,
-    drop_cols: Optional[Iterable[str]] = None,
+    drop_cols: Iterable[str] | None = None,
     shift: float = 1.8,
     nstd: float = 0.3,
     group: str = "group",
@@ -171,7 +171,7 @@ def imputation_mixed_norm_KNN(
 # ? This one is not using the grouping?
 def imputation_normal_distribution(
     data: pd.DataFrame,
-    drop_cols: Optional[Iterable[str]] = None,
+    drop_cols: Iterable[str] | None = None,
     shift: float = 1.8,
     nstd: float = 0.3,
     random_state: int = 112736,
@@ -254,9 +254,9 @@ replacemissingfromgaussian.html
 
 def imputation_zeros(
     data: pd.DataFrame,
-    on_cols: Optional[Iterable[str]] = None,
-    on_rows: Optional[Iterable[str]] = None,
-    drop_cols: Optional[Iterable[str]] = None,
+    on_cols: Iterable[str] | None = None,
+    on_rows: Iterable[str] | None = None,
+    drop_cols: Iterable[str] | None = None,
 ):
     """
     Replace missing values with zeros.
@@ -313,9 +313,9 @@ def imputation_zeros(
 
 def imputation_half_minimum(
     data: pd.DataFrame,
-    on_cols: Optional[Iterable[str]] = None,
-    on_rows: Optional[Iterable[str]] = None,
-    drop_cols: Optional[Iterable[str]] = None,
+    on_cols: Iterable[str] | None = None,
+    on_rows: Iterable[str] | None = None,
+    drop_cols: Iterable[str] | None = None,
 ):
     """
     Replace missing values with half the per-column minimum of observed values.

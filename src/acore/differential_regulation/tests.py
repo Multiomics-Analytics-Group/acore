@@ -134,7 +134,7 @@ def calculate_thsd(df, column, group="group", alpha=0.05, is_logged=True):
     Pairwise Tukey-HSD posthoc test using pingouin.pairwise_tukey_.
 
     .. _pingouin.pairwise_tukey: \
-    https://pingouin-stats.org/build/html/generated/pingouin.pairwise_tukey.html
+    https://pingouin-stats.org/generated/pingouin.pairwise_tukey.html
 
     :param df: pandas dataframe with group and protein identifier as columns
     :param str column: column containing the protein identifier
@@ -170,10 +170,10 @@ def calculate_pairwise_ttest(
 ):
     """
     Performs pairwise t-test using pingouin, as a posthoc test,
-    and calculates fold-changes using pingouin.pairwise_ttests_.
+    and calculates fold-changes using pingouin.pairwise_tests_.
     
-    .. _pingouin.pairwise_ttests: \
-    https://pingouin-stats.org/build/html/generated/pingouin.pairwise_ttests.html.
+    .. _pingouin.pairwise_tests: \
+    https://pingouin-stats.org/generated/pingouin.pairwise_tests.html.
 
     :param df: pandas dataframe with subject and group as rows and protein identifier as column.
     :param str column: column label containing the dependant variable
@@ -226,6 +226,7 @@ def calculate_pairwise_ttest(
         "posthoc BF10",
         "posthoc effsize",
     ]
+    # equivalent to calling `pg.pairwise_tests(data=df, ...)`
     posthoc = df.pairwise_tests(
         dv=column,
         between=group,
@@ -277,7 +278,9 @@ def calculate_anova(df, column, group="group"):
     return (column, df1, df2, t, pvalue)
 
 
-def calculate_ancova(data, column, group="group", covariates=[]):
+def calculate_ancova(
+    data, column, group: str = "group", covariates: list[str] | None = None
+):
     """
     Calculates one-way ANCOVA using pingouin.
 
@@ -287,6 +290,8 @@ def calculate_ancova(data, column, group="group", covariates=[]):
     :param list covariates: list of covariates (columns in df)
     :return: Tuple with column, F-statistics and p-value.
     """
+    if covariates is None:
+        covariates = []
     ancova_result = pg.ancova(data=data, dv=column, between=group, covar=covariates)
     t, df, pvalue = (
         ancova_result.loc[ancova_result["Source"] == group, ["F", "DF", "p-unc"]]
@@ -331,7 +336,7 @@ def calculate_repeated_measures_anova(df, column, subject="subject", within="gro
         )
         t, pvalue = aov_result.loc[0, ["F", "p-unc"]].values.tolist()
         df1, df2 = aov_result["DF"]
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(
             f"Repeated measurements Anova for column: {column} could not be calculated."
             f" Error {e}"
@@ -373,7 +378,7 @@ def calculate_mixed_anova(
             correction=True,
         )
         aov_result["identifier"] = column
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"Mixed Anova for column: {column} could not be calculated. Error {e}")
 
     return aov_result[["identifier", "DF1", "DF2", "F", "p-unc", "Source"]]
@@ -456,8 +461,7 @@ def format_anova_table(
     if permutations > 0:
         max_perm = get_max_permutations(df, group=group)
         if max_perm >= 10:
-            if max_perm < permutations:
-                permutations = max_perm
+            permutations = min(permutations, max_perm)
             observed_pvalues = scores.pvalue
             count = apply_pvalue_permutation_fdrcorrection(
                 df,
@@ -477,7 +481,7 @@ def format_anova_table(
         scores["correction"] = "FDR correction BH"
         scores["padj"] = padj
         corrected = True
-
+    # ! scores is omnibus result
     res = pd.DataFrame(pairwise_results, columns=pairwise_cols).set_index("identifier")
     if not res.empty:
         res = res.join(scores[["F-statistics", "pvalue", "padj"]].astype("float"))
@@ -488,10 +492,12 @@ def format_anova_table(
 
     res = res.reset_index()
     res["rejected"] = res["padj"] < alpha
-
+    # ! double check this
     if "posthoc pvalue" in res.columns:
-        res["-log10 pvalue"] = [-np.log10(x) for x in res["posthoc pvalue"].values]
-    else:
+        res["-log10 posthoc pvalue"] = [
+            -np.log10(x) for x in res["posthoc pvalue"].values
+        ]
+    if "pvalue" in res.columns:
         res["-log10 pvalue"] = [-np.log10(x) for x in res["pvalue"].values]
 
     return res
