@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.19.1
+#       jupytext_version: 1.19.3
 # ---
 
 # %% [markdown]
@@ -31,6 +31,7 @@
 # %% tags=["hide-input"]
 import dsp_pandas
 import pandas as pd
+import vuecore.plots.basic.scatter
 
 import acore.differential_regulation as ad
 
@@ -92,7 +93,7 @@ if isinstance(subject_col, int):
 anova = (
     ad.run_anova(
         omics_and_meta,  # .reset_index(),
-        subject=subject_col,
+        subject=None,
         drop_cols=[],
         group=group,
     ).set_index(["identifier", "group1", "group2"])
@@ -103,7 +104,7 @@ anova.head().T
 # %% [markdown]
 # ### pairwise t-test results:
 
-# %%
+# %% tags=["hide-input"]
 cols_pairwise_ttest = [
     # "group1",
     # "group2",
@@ -117,6 +118,7 @@ cols_pairwise_ttest = [
     "posthoc dof",
     "posthoc tail",
     "posthoc pvalue",
+    "posthoc pvalue adj",
     "posthoc BF10",
     "posthoc effsize",
     # "identifier",
@@ -124,7 +126,7 @@ cols_pairwise_ttest = [
     "FC",
     "efftype",
 ]
-anova[cols_pairwise_ttest]
+anova[cols_pairwise_ttest].T
 
 # %% [markdown]
 # ANOVA results
@@ -139,5 +141,37 @@ anova.drop(columns=cols_pairwise_ttest)
 regex_filter = "pval|padj|reject|stat|FC"
 view = anova.filter(regex=regex_filter)
 view
+
+# %% [markdown]
+# ## Volcano plot of ANOVA results
+# - volcano plot of ANOVA (omnibus test) results
+# - more than one group present in the example.
+
+
+# %% tags=["hide-input"]
+scatter_plot_adv = vuecore.plots.basic.scatter.create_scatter_plot(
+    data=anova.reset_index(),
+    x="log2FC",
+    y="-log10 pvalue",
+    color="rejected",
+    title="Simple Volcano Plot",
+    subtitle="Visualizing ANOVA results",
+    labels={
+        "log2FC": "Log2 Fold Change",
+        "-log10 pvalue": "-log10(p-value)",
+        "rejected": "FDR corrected Significant",
+        "identifier": "Protein Identifier",
+    },
+    hover_data=["identifier", "group1", "group2"],
+    # currently does not work:
+    # color_discrete_map={False: "#2166AC", True: "#B2182B"},  # Blue  # Red
+    color_discrete_sequence=["red", "blue"],
+    opacity=1,
+    marker_line_width=1,
+    marker_line_color="darkgray",
+    width=800,
+    height=600,
+)
+scatter_plot_adv
 
 # %%

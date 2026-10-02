@@ -10,7 +10,7 @@ Finds communities in a graph using different methods. For more information on th
 > - [https://networkx.github.io/documentation/latest/reference/generated/networkx.convert_matrix.to_pandas_adjacency.html](https://networkx.github.io/documentation/latest/reference/generated/networkx.convert_matrix.to_pandas_adjacency.html)
 * **Parameters:**
   * **graph** (*graph*) – networkx graph
-  * **args** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – config file arguments
+  * **args** ([*dict*](https://docs.python.org/3/builtins/stdtypes.html#dict)) – config file arguments
 * **Returns:**
   Dictionary of nodes and which community they belong to (from 0 to number of communities).
 
@@ -38,7 +38,7 @@ Compute the eigenvector centrality for the graph G, and finds the highest value.
 * **Returns:**
   Highest eigenvector centrality value.
 * **Return type:**
-  [float](https://docs.python.org/3/library/functions.html#float)
+  [float](https://docs.python.org/3/builtins/functions.html#float)
 
 ### get_louvain_partitions(G, weight)
 
@@ -46,11 +46,11 @@ Computes the partition of the graph nodes which maximises the modularity (or try
 
 * **Parameters:**
   * **G** (*graph*) – networkx graph which is decomposed.
-  * **weight** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – the key in graph to use as weight.
+  * **weight** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – the key in graph to use as weight.
 * **Returns:**
   The partition, with communities numbered from 0 to number of communities.
 * **Return type:**
-  [dict](https://docs.python.org/3/library/stdtypes.html#dict)
+  [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
 ### run_snf(df_dict, index, num_clusters=None, distance_metric='euclidean', k_affinity=5, mu_affinity=0.5)
 

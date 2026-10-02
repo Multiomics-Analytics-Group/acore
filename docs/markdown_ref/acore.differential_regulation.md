@@ -2,7 +2,7 @@
 
 Differential regulation module.
 
-### run_ancova(df: DataFrame, covariates: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)], alpha: [float](https://docs.python.org/3/library/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, subject: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'subject', group: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'group', permutations: [int](https://docs.python.org/3/library/functions.html#int) = 0, correction: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'fdr_bh', is_logged: [bool](https://docs.python.org/3/library/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/library/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AncovaSchema](acore.types.md#acore.types.differential_analysis.AncovaSchema)]
+### run_ancova(df: DataFrame, covariates: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)], alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'subject', group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 0, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AncovaSchema](acore.types.md#acore.types.differential_analysis.AncovaSchema)]
 
 Performs statistical test for each protein in a dataset.
 Checks what type of data is the input (paired, unpaired or repeated measurements)
@@ -13,17 +13,17 @@ if permutations>0 and Benjamini/Hochberg if permutations=0.
 * **Parameters:**
   * **df** (*pd.DataFrame*) – Pandas DataFrame with samples as rows and protein identifiers and
     covariates as columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **covariates** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – list of covariates to include in the model (column in df)
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – error rate for multiple hypothesis correction
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
+  * **covariates** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of covariates to include in the model (column in df)
+  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate for multiple hypothesis correction
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
     to drop no columns.
-  * **subject** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with subject identifiers
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with group identifiers
-  * **permutations** ([*int*](https://docs.python.org/3/library/functions.html#int)) – number of permutations used to estimate false discovery rates.
-  * **correction** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers
+  * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate false discovery rates.
+  * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
     use methods available in acore.multiple_testing
-  * **is_logged** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – whether data is log-transformed
-  * **non_par** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – if True, normality and variance equality assumptions are checked
+  * **is_logged** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – whether data is log-transformed
+  * **non_par** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if True, normality and variance equality assumptions are checked
     and non-parametric test Mann Whitney U test if not passed
 * **Returns:**
   DataFrame adhering to AncovaSchema
@@ -43,7 +43,7 @@ result = run_ancova(df,
         )
 ```
 
-### run_anova(df: DataFrame, alpha: [float](https://docs.python.org/3/library/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None, subject: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'subject', group: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'group', permutations: [int](https://docs.python.org/3/library/functions.html#int) = 0, correction: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'fdr_bh', is_logged: [bool](https://docs.python.org/3/library/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/library/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AnovaSchema](acore.types.md#acore.types.differential_analysis.AnovaSchema)] | [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AnovaSchemaMultiGroup](acore.types.md#acore.types.differential_analysis.AnovaSchemaMultiGroup)]
+### run_anova(df: DataFrame, alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 0, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AnovaSchema](acore.types.md#acore.types.differential_analysis.AnovaSchema)] | [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AnovaSchemaMultiGroup](acore.types.md#acore.types.differential_analysis.AnovaSchemaMultiGroup)]
 
 Performs statistical test for each protein in a dataset.
 Checks what type of data is the input (paired, unpaired or repeated measurements) and
@@ -56,16 +56,16 @@ if permutations>0 and Benjamini/Hochberg if permutations=0.
 * **Parameters:**
   * **df** (*pd.DataFrame*) – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – error rate for multiple hypothesis correction
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the dataframe. Pass `None` or `[]`
+  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate for multiple hypothesis correction
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe. Pass `None` or `[]`
     to drop no columns.
-  * **subject** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with subject identifiers
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with group identifiers
-  * **permutations** ([*int*](https://docs.python.org/3/library/functions.html#int)) – number of permutations used to estimate false discovery rates.
-  * **correction** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers
+  * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate false discovery rates.
+  * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
     use methods available in acore.multiple_testing
-  * **is_logged** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – whether data is log-transformed
-  * **non_par** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – if True, normality and variance equality assumptions are checked
+  * **is_logged** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – whether data is log-transformed
+  * **non_par** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if True, normality and variance equality assumptions are checked
     and non-parametric test Mann Whitney U test if not passed
 * **Returns:**
   DataFrame adhering to AnovaSchema or AnovaSchemaMultiGroup.
@@ -84,7 +84,7 @@ result = run_anova(df,
         )
 ```
 
-### run_diff_analysis(df: DataFrame, boolean_array: Series, event_names: [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[str](https://docs.python.org/3/library/stdtypes.html#str), [str](https://docs.python.org/3/library/stdtypes.html#str)] = ('1', '0'), ttest_vars=('alternative', 'p-val', 'cohen-d')) → DataFrame
+### run_diff_analysis(df: DataFrame, boolean_array: Series, event_names: [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [str](https://docs.python.org/3/builtins/stdtypes.html#str)] = ('1', '0'), ttest_vars=('alternative', 'p-val', 'cohen-d')) → DataFrame
 
 Differential analysis procedure between two groups. Calculaes
 mean per group and t-test for each variable in vars between two groups.
@@ -103,13 +103,13 @@ type of mixed-effects model ([source](https://en.wikipedia.org/wiki/Mixed-design
 * **Parameters:**
   * **df** (*pd.DataFrame*) – Pandas DataFrame with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – error rate for multiple hypothesis correction
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
+  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate for multiple hypothesis correction
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
     to drop no columns.
-  * **subject** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with subject identifiers
-  * **within** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with within factor identifiers
-  * **between** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with between factor identifiers
-  * **correction** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers
+  * **within** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with within factor identifiers
+  * **between** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with between factor identifiers
+  * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
     use methods available in acore.multiple_testing
 * **Returns:**
   Pandas DataFrame
@@ -135,16 +135,16 @@ Performs repeated measurements anova and pairwise posthoc tests for each protein
 * **Parameters:**
   * **df** (*pd.DataFrame*) – Pandas DataFrame with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – error rate for multiple hypothesis correction
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
+  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate for multiple hypothesis correction
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
     to drop no columns. The `subject` column must not be included here as
     it is required for the analysis.
-  * **subject** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with subject identifiers
-  * **within** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with within factor identifiers
-  * **permutations** ([*int*](https://docs.python.org/3/library/functions.html#int)) – number of permutations used to estimate false discovery rates
-  * **correction** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers
+  * **within** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with within factor identifiers
+  * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate false discovery rates
+  * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
     use methods available in acore.multiple_testing
-  * **is_logged** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – whether data is log-transformed
+  * **is_logged** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – whether data is log-transformed
 * **Returns:**
   Pandas DataFrame
 
@@ -169,19 +169,19 @@ multiple hypothesis correction.
 * **Parameters:**
   * **df** (*pd.DataFrame*) – Pandas DataFrame with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **condition1** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – first of two conditions of the independent variable
-  * **condition2** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – second of two conditions of the independent variable
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – error rate for multiple hypothesis correction
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
+  * **condition1** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – first of two conditions of the independent variable
+  * **condition2** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – second of two conditions of the independent variable
+  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate for multiple hypothesis correction
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
     to drop no columns. The `subject` column should not be included here
     as it is handled separately based on the `paired` parameter.
-  * **subject** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with subject identifiers
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with group identifiers (independent variable)
-  * **paired** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – paired or unpaired samples
-  * **correction** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods
-  * **permutations** ([*int*](https://docs.python.org/3/library/functions.html#int)) – number of permutations used to estimate false discovery rates.
-  * **is_logged** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – data is log-transformed
-  * **non_par** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – if True, normality and variance equality assumptions are checked
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers (independent variable)
+  * **paired** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – paired or unpaired samples
+  * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods
+  * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate false discovery rates.
+  * **is_logged** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – data is log-transformed
+  * **non_par** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if True, normality and variance equality assumptions are checked
     and non-parametric test Mann Whitney U test if not passed
 * **Returns:**
   Pandas DataFrame with columns ‘identifier’, ‘group1’, ‘group2’,
@@ -211,10 +211,10 @@ Run a 2-way ANOVA when data[‘secondary_group’] is not empty
 * **Parameters:**
   * **df** (*pd.DataFrame*) – processed pandas DataFrame with samples as rows,
     and proteins and groups as columns.
-  * **drop_cols** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column names to drop from DataFrame. Pass `None` or `[]`
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column names to drop from DataFrame. Pass `None` or `[]`
     to drop no columns.
-  * **subject** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column name containing subject identifiers.
-  * **group** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – column names corresponding to independent variable groups.
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column name containing subject identifiers.
+  * **group** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column names corresponding to independent variable groups.
     Defaults to [‘group’, ‘secondary_group’] if None.
 * **Returns:**
   Two DataFrames, anova results and residuals.
@@ -240,11 +240,11 @@ Formatting related functions for test tables.
 All the tests for differential regulation. Functions used in the user facing
 function starting with run_.
 
-### calc_means_between_groups(df: DataFrame, boolean_array: Series, event_names: [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[str](https://docs.python.org/3/library/stdtypes.html#str), [str](https://docs.python.org/3/library/stdtypes.html#str)] = ('1', '0')) → DataFrame
+### calc_means_between_groups(df: DataFrame, boolean_array: Series, event_names: [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [str](https://docs.python.org/3/builtins/stdtypes.html#str)] = ('1', '0')) → DataFrame
 
 Mean comparison between groups
 
-### calc_ttest(df: DataFrame, boolean_array: Series, variables: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)]) → DataFrame
+### calc_ttest(df: DataFrame, boolean_array: Series, variables: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)]) → DataFrame
 
 Calculate t-test for each variable in variables between two groups defined
 by boolean array.
@@ -257,10 +257,10 @@ groups using [scipy.stats.ttest_ind](https://docs.scipy.org/doc/scipy/reference/
 * **Parameters:**
   * **df** – pandas dataframe with groups and subjects as rows and protein identifier
     as column.
-  * **condition1** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – identifier of first group.
-  * **condition2** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – ientifier of second group.
-  * **is_logged** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – data is logged transformed
-  * **non_par** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – if True, normality and variance equality assumptions are checked
+  * **condition1** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – identifier of first group.
+  * **condition2** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – ientifier of second group.
+  * **is_logged** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – data is logged transformed
+  * **non_par** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if True, normality and variance equality assumptions are checked
     and non-parametric test Mann Whitney U test if not passed
 * **Returns:**
   Tuple with t-statistics, two-tailed p-value, mean of first group,
@@ -274,13 +274,13 @@ result = calculate_ttest(df, 'group1', 'group2')
 
 ### calculate_thsd(df, column, group='group', alpha=0.05, is_logged=True)
 
-Pairwise Tukey-HSD posthoc test using [pingouin.pairwise_tukey](https://pingouin-stats.org/build/html/generated/pingouin.pairwise_tukey.html).
+Pairwise Tukey-HSD posthoc test using [pingouin.pairwise_tukey](https://pingouin-stats.org/generated/pingouin.pairwise_tukey.html).
 
 * **Parameters:**
   * **df** – pandas dataframe with group and protein identifier as columns
-  * **column** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column containing the protein identifier
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing the between factor
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – significance level
+  * **column** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column containing the protein identifier
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing the between factor
+  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – significance level
 * **Returns:**
   Pandas dataframe.
 
@@ -293,14 +293,14 @@ result = calculate_thsd(df, column='HBG2~P69892', group='group', alpha=0.05)
 ### calculate_pairwise_ttest(df, column, subject='subject', group='group', correction='none', is_logged=True)
 
 Performs pairwise t-test using pingouin, as a posthoc test,
-and calculates fold-changes using [pingouin.pairwise_ttests](https://pingouin-stats.org/build/html/generated/pingouin.pairwise_ttests.html.).
+and calculates fold-changes using [pingouin.pairwise_tests](https://pingouin-stats.org/generated/pingouin.pairwise_tests.html.).
 
 * **Parameters:**
   * **df** – pandas dataframe with subject and group as rows and protein identifier as column.
-  * **column** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing the dependant variable
-  * **subject** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing subject identifiers
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing the between factor
-  * **correction** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – method used for testing and adjustment of p-values.
+  * **column** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing the dependant variable
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing subject identifiers
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing the between factor
+  * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method used for testing and adjustment of p-values.
 * **Returns:**
   Pandas dataframe with means, standard deviations, test-statistics,
   degrees of freedom and effect size columns.
@@ -323,7 +323,7 @@ Calculates fold-changes after posthoc test.
 * **Parameters:**
   * **posthoc** – pandas dataframe from posthoc test. Should have at least columns
     ‘mean(group1)’ and ‘mean(group2)’.
-  * **identifier** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – feature identifier.
+  * **identifier** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – feature identifier.
 * **Returns:**
   Pandas dataframe with additional columns ‘identifier’, ‘log2FC’ and ‘FC’.
 
@@ -333,20 +333,20 @@ Calculates one-way ANOVA using pingouin.
 
 * **Parameters:**
   * **df** – pandas dataframe with group as rows and protein identifier as column
-  * **column** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – name of the column in df to run ANOVA on
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with group identifiers
+  * **column** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column in df to run ANOVA on
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers
 * **Returns:**
   Tuple with t-statistics and p-value.
 
-### calculate_ancova(data, column, group: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'group', covariates: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None)
+### calculate_ancova(data, column, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', covariates: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Calculates one-way ANCOVA using pingouin.
 
 * **Parameters:**
   * **df** – pandas dataframe with group as rows and protein identifier as column
-  * **column** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – name of the column in df to run ANOVA on
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with group identifiers
-  * **covariates** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – list of covariates (columns in df)
+  * **column** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column in df to run ANOVA on
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers
+  * **covariates** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of covariates (columns in df)
 * **Returns:**
   Tuple with column, F-statistics and p-value.
 
@@ -357,9 +357,9 @@ One-way and two-way repeated measures ANOVA using pingouin stats.
 * **Parameters:**
   * **df** – pandas dataframe with samples as rows and protein identifier as column.
     Data must be in long-format for two-way repeated measures.
-  * **column** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing the dependant variable
-  * **subject** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing subject identifiers
-  * **within** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing the within factor
+  * **column** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing the dependant variable
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing subject identifiers
+  * **within** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing the within factor
 * **Returns:**
   Tuple with protein identifier, t-statistics and p-value.
 
@@ -380,9 +380,9 @@ One-way and two-way repeated measures ANOVA using pingouin stats.
 * **Parameters:**
   * **df** – pandas dataframe with samples as rows and protein identifier as column.
     Data must be in long-format for two-way repeated measures.
-  * **column** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing the dependant variable
-  * **subject** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing subject identifiers
-  * **within** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column label containing the within factor
+  * **column** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing the dependant variable
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing subject identifiers
+  * **within** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing the within factor
   * **within** – column label containing the between factor
 * **Returns:**
   Tuple with protein identifier, t-statistics and p-value.
@@ -410,12 +410,12 @@ into final format.
 * **Parameters:**
   * **df** – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **aov_results** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *[*[*tuple*](https://docs.python.org/3/library/stdtypes.html#tuple) *]*) – list of tuples with anova results (one tuple per feature).
-  * **pairwise_results** ([*list*](https://docs.python.org/3/library/stdtypes.html#list) *[**dataframes* *]*) – list of pandas dataframes with
+  * **aov_results** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list) *[*[*tuple*](https://docs.python.org/3/builtins/stdtypes.html#tuple) *]*) – list of tuples with anova results (one tuple per feature).
+  * **pairwise_results** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list) *[**dataframes* *]*) – list of pandas dataframes with
     posthoc tests results
-  * **group** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – column with group identifiers
-  * **alpha** ([*float*](https://docs.python.org/3/library/functions.html#float)) – error rate for multiple hypothesis correction
-  * **permutations** ([*int*](https://docs.python.org/3/library/functions.html#int)) – number of permutations used to estimate false discovery rates
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers
+  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate for multiple hypothesis correction
+  * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate false discovery rates
 * **Returns:**
   Pandas dataframe
 

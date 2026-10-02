@@ -68,7 +68,7 @@ def run_anova(
     df: pd.DataFrame,
     alpha: float = 0.05,
     drop_cols: list[str] | None = None,
-    subject: str = "subject",
+    subject: str | None = None,
     group: str = "group",
     permutations: int = 0,
     correction: str = "fdr_bh",
@@ -179,6 +179,7 @@ def run_anova(
                 correction,
             )
             res["Method"] = "One-way anova"
+            # ? does this use the correct column `padj` for multiple testing correction?
             res = correct_pairwise_ttest(res, alpha, correction)
             res = AnovaSchemaMultiGroup.validate(res)
     else:
