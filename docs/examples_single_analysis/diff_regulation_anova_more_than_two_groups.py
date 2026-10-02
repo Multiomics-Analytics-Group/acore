@@ -20,6 +20,11 @@
 #
 # An omnibus analysis across groups
 # is combined with posthoc analysis between each set of the separate groups.
+# The omnibus test's adjusted p-value and rejection flag are in `padj` and
+# `rejected`; pairwise posthoc results use `posthoc pvalue adj` and
+# `posthoc rejected`.
+# `Method` records the selected omnibus test (`One-way anova` here); use
+# `run_ancova` when covariates should be included in the omnibus model.
 #
 # The function is the same as for the two groups case. The `group1` and
 # `group2` columns give the posthoc comparison.
@@ -53,7 +58,6 @@ subject_col: str | int = 0
 factor_and_covars: list[str] = [group, *covariates]
 
 # %% [markdown]
-# # ANOVA analysis for two groups
 # Use combined dataset for ANOVA analysis.
 
 # %% tags=["hide-input"]
@@ -83,7 +87,7 @@ omics_and_meta[factor_and_covars]
 
 
 # %% [markdown]
-# ## With four groups
+# # Run ANOVA with four groups
 # Acore make each combinatorial comparison between groups in the group column.
 
 
@@ -102,7 +106,7 @@ anova = (
 anova.head().T
 
 # %% [markdown]
-# ### pairwise t-test results:
+# ## pairwise t-test results:
 
 # %% tags=["hide-input"]
 cols_pairwise_ttest = [
@@ -119,6 +123,7 @@ cols_pairwise_ttest = [
     "posthoc tail",
     "posthoc pvalue",
     "posthoc pvalue adj",
+    "posthoc rejected",
     "posthoc BF10",
     "posthoc effsize",
     # "identifier",
@@ -143,9 +148,9 @@ view = anova.filter(regex=regex_filter)
 view
 
 # %% [markdown]
-# ## Volcano plot of ANOVA results
-# - volcano plot of ANOVA (omnibus test) results
-# - more than one group present in the example.
+# ## Omnibus ANOVA plot
+# Omnibus p-values, showing the overall significance of the differences between groups.
+# Omnibus significance decision based on choosen cutoff is available in `rejected`.
 
 
 # %% tags=["hide-input"]
@@ -155,11 +160,10 @@ scatter_plot_adv = vuecore.plots.basic.scatter.create_scatter_plot(
     y="-log10 pvalue",
     color="rejected",
     title="Simple Volcano Plot",
-    subtitle="Visualizing ANOVA results",
+    subtitle="Visualizing omnibus ANOVA results",
     labels={
-        "log2FC": "Log2 Fold Change",
         "-log10 pvalue": "-log10(p-value)",
-        "rejected": "FDR corrected Significant",
+        "rejected": "Omnibus FDR corrected significant",
         "identifier": "Protein Identifier",
     },
     hover_data=["identifier", "group1", "group2"],
