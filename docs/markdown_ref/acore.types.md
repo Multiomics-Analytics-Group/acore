@@ -273,7 +273,7 @@ Schema for more than two groups
 
 #### f_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'F-statistics'*
 
-#### posthoc_padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc padj'*
+#### posthoc_padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue adj'*
 
 #### posthoc_paired *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= 'posthoc Paired'*
 
@@ -283,7 +283,7 @@ Schema for more than two groups
 
 #### posthoc_tail *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'posthoc tail'*
 
-#### posthoc_BF10 *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'posthoc BF10'*
+#### posthoc_BF10 *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc BF10'*
 
 #### posthoc_effsize *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc effsize'*
 
@@ -539,7 +539,7 @@ Schema for the enrichment analysis results DataFrame.
 
 #### f_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'F-statistics'*
 
-#### posthoc_padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc padj'*
+#### posthoc_padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue adj'*
 
 #### *class* Config
 

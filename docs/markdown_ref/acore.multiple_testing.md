@@ -159,4 +159,4 @@ Get maximum number of permutations according to number of samples.
 * **Return type:**
   [int](https://docs.python.org/3/builtins/functions.html#int)
 
-### correct_pairwise_ttest(df, alpha, correction='fdr_bh')
+### correct_pairwise_ttest(df, alpha, correction='fdr_bh', pvalue_col='posthoc pvalue')

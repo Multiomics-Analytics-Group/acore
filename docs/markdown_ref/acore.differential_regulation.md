@@ -43,7 +43,7 @@ result = run_ancova(df,
         )
 ```
 
-### run_anova(df: DataFrame, alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'subject', group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 0, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AnovaSchema](acore.types.md#acore.types.differential_analysis.AnovaSchema)] | [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AnovaSchemaMultiGroup](acore.types.md#acore.types.differential_analysis.AnovaSchemaMultiGroup)]
+### run_anova(df: DataFrame, alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 0, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AnovaSchema](acore.types.md#acore.types.differential_analysis.AnovaSchema)] | [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AnovaSchemaMultiGroup](acore.types.md#acore.types.differential_analysis.AnovaSchemaMultiGroup)]
 
 Performs statistical test for each protein in a dataset.
 Checks what type of data is the input (paired, unpaired or repeated measurements) and
@@ -274,7 +274,7 @@ result = calculate_ttest(df, 'group1', 'group2')
 
 ### calculate_thsd(df, column, group='group', alpha=0.05, is_logged=True)
 
-Pairwise Tukey-HSD posthoc test using [pingouin.pairwise_tukey](https://pingouin-stats.org/build/html/generated/pingouin.pairwise_tukey.html).
+Pairwise Tukey-HSD posthoc test using [pingouin.pairwise_tukey](https://pingouin-stats.org/generated/pingouin.pairwise_tukey.html).
 
 * **Parameters:**
   * **df** – pandas dataframe with group and protein identifier as columns
@@ -293,7 +293,7 @@ result = calculate_thsd(df, column='HBG2~P69892', group='group', alpha=0.05)
 ### calculate_pairwise_ttest(df, column, subject='subject', group='group', correction='none', is_logged=True)
 
 Performs pairwise t-test using pingouin, as a posthoc test,
-and calculates fold-changes using [pingouin.pairwise_ttests](https://pingouin-stats.org/build/html/generated/pingouin.pairwise_ttests.html.).
+and calculates fold-changes using [pingouin.pairwise_tests](https://pingouin-stats.org/generated/pingouin.pairwise_tests.html.).
 
 * **Parameters:**
   * **df** – pandas dataframe with subject and group as rows and protein identifier as column.
