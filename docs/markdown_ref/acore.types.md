@@ -275,6 +275,8 @@ Schema for more than two groups
 
 #### posthoc_padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue adj'*
 
+#### posthoc_rejected *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= 'posthoc rejected'*
+
 #### posthoc_paired *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= 'posthoc Paired'*
 
 #### posthoc_parametric *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= 'posthoc Parametric'*
@@ -528,6 +530,8 @@ Schema for the enrichment analysis results DataFrame.
 #### t_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc T-Statistics'*
 
 #### posthoc_pvalue *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue'*
+
+#### posthoc_rejected *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= 'posthoc rejected'*
 
 #### coef *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'coef'*
 
