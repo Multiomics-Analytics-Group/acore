@@ -20,6 +20,9 @@
 #
 # An omnibus analysis across groups
 # is combined with posthoc analysis between each set of the separate groups.
+# The omnibus test's adjusted p-value and rejection flag are in `padj` and
+# `rejected`; pairwise posthoc results use `posthoc pvalue adj` and
+# `posthoc rejected`.
 #
 # The function is the same as for the two groups case. The `group1` and
 # `group2` columns give the posthoc comparison.
@@ -119,6 +122,7 @@ cols_pairwise_ttest = [
     "posthoc tail",
     "posthoc pvalue",
     "posthoc pvalue adj",
+    "posthoc rejected",
     "posthoc BF10",
     "posthoc effsize",
     # "identifier",
@@ -143,23 +147,23 @@ view = anova.filter(regex=regex_filter)
 view
 
 # %% [markdown]
-# ## Volcano plot of ANOVA results
-# - volcano plot of ANOVA (omnibus test) results
-# - more than one group present in the example.
+# ## Pairwise posthoc plot
+# Fold changes and posthoc p-values both refer to the `group1` versus `group2`
+# comparison. Omnibus significance is available separately in `rejected`.
 
 
 # %% tags=["hide-input"]
 scatter_plot_adv = vuecore.plots.basic.scatter.create_scatter_plot(
     data=anova.reset_index(),
     x="log2FC",
-    y="-log10 pvalue",
-    color="rejected",
+    y="-log10 posthoc pvalue",
+    color="posthoc rejected",
     title="Simple Volcano Plot",
-    subtitle="Visualizing ANOVA results",
+    subtitle="Visualizing pairwise posthoc results",
     labels={
         "log2FC": "Log2 Fold Change",
-        "-log10 pvalue": "-log10(p-value)",
-        "rejected": "FDR corrected Significant",
+        "-log10 posthoc pvalue": "-log10(posthoc p-value)",
+        "posthoc rejected": "Posthoc FDR corrected significant",
         "identifier": "Protein Identifier",
     },
     hover_data=["identifier", "group1", "group2"],
