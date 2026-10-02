@@ -274,7 +274,7 @@ result = calculate_ttest(df, 'group1', 'group2')
 
 ### calculate_thsd(df, column, group='group', alpha=0.05, is_logged=True)
 
-Pairwise Tukey-HSD posthoc test using [pingouin.pairwise_tukey](https://pingouin-stats.org/build/html/generated/pingouin.pairwise_tukey.html).
+Pairwise Tukey-HSD posthoc test using [pingouin.pairwise_tukey](https://pingouin-stats.org/generated/pingouin.pairwise_tukey.html).
 
 * **Parameters:**
   * **df** – pandas dataframe with group and protein identifier as columns
@@ -293,7 +293,7 @@ result = calculate_thsd(df, column='HBG2~P69892', group='group', alpha=0.05)
 ### calculate_pairwise_ttest(df, column, subject='subject', group='group', correction='none', is_logged=True)
 
 Performs pairwise t-test using pingouin, as a posthoc test,
-and calculates fold-changes using [pingouin.pairwise_ttests](https://pingouin-stats.org/build/html/generated/pingouin.pairwise_ttests.html.).
+and calculates fold-changes using [pingouin.pairwise_tests](https://pingouin-stats.org/generated/pingouin.pairwise_tests.html.).
 
 * **Parameters:**
   * **df** – pandas dataframe with subject and group as rows and protein identifier as column.
