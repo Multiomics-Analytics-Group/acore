@@ -22,6 +22,8 @@ from pathlib import Path
 
 import dsp_pandas
 import pandas as pd
+import plotly.graph_objects as go
+from vuecore import viz
 
 import acore
 import acore.differential_regulation
@@ -350,9 +352,6 @@ loadings
 # for this, which is also developed by the Multiomics Analytics Group.
 
 # %%
-import plotly.graph_objects as go
-from vuecore import viz
-
 args = {"factor": 2, "loadings": 1}  # increase number of loadings or scaling factor
 # #! pca_results has three items, but docstring requests only two -> double check
 figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
@@ -370,7 +369,8 @@ figure
 # sensitive to the choice of an arbitrary threshold.
 #
 # Here we use `gseapy.prerank` under the hood, which implements the classic weighted
-# Kolmogorov–Smirnov enrichment statistic described in Subramanian et al. (2005).
+# Kolmogorov–Smirnov enrichment statistic described in
+# [Subramanian et al. (2005)](https://doi.org/10.1073/pnas.0506580102).
 #
 # See [`gseapy.prerank`](https://gseapy.readthedocs.io/en/latest/run.html#gseapy.prerank)
 # for more details.
