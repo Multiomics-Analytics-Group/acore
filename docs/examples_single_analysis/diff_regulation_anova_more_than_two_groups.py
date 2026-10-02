@@ -58,7 +58,6 @@ subject_col: str | int = 0
 factor_and_covars: list[str] = [group, *covariates]
 
 # %% [markdown]
-# # ANOVA analysis for two groups
 # Use combined dataset for ANOVA analysis.
 
 # %% tags=["hide-input"]
@@ -88,7 +87,7 @@ omics_and_meta[factor_and_covars]
 
 
 # %% [markdown]
-# ## With four groups
+# # Run ANOVA with four groups
 # Acore make each combinatorial comparison between groups in the group column.
 
 
@@ -107,7 +106,7 @@ anova = (
 anova.head().T
 
 # %% [markdown]
-# ### pairwise t-test results:
+# ## pairwise t-test results:
 
 # %% tags=["hide-input"]
 cols_pairwise_ttest = [
@@ -149,23 +148,22 @@ view = anova.filter(regex=regex_filter)
 view
 
 # %% [markdown]
-# ## Pairwise posthoc plot
-# Fold changes and posthoc p-values both refer to the `group1` versus `group2`
-# comparison. Omnibus significance is available separately in `rejected`.
+# ## Omnibus ANOVA plot
+# Omnibus p-values, showing the overall significance of the differences between groups.
+# Omnibus significance decision based on choosen cutoff is available in `rejected`.
 
 
 # %% tags=["hide-input"]
 scatter_plot_adv = vuecore.plots.basic.scatter.create_scatter_plot(
     data=anova.reset_index(),
     x="log2FC",
-    y="-log10 posthoc pvalue",
-    color="posthoc rejected",
+    y="-log10 pvalue",
+    color="rejected",
     title="Simple Volcano Plot",
-    subtitle="Visualizing pairwise posthoc results",
+    subtitle="Visualizing omnibus ANOVA results",
     labels={
-        "log2FC": "Log2 Fold Change",
-        "-log10 posthoc pvalue": "-log10(posthoc p-value)",
-        "posthoc rejected": "Posthoc FDR corrected significant",
+        "-log10 pvalue": "-log10(p-value)",
+        "rejected": "Omnibus FDR corrected significant",
         "identifier": "Protein Identifier",
     },
     hover_data=["identifier", "group1", "group2"],
