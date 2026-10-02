@@ -229,6 +229,12 @@ reference/api/pandas.DataFrame.groupby.html
                 correction=correction,
                 correction_alpha=correction_alpha,
             )
+            if _enrichment.empty:
+                logger.warning(
+                    "No significant enrichment found for comparison %s (%s).",
+                    comparison_tag,
+                    direction,
+                )
             _enrichment["direction"] = direction
             _enrichment["comparison"] = comparison_tag
             ret.append(_enrichment)
@@ -705,11 +711,7 @@ def run_gsea(
     rnk = regulation_data.set_index(identifier)[ranking_col].dropna()
 
     # Build gene sets dict from the annotation DataFrame
-    gene_sets = (
-        annotation.groupby(annotation_col)[identifier_col]
-        .apply(list)
-        .to_dict()
-    )
+    gene_sets = annotation.groupby(annotation_col)[identifier_col].apply(list).to_dict()
 
     enrichment = gp.prerank(
         rnk=rnk,
