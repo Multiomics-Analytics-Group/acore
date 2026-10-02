@@ -23,6 +23,8 @@
 # The omnibus test's adjusted p-value and rejection flag are in `padj` and
 # `rejected`; pairwise posthoc results use `posthoc pvalue adj` and
 # `posthoc rejected`.
+# `Method` records the selected omnibus test (`One-way anova` here); use
+# `run_ancova` when covariates should be included in the omnibus model.
 #
 # The function is the same as for the two groups case. The `group1` and
 # `group2` columns give the posthoc comparison.

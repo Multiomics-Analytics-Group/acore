@@ -61,6 +61,7 @@ class AncovaSchema(DataFrameModel):
 
     t_statistics: float = Field(alias="posthoc T-Statistics")
     posthoc_pvalue: float = Field(alias="posthoc pvalue")
+    posthoc_rejected: bool = Field(alias="posthoc rejected", nullable=False)
     coef: float = Field()
     std_err: float = Field(alias="std err")
     conf_int_low: float = Field(alias="Conf. Int. Low")
