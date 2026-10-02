@@ -134,7 +134,7 @@ def calculate_thsd(df, column, group="group", alpha=0.05, is_logged=True):
     Pairwise Tukey-HSD posthoc test using pingouin.pairwise_tukey_.
 
     .. _pingouin.pairwise_tukey: \
-    https://pingouin-stats.org/build/html/generated/pingouin.pairwise_tukey.html
+    https://pingouin-stats.org/generated/pingouin.pairwise_tukey.html
 
     :param df: pandas dataframe with group and protein identifier as columns
     :param str column: column containing the protein identifier
@@ -170,10 +170,10 @@ def calculate_pairwise_ttest(
 ):
     """
     Performs pairwise t-test using pingouin, as a posthoc test,
-    and calculates fold-changes using pingouin.pairwise_ttests_.
+    and calculates fold-changes using pingouin.pairwise_tests_.
     
-    .. _pingouin.pairwise_ttests: \
-    https://pingouin-stats.org/build/html/generated/pingouin.pairwise_ttests.html.
+    .. _pingouin.pairwise_tests: \
+    https://pingouin-stats.org/generated/pingouin.pairwise_tests.html.
 
     :param df: pandas dataframe with subject and group as rows and protein identifier as column.
     :param str column: column label containing the dependant variable
@@ -226,6 +226,7 @@ def calculate_pairwise_ttest(
         "posthoc BF10",
         "posthoc effsize",
     ]
+    # equivalent to calling `pg.pairwise_tests(data=df, ...)`
     posthoc = df.pairwise_tests(
         dv=column,
         between=group,
