@@ -104,7 +104,7 @@ anova.head().T
 # %% [markdown]
 # ### pairwise t-test results:
 
-# %%
+# %% tags=["hide-input"]
 cols_pairwise_ttest = [
     # "group1",
     # "group2",
@@ -126,7 +126,7 @@ cols_pairwise_ttest = [
     "FC",
     "efftype",
 ]
-anova[cols_pairwise_ttest]
+anova[cols_pairwise_ttest].T
 
 # %% [markdown]
 # ANOVA results
@@ -144,15 +144,11 @@ view
 
 # %% [markdown]
 # ## Volcano plot of ANOVA results
-# - volcano plot of ANOVA
+# - volcano plot of ANOVA (omnibus test) results
 # - more than one group present in the example.
-# - double check what adj. pvalue `rejected` is based on
 
 
-# %%
-# ToDo: check why the pvalue is not used for log-tranformation of omnibus test
-# anova["-log10 pvalue #2"] = -np.log10(anova["pvalue"]) # not current -log10 pvalue
-
+# %% tags=["hide-input"]
 scatter_plot_adv = vuecore.plots.basic.scatter.create_scatter_plot(
     data=anova.reset_index(),
     x="log2FC",
