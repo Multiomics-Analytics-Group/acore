@@ -90,7 +90,7 @@ result = run_site_regulation_enrichment(regulation_data,
 )
 ```
 
-### run_up_down_regulation_enrichment(regulation_data: DataFrame, annotation: DataFrame, identifier: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', groups: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] = ('group1', 'group2'), annotation_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'annotation', pval_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'pval', group_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', log2fc_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'log2FC', method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fisher', min_detected_in_set: [int](https://docs.python.org/3/builtins/functions.html#int) = 2, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', correction_alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, lfc_cutoff: [float](https://docs.python.org/3/builtins/functions.html#float) = 1) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[EnrichmentAnalysisSchema](acore.types.md#acore.types.enrichment_analysis.EnrichmentAnalysisSchema)]
+### run_up_down_regulation_enrichment(regulation_data: DataFrame, annotation: DataFrame, identifier: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', groups: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] = ('group1', 'group2'), annotation_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'annotation', pval_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'pval', group_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', log2fc_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'log2FC', method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fisher', min_detected_in_set: [int](https://docs.python.org/3/builtins/functions.html#int) = 2, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', correction_alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, lfc_cutoff: [float](https://docs.python.org/3/builtins/functions.html#float) = 1, permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 0) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[EnrichmentAnalysisSchema](acore.types.md#acore.types.enrichment_analysis.EnrichmentAnalysisSchema)]
 
 This function runs a simple enrichment analysis for significantly regulated proteins
 distinguishing between upregulation per group defined by the groups.
@@ -112,9 +112,13 @@ distinguishing between upregulation per group defined by the groups.
     if feature belongs to foreground or background.
   * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method used to compute enrichment
     (only ‘fisher’ is supported currently).
-  * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method to be used for multiple-testing correction
+  * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method to be used for multiple-testing correction.
+    Use `'efdr'` to apply empirical FDR via permutation (requires
+    `permutations > 0`).
   * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – adjusted p-value cutoff to define significance
   * **lfc_cutoff** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – log fold-change cutoff to define practical significance
+  * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate the empirical FDR
+    when `correction='efdr'`. Ignored for other correction methods.
 * **Returns:**
   DataFrame adhering to EnrichmentAnalysisSchema
 * **Return type:**

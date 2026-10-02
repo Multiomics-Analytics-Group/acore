@@ -91,6 +91,7 @@
       * [`apply_pvalue_permutation_fdrcorrection()`](acore.multiple_testing.md#acore.multiple_testing.apply_pvalue_permutation_fdrcorrection)
       * [`calculate_anova()`](acore.multiple_testing.md#acore.multiple_testing.calculate_anova)
       * [`get_counts_permutation_fdr()`](acore.multiple_testing.md#acore.multiple_testing.get_counts_permutation_fdr)
+      * [`compute_efdr()`](acore.multiple_testing.md#acore.multiple_testing.compute_efdr)
       * [`get_max_permutations()`](acore.multiple_testing.md#acore.multiple_testing.get_max_permutations)
       * [`correct_pairwise_ttest()`](acore.multiple_testing.md#acore.multiple_testing.correct_pairwise_ttest)
     * [acore.network_analysis package](acore.network_analysis.md)

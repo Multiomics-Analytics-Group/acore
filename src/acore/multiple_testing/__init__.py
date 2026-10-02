@@ -186,6 +186,76 @@ def get_counts_permutation_fdr(value, random, observed, n, alpha):
     return (qvalue, qvalue <= alpha)
 
 
+def compute_efdr(
+    observed_pvalues: np.ndarray,
+    permuted_pvalues: list,
+    alpha: float = 0.05,
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Computes empirical FDR (eFDR) from permutation analysis.
+
+    For each observed p-value threshold, eFDR is estimated as the ratio of the
+    expected number of significant findings in permuted data to the number of
+    significant findings in the observed data:
+
+        eFDR(t) = mean_permutations(#{perm p-values <= t}) / #{observed p-values <= t}
+
+    Monotonicity is enforced by applying a cumulative minimum from the largest to
+    the smallest p-value, ensuring eFDR is non-decreasing with increasing p-values.
+
+    Reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC11490090/#Sec2
+
+    :param numpy.ndarray observed_pvalues: P-values from the observed enrichment analysis.
+    :param list[numpy.ndarray] permuted_pvalues: List of p-value arrays from permutation
+        runs. Each array contains p-values from one permutation of the data.
+    :param float alpha: Significance threshold for eFDR.
+    :return: Tuple of (rejected, efdr_values) where rejected is a boolean array and
+        efdr_values contains the empirical FDR for each input p-value.
+    :raises ValueError: if permuted_pvalues is empty.
+
+    Example::
+
+        efdr_rejected, efdr_values = compute_efdr(observed_pvalues, permuted_pvalues, alpha=0.05)
+    """
+    n_permutations = len(permuted_pvalues)
+    if n_permutations == 0:
+        raise ValueError("permuted_pvalues must contain at least one permutation.")
+
+    observed = np.asarray(observed_pvalues, dtype=float)
+    n_obs = len(observed)
+
+    if n_obs == 0:
+        return np.array([], dtype=bool), np.array([], dtype=float)
+
+    # Sort indices by ascending p-value
+    sort_idx = np.argsort(observed)
+    sorted_obs = observed[sort_idx]
+
+    efdr = np.zeros(n_obs, dtype=float)
+    perm_arrays = [np.asarray(p, dtype=float) for p in permuted_pvalues]
+
+    for i, p in enumerate(sorted_obs):
+        # Number of observed p-values <= p (always >= 1 since we iterate sorted)
+        n_obs_sig = i + 1
+        # Mean number of permuted p-values <= p across all permutations
+        n_perm_sig = np.mean([np.sum(perm <= p) for perm in perm_arrays])
+        efdr[sort_idx[i]] = n_perm_sig / n_obs_sig
+
+    # Enforce monotonicity: eFDR must be non-decreasing with increasing p-values.
+    # Apply cumulative minimum from right to left on the sorted array so that
+    # each entry is at most the entry of any larger p-value.
+    efdr_sorted = efdr[sort_idx]
+    efdr_sorted = np.minimum.accumulate(efdr_sorted[::-1])[::-1]
+    efdr[sort_idx] = efdr_sorted
+
+    # Clamp to [0, 1]
+    efdr = np.clip(efdr, 0.0, 1.0)
+
+    rejected = efdr <= alpha
+
+    return rejected, efdr
+
+
 def get_max_permutations(df, group="group"):
     """
     Get maximum number of permutations according to number of samples.
