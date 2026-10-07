@@ -148,22 +148,30 @@ view = anova.filter(regex=regex_filter)
 view
 
 # %% [markdown]
-# ## Omnibus ANOVA plot
-# Omnibus p-values, showing the overall significance of the differences between groups.
-# Omnibus significance decision based on choosen cutoff is available in `rejected`.
+# ## Posthoc volcano plot: WRP versus WT
+# Select one pairwise comparison so each identifier has one point.
+# The x-axis shows its `log2FC`, the y-axis its posthoc p-value, and
+# the color its posthoc FDR significance decision (`posthoc rejected`).
+# Change `comparison` to another pair from the `group1` and `group2` index levels.
 
 
 # %% tags=["hide-input"]
+comparison = ("WRP", "WT")
+pairwise_results = anova.xs(
+    comparison, level=["group1", "group2"], drop_level=False
+).reset_index()
+
 scatter_plot_adv = vuecore.plots.basic.scatter.create_scatter_plot(
-    data=anova.reset_index(),
+    data=pairwise_results,
     x="log2FC",
-    y="-log10 pvalue",
-    color="rejected",
-    title="Simple Volcano Plot",
-    subtitle="Visualizing omnibus ANOVA results",
+    y="-log10 posthoc pvalue",
+    color="posthoc rejected",
+    title="Posthoc Volcano Plot",
+    subtitle=f"{comparison[0]} versus {comparison[1]}",
     labels={
-        "-log10 pvalue": "-log10(p-value)",
-        "rejected": "Omnibus FDR corrected significant",
+        "log2FC": f"log2 fold change ({comparison[0]} / {comparison[1]})",
+        "-log10 posthoc pvalue": "-log10(posthoc p-value)",
+        "posthoc rejected": "Posthoc FDR corrected significant",
         "identifier": "Protein Identifier",
     },
     hover_data=["identifier", "group1", "group2"],
