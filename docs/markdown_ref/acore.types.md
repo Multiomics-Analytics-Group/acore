@@ -267,6 +267,8 @@ Bases: [`AnovaSchema`](#acore.types.differential_analysis.AnovaSchema)
 
 Schema for more than two groups
 
+#### posthoc_comparison *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'posthoc comparison'*
+
 #### t_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc T-Statistics'*
 
 #### posthoc_pvalue *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue'*
@@ -526,6 +528,8 @@ Validate a DataFrame based on the schema specification.
 Bases: [`DataFrameModel`](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.model.DataFrameModel.html#pandera.api.pandas.model.DataFrameModel)
 
 Schema for the enrichment analysis results DataFrame.
+
+#### posthoc_comparison *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'posthoc comparison'*
 
 #### t_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc T-Statistics'*
 
