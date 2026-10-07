@@ -27,7 +27,8 @@
 # `run_ancova` when covariates should be included in the omnibus model.
 #
 # The function is the same as for the two groups case. The `group1` and
-# `group2` columns give the posthoc comparison.
+# `group2` columns give the posthoc comparison, also available as
+# `posthoc comparison` in the form `group1~~group2`.
 #
 
 # %% tags=["hide-output"]
@@ -112,6 +113,7 @@ anova.head().T
 cols_pairwise_ttest = [
     # "group1",
     # "group2",
+    "posthoc comparison",
     "mean(group1)",
     "std(group1)",
     "mean(group2)",
@@ -152,14 +154,12 @@ view
 # Select one pairwise comparison so each identifier has one point.
 # The x-axis shows its `log2FC`, the y-axis its posthoc p-value, and
 # the color its posthoc FDR significance decision (`posthoc rejected`).
-# Change `comparison` to another pair from the `group1` and `group2` index levels.
+# Change `comparison` to another value from the `posthoc comparison` column.
 
 
 # %% tags=["hide-input"]
-comparison = ("WRP", "WT")
-pairwise_results = anova.xs(
-    comparison, level=["group1", "group2"], drop_level=False
-).reset_index()
+comparison = "WRP~~WT"
+pairwise_results = anova.loc[anova["posthoc comparison"] == comparison].reset_index()
 
 scatter_plot_adv = vuecore.plots.basic.scatter.create_scatter_plot(
     data=pairwise_results,
@@ -167,9 +167,9 @@ scatter_plot_adv = vuecore.plots.basic.scatter.create_scatter_plot(
     y="-log10 posthoc pvalue",
     color="posthoc rejected",
     title="Posthoc Volcano Plot",
-    subtitle=f"{comparison[0]} versus {comparison[1]}",
+    subtitle=comparison.replace("~~", " versus "),
     labels={
-        "log2FC": f"log2 fold change ({comparison[0]} / {comparison[1]})",
+        "log2FC": f"log2 fold change ({comparison.replace('~~', ' / ')})",
         "-log10 posthoc pvalue": "-log10(posthoc p-value)",
         "posthoc rejected": "Posthoc FDR corrected significant",
         "identifier": "Protein Identifier",

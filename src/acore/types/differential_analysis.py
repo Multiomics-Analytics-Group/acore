@@ -39,6 +39,7 @@ class AnovaSchemaMultiGroup(AnovaSchema):
     Schema for more than two groups
     """
 
+    posthoc_comparison: str = Field(alias="posthoc comparison", nullable=False)
     t_statistics: float = Field(alias="posthoc T-Statistics")
     posthoc_pvalue: float = Field(alias="posthoc pvalue")
     f_statistics: float = Field(alias="F-statistics")
@@ -59,6 +60,7 @@ class AncovaSchema(DataFrameModel):
     Schema for the enrichment analysis results DataFrame.
     """
 
+    posthoc_comparison: str = Field(alias="posthoc comparison", nullable=False)
     t_statistics: float = Field(alias="posthoc T-Statistics")
     posthoc_pvalue: float = Field(alias="posthoc pvalue")
     posthoc_rejected: bool = Field(alias="posthoc rejected", nullable=False)

@@ -283,6 +283,28 @@ class TestDropColsOptional(unittest.TestCase):
         self.assertIsInstance(result, pd.DataFrame)
         self.assertIn("identifier", result.columns)
 
+    def test_run_anova_posthoc_comparisons(self):
+        for subject in (None, "subject"):
+            with self.subTest(subject=subject):
+                result = dr.run_anova(
+                    self.df_3groups,
+                    drop_cols=[],
+                    subject=subject,
+                    group="group",
+                )
+                self.assertEqual(
+                    set(
+                        result[["posthoc comparison", "group1", "group2"]]
+                        .drop_duplicates()
+                        .itertuples(index=False, name=None)
+                    ),
+                    {("A~~B", "A", "B"), ("A~~C", "A", "C"), ("B~~C", "B", "C")},
+                )
+                self.assertEqual(
+                    result.groupby(["identifier", "posthoc comparison"]).size().max(),
+                    1,
+                )
+
     def test_run_anova_distinguishes_omnibus_and_posthoc_rejections(self):
         result = dr.run_anova(
             self.df_3groups,
