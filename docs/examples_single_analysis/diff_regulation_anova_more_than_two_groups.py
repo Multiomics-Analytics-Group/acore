@@ -89,7 +89,17 @@ omics_and_meta[factor_and_covars]
 
 # %% [markdown]
 # # Run ANOVA with four groups
-# Acore make each combinatorial comparison between groups in the group column.
+# Acore runs an omnibus test asking if any of the groups are significantly different, so
+# if a feature as any effect (F-test between a regression with group dummies and without
+# any) and also runs pairwise (posthoc) tests to identify which groups are different and
+# in which direction. The omnibus test's adjusted p-value and rejection flag are in
+# `padj` and `rejected`; pairwise posthoc results use `posthoc pvalue adj` and `posthoc
+# rejected`. `Method` records the selected omnibus test (`One-way anova` here); use
+# `run_ancova` when covariates should be included in the omnibus model.
+#
+# The function is the same as for the two groups case. The `group1` and `group2` columns
+# give the posthoc comparison, also available as `posthoc comparison` in the form
+# `group1~~group2`.
 
 
 # %%
@@ -107,7 +117,8 @@ anova = (
 anova.head().T
 
 # %% [markdown]
-# ## pairwise t-test results:
+# ## pairwise (posthoc) t-test results
+# posthoc t-test results to identify which groups are different and in which direction.
 
 # %% tags=["hide-input"]
 cols_pairwise_ttest = [
