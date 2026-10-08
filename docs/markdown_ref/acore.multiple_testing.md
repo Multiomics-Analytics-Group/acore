@@ -115,6 +115,38 @@ Example:
 result = get_counts_permutation_fdr(value, random, observed, n=250, alpha=0.05)
 ```
 
+### compute_efdr(observed_pvalues: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), permuted_pvalues: [list](https://docs.python.org/3/builtins/stdtypes.html#list), alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05) → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)]
+
+Computes empirical FDR (eFDR) from permutation analysis.
+
+For each observed p-value threshold, eFDR is estimated as the ratio of the
+expected number of significant findings in permuted data to the number of
+significant findings in the observed data:
+
+> eFDR(t) = mean_permutations(#{perm p-values <= t}) / #{observed p-values <= t}
+
+Monotonicity is enforced by applying a cumulative minimum from the largest to
+the smallest p-value, ensuring eFDR is non-decreasing with increasing p-values.
+
+Reference: [https://pmc.ncbi.nlm.nih.gov/articles/PMC11490090/#Sec2](https://pmc.ncbi.nlm.nih.gov/articles/PMC11490090/#Sec2)
+
+* **Parameters:**
+  * **observed_pvalues** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – P-values from the observed enrichment analysis.
+  * **permuted_pvalues** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list) *[*[*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray) *]*) – List of p-value arrays from permutation
+    runs. Each array contains p-values from one permutation of the data.
+  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – Significance threshold for eFDR.
+* **Returns:**
+  Tuple of (rejected, efdr_values) where rejected is a boolean array and
+  efdr_values contains the empirical FDR for each input p-value.
+* **Raises:**
+  [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – if permuted_pvalues is empty.
+
+Example:
+
+```default
+efdr_rejected, efdr_values = compute_efdr(observed_pvalues, permuted_pvalues, alpha=0.05)
+```
+
 ### get_max_permutations(df, group='group')
 
 Get maximum number of permutations according to number of samples.
