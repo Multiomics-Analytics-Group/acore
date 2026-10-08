@@ -120,8 +120,7 @@ Before you submit a pull request, check that it meets these guidelines:
    into a function with a docstring, and add the feature to the list in README.rst.
 3. The pull request should pass the GitHub workflows.
 
-See the PR template example:
-[Add module PR template](https://github.com/Multiomics-Analytics-Group/acore/blob/main/.github/workflows/PULL_REQUEST_TEMPLATE/module.md)
+See the checklist if you open a PR!
 
 ## Deploying
 
