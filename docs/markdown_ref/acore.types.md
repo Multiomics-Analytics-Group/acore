@@ -201,7 +201,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -267,6 +267,8 @@ Bases: [`AnovaSchema`](#acore.types.differential_analysis.AnovaSchema)
 
 Schema for more than two groups
 
+#### posthoc_comparison *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'posthoc comparison'*
+
 #### t_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc T-Statistics'*
 
 #### posthoc_pvalue *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue'*
@@ -274,6 +276,8 @@ Schema for more than two groups
 #### f_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'F-statistics'*
 
 #### posthoc_padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue adj'*
+
+#### posthoc_rejected *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= 'posthoc rejected'*
 
 #### posthoc_paired *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= 'posthoc Paired'*
 
@@ -437,7 +441,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -525,9 +529,13 @@ Bases: [`DataFrameModel`](https://pandera.readthedocs.io/en/stable/reference/gen
 
 Schema for the enrichment analysis results DataFrame.
 
+#### posthoc_comparison *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'posthoc comparison'*
+
 #### t_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc T-Statistics'*
 
 #### posthoc_pvalue *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue'*
+
+#### posthoc_rejected *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= 'posthoc rejected'*
 
 #### coef *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'coef'*
 
@@ -683,7 +691,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -915,7 +923,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -1131,7 +1139,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -1341,7 +1349,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 

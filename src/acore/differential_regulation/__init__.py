@@ -97,7 +97,8 @@ def run_anova(
     :param bool is_logged: whether data is log-transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
-    :return: DataFrame adhering to AnovaSchema or AnovaSchemaMultiGroup.
+    :return: DataFrame adhering to AnovaSchema or AnovaSchemaMultiGroup. For more than
+             two groups, ``posthoc comparison`` labels each pair as ``group1~~group2``.
     :rtype: DataFrame[AnovaSchema] | DataFrame[AnovaSchemaMultiGroup]
 
     Example::
