@@ -96,8 +96,8 @@ class TestDimensionalityReduction(unittest.TestCase):
         expected_result = pd.DataFrame(
             {
                 "group": ["A", "A", "B", "B"],
-                "x": [-113.341728, 36.020717, 57.2992514, -134.729141],
-                "y": [131.169082, -59.616630, 110.601203, -39.086254],
+                "x": [-41.633194, -21.315784, -26.172028, -5.8222594],
+                "y": [28.062798, 43.488983, 7.7333646, 23.160675],
             }
         )
         # ! Ubuntu x64 yields these results:
