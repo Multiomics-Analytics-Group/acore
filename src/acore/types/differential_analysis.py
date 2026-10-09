@@ -3,7 +3,7 @@ from pandera.pandas import DataFrameModel, Field
 
 class AnovaSchema(DataFrameModel):
     """
-    Schema for the enrichment analysis results DataFrame.
+    Schema for the differential regulation analysis results DataFrame.
     """
 
     group1: str = Field(nullable=False)
@@ -57,16 +57,18 @@ class AnovaSchemaMultiGroup(AnovaSchema):
 
 class AncovaSchema(DataFrameModel):
     """
-    Schema for the enrichment analysis results DataFrame.
+    Schema for the differential regulation analysis results DataFrame.
     """
 
+    # same as in AnovaSchemaMultiGroup
     posthoc_comparison: str = Field(alias="posthoc comparison", nullable=False)
     t_statistics: float = Field(alias="posthoc T-Statistics")
     posthoc_pvalue: float = Field(alias="posthoc pvalue")
+    f_statistics: float = Field(alias="F-statistics")
+    posthoc_padj: float = Field(alias="posthoc pvalue adj", ge=0, le=1)
     posthoc_rejected: bool = Field(alias="posthoc rejected", nullable=False)
+
     coef: float = Field()
     std_err: float = Field(alias="std err")
     conf_int_low: float = Field(alias="Conf. Int. Low")
     conf_int_upp: float = Field(alias="Conf. Int. Upp.")
-    f_statistics: float = Field(alias="F-statistics")
-    posthoc_padj: float = Field(alias="posthoc pvalue adj", ge=0, le=1)

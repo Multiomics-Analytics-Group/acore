@@ -34,6 +34,7 @@ import dsp_pandas
 import pandas as pd
 import sklearn.impute
 import vuecore.plots.basic.scatter
+from vuecore.interactive import get_differential_regulation_plot
 
 import acore.differential_regulation as ad
 
@@ -193,3 +194,10 @@ scatter_plot_adv = vuecore.plots.basic.scatter.create_scatter_plot(
     height=600,
 )
 scatter_plot_adv
+
+# %%
+get_differential_regulation_plot(
+    data=ancova,
+)
+
+# %%

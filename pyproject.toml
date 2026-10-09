@@ -55,7 +55,7 @@ docs = [
   "sphinx-copybutton",
   "sphinx-llms-txt",
   # Multi-Omics-Analysis group package for visualisation of results in the documentation
-  "vuecore",
+  "vuecore>=0.2.1",
 ]
 dev = [
   "black[jupyter]",
