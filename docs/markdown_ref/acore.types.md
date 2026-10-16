@@ -27,7 +27,7 @@ containing NaN values.
 
 Bases: [`DataFrameModel`](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.model.DataFrameModel.html#pandera.api.pandas.model.DataFrameModel)
 
-Schema for the enrichment analysis results DataFrame.
+Schema for the differential regulation analysis results DataFrame.
 
 #### group1 *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'group1'*
 
@@ -527,13 +527,17 @@ Validate a DataFrame based on the schema specification.
 
 Bases: [`DataFrameModel`](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.model.DataFrameModel.html#pandera.api.pandas.model.DataFrameModel)
 
-Schema for the enrichment analysis results DataFrame.
+Schema for the differential regulation analysis results DataFrame.
 
 #### posthoc_comparison *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= 'posthoc comparison'*
 
 #### t_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc T-Statistics'*
 
 #### posthoc_pvalue *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue'*
+
+#### f_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'F-statistics'*
+
+#### posthoc_padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue adj'*
 
 #### posthoc_rejected *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= 'posthoc rejected'*
 
@@ -544,10 +548,6 @@ Schema for the enrichment analysis results DataFrame.
 #### conf_int_low *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'Conf. Int. Low'*
 
 #### conf_int_upp *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'Conf. Int. Upp.'*
-
-#### f_statistics *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'F-statistics'*
-
-#### posthoc_padj *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'posthoc pvalue adj'*
 
 #### *class* Config
 
