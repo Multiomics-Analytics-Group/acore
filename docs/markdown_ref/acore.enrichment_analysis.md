@@ -6,46 +6,6 @@ analysis.
 Most things in this module are covered in [https://www.youtube.com/watch?v=2NC1QOXmc5o](https://www.youtube.com/watch?v=2NC1QOXmc5o)
 by Lars Juhl Jensen.
 
-### run_fisher(group1: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[int](https://docs.python.org/3/builtins/functions.html#int)], group2: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[int](https://docs.python.org/3/builtins/functions.html#int)], alternative: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'two-sided') → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[float](https://docs.python.org/3/builtins/functions.html#float), [float](https://docs.python.org/3/builtins/functions.html#float)]
-
-Run fisher’s exact test on two groups using [scipy.stats.fisher_exact](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fisher_exact.html).
-
-Example:
-
-```default
-# annotated   not-annotated
-# group1      a               b
-# group2      c               d
-
-
-odds, pvalue = stats.fisher_exact(group1=[a, b],
-                                  group2 =[c, d]
-                )
-```
-
-### run_kolmogorov_smirnov(dist1: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[float](https://docs.python.org/3/builtins/functions.html#float)], dist2: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[float](https://docs.python.org/3/builtins/functions.html#float)], alternative: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'two-sided') → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[float](https://docs.python.org/3/builtins/functions.html#float), [float](https://docs.python.org/3/builtins/functions.html#float)]
-
-Compute the Kolmogorov-Smirnov statistic on 2 samples.
-See [scipy.stats.ks_2samp](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_2samp.html)
-
-* **Parameters:**
-  * **dist1** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – sequence of 1-D ndarray (first distribution to compare)
-    drawn from a continuous distribution
-  * **dist2** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – sequence of 1-D ndarray (second distribution to compare)
-    drawn from a continuous distribution
-  * **alternative** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – defines the alternative hypothesis (default is ‘two-sided’):
-    \* **‘two-sided’**
-    \* **‘less’**
-    \* **‘greater’**
-* **Returns:**
-  statistic float and KS statistic pvalue float Two-tailed p-value.
-
-Example:
-
-```default
-result = run_kolmogorov_smirnov(dist1, dist2, alternative='two-sided')
-```
-
 ### run_site_regulation_enrichment(regulation_data: DataFrame, annotation: DataFrame, identifier: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', groups: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] = ('group1', 'group2'), annotation_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'annotation', rejected_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'rejected', group_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fisher', regex: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = '(\\\\w+~.+)_\\\\w\\\\d+\\\\-\\\\w+', correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', remove_duplicates: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[EnrichmentAnalysisSchema](acore.types.md#acore.types.enrichment_analysis.EnrichmentAnalysisSchema)]
 
 This function runs a simple enrichment analysis for significantly
@@ -137,6 +97,113 @@ result = run_up_down_regulation_enrichment(
     alpha=0.05,
     lfc_cutoff=1,
 )
+```
+
+### run_gsea(regulation_data: DataFrame, annotation: DataFrame, identifier: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', ranking_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'log2FC', annotation_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'annotation', identifier_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', min_size: [int](https://docs.python.org/3/builtins/functions.html#int) = 15, max_size: [int](https://docs.python.org/3/builtins/functions.html#int) = 500, permutation_num: [int](https://docs.python.org/3/builtins/functions.html#int) = 1000, seed: [int](https://docs.python.org/3/builtins/functions.html#int) = 42, weight: [float](https://docs.python.org/3/builtins/functions.html#float) = 1.0, ascending: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → DataFrame
+
+Run Gene Set Enrichment Analysis (GSEA) on a pre-ranked gene list using
+[gseapy.prerank](https://gseapy.readthedocs.io/en/latest/run.html#gseapy.prerank).
+
+Genes are ranked by ranking_col (e.g. log2 fold-change from differential
+expression analysis) and enrichment is computed for each gene set defined in
+annotation. Unlike overrepresentation analysis (ORA), GSEA does not require
+a significance cutoff to split genes into foreground/background; it uses the
+full ranked list instead.
+
+* **Parameters:**
+  * **regulation_data** (*pd.DataFrame*) – DataFrame with differential regulation
+    results. Must contain the column specified by identifier and the
+    column specified by ranking_col. Each identifier must appear at most
+    once (duplicates are not allowed).
+  * **annotation** (*pd.DataFrame*) – DataFrame with functional annotations.
+    Must contain annotation_col and identifier_col.
+  * **identifier** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – Column in regulation_data containing feature
+    identifiers. These must match the identifiers in annotation_col of
+    the annotation DataFrame.
+  * **ranking_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – Column in regulation_data used to rank the
+    features (e.g. `'log2FC'`). Features are ranked in descending order
+    by default so that strongly up-regulated features appear at the top.
+  * **annotation_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – Column in annotation containing annotation
+    term names (e.g. pathway names).
+  * **identifier_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – Column in annotation containing feature
+    identifiers that map to identifier in regulation_data.
+  * **min_size** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – Minimum number of features in a gene set that are also
+    present in the ranking. Gene sets smaller than this threshold are
+    excluded.
+  * **max_size** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – Maximum number of features in a gene set that are also
+    present in the ranking. Gene sets larger than this threshold are
+    excluded.
+  * **permutation_num** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – Number of permutations used to estimate nominal
+    p-values. Higher values give more precise p-values but increase runtime.
+    Default: 1000.
+  * **seed** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – Random seed for reproducibility. Default: 42.
+  * **weight** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – Exponent for the enrichment score weighting.
+    `weight=1` (default) corresponds to weighted GSEA; `weight=0`
+    gives classic (unweighted) GSEA.
+  * **ascending** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – Sort order for the ranking. `False` (default)
+    means descending (highest ranking metric first, suited for log2FC).
+* **Returns:**
+  DataFrame with one row per gene set. Columns are: `'Term'`,
+  `'ES'` (enrichment score), `'NES'` (normalised enrichment score),
+  `'NOM p-val'` (nominal p-value), `'FDR q-val'` (FDR-corrected
+  q-value), `'FWER p-val'`, `'Tag %'`, `'Gene %'`,
+  `'Lead_genes'` (semi-colon-separated leading-edge genes).
+* **Return type:**
+  pd.DataFrame
+
+Example:
+
+```default
+result = run_gsea(
+    regulation_data=diff_reg,
+    annotation=annotations,
+    identifier='identifier',
+    ranking_col='log2FC',
+    annotation_col='annotation',
+    identifier_col='identifier',
+    min_size=5,
+    permutation_num=100,
+)
+```
+
+### run_fisher(group1: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[int](https://docs.python.org/3/builtins/functions.html#int)], group2: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[int](https://docs.python.org/3/builtins/functions.html#int)], alternative: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'two-sided') → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[float](https://docs.python.org/3/builtins/functions.html#float), [float](https://docs.python.org/3/builtins/functions.html#float)]
+
+Run fisher’s exact test on two groups using [scipy.stats.fisher_exact](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fisher_exact.html).
+
+Example:
+
+```default
+# annotated   not-annotated
+# group1      a               b
+# group2      c               d
+
+
+odds, pvalue = stats.fisher_exact(group1=[a, b],
+                                  group2 =[c, d]
+                )
+```
+
+### run_kolmogorov_smirnov(dist1: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[float](https://docs.python.org/3/builtins/functions.html#float)], dist2: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[float](https://docs.python.org/3/builtins/functions.html#float)], alternative: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'two-sided') → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[float](https://docs.python.org/3/builtins/functions.html#float), [float](https://docs.python.org/3/builtins/functions.html#float)]
+
+Compute the Kolmogorov-Smirnov statistic on 2 samples.
+See [scipy.stats.ks_2samp](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_2samp.html)
+
+* **Parameters:**
+  * **dist1** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – sequence of 1-D ndarray (first distribution to compare)
+    drawn from a continuous distribution
+  * **dist2** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – sequence of 1-D ndarray (second distribution to compare)
+    drawn from a continuous distribution
+  * **alternative** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – defines the alternative hypothesis (default is ‘two-sided’):
+    \* **‘two-sided’**
+    \* **‘less’**
+    \* **‘greater’**
+* **Returns:**
+  statistic float and KS statistic pvalue float Two-tailed p-value.
+
+Example:
+
+```default
+result = run_kolmogorov_smirnov(dist1, dist2, alternative='two-sided')
 ```
 
 ## Subpackages
