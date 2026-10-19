@@ -201,7 +201,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -437,7 +437,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -683,7 +683,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -915,7 +915,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -1131,7 +1131,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -1341,7 +1341,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
