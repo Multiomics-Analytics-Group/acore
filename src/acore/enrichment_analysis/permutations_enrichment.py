@@ -23,20 +23,26 @@ def _compute_efdr_for_enrichment(
     """
     Internal helper that generates permuted p-values and calls :func:`compute_efdr`.
 
-    For each permutation the group labels are randomly shuffled within the annotated
-    data (preserving the original group sizes), Fisher's test is re-run for every
+    For each permutation the group labels are randomly shuffled across the unique
+    annotated features (preserving the original group sizes), so that a feature
+    keeps one label across all of its annotation terms. Fisher's test is re-run for every
     annotation term present in the observed result, and p-values are collected.
     Terms that do not meet ``min_detected_in_set`` in a given permutation are
     assigned p-value 1.0.
     """
-    all_groups = data[group_col].values.copy()
+    # one label per feature, as a feature can be annotated with multiple terms
+    feature_groups = data.drop_duplicates(identifier_col).set_index(identifier_col)[
+        group_col
+    ]
     rng = np.random.default_rng()
 
     permuted_pvalues = []
     for _ in range(permutations):
-        perm_groups = rng.permutation(all_groups)
+        perm_feature_groups = pd.Series(
+            rng.permutation(feature_groups.to_numpy()), index=feature_groups.index
+        )
         perm_data = data.copy()
-        perm_data[group_col] = perm_groups
+        perm_data[group_col] = perm_data[identifier_col].map(perm_feature_groups)
 
         perm_countsdf = (
             perm_data.groupby([annotation_col, group_col])

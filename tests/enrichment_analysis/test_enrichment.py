@@ -706,9 +706,36 @@ def test_run_enrichment_efdr_monotone_padj():
     )
     result_sorted = result.sort_values("pvalue")
     padj = result_sorted["padj"].to_numpy()
-    assert np.all(np.diff(padj) >= -1e-12), (
-        f"padj is not monotonically non-decreasing: {padj}"
+    assert np.all(
+        np.diff(padj) >= -1e-12
+    ), f"padj is not monotonically non-decreasing: {padj}"
+
+
+def test_run_enrichment_efdr_shared_features_across_terms():
+    """Permutations are done on features, not annotation rows. Features annotated
+    with many terms must not lead to invalid Fisher tables."""
+    n_features = 20
+    features = [f"gene{i}" for i in range(n_features)]
+    annotation = pd.DataFrame(
+        {
+            "annotation": [f"path{i % 5}" for i in range(n_features)]
+            + [f"other{i % 4}" for i in range(n_features)],
+            "identifier": features + features,
+        }
     )
+    regulation_res = pd.DataFrame(
+        {"identifier": features, "rejected": [i < 3 for i in range(n_features)]}
+    )
+    result = ea.run_regulation_enrichment(
+        regulation_data=regulation_res,
+        annotation=annotation,
+        min_detected_in_set=1,
+        correction="efdr",
+        permutations=30,
+    )
+    assert len(result) > 0
+    assert (result["padj"].between(0.0, 1.0)).all()
+
 
 def test_run_gsea_basic():
     """Integration test for run_gsea: checks that the function returns

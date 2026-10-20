@@ -222,6 +222,83 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
 
 
 # %% [markdown]
+# ## Multiple testing correction: Benjamini-Hochberg vs. empirical FDR (eFDR)
+# The classic Benjamini-Hochberg (BH) procedure (`correction="fdr_bh"`, the default)
+# corrects the Fisher's exact test p-values of all tested annotations using only the
+# p-values themselves. The empirical FDR (eFDR, `correction="efdr"`) instead estimates
+# the FDR from permutations: for each p-value threshold $t$ it is the average number of
+# annotations with a p-value $\leq t$ in the permuted data divided by the number of
+# annotations with a p-value $\leq t$ in the observed data. In each permutation the
+# foreground/background labels of the features are shuffled, keeping the group sizes.
+# This takes into account the overlap between annotations (one feature belongs to many
+# GO terms) and the discreteness of Fisher's exact test p-values, which are both
+# violations of the assumptions of the BH procedure.
+#
+# To use it, set `correction="efdr"` and the number of `permutations`
+# (use a larger number, e.g. 1000 or more, for stable estimates). The permutations are
+# random, so the `padj` values change slightly between runs.
+
+# %%
+enrichment_kwargs = dict(
+    regulation_data=diff_reg,
+    annotation=annotations,
+    pval_col="padj",
+    min_detected_in_set=1,
+    lfc_cutoff=0.5,
+)
+ora_bh = acore.enrichment_analysis.run_up_down_regulation_enrichment(
+    **enrichment_kwargs, correction="fdr_bh"
+)
+ora_efdr = acore.enrichment_analysis.run_up_down_regulation_enrichment(
+    **enrichment_kwargs, correction="efdr", permutations=1000
+)
+
+# %% [markdown]
+# Both runs test the same annotations and share the same Fisher's exact test p-values.
+# Only the adjusted p-values (`padj`) and thereby the `rejected` decision differ.
+# Here the comparison for the annotations with the smallest p-values:
+
+# %%
+keys = ["comparison", "direction", "terms"]
+comparison_ora = (
+    ora_bh.set_index(keys)[["foreground", "pvalue", "padj", "rejected"]]
+    .join(
+        ora_efdr.set_index(keys)[["padj", "rejected"]],
+        lsuffix=" BH",
+        rsuffix=" eFDR",
+    )
+    .sort_values("pvalue")
+)
+comparison_ora.head(10)
+
+# %% [markdown]
+# Number of annotations considered significant (adjusted p-value <= 0.05) by each
+# procedure:
+
+# %%
+comparison_ora[["rejected BH", "rejected eFDR"]].sum().to_frame("n significant")
+
+# %% [markdown]
+# In this small example most annotations are supported by a single protein group, and
+# many annotations are driven by the same few protein groups. Their tests are therefore
+# strongly dependent and have identical, discrete p-values. BH treats all
+# annotations as independent tests and can be conservative here, whereas eFDR estimates
+# the false discovery rate from the permuted data directly, which is why it flags more
+# annotations. With only one protein group behind an annotation, these hits should
+# still be interpreted with care.
+
+# %%
+ax = comparison_ora.plot.scatter(
+    x="padj BH",
+    y="padj eFDR",
+    xlabel="Benjamini-Hochberg adjusted p-value",
+    ylabel="eFDR",
+    title="BH vs. eFDR (ORA)",
+)
+_ = ax.axline((0, 0), slope=1, color="grey", linestyle="--")
+
+
+# %% [markdown]
 # ## Site specific enrichment analysis
 
 # %% [markdown]
