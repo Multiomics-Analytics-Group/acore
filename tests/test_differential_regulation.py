@@ -283,6 +283,52 @@ class TestDropColsOptional(unittest.TestCase):
         self.assertIsInstance(result, pd.DataFrame)
         self.assertIn("identifier", result.columns)
 
+    def test_run_anova_posthoc_comparisons(self):
+        for subject in (None, "subject"):
+            with self.subTest(subject=subject):
+                result = dr.run_anova(
+                    self.df_3groups,
+                    drop_cols=[],
+                    subject=subject,
+                    group="group",
+                )
+                self.assertEqual(
+                    set(
+                        result[["posthoc comparison", "group1", "group2"]]
+                        .drop_duplicates()
+                        .itertuples(index=False, name=None)
+                    ),
+                    {("A~~B", "A", "B"), ("A~~C", "A", "C"), ("B~~C", "B", "C")},
+                )
+                self.assertEqual(
+                    result.groupby(["identifier", "posthoc comparison"]).size().max(),
+                    1,
+                )
+
+    def test_run_anova_distinguishes_omnibus_and_posthoc_rejections(self):
+        result = dr.run_anova(
+            self.df_3groups,
+            drop_cols=[],
+            subject=None,
+            group="group",
+        )
+
+        self.assertIn("rejected", result.columns)
+        self.assertIn("posthoc rejected", result.columns)
+        pd.testing.assert_series_equal(
+            result["rejected"],
+            result["padj"] < 0.05,
+            check_names=False,
+        )
+        pd.testing.assert_series_equal(
+            result["posthoc rejected"],
+            result["posthoc pvalue adj"] < 0.05,
+            check_names=False,
+        )
+        self.assertEqual(
+            result.groupby("identifier")["F-statistics"].nunique().max(), 1
+        )
+
     def test_run_anova_paired_three_groups_drop_cols_none(self):
         """run_anova should not crash when drop_cols=None (>2-group paired case).
 

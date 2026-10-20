@@ -213,12 +213,22 @@ def correct_pairwise_ttest(df, alpha, correction="fdr_bh", pvalue_col="posthoc p
     for comparison in df.groupby(["group1", "group2"]).groups:
         index = df.groupby(["group1", "group2"]).groups.get(comparison)
         posthoc_pvalues = df.loc[index, pvalue_col].tolist()
-        _, _padj = apply_pvalue_correction(
+        rejected, padj = apply_pvalue_correction(
             posthoc_pvalues, alpha=alpha, method=correction
         )
 
-        _posthoc_df = pd.DataFrame({"index": index, f"{pvalue_col} adj": _padj})
-        posthoc_df.append(_posthoc_df)
+        posthoc_df.append(
+            pd.DataFrame(
+                {
+                    "index": index,
+                    f"{pvalue_col} adj": padj,
+                    "posthoc rejected": pd.Series(rejected)
+                    .fillna(False)
+                    .astype(bool)
+                    .to_numpy(),
+                }
+            )
+        )
     posthoc_df = pd.concat(posthoc_df)
     posthoc_df = posthoc_df.set_index("index")
     df = df.join(posthoc_df)

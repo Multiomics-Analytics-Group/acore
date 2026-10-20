@@ -68,7 +68,8 @@ if permutations>0 and Benjamini/Hochberg if permutations=0.
   * **non_par** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if True, normality and variance equality assumptions are checked
     and non-parametric test Mann Whitney U test if not passed
 * **Returns:**
-  DataFrame adhering to AnovaSchema or AnovaSchemaMultiGroup.
+  DataFrame adhering to AnovaSchema or AnovaSchemaMultiGroup. For more than
+  two groups, `posthoc comparison` labels each pair as `group1~~group2`.
 * **Return type:**
   DataFrame[[AnovaSchema](acore.types.md#acore.types.differential_analysis.AnovaSchema)] | DataFrame[[AnovaSchemaMultiGroup](acore.types.md#acore.types.differential_analysis.AnovaSchemaMultiGroup)]
 
