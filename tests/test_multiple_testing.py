@@ -81,9 +81,9 @@ def test_compute_efdr_monotonicity():
     # Sort observed p-values and check eFDR is non-decreasing
     sort_idx = np.argsort(observed)
     efdr_sorted = efdr[sort_idx]
-    assert np.all(np.diff(efdr_sorted) >= -1e-12), (
-        f"eFDR is not monotonically non-decreasing: {efdr_sorted}"
-    )
+    assert np.all(
+        np.diff(efdr_sorted) >= -1e-12
+    ), f"eFDR is not monotonically non-decreasing: {efdr_sorted}"
 
 
 def test_compute_efdr_values_in_unit_interval():
