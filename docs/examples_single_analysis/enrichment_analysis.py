@@ -386,6 +386,7 @@ gsea_results = acore.enrichment_analysis.run_gsea(
     min_size=1,
     permutation_num=100,
     seed=42,
+    correction_alpha=0.05,
 )
 gsea_results
 
@@ -393,6 +394,14 @@ gsea_results
 # The normalised enrichment score (NES) summarises the enrichment: positive values
 # indicate that the gene set is enriched among the **up**-regulated features and negative
 # values indicate enrichment among the **down**-regulated features.
+
+# %% [markdown]
+# gseapy reports a permutation-based `FDR q-val` for each gene set (derived from the NES
+# null distribution), so no further correction is needed. The `rejected` column flags
+# gene sets with `FDR q-val <= correction_alpha`.
+
+# %%
+gsea_results[["Term", "NES", "NOM p-val", "FDR q-val", "rejected"]]
 
 # %%
 ax = gsea_results["NES"].plot.hist(title="Distribution of NES", xlabel="NES")

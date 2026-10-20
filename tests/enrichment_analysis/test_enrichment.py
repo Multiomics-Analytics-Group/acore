@@ -634,6 +634,9 @@ def test_run_gsea_basic():
     assert not result.empty
     expected_cols = {"Term", "ES", "NES", "NOM p-val", "FDR q-val", "Lead_genes"}
     assert expected_cols.issubset(result.columns)
+    assert "rejected" in result.columns
+    fdr = result["FDR q-val"].astype(float)
+    assert (result["rejected"] == (fdr <= 0.05)).all()
     assert set(result["Term"]) == {"path1", "path2"}
     # path1 genes are up-regulated -> positive NES
     nes_path1 = result.loc[result["Term"] == "path1", "NES"].iloc[0]

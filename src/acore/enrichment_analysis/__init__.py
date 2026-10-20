@@ -616,6 +616,7 @@ def run_gsea(
     seed: int = 42,
     weight: float = 1.0,
     ascending: bool = False,
+    correction_alpha: float = 0.05,
 ) -> pd.DataFrame:
     """
     Run Gene Set Enrichment Analysis (GSEA) on a pre-ranked gene list using
@@ -658,11 +659,14 @@ def run_gsea(
         gives classic (unweighted) GSEA.
     :param bool ascending: Sort order for the ranking. ``False`` (default)
         means descending (highest ranking metric first, suited for log2FC).
+    :param float correction_alpha: FDR q-value cutoff used to define the
+        ``'rejected'`` column. Default: 0.05.
     :return: DataFrame with one row per gene set. Columns are: ``'Term'``,
         ``'ES'`` (enrichment score), ``'NES'`` (normalised enrichment score),
-        ``'NOM p-val'`` (nominal p-value), ``'FDR q-val'`` (FDR-corrected
-        q-value), ``'FWER p-val'``, ``'Tag %'``, ``'Gene %'``,
-        ``'Lead_genes'`` (semi-colon-separated leading-edge genes).
+        ``'NOM p-val'`` (nominal p-value), ``'FDR q-val'`` (gseapy's
+        permutation-based FDR q-value), ``'FWER p-val'``, ``'Tag %'``,
+        ``'Gene %'``, ``'Lead_genes'`` (semi-colon-separated leading-edge genes)
+        and ``'rejected'`` (``'FDR q-val' <= correction_alpha``).
     :rtype: pd.DataFrame
 
     Example::
@@ -726,4 +730,6 @@ def run_gsea(
         outdir=None,
     )
     result = pd.DataFrame(enrichment.res2d).drop(columns=["Name"])
+    fdr = pd.to_numeric(result["FDR q-val"], errors="coerce")
+    result["rejected"] = (fdr <= correction_alpha).where(fdr.notna()).astype("boolean")
     return result
