@@ -449,3 +449,11 @@ def test_imputation_half_minimum_unknown_row_index_warning(caplog):
         result = imputation_half_minimum(df, on_rows=["r1", "r2", "ghost"])
     assert any("ghost" in msg for msg in caplog.messages)
     assert result.loc["r2", "A"] == pytest.approx(1.0)
+
+
+def test_imputation_zeros_unknown_row_index_warning(caplog):
+    df = pd.DataFrame({"A": [2.0, nan]}, index=["r1", "r2"])
+    with caplog.at_level(logging.WARNING, logger="acore.imputation_analysis"):
+        result = imputation_zeros(df, on_rows=["r1", "r2", "ghost"])
+    assert any("ghost" in msg for msg in caplog.messages)
+    assert result.loc["r2", "A"] == 0.0
