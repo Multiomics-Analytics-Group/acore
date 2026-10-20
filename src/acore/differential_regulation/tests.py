@@ -491,6 +491,10 @@ def format_anova_table(
         res["log2FC"] = np.nan
 
     res = res.reset_index()
+    if {"group1", "group2"}.issubset(res.columns):
+        res["posthoc comparison"] = (
+            res["group1"].astype(str) + "~~" + res["group2"].astype(str)
+        )
     res["rejected"] = res["padj"] < alpha
     # ! double check this
     if "posthoc pvalue" in res.columns:
