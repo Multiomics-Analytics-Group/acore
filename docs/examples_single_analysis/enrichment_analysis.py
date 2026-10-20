@@ -307,7 +307,7 @@ match.group(1)
 enrichtments = acore.enrichment_analysis.run_ssgsea(
     data=df_omics,
     annotation=annotations,
-    min_size=1,
+    min_size=2,
 )
 enrichtments
 
@@ -352,7 +352,7 @@ loadings
 # for this, which is also developed by the Multiomics Analytics Group.
 
 # %%
-args = {"factor": 2, "loadings": 1}  # increase number of loadings or scaling factor
+args = {"factor": 2, "loadings": 2}  # increase number of loadings or scaling factor
 # #! pca_results has three items, but docstring requests only two -> double check
 figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
 figure = go.Figure(data=figure["data"], layout=figure["layout"])
