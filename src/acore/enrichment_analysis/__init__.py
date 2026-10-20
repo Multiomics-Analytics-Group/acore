@@ -10,7 +10,6 @@ from __future__ import annotations
 import logging
 import os
 import re
-import uuid
 
 import gseapy as gp
 import pandas as pd
@@ -33,6 +32,7 @@ columns: 'terms', 'identifiers', 'foreground',
 
 __all__ = [
     "run_fisher",
+    "run_gsea",
     "run_kolmogorov_smirnov",
     "run_site_regulation_enrichment",
     "run_up_down_regulation_enrichment",
@@ -228,6 +228,12 @@ reference/api/pandas.DataFrame.groupby.html
                 correction=correction,
                 correction_alpha=correction_alpha,
             )
+            if _enrichment.empty:
+                logger.warning(
+                    "No significant enrichment found for comparison %s (%s).",
+                    comparison_tag,
+                    direction,
+                )
             _enrichment["direction"] = direction
             _enrichment["comparison"] = comparison_tag
             ret.append(_enrichment)
@@ -563,23 +569,28 @@ def run_ssgsea(
             f"Missing Identifier Column: {identifier_col}"
             " as specified by `identifier_col`"
         )
+    # ! Legacy implementation that was missing the description column of gmt files:
+    # ?gmt-columns: term<TAB>description<TAB>gene1<TAB>gene2
+    # grouped_annotations = (
+    #     annotation.groupby(annotation_col)[identifier_col].apply(list).reset_index()
+    # )
+    # gene_sets = os.path.join(outdir, "ss_gsea" + ".gmt")
+    # with open(gene_sets, "w", encoding="utf8") as out:
+    #     for _, row in grouped_annotations.iterrows():
+    #         out.write(
+    #             row[annotation_col]
+    #             + "\t"
+    #             + "\t".join(list(filter(None, row[identifier_col])))
+    #             + "\n"
+    #         )
+    # In case annotations were not provided by acore itself:
+    annotation = annotation.dropna(subset=[identifier_col])
+    annotation = annotation[annotation[identifier_col] != ""]
+    gene_sets = annotation.groupby(annotation_col)[identifier_col].apply(list).to_dict()
 
-    grouped_annotations = (
-        annotation.groupby(annotation_col)[identifier_col].apply(list).reset_index()
-    )
-    fid = uuid.uuid4()
-    file_path = os.path.join(outdir, str(fid) + ".gmt")
-    with open(file_path, "w", encoding="utf8") as out:
-        for _, row in grouped_annotations.iterrows():
-            out.write(
-                row[annotation_col]
-                + "\t"
-                + "\t".join(list(filter(None, row[identifier_col])))
-                + "\n"
-            )
     enrichment = gp.ssgsea(
         data=df,
-        gene_sets=str(file_path),
+        gene_sets=gene_sets,
         outdir=outdir,
         min_size=min_size,
         max_size=max_size,
@@ -593,4 +604,143 @@ def run_ssgsea(
     result = pd.DataFrame(enrichment.res2d).set_index("Name")
     # potentially return wide format in separate format
     # result = {"es": enrichment_es, "nes": enrichment_nes}
+    return result
+
+
+def run_gsea(
+    regulation_data: pd.DataFrame,
+    annotation: pd.DataFrame,
+    identifier: str = "identifier",
+    ranking_col: str = "log2FC",
+    annotation_col: str = "annotation",
+    identifier_col: str = "identifier",
+    min_size: int = 15,
+    max_size: int = 500,
+    permutation_num: int = 1000,
+    seed: int = 42,
+    weight: float = 1.0,
+    ascending: bool = False,
+    correction_alpha: float = 0.05,
+) -> pd.DataFrame:
+    """
+    Run Gene Set Enrichment Analysis (GSEA) on a pre-ranked gene list using
+    `gseapy.prerank <https://gseapy.readthedocs.io/en/latest/run.html#gseapy.prerank>`_.
+
+    Genes are ranked by `ranking_col` (e.g. log2 fold-change from differential
+    expression analysis) and enrichment is computed for each gene set defined in
+    `annotation`. Unlike overrepresentation analysis (ORA), GSEA does not require
+    a significance cutoff to split genes into foreground/background; it uses the
+    full ranked list instead.
+
+    :param pd.DataFrame regulation_data: DataFrame with differential regulation
+        results. Must contain the column specified by `identifier` and the
+        column specified by `ranking_col`. Each identifier must appear at most
+        once (duplicates are not allowed).
+    :param pd.DataFrame annotation: DataFrame with functional annotations.
+        Must contain `annotation_col` and `identifier_col`.
+    :param str identifier: Column in `regulation_data` containing feature
+        identifiers. These must match the identifiers in `annotation_col` of
+        the `annotation` DataFrame.
+    :param str ranking_col: Column in `regulation_data` used to rank the
+        features (e.g. ``'log2FC'``). Features are ranked in descending order
+        by default so that strongly up-regulated features appear at the top.
+    :param str annotation_col: Column in `annotation` containing annotation
+        term names (e.g. pathway names).
+    :param str identifier_col: Column in `annotation` containing feature
+        identifiers that map to `identifier` in `regulation_data`.
+    :param int min_size: Minimum number of features in a gene set that are also
+        present in the ranking. Gene sets smaller than this threshold are
+        excluded.
+    :param int max_size: Maximum number of features in a gene set that are also
+        present in the ranking. Gene sets larger than this threshold are
+        excluded.
+    :param int permutation_num: Number of permutations used to estimate nominal
+        p-values. Higher values give more precise p-values but increase runtime.
+        Default: 1000.
+    :param int seed: Random seed for reproducibility. Default: 42.
+    :param float weight: Exponent for the enrichment score weighting.
+        ``weight=1`` (default) corresponds to weighted GSEA; ``weight=0``
+        gives classic (unweighted) GSEA.
+    :param bool ascending: Sort order for the ranking. ``False`` (default)
+        means descending (highest ranking metric first, suited for log2FC).
+    :param float correction_alpha: FDR q-value cutoff used to define the
+        ``'rejected'`` column. Default: 0.05.
+    :return: DataFrame with one row per gene set. Columns are: ``'Term'``,
+        ``'ES'`` (enrichment score), ``'NES'`` (normalised enrichment score),
+        ``'NOM p-val'`` (nominal p-value), ``'FDR q-val'`` (gseapy's
+        permutation-based FDR q-value), ``'FWER p-val'``, ``'Tag %'``,
+        ``'Gene %'``, ``'Lead_genes'`` (semi-colon-separated leading-edge genes)
+        and ``'rejected'`` (``'FDR q-val' <= correction_alpha``).
+    :rtype: pd.DataFrame
+
+    Example::
+
+        result = run_gsea(
+            regulation_data=diff_reg,
+            annotation=annotations,
+            identifier='identifier',
+            ranking_col='log2FC',
+            annotation_col='annotation',
+            identifier_col='identifier',
+            min_size=5,
+            permutation_num=100,
+        )
+    """
+    if regulation_data is None or regulation_data.empty:
+        raise ValueError("regulation_data is empty.")
+
+    if identifier not in regulation_data.columns:
+        raise ValueError(
+            f"Column '{identifier}' not found in regulation_data. "
+            "Specify the correct column name via `identifier`."
+        )
+    if ranking_col not in regulation_data.columns:
+        raise ValueError(
+            f"Column '{ranking_col}' not found in regulation_data. "
+            "Specify the correct column name via `ranking_col`."
+        )
+    if not regulation_data[identifier].is_unique:
+        raise ValueError(
+            f"Column '{identifier}' in regulation_data contains duplicate values. "
+            "Each identifier must appear at most once."
+        )
+    if annotation_col not in annotation.columns:
+        raise ValueError(
+            f"Missing annotation column '{annotation_col}' in annotation DataFrame. "
+            "Specify the correct column name via `annotation_col`."
+        )
+    if identifier_col not in annotation.columns:
+        raise ValueError(
+            f"Missing identifier column '{identifier_col}' in annotation DataFrame. "
+            "Specify the correct column name via `identifier_col`."
+        )
+
+    # Build the pre-ranked Series: index = feature identifier, value = ranking metric
+    rnk = regulation_data.set_index(identifier)[ranking_col].dropna()
+
+    # Build gene sets dict from the annotation DataFrame
+    gene_sets = annotation.groupby(annotation_col)[identifier_col].apply(list).to_dict()
+
+    enrichment = gp.prerank(
+        rnk=rnk,
+        gene_sets=gene_sets,
+        min_size=min_size,
+        max_size=max_size,
+        permutation_num=permutation_num,
+        weight=weight,
+        ascending=ascending,
+        seed=seed,
+        no_plot=True,
+        outdir=None,
+    )
+    result = pd.DataFrame(enrichment.res2d).drop(columns=["Name"])
+    # 'Tag %' and 'Gene %' are strings like "5/20" and "10.00%", so they stay as is.
+    numeric_cols = ["ES", "NES", "NOM p-val", "FDR q-val", "FWER p-val"]
+    non_numeric_cols = result[numeric_cols].select_dtypes(exclude="number").columns
+    if len(non_numeric_cols):
+        result[non_numeric_cols] = result[non_numeric_cols].apply(
+            pd.to_numeric, errors="coerce"
+        )
+    fdr = result["FDR q-val"]
+    result["rejected"] = (fdr <= correction_alpha).where(fdr.notna()).astype("boolean")
     return result

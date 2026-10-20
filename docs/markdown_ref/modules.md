@@ -41,6 +41,7 @@
       * [acore.drift_correction.loess_drift_correction module](acore.drift_correction.md#module-acore.drift_correction.loess_drift_correction)
     * [acore.enrichment_analysis package](acore.enrichment_analysis.md)
       * [`run_fisher()`](acore.enrichment_analysis.md#acore.enrichment_analysis.run_fisher)
+      * [`run_gsea()`](acore.enrichment_analysis.md#acore.enrichment_analysis.run_gsea)
       * [`run_kolmogorov_smirnov()`](acore.enrichment_analysis.md#acore.enrichment_analysis.run_kolmogorov_smirnov)
       * [`run_site_regulation_enrichment()`](acore.enrichment_analysis.md#acore.enrichment_analysis.run_site_regulation_enrichment)
       * [`run_up_down_regulation_enrichment()`](acore.enrichment_analysis.md#acore.enrichment_analysis.run_up_down_regulation_enrichment)
