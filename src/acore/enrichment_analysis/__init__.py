@@ -10,7 +10,6 @@ from __future__ import annotations
 import logging
 import os
 import re
-import uuid
 
 import gseapy as gp
 import pandas as pd
@@ -571,22 +570,27 @@ def run_ssgsea(
             " as specified by `identifier_col`"
         )
 
-    grouped_annotations = (
-        annotation.groupby(annotation_col)[identifier_col].apply(list).reset_index()
-    )
-    fid = uuid.uuid4()
-    file_path = os.path.join(outdir, str(fid) + ".gmt")
-    with open(file_path, "w", encoding="utf8") as out:
-        for _, row in grouped_annotations.iterrows():
-            out.write(
-                row[annotation_col]
-                + "\t"
-                + "\t".join(list(filter(None, row[identifier_col])))
-                + "\n"
-            )
+    # grouped_annotations = (
+    #     annotation.groupby(annotation_col)[identifier_col].apply(list).reset_index()
+    # )
+    # fid = uuid.uuid4()
+    # file_path = os.path.join(outdir, str(fid) + ".gmt")
+    # with open(file_path, "w", encoding="utf8") as out:
+    #     for _, row in grouped_annotations.iterrows():
+    #         out.write(
+    #             row[annotation_col]
+    #             + "\t"
+    #             + "\t".join(list(filter(None, row[identifier_col])))
+    #             + "\n"
+    # )
+    # In case annotations were not provided by acore itself:
+    annotation = annotation.dropna(subset=[identifier_col])
+    annotation = annotation[annotation[identifier_col] != ""]
+    gene_sets = annotation.groupby(annotation_col)[identifier_col].apply(list).to_dict()
+
     enrichment = gp.ssgsea(
         data=df,
-        gene_sets=str(file_path),
+        gene_sets=gene_sets,
         outdir=outdir,
         min_size=min_size,
         max_size=max_size,
