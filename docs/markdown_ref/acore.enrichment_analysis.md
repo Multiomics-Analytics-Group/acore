@@ -23,7 +23,7 @@ odds, pvalue = stats.fisher_exact(group1=[a, b],
                 )
 ```
 
-### run_gsea(regulation_data: DataFrame, annotation: DataFrame, identifier: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', ranking_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'log2FC', annotation_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'annotation', identifier_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', min_size: [int](https://docs.python.org/3/builtins/functions.html#int) = 15, max_size: [int](https://docs.python.org/3/builtins/functions.html#int) = 500, permutation_num: [int](https://docs.python.org/3/builtins/functions.html#int) = 1000, seed: [int](https://docs.python.org/3/builtins/functions.html#int) = 42, weight: [float](https://docs.python.org/3/builtins/functions.html#float) = 1.0, ascending: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → DataFrame
+### run_gsea(regulation_data: DataFrame, annotation: DataFrame, identifier: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', ranking_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'log2FC', annotation_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'annotation', identifier_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', min_size: [int](https://docs.python.org/3/builtins/functions.html#int) = 15, max_size: [int](https://docs.python.org/3/builtins/functions.html#int) = 500, permutation_num: [int](https://docs.python.org/3/builtins/functions.html#int) = 1000, seed: [int](https://docs.python.org/3/builtins/functions.html#int) = 42, weight: [float](https://docs.python.org/3/builtins/functions.html#float) = 1.0, ascending: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, correction_alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05) → DataFrame
 
 Run Gene Set Enrichment Analysis (GSEA) on a pre-ranked gene list using
 [gseapy.prerank](https://gseapy.readthedocs.io/en/latest/run.html#gseapy.prerank).
@@ -66,12 +66,15 @@ full ranked list instead.
     gives classic (unweighted) GSEA.
   * **ascending** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – Sort order for the ranking. `False` (default)
     means descending (highest ranking metric first, suited for log2FC).
+  * **correction_alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – FDR q-value cutoff used to define the
+    `'rejected'` column. Default: 0.05.
 * **Returns:**
   DataFrame with one row per gene set. Columns are: `'Term'`,
   `'ES'` (enrichment score), `'NES'` (normalised enrichment score),
-  `'NOM p-val'` (nominal p-value), `'FDR q-val'` (FDR-corrected
-  q-value), `'FWER p-val'`, `'Tag %'`, `'Gene %'`,
-  `'Lead_genes'` (semi-colon-separated leading-edge genes).
+  `'NOM p-val'` (nominal p-value), `'FDR q-val'` (gseapy’s
+  permutation-based FDR q-value), `'FWER p-val'`, `'Tag %'`,
+  `'Gene %'`, `'Lead_genes'` (semi-colon-separated leading-edge genes)
+  and `'rejected'` (`'FDR q-val' <= correction_alpha`).
 * **Return type:**
   pd.DataFrame
 
