@@ -80,6 +80,7 @@
   * [Submodules](acore.enrichment_analysis.md#submodules)
   * [acore.enrichment_analysis.annotate module](acore.enrichment_analysis.md#module-acore.enrichment_analysis.annotate)
     * [`annotate_features()`](acore.enrichment_analysis.md#acore.enrichment_analysis.annotate.annotate_features)
+  * [acore.enrichment_analysis.permutations_enrichment module](acore.enrichment_analysis.md#module-acore.enrichment_analysis.permutations_enrichment)
 * [acore.exploratory_analysis package](acore.exploratory_analysis.md)
   * [`get_histogram_series()`](acore.exploratory_analysis.md#acore.exploratory_analysis.get_histogram_series)
   * [`calculate_coefficient_variation()`](acore.exploratory_analysis.md#acore.exploratory_analysis.calculate_coefficient_variation)

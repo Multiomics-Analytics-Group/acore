@@ -246,3 +246,5 @@ Example:
 ```default
 result = _annotate_features(features, in_foreground, in_background)
 ```
+
+## acore.enrichment_analysis.permutations_enrichment module
