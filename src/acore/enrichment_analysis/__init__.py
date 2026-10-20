@@ -734,6 +734,13 @@ def run_gsea(
         outdir=None,
     )
     result = pd.DataFrame(enrichment.res2d).drop(columns=["Name"])
-    fdr = pd.to_numeric(result["FDR q-val"], errors="coerce")
+    # 'Tag %' and 'Gene %' are strings like "5/20" and "10.00%", so they stay as is.
+    numeric_cols = ["ES", "NES", "NOM p-val", "FDR q-val", "FWER p-val"]
+    non_numeric_cols = result[numeric_cols].select_dtypes(exclude="number").columns
+    if len(non_numeric_cols):
+        result[non_numeric_cols] = result[non_numeric_cols].apply(
+            pd.to_numeric, errors="coerce"
+        )
+    fdr = result["FDR q-val"]
     result["rejected"] = (fdr <= correction_alpha).where(fdr.notna()).astype("boolean")
     return result
