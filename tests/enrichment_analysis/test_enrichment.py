@@ -677,4 +677,3 @@ def test_run_gsea_raises_on_duplicate_identifiers():
             regulation_data=regulation_data,
             annotation=annotation,
         )
-

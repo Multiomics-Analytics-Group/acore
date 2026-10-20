@@ -569,20 +569,20 @@ def run_ssgsea(
             f"Missing Identifier Column: {identifier_col}"
             " as specified by `identifier_col`"
         )
-
+    # ! Legacy implementation that was missing the description column of gmt files:
+    # ?gmt-columns: term<TAB>description<TAB>gene1<TAB>gene2
     # grouped_annotations = (
     #     annotation.groupby(annotation_col)[identifier_col].apply(list).reset_index()
     # )
-    # fid = uuid.uuid4()
-    # file_path = os.path.join(outdir, str(fid) + ".gmt")
-    # with open(file_path, "w", encoding="utf8") as out:
+    # gene_sets = os.path.join(outdir, "ss_gsea" + ".gmt")
+    # with open(gene_sets, "w", encoding="utf8") as out:
     #     for _, row in grouped_annotations.iterrows():
     #         out.write(
     #             row[annotation_col]
     #             + "\t"
     #             + "\t".join(list(filter(None, row[identifier_col])))
     #             + "\n"
-    # )
+    #         )
     # In case annotations were not provided by acore itself:
     annotation = annotation.dropna(subset=[identifier_col])
     annotation = annotation[annotation[identifier_col] != ""]
