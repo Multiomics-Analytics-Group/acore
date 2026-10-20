@@ -12,6 +12,7 @@ import os
 import re
 
 import gseapy as gp
+import numpy as np
 import pandas as pd
 from pandera.typing.pandas import DataFrame
 
@@ -20,8 +21,6 @@ from acore.enrichment_analysis.statistical_tests.fisher import run_fisher
 from acore.enrichment_analysis.statistical_tests.kolmogorov_smirnov import (
     run_kolmogorov_smirnov,
 )
-import numpy as np
-
 from acore.multiple_testing import apply_pvalue_correction, compute_efdr
 from acore.types.enrichment_analysis import EnrichmentAnalysisSchema
 
@@ -433,9 +432,7 @@ generated/statsmodels.stats.multitest.multipletests.html
         raise ValueError("Only Fisher's exact test is supported at the moment.")
 
     if correction == "efdr" and permutations <= 0:
-        raise ValueError(
-            "permutations must be greater than 0 when correction='efdr'."
-        )
+        raise ValueError("permutations must be greater than 0 when correction='efdr'.")
 
     terms = []
     ids = []
