@@ -69,8 +69,8 @@ def test_run_regulation_enrichment():
             "background": [1, 0, 0],
             "foreground_pop": [4, 4, 4],
             "background_pop": [6, 6, 6],
-            "pvalue": [1.0, 0.4666666666666667, 1.0],
-            "padj": [1.0, 1.0, 1.0],
+            "pvalue": [0.7999999999999999, 0.4, 0.6666666666666667],
+            "padj": [0.7999999999999999, 0.7999999999999999, 0.7999999999999999],
             "rejected": [False, False, False],
         }
     ).convert_dtypes(convert_boolean=False)
@@ -141,18 +141,18 @@ def test_run_regulation_enrichment_pep():
 
     expected = pd.DataFrame(
         {
-            "terms": ["path3", "path1"],  # path2 has no peptides in foreground
+            "terms": ["path1", "path3"],  # path2 has no peptides in foreground
             "identifiers": [
                 # forground peptides concatenated by comma
-                "gene6_pep1,gene9_pep1",
                 "gene1_pep1,gene2_pep1,gene3_pep1",
+                "gene6_pep1,gene9_pep1",
             ],
-            "foreground": [2, 3],
-            "background": [0, 1],
+            "foreground": [3, 2],
+            "background": [1, 0],
             "foreground_pop": [5, 5],
             "background_pop": [8, 8],
-            "pvalue": [0.4642857142857143, 1.0],
-            "padj": [0.9285714285714286, 1.0],
+            "pvalue": [0.5, 0.35714285714285715],
+            "padj": [0.5, 0.5],
             "rejected": [False, False],
         }
     ).convert_dtypes(convert_boolean=False)
@@ -457,36 +457,36 @@ def test_run_up_down_regulation_enrichment_large():
                     0.07094943240454077,
                     0.07094943240454077,
                     0.07094943240454077,
-                    0.07094943240454077,
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0,
+                    0.9961300309597523,
+                    0.5250257997936016,
+                    0.8722910216718266,
+                    0.8722910216718266,
+                    0.8722910216718266,
+                    0.8722910216718266,
                     0.08771929824561403,
                     0.08771929824561403,
                     0.08771929824561403,
                     0.08771929824561403,
-                    0.5087719298245614,
-                    1.0,
+                    0.3859649122807018,
+                    0.45614035087719307,
                 ],
                 "padj": [
-                    0.14189886480908154,
-                    0.14189886480908154,
-                    0.14189886480908154,
-                    0.14189886480908154,
-                    0.14189886480908154,
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0,
+                    0.17737358101135192,
+                    0.17737358101135192,
+                    0.17737358101135192,
+                    0.17737358101135192,
+                    0.9961300309597523,
+                    0.9692122463020295,
+                    0.9692122463020295,
+                    0.9692122463020295,
+                    0.9692122463020295,
+                    0.9692122463020295,
                     0.13157894736842105,
                     0.13157894736842105,
                     0.13157894736842105,
                     0.13157894736842105,
-                    0.6105263157894737,
-                    1.0,
+                    0.45614035087719307,
+                    0.45614035087719307,
                 ],
                 "rejected": [
                     False,
@@ -774,7 +774,7 @@ def test_run_enrichment_efdr_seed_reproducible():
     assert not np.allclose(first["padj"], other["padj"])
 
 
-def test_run_enrichment_alternative_greater():
+def test_run_enrichment_tests_overrepresentation():
     """One-sided test reproduces the hypergeometric overrepresentation p-value."""
     from scipy import stats
 
@@ -783,21 +783,13 @@ def test_run_enrichment_alternative_greater():
         regulation_data=regulation,
         annotation=annotation,
         min_detected_in_set=1,
-        alternative="greater",
     ).set_index("terms")
     n_total, n_fg = len(regulation), int(regulation["rejected"].sum())
-    row = result.loc["term0"]
-    expected = stats.hypergeom.sf(
-        row["foreground"] - 1, n_total, len(members["term0"]), n_fg
-    )
-    assert row["pvalue"] == pytest.approx(expected)
-    two_sided = ea.run_regulation_enrichment(
-        regulation_data=regulation,
-        annotation=annotation,
-        min_detected_in_set=1,
-    ).set_index("terms")
-    two_sided = two_sided.loc[result.index]
-    assert (two_sided["pvalue"] >= result["pvalue"] - 1e-12).all()
+    for term, row in result.iterrows():
+        expected = stats.hypergeom.sf(
+            row["foreground"] - 1, n_total, len(members[term]), n_fg
+        )
+        assert row["pvalue"] == pytest.approx(expected)
 
 
 def test_run_enrichment_efdr_matches_mulea_algorithm():
@@ -839,7 +831,6 @@ def test_run_enrichment_efdr_matches_mulea_algorithm():
         min_detected_in_set=1,
         correction="efdr",
         permutations=n_perm,
-        alternative="greater",
         seed=1,
     ).set_index("terms")
     common = result.index

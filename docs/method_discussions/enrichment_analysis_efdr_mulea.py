@@ -88,7 +88,7 @@ regulation_data["rejected"].value_counts()
 
 # %% [markdown]
 # # Overrepresentation analysis with eFDR
-# We use a one-sided test (`alternative="greater"`, only overrepresentation), as mulea,
+# Enrichment analysis uses a one-sided test for overrepresentation, as mulea, with
 # `min_detected_in_set=1`, and the 10000 permutations recommended by mulea.
 # Fixing the `seed` makes the result reproducible.
 
@@ -99,7 +99,6 @@ efdr = acore.enrichment_analysis.run_regulation_enrichment(
     min_detected_in_set=1,
     correction="efdr",
     permutations=10_000,
-    alternative="greater",
     seed=1,
 ).set_index("terms")
 efdr["rejected"] = efdr["rejected"].astype(bool)
@@ -198,7 +197,6 @@ bh = acore.enrichment_analysis.run_regulation_enrichment(
     annotation=annotation.copy(),
     min_detected_in_set=1,
     correction="fdr_bh",
-    alternative="greater",
 ).set_index("terms")
 n_terms_ontology = annotation["annotation"].nunique()
 # terms without any gene in the foreground have a p-value of 1
@@ -417,8 +415,6 @@ manual_vs_function.head(12).round(5)
 
 # %% [markdown]
 # # Differences to be aware of
-# - mulea only supports a one-sided test. In `acore` use `alternative="greater"` to get
-#   the same p-values; the default is the two-sided Fisher's exact test.
 # - `acore` applies the multiple testing correction only to the annotations with at
 #   least `min_detected_in_set` foreground features, mulea to all annotations of the
 #   ontology. For the BH correction this changes the number of tests.

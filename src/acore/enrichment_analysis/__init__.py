@@ -141,12 +141,12 @@ def run_up_down_regulation_enrichment(
     correction_alpha: float = 0.05,
     lfc_cutoff: float = 1,
     permutations: int = 0,
-    alternative: str = "two-sided",
     seed: int | None = None,
 ) -> DataFrame[EnrichmentAnalysisSchema]:
     """
     This function runs a simple enrichment analysis for significantly regulated proteins
     distinguishing between upregulation per group defined by the `groups`.
+    Only overrepresentation is tested using one-sided Fisher's exact tests.
 
     :param pandas.DataFrame regulation_data: pandas.DataFrame resulting from differential regulation
         analysis (CKG's regulation table).
@@ -172,9 +172,6 @@ reference/api/pandas.DataFrame.groupby.html
     :param float lfc_cutoff: log fold-change cutoff to define practical significance
     :param int permutations: number of permutations used to estimate the empirical FDR
         when ``correction='efdr'``. Ignored for other correction methods.
-    :param str alternative: alternative hypothesis of Fisher's exact test: ``'two-sided'``
-        (default), ``'greater'`` (overrepresentation only, as in a hypergeometric test)
-        or ``'less'``.
     :param int | None seed: seed of the random number generator used for the
         permutations when ``correction='efdr'``, for reproducible results.
     :return: DataFrame adhering to EnrichmentAnalysisSchema
@@ -241,7 +238,6 @@ reference/api/pandas.DataFrame.groupby.html
                 correction=correction,
                 correction_alpha=correction_alpha,
                 permutations=permutations,
-                alternative=alternative,
                 seed=seed,
             )
             if _enrichment.empty:
@@ -278,12 +274,11 @@ def run_regulation_enrichment(
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
     permutations: int = 0,
-    alternative: str = "two-sided",
     seed: int | None = None,
 ) -> pd.DataFrame:
     """
     This function runs a simple enrichment analysis for significantly regulated features
-    in a dataset.
+    in a dataset. Only overrepresentation is tested using one-sided Fisher's exact tests.
 
     :param regulation_data: pandas.DataFrame resulting from differential regulation analysis.
     :param annotation: pandas.DataFrame with annotations for features
@@ -303,9 +298,6 @@ def run_regulation_enrichment(
         ``permutations > 0``).
     :param int permutations: number of permutations used to estimate the empirical FDR
         when ``correction='efdr'``. Ignored for other correction methods.
-    :param str alternative: alternative hypothesis of Fisher's exact test: ``'two-sided'``
-        (default), ``'greater'`` (overrepresentation only, as in a hypergeometric test)
-        or ``'less'``.
     :param int | None seed: seed of the random number generator used for the
         permutations when ``correction='efdr'``, for reproducible results.
     :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
@@ -360,7 +352,6 @@ def run_regulation_enrichment(
         min_detected_in_set=min_detected_in_set,
         correction_alpha=correction_alpha,
         permutations=permutations,
-        alternative=alternative,
         seed=seed,
     ).convert_dtypes(convert_boolean=False)
     return result
@@ -380,12 +371,12 @@ def run_enrichment(
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
     permutations: int = 0,
-    alternative: str = "two-sided",
     seed: int | None = None,
 ) -> pd.DataFrame:
     """
-    Computes enrichment of the foreground relative to a given backgroung,
-    using Fisher's exact test, and corrects for multiple hypothesis testing.
+    Computes overrepresentation of the foreground relative to a given background,
+    using Fisher's exact test with ``alternative='greater'``, and corrects for
+    multiple hypothesis testing.
 
     :param data: pandas.DataFrame with annotations for dataset features
         (columns: 'annotation', 'identifier', 'group').
@@ -411,9 +402,6 @@ generated/statsmodels.stats.multitest.multipletests.html
     :param float correction_alpha: adjusted p-value cutoff to define significance.
     :param int permutations: number of permutations used to estimate the empirical FDR
         when ``correction='efdr'``. Ignored for other correction methods.
-    :param str alternative: alternative hypothesis of Fisher's exact test: ``'two-sided'``
-        (default), ``'greater'`` (overrepresentation only, as in a hypergeometric test)
-        or ``'less'``.
     :param int | None seed: seed of the random number generator used for the
         permutations when ``correction='efdr'``, for reproducible results.
         Must be greater than 0 when ``correction='efdr'``.
@@ -494,7 +482,7 @@ generated/statsmodels.stats.multitest.multipletests.html
             _, pvalue = run_fisher(
                 [num_foreground, foreground_pop - num_foreground],
                 [num_background, background_pop - foreground_pop - num_background],
-                alternative=alternative,
+                alternative="greater",
             )
             fnum.append(num_foreground)
             bnum.append(num_background)
@@ -521,7 +509,6 @@ generated/statsmodels.stats.multitest.multipletests.html
                 identifier_col=identifier_col,
                 permutations=permutations,
                 alpha=correction_alpha,
-                alternative=alternative,
                 seed=seed,
             )
         else:

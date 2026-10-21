@@ -16,7 +16,6 @@ def _compute_efdr_for_enrichment(
     identifier_col: str,
     permutations: int,
     alpha: float,
-    alternative: str = "two-sided",
     seed: int | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
@@ -25,9 +24,10 @@ def _compute_efdr_for_enrichment(
     In each permutation a random foreground set of the original size
     (``foreground_pop``) is drawn from *all* ``background_pop`` features, i.e. also
     from features without any annotation. The permuted foreground is therefore
-    consistent with the null hypothesis of the (hypergeometric) Fisher's test and
-    does not condition on the number of annotated features in the foreground. A
-    feature keeps one label across all of its annotation terms. This follows the
+    consistent with the null hypothesis of the one-sided (overrepresentation)
+    Fisher's test and does not condition on the number of annotated features in
+    the foreground. A feature keeps one label across all of its annotation terms.
+    This follows the
     eFDR procedure of the mulea R package (Turek et al. 2024).
 
     Fisher's test is re-run for *every* annotation term in ``data`` (not only for
@@ -40,8 +40,6 @@ def _compute_efdr_for_enrichment(
         (one row per feature and annotation term).
     :param observed_pvalues: p-values of the tested terms in the observed data.
     :param seed: seed of the random number generator for reproducible permutations.
-    :param alternative: alternative hypothesis of Fisher's test, see
-        :func:`acore.enrichment_analysis.run_fisher`.
     """
     data = data[[identifier_col, annotation_col]].drop_duplicates()
     feature_codes, _ = pd.factorize(data[identifier_col])
@@ -65,7 +63,7 @@ def _compute_efdr_for_enrichment(
             _, cache[key] = run_fisher(
                 [num_fg, foreground_pop - num_fg],
                 [n_in - num_fg, background_pop - foreground_pop - (n_in - num_fg)],
-                alternative=alternative,
+                alternative="greater",
             )
         return cache[key]
 
