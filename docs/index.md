@@ -47,6 +47,14 @@ PXD040621 <downloaded/PXD040621_analysis>
 
 ```{toctree}
 :maxdepth: 1
+:caption: Methods discussion
+
+examples_single_analysis/enrichment_analysis_efdr_mulea
+
+```
+
+```{toctree}
+:maxdepth: 1
 :caption: Example dataset (preprocessing)
 :hidden:
 
