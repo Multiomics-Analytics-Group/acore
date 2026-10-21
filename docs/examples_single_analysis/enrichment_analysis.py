@@ -163,7 +163,8 @@ annotations.groupby("annotation").size().value_counts(ascending=False)
 # %% [markdown]
 # # Enrichment analysis
 # Is done separately for upregulated genes in each group as it's assumed that biological
-# processes are regulated in one direction together.
+# processes are regulated in one direction together. The minimum absolut log2 fold
+# change is `0.553` for the statistically significant protein groups in this example.
 
 # %% tags=["hide-input"]
 diff_reg.query("rejected")[
@@ -193,10 +194,11 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     min_detected_in_set=2,
     lfc_cutoff=1,
 )
+ret
 
 # %% [markdown]
 # we can decrease the cutoff for the log2 fold change to 0.5 and see that we retain
-# more annotations.
+# all targets from the differential expression analysis.
 
 # %%
 ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
@@ -206,6 +208,7 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     min_detected_in_set=2,
     lfc_cutoff=0.5,  # ! the default is 1
 )
+ret
 
 # %% [markdown]
 # And even more if we do not restrict the analysis of finding at least two proteins
@@ -219,7 +222,7 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     min_detected_in_set=1,
     lfc_cutoff=0.5,  # ! the default is 1
 )
-
+ret
 
 # %% [markdown]
 # ## Multiple testing correction: Benjamini-Hochberg vs. empirical FDR (eFDR)
