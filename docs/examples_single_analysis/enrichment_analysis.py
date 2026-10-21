@@ -475,27 +475,4 @@ gsea_results[["Term", "NES", "NOM p-val", "FDR q-val", "rejected"]]
 ax = gsea_results["NES"].plot.hist(title="Distribution of NES", xlabel="NES")
 
 # %% [markdown]
-# # Compare two distributions - KS test
-#
-# The Kolmogorov-Smirnov test is a non-parametric test that compares two distributions.
-# - we compare the distributions of the two differently upregulated protein groups
-# This is not the best example for comparing distributions, but it shows how to use the
-# KS test.
-
-# %%
-# plot two histograms of intensity values here
-sel_pgs = ["O43175", "P39059"]
-view = df_omics[sel_pgs].sub(df_omics[sel_pgs].mean())
-ax = view.plot.hist(bins=20, alpha=0.5)
-
-# %% [markdown]
-# Let us compare the two centered distributions using the KS test.
-
-# %%
-acore.enrichment_analysis.run_kolmogorov_smirnov(view[sel_pgs[0]], view[sel_pgs[1]])
-
-# %% [markdown]
-# The result suggests that the two distributions are from the same distribution.
-
-# %% [markdown]
 # Done.
