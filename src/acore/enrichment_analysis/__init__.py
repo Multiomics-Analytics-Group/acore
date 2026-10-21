@@ -141,6 +141,8 @@ def run_up_down_regulation_enrichment(
     correction_alpha: float = 0.05,
     lfc_cutoff: float = 1,
     permutations: int = 0,
+    alternative: str = "two-sided",
+    seed: int | None = None,
 ) -> DataFrame[EnrichmentAnalysisSchema]:
     """
     This function runs a simple enrichment analysis for significantly regulated proteins
@@ -170,6 +172,11 @@ reference/api/pandas.DataFrame.groupby.html
     :param float lfc_cutoff: log fold-change cutoff to define practical significance
     :param int permutations: number of permutations used to estimate the empirical FDR
         when ``correction='efdr'``. Ignored for other correction methods.
+    :param str alternative: alternative hypothesis of Fisher's exact test: ``'two-sided'``
+        (default), ``'greater'`` (overrepresentation only, as in a hypergeometric test)
+        or ``'less'``.
+    :param int | None seed: seed of the random number generator used for the
+        permutations when ``correction='efdr'``, for reproducible results.
     :return: DataFrame adhering to EnrichmentAnalysisSchema
     :rtype: DataFrame[EnrichmentAnalysisSchema]
 
@@ -234,6 +241,8 @@ reference/api/pandas.DataFrame.groupby.html
                 correction=correction,
                 correction_alpha=correction_alpha,
                 permutations=permutations,
+                alternative=alternative,
+                seed=seed,
             )
             if _enrichment.empty:
                 logger.warning(
@@ -249,6 +258,8 @@ reference/api/pandas.DataFrame.groupby.html
 
     if not ret.empty:
         ret["rejected"] = ret["rejected"].astype(bool)
+        # whole numbers only (e.g. eFDR of 0 or 1) are converted to int upstream
+        ret[["pvalue", "padj"]] = ret[["pvalue", "padj"]].astype("Float64")
 
     ret = EnrichmentAnalysisSchema.validate(ret)
 
@@ -267,6 +278,8 @@ def run_regulation_enrichment(
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
     permutations: int = 0,
+    alternative: str = "two-sided",
+    seed: int | None = None,
 ) -> pd.DataFrame:
     """
     This function runs a simple enrichment analysis for significantly regulated features
@@ -290,6 +303,11 @@ def run_regulation_enrichment(
         ``permutations > 0``).
     :param int permutations: number of permutations used to estimate the empirical FDR
         when ``correction='efdr'``. Ignored for other correction methods.
+    :param str alternative: alternative hypothesis of Fisher's exact test: ``'two-sided'``
+        (default), ``'greater'`` (overrepresentation only, as in a hypergeometric test)
+        or ``'less'``.
+    :param int | None seed: seed of the random number generator used for the
+        permutations when ``correction='efdr'``, for reproducible results.
     :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
         'background', 'foreground_pop', 'background_pop', 'pvalue', 'padj' and 'rejected'.
 
@@ -342,6 +360,8 @@ def run_regulation_enrichment(
         min_detected_in_set=min_detected_in_set,
         correction_alpha=correction_alpha,
         permutations=permutations,
+        alternative=alternative,
+        seed=seed,
     ).convert_dtypes(convert_boolean=False)
     return result
 
@@ -360,6 +380,8 @@ def run_enrichment(
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
     permutations: int = 0,
+    alternative: str = "two-sided",
+    seed: int | None = None,
 ) -> pd.DataFrame:
     """
     Computes enrichment of the foreground relative to a given backgroung,
@@ -389,6 +411,11 @@ generated/statsmodels.stats.multitest.multipletests.html
     :param float correction_alpha: adjusted p-value cutoff to define significance.
     :param int permutations: number of permutations used to estimate the empirical FDR
         when ``correction='efdr'``. Ignored for other correction methods.
+    :param str alternative: alternative hypothesis of Fisher's exact test: ``'two-sided'``
+        (default), ``'greater'`` (overrepresentation only, as in a hypergeometric test)
+        or ``'less'``.
+    :param int | None seed: seed of the random number generator used for the
+        permutations when ``correction='efdr'``, for reproducible results.
         Must be greater than 0 when ``correction='efdr'``.
     :return: pandas.DataFrame with columns: annotation terms, features,
         number of foreground/background features in each term,
@@ -467,6 +494,7 @@ generated/statsmodels.stats.multitest.multipletests.html
             _, pvalue = run_fisher(
                 [num_foreground, foreground_pop - num_foreground],
                 [num_background, background_pop - foreground_pop - num_background],
+                alternative=alternative,
             )
             fnum.append(num_foreground)
             bnum.append(num_background)
@@ -484,19 +512,17 @@ generated/statsmodels.stats.multitest.multipletests.html
     if len(pvalues) >= 1:
         if correction == "efdr":
             rejected, padj = permutations_enrichment._compute_efdr_for_enrichment(
-                data=data,
+                data=data.loc[data[group_col].isin([foreground_id, background_id])],
                 observed_pvalues=pvalues,
-                observed_terms=terms,
-                foreground_id=foreground_id,
-                background_id=background_id,
                 foreground_pop=foreground_pop,
                 background_pop=background_pop,
                 min_detected_in_set=min_detected_in_set,
                 annotation_col=annotation_col,
-                group_col=group_col,
                 identifier_col=identifier_col,
                 permutations=permutations,
                 alpha=correction_alpha,
+                alternative=alternative,
+                seed=seed,
             )
         else:
             rejected, padj = apply_pvalue_correction(

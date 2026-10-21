@@ -224,19 +224,21 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
 # %% [markdown]
 # ## Multiple testing correction: Benjamini-Hochberg vs. empirical FDR (eFDR)
 # The classic Benjamini-Hochberg (BH) procedure (`correction="fdr_bh"`, the default)
-# corrects the Fisher's exact test p-values of all tested annotations using only the
-# p-values themselves. The empirical FDR (eFDR, `correction="efdr"`) instead estimates
-# the FDR from permutations: for each p-value threshold $t$ it is the average number of
-# annotations with a p-value $\leq t$ in the permuted data divided by the number of
-# annotations with a p-value $\leq t$ in the observed data. In each permutation the
-# foreground/background labels of the features are shuffled, keeping the group sizes.
+# corrects the p-values of all tested annotations using only the p-values themselves.
+# The empirical FDR (eFDR, `correction="efdr"`) instead estimates the FDR from
+# permutations, as done in the [mulea](https://github.com/ELTEbioinformatics/mulea) R
+# package ([Turek et al. 2024](https://doi.org/10.1093/bib/bbae301)): in each permutation a random
+# foreground set of the original size is drawn from all measured features and the test
+# is repeated for all annotations. For each p-value threshold $t$ the eFDR is the
+# average number of annotations with a p-value $\leq t$ in the permuted data divided
+# by the number of annotations with a p-value $\leq t$ in the observed data.
 # This takes into account the overlap between annotations (one feature belongs to many
-# GO terms) and the discreteness of Fisher's exact test p-values, which are both
-# violations of the assumptions of the BH procedure.
+# GO terms) and the discreteness of Fisher's exact test p-values, which violate the
+# assumptions of the BH procedure.
 #
 # To use it, set `correction="efdr"` and the number of `permutations`
-# (use a larger number, e.g. 1000 or more, for stable estimates). The permutations are
-# random, so the `padj` values change slightly between runs.
+# (use a large number, e.g. 10000, for stable estimates). Set a `seed` to make the
+# permutations reproducible.
 
 # %%
 enrichment_kwargs = dict(
@@ -250,7 +252,7 @@ ora_bh = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     **enrichment_kwargs, correction="fdr_bh"
 )
 ora_efdr = acore.enrichment_analysis.run_up_down_regulation_enrichment(
-    **enrichment_kwargs, correction="efdr", permutations=1000
+    **enrichment_kwargs, correction="efdr", permutations=1000, seed=42
 )
 
 # %% [markdown]
@@ -279,24 +281,13 @@ comparison_ora.head(10)
 comparison_ora[["rejected BH", "rejected eFDR"]].sum().to_frame("n significant")
 
 # %% [markdown]
-# In this small example most annotations are supported by a single protein group, and
-# many annotations are driven by the same few protein groups. Their tests are therefore
-# strongly dependent and have identical, discrete p-values. BH treats all
-# annotations as independent tests and can be conservative here, whereas eFDR estimates
-# the false discovery rate from the permuted data directly, which is why it flags more
-# annotations. With only one protein group behind an annotation, these hits should
-# still be interpreted with care.
-
-# %%
-ax = comparison_ora.plot.scatter(
-    x="padj BH",
-    y="padj eFDR",
-    xlabel="Benjamini-Hochberg adjusted p-value",
-    ylabel="eFDR",
-    title="BH vs. eFDR (ORA)",
-)
-_ = ax.axline((0, 0), slope=1, color="grey", linestyle="--")
-
+# In this small example most annotations are supported by a single protein group and
+# share the same discrete p-value of 0.02. In the permuted data many annotations reach
+# this p-value just by chance, so the eFDR of these annotations is 1 and none of them
+# is called significant, whereas BH, which treats the p-values as independent
+# continuous values, only just misses the cutoff. An example where eFDR calls more
+# annotations significant than BH is shown in the
+# [comparison with mulea](nb_ref_efdr_mulea).
 
 # %% [markdown]
 # ## Site specific enrichment analysis

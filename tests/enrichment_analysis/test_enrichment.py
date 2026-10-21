@@ -737,6 +737,149 @@ def test_run_enrichment_efdr_shared_features_across_terms():
     assert (result["padj"].between(0.0, 1.0)).all()
 
 
+def _make_planted_enrichment(n_features=600, n_terms=20, n_foreground=40, seed=0):
+    """Random annotation with two terms enriched in the foreground."""
+    rng = np.random.default_rng(seed)
+    features = np.array([f"gene{i}" for i in range(n_features)])
+    members = {
+        f"term{t}": rng.choice(features, size=rng.integers(5, 40), replace=False)
+        for t in range(n_terms)
+    }
+    foreground = set(rng.choice(features, size=n_foreground - 12, replace=False))
+    foreground |= set(members["term0"][:7]) | set(members["term1"][:5])
+    annotation = pd.DataFrame(
+        [(term, g) for term, genes in members.items() for g in genes],
+        columns=["annotation", "identifier"],
+    )
+    regulation = pd.DataFrame(
+        {"identifier": features, "rejected": [g in foreground for g in features]}
+    )
+    return annotation, regulation, members
+
+
+def test_run_enrichment_efdr_seed_reproducible():
+    annotation, regulation, _ = _make_planted_enrichment()
+    kwargs = dict(
+        regulation_data=regulation,
+        min_detected_in_set=1,
+        correction="efdr",
+        permutations=200,
+    )
+    first = ea.run_regulation_enrichment(annotation=annotation.copy(), seed=3, **kwargs)
+    second = ea.run_regulation_enrichment(
+        annotation=annotation.copy(), seed=3, **kwargs
+    )
+    other = ea.run_regulation_enrichment(annotation=annotation.copy(), seed=4, **kwargs)
+    pd.testing.assert_frame_equal(first, second)
+    assert not np.allclose(first["padj"], other["padj"])
+
+
+def test_run_enrichment_alternative_greater():
+    """One-sided test reproduces the hypergeometric overrepresentation p-value."""
+    from scipy import stats
+
+    annotation, regulation, members = _make_planted_enrichment()
+    result = ea.run_regulation_enrichment(
+        regulation_data=regulation,
+        annotation=annotation,
+        min_detected_in_set=1,
+        alternative="greater",
+    ).set_index("terms")
+    n_total, n_fg = len(regulation), int(regulation["rejected"].sum())
+    row = result.loc["term0"]
+    expected = stats.hypergeom.sf(
+        row["foreground"] - 1, n_total, len(members["term0"]), n_fg
+    )
+    assert row["pvalue"] == pytest.approx(expected)
+    two_sided = ea.run_regulation_enrichment(
+        regulation_data=regulation,
+        annotation=annotation,
+        min_detected_in_set=1,
+    ).set_index("terms")
+    two_sided = two_sided.loc[result.index]
+    assert (two_sided["pvalue"] >= result["pvalue"] - 1e-12).all()
+
+
+def test_run_enrichment_efdr_matches_mulea_algorithm():
+    """Compare to an independent implementation of the eFDR of the mulea R package
+    (Turek et al. 2024): random foreground of the same size drawn from all
+    background features, all terms tested in every permutation, one-sided test,
+    eFDR = expected number of hits / observed number of hits at the p-value."""
+    from scipy import stats
+
+    annotation, regulation, members = _make_planted_enrichment()
+    n_total, n_fg = len(regulation), int(regulation["rejected"].sum())
+    terms = list(members)
+    sizes = np.array([len(members[t]) for t in terms])
+    index = {g: i for i, g in enumerate(regulation["identifier"])}
+    membership = np.zeros((n_total, len(terms)), dtype=int)
+    for j, term in enumerate(terms):
+        membership[[index[g] for g in members[term]], j] = 1
+
+    def hypergeom_p(counts):
+        return stats.hypergeom.sf(counts - 1, n_total, sizes, n_fg)
+
+    observed_counts = membership[regulation["rejected"].to_numpy()].sum(axis=0)
+    observed = hypergeom_p(observed_counts)
+    rng = np.random.default_rng(0)
+    n_perm = 2000
+    permuted = np.concatenate(
+        [
+            hypergeom_p(membership[rng.choice(n_total, n_fg, replace=False)].sum(0))
+            for _ in range(n_perm)
+        ]
+    )
+    r_exp = np.array([(permuted <= p).sum() / n_perm for p in observed])
+    r_obs = np.array([(observed <= p).sum() for p in observed])
+    reference = pd.Series(np.minimum(r_exp / r_obs, 1.0), index=terms)
+
+    result = ea.run_regulation_enrichment(
+        regulation_data=regulation,
+        annotation=annotation,
+        min_detected_in_set=1,
+        correction="efdr",
+        permutations=n_perm,
+        alternative="greater",
+        seed=1,
+    ).set_index("terms")
+    common = result.index
+    assert {"term0", "term1"} <= set(common)
+    top = reference[common].sort_values().index[:3]
+    np.testing.assert_allclose(
+        result.loc[top, "padj"], reference[top], atol=0.02, rtol=0.25
+    )
+    assert set(result.index[result["rejected"].astype(bool)]) == set(
+        reference.index[reference <= 0.05]
+    ) & set(common)
+
+
+def test_run_up_down_regulation_enrichment_efdr_whole_number_padj():
+    """eFDR values of exactly 0 or 1 are valid and must not break the schema."""
+    annotation, _, members = _make_planted_enrichment()
+    features = [f"gene{i}" for i in range(600)]
+    up = set(list(members["term0"])[:2])
+    regulation = pd.DataFrame(
+        {
+            "identifier": features,
+            "group1": "a",
+            "group2": "b",
+            "padj": np.where(pd.Series(features).isin(up), 0.01, 0.9),
+            "log2FC": np.where(pd.Series(features).isin(up), 2.0, 0.0),
+        }
+    )
+    result = ea.run_up_down_regulation_enrichment(
+        regulation_data=regulation,
+        annotation=annotation,
+        pval_col="padj",
+        min_detected_in_set=1,
+        correction="efdr",
+        permutations=50,
+        seed=0,
+    )
+    assert result["padj"].between(0, 1).all()
+    assert (result["padj"] == 0).any()
+
+
 def test_run_gsea_basic():
     """Integration test for run_gsea: checks that the function returns
     a DataFrame with the expected columns and one row per gene set."""

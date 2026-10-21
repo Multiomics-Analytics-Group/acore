@@ -231,15 +231,14 @@ def compute_efdr(
     sort_idx = np.argsort(observed)
     sorted_obs = observed[sort_idx]
 
+    # Mean number of permuted p-values <= p across all permutations. Pooling and
+    # sorting all permuted p-values allows counting them for each p at once.
+    pooled_perm = np.sort(np.concatenate([np.ravel(p) for p in permuted_pvalues]))
+    n_perm_sig = np.searchsorted(pooled_perm, sorted_obs, side="right") / n_permutations
+    # Number of observed p-values <= p (always >= 1 since we iterate sorted)
+    n_obs_sig = np.arange(1, n_obs + 1)  # 1, 2, ..., n_obs
     efdr = np.zeros(n_obs, dtype=float)
-    perm_arrays = [np.asarray(p, dtype=float) for p in permuted_pvalues]
-
-    for i, p in enumerate(sorted_obs):
-        # Number of observed p-values <= p (always >= 1 since we iterate sorted)
-        n_obs_sig = i + 1
-        # Mean number of permuted p-values <= p across all permutations
-        n_perm_sig = np.mean([np.sum(perm <= p) for perm in perm_arrays])
-        efdr[sort_idx[i]] = n_perm_sig / n_obs_sig
+    efdr[sort_idx] = n_perm_sig / n_obs_sig
 
     # Enforce monotonicity: eFDR must be non-decreasing with increasing p-values.
     # Apply cumulative minimum from right to left on the sorted array so that
