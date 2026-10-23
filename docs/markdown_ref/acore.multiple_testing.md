@@ -115,7 +115,7 @@ Example:
 result = get_counts_permutation_fdr(value, random, observed, n=250, alpha=0.05)
 ```
 
-### compute_efdr(observed_pvalues: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), permuted_pvalues: [list](https://docs.python.org/3/builtins/stdtypes.html#list), alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05) → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)]
+### compute_efdr(observed_pvalues: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), permuted_pvalues: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)], alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05) → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)]
 
 Computes empirical FDR (eFDR) from permutation analysis.
 
@@ -132,8 +132,9 @@ Reference: [https://pmc.ncbi.nlm.nih.gov/articles/PMC11490090/#Sec2](https://pmc
 
 * **Parameters:**
   * **observed_pvalues** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – P-values from the observed enrichment analysis.
-  * **permuted_pvalues** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list) *[*[*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray) *]*) – List of p-value arrays from permutation
-    runs. Each array contains p-values from one permutation of the data.
+  * **permuted_pvalues** (*Iterable* *[*[*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray) *]*) – P-value arrays from permutation
+    runs, consumed once. Each array contains one permutation. Pass a generator
+    to keep memory independent of the number of permutations.
   * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – Significance threshold for eFDR.
 * **Returns:**
   Tuple of (rejected, efdr_values) where rejected is a boolean array and
