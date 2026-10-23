@@ -109,7 +109,7 @@ efdr.query("rejected")[["foreground", "pvalue", "padj"]].round(5)
 # The table below is the result of the mulea README (`ora_results` filtered for
 # `eFDR < 0.05`, 10000 permutations, `random_seed = 1`).
 
-# %%
+# %% tags=["hide-input"]
 mulea_reference = pd.DataFrame(
     {
         "terms": [
@@ -190,8 +190,14 @@ _ = ax.axline((0, 0), slope=1, color="grey", linestyle="--")
 # those without any gene in the target set have a p-value of 1, is more conservative.
 # The eFDR on the other hand is based on the permuted data and not on the number of
 # tests.
+#
+# If we would assign terms that do not have any foreground feature or to few detected
+# in the set, then we would see the behaviour described by mulea w.r.t. the number
+# of significant terms:
+#
+# ![eFDR normally more than BH](https://github.com/ELTEbioinformatics/mulea/raw/master/vignettes/Venn.png)
 
-# %%
+# %% tags=["hide-input"]
 bh = acore.enrichment_analysis.run_regulation_enrichment(
     regulation_data=regulation_data,
     annotation=annotation.copy(),
