@@ -90,6 +90,23 @@ class TestDimensionalityReduction(unittest.TestCase):
             check_dtype=False,
         )
 
+    def test_run_pca_warns_for_missing_annotation_columns(self):
+        with self.assertWarnsRegex(UserWarning, "Annotation columns not found.*sample"):
+            (result, _, _), _ = ea.run_pca(
+                self.data,
+                annotation_cols=["sample"],
+                group="group",
+                components=2,
+            )
+        self.assertListEqual(result.columns.tolist(), ["group", "x", "y"])
+
+    def test_run_pca_annotation_from_index(self):
+        data = self.data.set_index(pd.Index(["S1", "S2", "S3", "S4"], name="Sample ID"))
+        (result, _, _), _ = ea.run_pca(
+            data, annotation_cols=["Sample ID"], group="group", components=2
+        )
+        self.assertListEqual(result["Sample ID"].tolist(), ["S1", "S2", "S3", "S4"])
+
     def test_run_tsne(self):
         components = 2
         # ! MAC ARM64 yields these results (using the similar installation)
