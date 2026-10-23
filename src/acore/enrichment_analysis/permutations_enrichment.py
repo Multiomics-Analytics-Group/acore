@@ -34,7 +34,8 @@ def _compute_efdr_for_enrichment(
     the terms tested in the observed data) and all permuted p-values are pooled to
     estimate the number of false positives expected at each p-value threshold. Terms
     that do not meet ``min_detected_in_set`` in a given permutation are assigned
-    p-value 1.0.
+    p-value 1.0. Permutations are streamed
+    into the correction so memory does not grow with the permutation count.
 
     :param data: annotation of the features in the foreground or background
         (one row per feature and annotation term).
@@ -67,16 +68,16 @@ def _compute_efdr_for_enrichment(
             )
         return cache[key]
 
-    permuted_pvalues = []
-    for _ in range(permutations):
-        # annotated features are slots 0..n_features-1 of the background population
-        drawn = rng.choice(background_pop, size=foreground_pop, replace=False)
-        in_foreground = np.zeros(n_features, dtype=np.int32)
-        in_foreground[drawn[drawn < n_features]] = 1
-        num_fg = membership.T.dot(in_foreground)
-        keys, inverse = np.unique(n_in_term * stride + num_fg, return_inverse=True)
-        pvalues = np.array([_pvalue(int(key)) for key in keys])[inverse]
-        pvalues[num_fg < min_detected_in_set] = 1.0
-        permuted_pvalues.append(pvalues)
+    def permuted_pvalues():
+        for _ in range(permutations):
+            # annotated features occupy slots 0..n_features-1 of the population
+            drawn = rng.choice(background_pop, size=foreground_pop, replace=False)
+            in_foreground = np.zeros(n_features, dtype=np.int32)
+            in_foreground[drawn[drawn < n_features]] = 1
+            num_fg = membership.T.dot(in_foreground)
+            keys, inverse = np.unique(n_in_term * stride + num_fg, return_inverse=True)
+            pvalues = np.array([_pvalue(int(key)) for key in keys])[inverse]
+            pvalues[num_fg < min_detected_in_set] = 1.0
+            yield pvalues
 
-    return compute_efdr(observed_pvalues, permuted_pvalues, alpha=alpha)
+    return compute_efdr(observed_pvalues, permuted_pvalues(), alpha=alpha)

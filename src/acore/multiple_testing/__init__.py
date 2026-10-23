@@ -1,3 +1,5 @@
+from collections.abc import Iterable
+
 import numpy as np
 import pandas as pd
 import pingouin as pg
@@ -188,7 +190,7 @@ def get_counts_permutation_fdr(value, random, observed, n, alpha):
 
 def compute_efdr(
     observed_pvalues: np.ndarray,
-    permuted_pvalues: list,
+    permuted_pvalues: Iterable[np.ndarray],
     alpha: float = 0.05,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
@@ -206,8 +208,9 @@ def compute_efdr(
     Reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC11490090/#Sec2
 
     :param numpy.ndarray observed_pvalues: P-values from the observed enrichment analysis.
-    :param list[numpy.ndarray] permuted_pvalues: List of p-value arrays from permutation
-        runs. Each array contains p-values from one permutation of the data.
+    :param Iterable[numpy.ndarray] permuted_pvalues: P-value arrays from permutation
+        runs, consumed once. Each array contains one permutation. Pass a generator
+        to keep memory independent of the number of permutations.
     :param float alpha: Significance threshold for eFDR.
     :return: Tuple of (rejected, efdr_values) where rejected is a boolean array and
         efdr_values contains the empirical FDR for each input p-value.
@@ -217,26 +220,24 @@ def compute_efdr(
 
         efdr_rejected, efdr_values = compute_efdr(observed_pvalues, permuted_pvalues, alpha=0.05)
     """
-    n_permutations = len(permuted_pvalues)
-    if n_permutations == 0:
-        raise ValueError("permuted_pvalues must contain at least one permutation.")
-
     observed = np.asarray(observed_pvalues, dtype=float)
     n_obs = len(observed)
-
-    if n_obs == 0:
-        return np.array([], dtype=bool), np.array([], dtype=float)
-
-    # Sort indices by ascending p-value
     sort_idx = np.argsort(observed)
     sorted_obs = observed[sort_idx]
 
-    # Mean number of permuted p-values <= p across all permutations. Pooling and
-    # sorting all permuted p-values allows counting them for each p at once.
-    pooled_perm = np.sort(np.concatenate([np.ravel(p) for p in permuted_pvalues]))
-    n_perm_sig = np.searchsorted(pooled_perm, sorted_obs, side="right") / n_permutations
-    # Number of observed p-values <= p (always >= 1 since we iterate sorted)
-    n_obs_sig = np.arange(1, n_obs + 1)  # 1, 2, ..., n_obs
+    # Count at observed thresholds one permutation at a time; never pool the runs.
+    n_perm_sig = np.zeros(n_obs, dtype=np.int64)
+    n_permutations = 0
+    for pvalues in permuted_pvalues:
+        sorted_perm = np.sort(np.asarray(pvalues, dtype=float).ravel())
+        n_perm_sig += np.searchsorted(sorted_perm, sorted_obs, side="right")
+        n_permutations += 1
+    if n_permutations == 0:
+        raise ValueError("permuted_pvalues must contain at least one permutation.")
+    if n_obs == 0:
+        return np.array([], dtype=bool), np.array([], dtype=float)
+    n_perm_sig = n_perm_sig / n_permutations
+    n_obs_sig = np.searchsorted(sorted_obs, sorted_obs, side="right")
     efdr = np.zeros(n_obs, dtype=float)
     efdr[sort_idx] = n_perm_sig / n_obs_sig
 

@@ -457,50 +457,40 @@ generated/statsmodels.stats.multitest.multipletests.html
     pvalues = []
     fnum = []
     bnum = []
-    countsdf = (
-        data.groupby([annotation_col, group_col])
-        .agg(["count"])[(identifier_col, "count")]
-        .reset_index()
+    # Aggregate only the identifier column, without copying unrelated metadata.
+    counts = data.groupby([annotation_col, group_col], observed=True)[
+        identifier_col
+    ].count()
+    counts = counts[
+        counts.index.get_level_values(group_col).isin([foreground_id, background_id])
+    ]
+    foreground_ids = (
+        data.loc[data[group_col] == foreground_id, [annotation_col, identifier_col]]
+        .groupby(annotation_col, observed=True)[identifier_col]
+        .agg(",".join)
     )
-    countsdf.columns = [annotation_col, group_col, "count"]
-    mask_in_foreground = countsdf[group_col] == foreground_id
-    terms_in_foreground = countsdf.loc[mask_in_foreground, annotation_col].unique()
-    for annotation in terms_in_foreground:
-        counts = countsdf[countsdf[annotation_col] == annotation]
-        num_foreground = int(
-            counts.loc[counts[group_col] == foreground_id, "count"].squeeze()
+    for annotation in foreground_ids.index:
+        num_foreground = int(counts.get((annotation, foreground_id), 0))
+        num_background = int(counts.get((annotation, background_id), 0))
+        if num_foreground < min_detected_in_set:
+            continue
+        _, pvalue = run_fisher(
+            [num_foreground, foreground_pop - num_foreground],
+            [num_background, background_pop - foreground_pop - num_background],
+            alternative="greater",
         )
-        num_background = 0  # initialize to 0 in case all features are foreground
-        num_background = counts.loc[
-            counts[group_col] == background_id, "count"
-        ].squeeze()
-        if isinstance(num_background, pd.Series) and num_background.empty:
-            # if no value is found in counts, an empty series is returned
-            num_background = 0
-
-        if num_foreground >= min_detected_in_set:
-            _, pvalue = run_fisher(
-                [num_foreground, foreground_pop - num_foreground],
-                [num_background, background_pop - foreground_pop - num_background],
-                alternative="greater",
-            )
-            fnum.append(num_foreground)
-            bnum.append(num_background)
-            terms.append(annotation)
-            pvalues.append(pvalue)
-            ids.append(
-                ",".join(
-                    data.loc[
-                        (data[annotation_col] == annotation)
-                        & (data[group_col] == foreground_id),
-                        identifier_col,
-                    ]
-                )
-            )
+        fnum.append(num_foreground)
+        bnum.append(num_background)
+        terms.append(annotation)
+        pvalues.append(pvalue)
+        ids.append(foreground_ids.get(annotation, ""))
     if len(pvalues) >= 1:
         if correction == "efdr":
             rejected, padj = permutations_enrichment._compute_efdr_for_enrichment(
-                data=data.loc[data[group_col].isin([foreground_id, background_id])],
+                data=data.loc[
+                    data[group_col].isin([foreground_id, background_id]),
+                    [annotation_col, identifier_col],
+                ],
                 observed_pvalues=pvalues,
                 foreground_pop=foreground_pop,
                 background_pop=background_pop,

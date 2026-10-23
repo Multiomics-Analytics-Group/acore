@@ -946,3 +946,64 @@ def test_run_gsea_raises_on_duplicate_identifiers():
             regulation_data=regulation_data,
             annotation=annotation,
         )
+
+
+def test_enrichment_efdr_matches_pooled_reference():
+    """The same tail and eligibility rules apply to observed and permuted terms."""
+    from acore.enrichment_analysis.permutations_enrichment import (
+        _compute_efdr_for_enrichment,
+    )
+    from acore.multiple_testing import compute_efdr
+
+    data = pd.DataFrame(
+        {
+            "identifier": ["g0", "g1", "g2", "g3", "g1", "g4"],
+            "annotation": ["a", "a", "a", "b", "b", "b"],
+        }
+    )
+    observed = [0.05, 0.3, 1.0]
+    rng = np.random.default_rng(3)
+    pooled = []
+    for _ in range(30):
+        drawn = set(rng.choice(8, 3, replace=False))
+        pvalues = []
+        for members in ({0, 1, 2}, {1, 3, 4}):
+            n_fg = len(members & drawn)
+            p = stats.fisher_exact(
+                [[n_fg, 3 - n_fg], [3 - n_fg, 2 + n_fg]], alternative="greater"
+            ).pvalue
+            pvalues.append(1.0 if n_fg < 2 else p)
+        pooled.append(pvalues)
+    expected = compute_efdr(observed, pooled)
+    actual = _compute_efdr_for_enrichment(
+        data,
+        observed,
+        foreground_pop=3,
+        background_pop=8,
+        min_detected_in_set=2,
+        annotation_col="annotation",
+        identifier_col="identifier",
+        permutations=30,
+        alpha=0.05,
+        seed=3,
+    )
+    np.testing.assert_array_equal(actual[0], expected[0])
+    np.testing.assert_allclose(actual[1], expected[1])
+
+
+def test_run_enrichment_greater_keeps_foreground_cutoff():
+    data = pd.DataFrame(
+        {
+            "annotation": ["absent", "rare", "common", "common"],
+            "identifier": ["g0", "g1", "g1", "g2"],
+            "group": ["bg", "fg", "fg", "fg"],
+        }
+    )
+    result = ea.run_enrichment(data, "fg", "bg", 2, 3)
+    assert result["terms"].tolist() == ["common"]
+
+
+@pytest.mark.parametrize("alternative", ["less", "two-sided"])
+def test_run_enrichment_does_not_accept_other_alternatives(alternative):
+    with pytest.raises(TypeError, match="alternative"):
+        ea.run_enrichment(pd.DataFrame(), "fg", "bg", 2, 3, alternative=alternative)

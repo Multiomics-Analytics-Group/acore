@@ -111,3 +111,25 @@ def test_compute_efdr_rejected_respects_alpha():
     permuted = [np.array([0.5, 0.6, 0.7, 0.8])] * 10
     rejected, efdr = compute_efdr(observed, permuted, alpha=0.05)
     np.testing.assert_array_equal(rejected, efdr <= 0.05)
+
+
+def test_compute_efdr_streams_permutations():
+    """Accept a single-pass stream and match independent pooled threshold counts."""
+    observed = np.array([0.5, 0.1, 0.1, 1.0])
+    permutations = [[0.01, 0.4, 1.0], [0.1, 0.6], [0.2, 0.9, 1.0]]
+    pooled = np.concatenate(permutations)
+    order = np.argsort(observed)
+    thresholds = observed[order]
+    raw = np.array(
+        [(pooled <= p).sum() / 3 / (observed <= p).sum() for p in thresholds]
+    )
+    expected = np.empty(4)
+    expected[order] = np.clip(np.minimum.accumulate(raw[::-1])[::-1], 0, 1)
+    rejected, actual = compute_efdr(observed, (np.array(p) for p in permutations))
+    np.testing.assert_allclose(actual, expected)
+    np.testing.assert_array_equal(rejected, expected <= 0.05)
+
+
+def test_compute_efdr_empty_stream_raises():
+    with pytest.raises(ValueError, match="at least one permutation"):
+        compute_efdr([0.1], iter(()))
