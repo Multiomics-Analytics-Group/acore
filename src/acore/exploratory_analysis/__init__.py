@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import pandas as pd
 import scipy.stats
@@ -194,6 +196,40 @@ def extract_percentage_missing(
     return groups
 
 
+def _get_annotations(data, annotation_cols, group):
+    """Select annotation columns (or index levels) with a positional index and
+    return the columns which should not be used as features."""
+    index_names = [name for name in data.index.names if name is not None]
+    missing_annotation_cols = [
+        col
+        for col in annotation_cols
+        if col not in data.columns and col not in index_names
+    ]
+    if missing_annotation_cols:
+        warnings.warn(
+            f"Annotation columns not found in data columns or index: "
+            f"{missing_annotation_cols}. They are ignored."
+        )
+    annotation_cols = [
+        col for col in annotation_cols if col not in missing_annotation_cols
+    ]
+    # positional index, as the group labels used as index are not unique
+    annotations = pd.DataFrame(
+        {
+            col: (
+                data[col].to_numpy()
+                if col in data.columns
+                else data.index.get_level_values(col)
+            )
+            for col in annotation_cols
+        },
+        index=pd.RangeIndex(len(data)),
+    )
+    # annotation columns are not used as features
+    non_feature_cols = set(annotation_cols).intersection(data.columns)
+    return annotations, non_feature_cols.difference([group])
+
+
 def run_pca(
     data,
     drop_cols=None,
@@ -212,10 +248,11 @@ def run_pca(
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
                  (with additional columns 'group', 'sample' and 'subject').
     :param list drop_cols: column labels to be dropped from the dataframe.
-                           Default is ['sample', 'subject'] if None.
+                           Default is [] if None.
     :param str group: column label containing group identifiers.
     :param list annotation_cols: list of columns to be added in the scatter plot annotation.
-                                 Default is ['sample'] if None.
+                                 Default is [] if None. Can be columns or index
+                                 level names; missing ones are ignored with a warning.
     :param int components: number of components to keep.
     :param bool dropna: if True removes all columns with any missing values.
     :return: tuple: 1) three pandas dataframes: components, loadings and variance; 2)
@@ -228,9 +265,9 @@ def run_pca(
     """
 
     if annotation_cols is None:
-        annotation_cols = ["sample"]
+        annotation_cols = []
     if drop_cols is None:
-        drop_cols = ["sample", "subject"]
+        drop_cols = []
     np.random.seed(112736)
     var_exp = []
     args = {}
@@ -238,13 +275,8 @@ def run_pca(
         raise ValueError("Dataframe is empty.")
 
     df = data.copy()
-    annotations = pd.DataFrame()
-    if (
-        annotation_cols is not None
-        and len(list(set(annotation_cols).intersection(data.columns))) > 0
-    ):
-        annotations = data.set_index(group)[annotation_cols]
-    drop_cols_int = list(set(drop_cols).intersection(df.columns))
+    annotations, non_feature_cols = _get_annotations(data, annotation_cols, group)
+    drop_cols_int = list((set(drop_cols) | non_feature_cols).intersection(df.columns))
     if len(drop_cols_int) > 0:
         df = df.drop(drop_cols_int, axis=1)
 
@@ -273,25 +305,16 @@ def run_pca(
             "group": "group",
         }
         if components == 2:
-            resultDf = pd.DataFrame(X, index=y, columns=["x", "y"])
-            resultDf = resultDf.assign(**annotations)
-            resultDf = resultDf.reset_index()
-            resultDf.columns = ["group", "x", "y"] + annotation_cols
-
+            pca_cols = ["x", "y"]
             loadings.columns = ["x", "y", "value"]
         if components > 2:
             args.update({"z_title": "PC3" + f" ({var_exp[2]:.2f})"})
-            resultDf = pd.DataFrame(X, index=y)
-            resultDf = resultDf.assign(**annotations)
-            resultDf = resultDf.reset_index()
-            pca_cols = []
-            loading_cols = []
-            if components > 3:
-                pca_cols = [str(i) for i in resultDf.columns[4:]]
-                loading_cols = [str(i) for i in loadings.columns[3:]]
-
-            resultDf.columns = ["group", "x", "y", "z"] + pca_cols
+            pca_cols = ["x", "y", "z"] + [str(i) for i in range(3, components)]
+            loading_cols = [str(i) for i in loadings.columns[3:]]
             loadings.columns = ["x", "y", "z"] + loading_cols
+        resultDf = pd.DataFrame(X, columns=pca_cols)
+        resultDf.insert(0, "group", y)
+        resultDf = pd.concat([resultDf, annotations], axis=1)
 
     return (resultDf, loadings, var_exp), args
 
@@ -316,11 +339,12 @@ def run_tsne(
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
                  (with additional columns 'group', 'sample' and 'subject').
     :param list drop_cols: column labels to be dropped from the dataframe.
-    Default is ['sample', 'subject'] if None.
+    Default is [] if None.
     :param str group: column label containing group identifiers.
     :param int components: dimension of the embedded space.
     :param list annotation_cols: list of columns to be added in the scatter plot annotation.
-                                 Default is ['sample'] if None.
+                                 Default is [] if None. Can be columns or index
+                                 level names; missing ones are ignored with a warning.
     :param int perplexity: related to the number of nearest neighbors that is used
                            in other manifold learning algorithms.
                            Consider selecting a value between 5 and 50.
@@ -345,26 +369,22 @@ def run_tsne(
                         )
     """
     if annotation_cols is None:
-        annotation_cols = ["sample"]
+        annotation_cols = []
     if drop_cols is None:
-        drop_cols = ["sample", "subject"]
+        drop_cols = []
     result = {}
     args = {}
     df = data.copy()
-    if len(set(drop_cols).intersection(df.columns)) == len(drop_cols):
-        df = df.drop(drop_cols, axis=1)
+    annotations, non_feature_cols = _get_annotations(data, annotation_cols, group)
+    df = df.drop(
+        list((set(drop_cols) | non_feature_cols).intersection(df.columns)), axis=1
+    )
     df = df.set_index(group)
     if dropna:
         df = df.dropna(axis=1)
     df = df.select_dtypes(["number"])
     X = df.values
     y = df.index
-    annotations = pd.DataFrame()
-    if (
-        annotation_cols is not None
-        and len(list(set(annotation_cols).intersection(data.columns))) > 0
-    ):
-        annotations = data[annotation_cols]
     if X.size > 0:
         tsne = TSNE(
             n_components=components,
@@ -375,19 +395,13 @@ def run_tsne(
         )
         X = tsne.fit_transform(X)
         args = {"x_title": "C1", "y_title": "C2"}
-        if components == 2:
-            resultDf = pd.DataFrame(X, index=y, columns=["x", "y"])
-            resultDf = resultDf.reset_index()
-            resultDf.columns = ["group", "x", "y"]
+        embedding_cols = ["x", "y"]
         if components > 2:
             args.update({"z_title": "C3"})
-            resultDf = pd.DataFrame(X, index=y)
-            resultDf = resultDf.reset_index()
-            cols = []
-            if len(components) > 4:
-                cols = resultDf.columns[4:]
-            resultDf.columns = ["group", "x", "y", "z"] + cols
-        resultDf = resultDf.join(annotations)
+            embedding_cols = ["x", "y", "z"] + [str(i) for i in range(3, components)]
+        resultDf = pd.DataFrame(X, columns=embedding_cols)
+        resultDf.insert(0, "group", y)
+        resultDf = pd.concat([resultDf, annotations], axis=1)
         result["tsne"] = resultDf
     return result, args
 
@@ -410,10 +424,11 @@ def run_umap(
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
                  (with additional columns 'group', 'sample' and 'subject').
     :param list drop_cols: column labels to be dropped from the dataframe.
-                           Default is ['sample', 'subject'] if None.
+                           Default is [] if None.
     :param str group: column label containing group identifiers.
     :param list annotation_cols: list of columns to be added in the scatter plot annotation.
-                                 Default is ['sample'] if None.
+                                 Default is [] if None. Can be columns or index
+                                 level names; missing ones are ignored with a warning.
     :param int n_neighbors: number of neighboring points used
                             in local approximations of manifold structure.
     :param float min_dist: controls how tightly the embedding is allowed compress points together.
@@ -435,28 +450,23 @@ def run_umap(
                         )
     """
     if annotation_cols is None:
-        annotation_cols = ["sample"]
+        annotation_cols = []
     if drop_cols is None:
-        drop_cols = ["sample", "subject"]
+        drop_cols = []
     np.random.seed(1145536)
     result = {}
     args = {}
     df = data.copy()
-    if len(set(drop_cols).intersection(df.columns)) == len(drop_cols):
-        df = df.drop(drop_cols, axis=1)
+    annotations, non_feature_cols = _get_annotations(data, annotation_cols, group)
+    df = df.drop(
+        list((set(drop_cols) | non_feature_cols).intersection(df.columns)), axis=1
+    )
     df = df.set_index(group)
     if dropna:
         df = df.dropna(axis=1)
     df = df.select_dtypes(["number"])
     X = df.values
     y = df.index
-
-    annotations = pd.DataFrame()
-    if (
-        annotation_cols is not None
-        and len(list(set(annotation_cols).intersection(data.columns))) > 0
-    ):
-        annotations = data[annotation_cols]
 
     if not X.size:
         return result, args
@@ -465,13 +475,10 @@ def run_umap(
         n_neighbors=n_neighbors, min_dist=min_dist, metric=metric
     ).fit_transform(X)
     args = {"x_title": "C1", "y_title": "C2"}
-    resultDf = pd.DataFrame(X, index=y)
-    resultDf = resultDf.reset_index()
-    cols = []
-    if len(resultDf.columns) > 3:
-        cols = resultDf.columns[3:]
-    resultDf.columns = ["group", "x", "y"] + cols
-    resultDf = resultDf.join(annotations)
+    embedding_cols = ["x", "y"] + [str(i) for i in range(2, X.shape[1])]
+    resultDf = pd.DataFrame(X, columns=embedding_cols)
+    resultDf.insert(0, "group", y)
+    resultDf = pd.concat([resultDf, annotations], axis=1)
     result["umap"] = resultDf
 
     return result, args
