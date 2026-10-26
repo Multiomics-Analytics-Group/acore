@@ -15,6 +15,7 @@ import gseapy as gp
 import pandas as pd
 from pandera.typing.pandas import DataFrame
 
+from acore.enrichment_analysis import permutations_enrichment
 from acore.enrichment_analysis.annotate import annotate_features
 from acore.enrichment_analysis.statistical_tests.fisher import run_fisher
 from acore.enrichment_analysis.statistical_tests.kolmogorov_smirnov import (
@@ -139,10 +140,13 @@ def run_up_down_regulation_enrichment(
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
     lfc_cutoff: float = 1,
+    permutations: int = 0,
+    seed: int | None = None,
 ) -> DataFrame[EnrichmentAnalysisSchema]:
     """
     This function runs a simple enrichment analysis for significantly regulated proteins
     distinguishing between upregulation per group defined by the `groups`.
+    Only overrepresentation is tested using one-sided Fisher's exact tests.
 
     :param pandas.DataFrame regulation_data: pandas.DataFrame resulting from differential regulation
         analysis (CKG's regulation table).
@@ -161,9 +165,15 @@ reference/api/pandas.DataFrame.groupby.html
         if feature belongs to foreground or background.
     :param str method: method used to compute enrichment
         (only 'fisher' is supported currently).
-    :param str correction: method to be used for multiple-testing correction
+    :param str correction: method to be used for multiple-testing correction.
+        Use ``'efdr'`` to apply empirical FDR via permutation (requires
+        ``permutations > 0``).
     :param float alpha: adjusted p-value cutoff to define significance
     :param float lfc_cutoff: log fold-change cutoff to define practical significance
+    :param int permutations: number of permutations used to estimate the empirical FDR
+        when ``correction='efdr'``. Ignored for other correction methods.
+    :param int | None seed: seed of the random number generator used for the
+        permutations when ``correction='efdr'``, for reproducible results.
     :return: DataFrame adhering to EnrichmentAnalysisSchema
     :rtype: DataFrame[EnrichmentAnalysisSchema]
 
@@ -227,6 +237,8 @@ reference/api/pandas.DataFrame.groupby.html
                 min_detected_in_set=min_detected_in_set,
                 correction=correction,
                 correction_alpha=correction_alpha,
+                permutations=permutations,
+                seed=seed,
             )
             if _enrichment.empty:
                 logger.warning(
@@ -242,6 +254,8 @@ reference/api/pandas.DataFrame.groupby.html
 
     if not ret.empty:
         ret["rejected"] = ret["rejected"].astype(bool)
+        # whole numbers only (e.g. eFDR of 0 or 1) are converted to int upstream
+        ret[["pvalue", "padj"]] = ret[["pvalue", "padj"]].astype("Float64")
 
     ret = EnrichmentAnalysisSchema.validate(ret)
 
@@ -259,10 +273,12 @@ def run_regulation_enrichment(
     min_detected_in_set: int = 2,
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
+    permutations: int = 0,
+    seed: int | None = None,
 ) -> pd.DataFrame:
     """
     This function runs a simple enrichment analysis for significantly regulated features
-    in a dataset.
+    in a dataset. Only overrepresentation is tested using one-sided Fisher's exact tests.
 
     :param regulation_data: pandas.DataFrame resulting from differential regulation analysis.
     :param annotation: pandas.DataFrame with annotations for features
@@ -277,7 +293,13 @@ def run_regulation_enrichment(
     :param str group_col: column name for new column in annotation dataframe determining
         if feature belongs to foreground or background.
     :param str method: method used to compute enrichment (only 'fisher' is supported currently).
-    :param str correction: method to be used for multiple-testing correction
+    :param str correction: method to be used for multiple-testing correction.
+        Use ``'efdr'`` to apply empirical FDR via permutation (requires
+        ``permutations > 0``).
+    :param int permutations: number of permutations used to estimate the empirical FDR
+        when ``correction='efdr'``. Ignored for other correction methods.
+    :param int | None seed: seed of the random number generator used for the
+        permutations when ``correction='efdr'``, for reproducible results.
     :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
         'background', 'foreground_pop', 'background_pop', 'pvalue', 'padj' and 'rejected'.
 
@@ -329,6 +351,8 @@ def run_regulation_enrichment(
         correction=correction,
         min_detected_in_set=min_detected_in_set,
         correction_alpha=correction_alpha,
+        permutations=permutations,
+        seed=seed,
     ).convert_dtypes(convert_boolean=False)
     return result
 
@@ -346,10 +370,13 @@ def run_enrichment(
     method: str = "fisher",
     correction: str = "fdr_bh",
     correction_alpha: float = 0.05,
+    permutations: int = 0,
+    seed: int | None = None,
 ) -> pd.DataFrame:
     """
-    Computes enrichment of the foreground relative to a given backgroung,
-    using Fisher's exact test, and corrects for multiple hypothesis testing.
+    Computes overrepresentation of the foreground relative to a given background,
+    using Fisher's exact test with ``alternative='greater'``, and corrects for
+    multiple hypothesis testing.
 
     :param data: pandas.DataFrame with annotations for dataset features
         (columns: 'annotation', 'identifier', 'group').
@@ -365,13 +392,26 @@ def run_enrichment(
     :param str method: method used to compute enrichment
                        (only 'fisher' is supported currently).
     :param str correction: method to be used for multiple-testing correction.
+        Use ``'efdr'`` to apply empirical FDR via permutation (requires
+        ``permutations > 0``).
+        See `statsmodels.stats.multitest.multipletests`_ for other supported methods.
+
+        .. _statsmodels.stats.multitest.multipletests: https://www.statsmodels.org/dev/\
+generated/statsmodels.stats.multitest.multipletests.html
+
     :param float correction_alpha: adjusted p-value cutoff to define significance.
+    :param int permutations: number of permutations used to estimate the empirical FDR
+        when ``correction='efdr'``. Ignored for other correction methods.
+    :param int | None seed: seed of the random number generator used for the
+        permutations when ``correction='efdr'``, for reproducible results.
+        Must be greater than 0 when ``correction='efdr'``.
     :return: pandas.DataFrame with columns: annotation terms, features,
         number of foreground/background features in each term,
         p-values and corrected p-values
         Columns are: 'terms', 'identifiers',
         'foreground', 'background', 'foreground_pop', 'background_pop',
         'pvalue', 'padj' and 'rejected'.
+    :raises ValueError: if ``correction='efdr'`` and ``permutations`` is not > 0.
 
     Example::
 
@@ -386,60 +426,87 @@ def run_enrichment(
             identifier_col='identifier',
             method='fisher',
          )
+
+    Example with eFDR::
+
+        result = run_enrichment(
+            data,
+            foreground='foreground',
+            background='background',
+            foreground_pop=len(foreground_list),
+            background_pop=len(background_list),
+            annotation_col='annotation',
+            group_col='group',
+            identifier_col='identifier',
+            method='fisher',
+            correction='efdr',
+            permutations=100,
+         )
     """
     if method != "fisher":
         raise ValueError("Only Fisher's exact test is supported at the moment.")
+
+    if correction == "efdr" and permutations <= 0:
+        raise ValueError(
+            "permutations must be greater than 0 when correction='efdr'. "
+            "Left at zero so it is set explicitly to e.g. 10000."
+        )
 
     terms = []
     ids = []
     pvalues = []
     fnum = []
     bnum = []
-    countsdf = (
-        data.groupby([annotation_col, group_col])
-        .agg(["count"])[(identifier_col, "count")]
-        .reset_index()
+    # Aggregate only the identifier column, without copying unrelated metadata.
+    counts = data.groupby([annotation_col, group_col], observed=True)[
+        identifier_col
+    ].count()
+    counts = counts[
+        counts.index.get_level_values(group_col).isin([foreground_id, background_id])
+    ]
+    foreground_ids = (
+        data.loc[data[group_col] == foreground_id, [annotation_col, identifier_col]]
+        .groupby(annotation_col, observed=True)[identifier_col]
+        .agg(",".join)
     )
-    countsdf.columns = [annotation_col, group_col, "count"]
-    mask_in_foreground = countsdf[group_col] == foreground_id
-    terms_in_foreground = countsdf.loc[mask_in_foreground, annotation_col].unique()
-    for annotation in terms_in_foreground:
-        counts = countsdf[countsdf[annotation_col] == annotation]
-        num_foreground = int(
-            counts.loc[counts[group_col] == foreground_id, "count"].squeeze()
+    for annotation in foreground_ids.index:
+        num_foreground = int(counts.get((annotation, foreground_id), 0))
+        num_background = int(counts.get((annotation, background_id), 0))
+        if num_foreground < min_detected_in_set:
+            continue
+        _, pvalue = run_fisher(
+            [num_foreground, foreground_pop - num_foreground],
+            [num_background, background_pop - foreground_pop - num_background],
+            alternative="greater",
         )
-        num_background = 0  # initialize to 0 in case all features are foreground
-        num_background = counts.loc[
-            counts[group_col] == background_id, "count"
-        ].squeeze()
-        if isinstance(num_background, pd.Series) and num_background.empty:
-            # if no value is found in counts, an empty series is returned
-            num_background = 0
-
-        if num_foreground >= min_detected_in_set:
-            _, pvalue = run_fisher(
-                [num_foreground, foreground_pop - num_foreground],
-                [num_background, background_pop - foreground_pop - num_background],
-            )
-            fnum.append(num_foreground)
-            bnum.append(num_background)
-            terms.append(annotation)
-            pvalues.append(pvalue)
-            ids.append(
-                ",".join(
-                    data.loc[
-                        (data[annotation_col] == annotation)
-                        & (data[group_col] == foreground_id),
-                        identifier_col,
-                    ]
-                )
-            )
+        fnum.append(num_foreground)
+        bnum.append(num_background)
+        terms.append(annotation)
+        pvalues.append(pvalue)
+        ids.append(foreground_ids.get(annotation, ""))
     if len(pvalues) >= 1:
-        rejected, padj = apply_pvalue_correction(
-            pvalues,
-            alpha=correction_alpha,
-            method=correction,
-        )
+        if correction == "efdr":
+            rejected, padj = permutations_enrichment._compute_efdr_for_enrichment(
+                data=data.loc[
+                    data[group_col].isin([foreground_id, background_id]),
+                    [annotation_col, identifier_col],
+                ],
+                observed_pvalues=pvalues,
+                foreground_pop=foreground_pop,
+                background_pop=background_pop,
+                min_detected_in_set=min_detected_in_set,
+                annotation_col=annotation_col,
+                identifier_col=identifier_col,
+                permutations=permutations,
+                alpha=correction_alpha,
+                seed=seed,
+            )
+        else:
+            rejected, padj = apply_pvalue_correction(
+                pvalues,
+                alpha=correction_alpha,
+                method=correction,
+            )
         result = pd.DataFrame(
             {
                 "terms": terms,
