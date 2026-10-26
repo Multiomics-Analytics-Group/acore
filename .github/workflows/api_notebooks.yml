@@ -1,0 +1,70 @@
+name: Test API notebooks
+
+# Notebooks and tests which depend on external APIs (PRIDE, UniProt, journal websites).
+# The notebooks are not executed during the docs build (see `nb_execution_excludepatterns`
+# in docs/conf.py) to keep the build fast and independent of API availability.
+on:
+  schedule:
+    - cron: "17 4 * * 1" # weekly on Monday
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - "src/acore/io/**"
+      - "docs/example_data/**"
+      - "docs/examples_single_analysis/enrichment_analysis.*"
+      - "tests_api/**"
+      - ".github/workflows/api_notebooks.yml"
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "src/acore/io/**"
+      - "docs/example_data/**"
+      - "docs/examples_single_analysis/enrichment_analysis.*"
+      - "tests_api/**"
+      - ".github/workflows/api_notebooks.yml"
+
+# cancel runs superseded by a newer push to the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-notebooks:
+    runs-on: ubuntu-latest
+    # external APIs can hang, so do not wait for the default 6h limit
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # needed for the package version (vuecore requires acore>=0.3.3)
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install unrar
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unrar
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install ".[docs,all]" pytest ipykernel openpyxl
+      - name: Test API functions
+        run: python -m pytest tests_api
+      - name: Execute API notebooks
+        working-directory: docs
+        run: |
+          jupyter execute --inplace --timeout=600 \
+            example_data/Download_PRIDE_data.ipynb \
+            example_data/ovarian_cancer.ipynb \
+            examples_single_analysis/enrichment_analysis.ipynb
+      - name: Upload executed notebooks and fetched annotations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-notebooks
+          path: |
+            docs/example_data/*.ipynb
+            docs/examples_single_analysis/enrichment_analysis.ipynb
+            example_data/PXD010372/processed/annotations_*.csv
+          if-no-files-found: ignore

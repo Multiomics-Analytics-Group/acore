@@ -12,6 +12,13 @@
 # >
 # > https://doi.org/10.1016/j.cell.2018.08.065.
 
+# %% [markdown]
+# ```{warning}
+# The outputs shown in this notebook are cached: it is not executed during the
+# documentation build. To refresh them, re-run the notebook locally and commit the
+# updated `.ipynb` file.
+# ```
+
 # %%
 # %pip install acore openpyxl
 
@@ -107,7 +114,10 @@ pgs
 # saved it as a csv file. You can load it for our GitHub repository:
 
 # %%
-# ! ToDo: link file after it is available on the main branch
+fname_meta = Path(
+    "../examples_single_analysis/example_data/PXD010372/processed/meta_patients.csv"
+)
+pd.read_csv(fname_meta, index_col=0)
 
 # %% [markdown]
 # Done.

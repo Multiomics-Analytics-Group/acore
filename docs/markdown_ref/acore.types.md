@@ -221,9 +221,6 @@ Convert this model’s schema to JSON.
 
 Serialize schema metadata into json-schema format.
 
-* **Parameters:**
-  **dataframe_schema** – schema to write to json-schema format.
-
 #### NOTE
 This function is currently does not fully specify a pandera schema,
 and is primarily used internally to render OpenAPI docs via the
@@ -483,9 +480,6 @@ Convert this model’s schema to JSON.
 
 Serialize schema metadata into json-schema format.
 
-* **Parameters:**
-  **dataframe_schema** – schema to write to json-schema format.
-
 #### NOTE
 This function is currently does not fully specify a pandera schema,
 and is primarily used internally to render OpenAPI docs via the
@@ -710,9 +704,6 @@ Convert this model’s schema to JSON.
 #### *classmethod* to_json_schema()
 
 Serialize schema metadata into json-schema format.
-
-* **Parameters:**
-  **dataframe_schema** – schema to write to json-schema format.
 
 #### NOTE
 This function is currently does not fully specify a pandera schema,
@@ -943,9 +934,6 @@ Convert this model’s schema to JSON.
 
 Serialize schema metadata into json-schema format.
 
-* **Parameters:**
-  **dataframe_schema** – schema to write to json-schema format.
-
 #### NOTE
 This function is currently does not fully specify a pandera schema,
 and is primarily used internally to render OpenAPI docs via the
@@ -1159,9 +1147,6 @@ Convert this model’s schema to JSON.
 
 Serialize schema metadata into json-schema format.
 
-* **Parameters:**
-  **dataframe_schema** – schema to write to json-schema format.
-
 #### NOTE
 This function is currently does not fully specify a pandera schema,
 and is primarily used internally to render OpenAPI docs via the
@@ -1370,9 +1355,6 @@ Convert this model’s schema to JSON.
 #### *classmethod* to_json_schema()
 
 Serialize schema metadata into json-schema format.
-
-* **Parameters:**
-  **dataframe_schema** – schema to write to json-schema format.
 
 #### NOTE
 This function is currently does not fully specify a pandera schema,

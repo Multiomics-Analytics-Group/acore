@@ -44,6 +44,19 @@ sphinx-apidoc --force --implicit-namespaces --module-first -o reference ../src/a
 python fetch_files.py
 # parse main repository README
 python split_readme.py
-# build docs
-sphinx-build -n -W --keep-going -b html ./ ./_build/
+# build docs (-j auto executes the notebooks in parallel)
+sphinx-build -n -W --keep-going -j auto -b html ./ ./_build/
 ```
+
+## Notebooks depending on external APIs
+
+Notebooks which mainly download data from external APIs (PRIDE, journal websites) are
+not executed during the docs build (see `nb_execution_excludepatterns` in `conf.py`).
+They are executed in the separate `Test API notebooks` GitHub Actions workflow
+(`.github/workflows/api_notebooks.yml`) together with the API tests in `tests_api`,
+weekly and on changes to `src/acore/io`.
+
+The enrichment analysis example loads cached UniProt annotations from
+`example_data/PXD010372/processed/annotations_100.csv` and only queries UniProt if
+that file is not available. In that case the fetched annotations are saved to this
+path (and uploaded as an artifact by the `Test API notebooks` workflow).

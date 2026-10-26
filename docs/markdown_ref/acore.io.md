@@ -1,6 +1,6 @@
 # acore.io package
 
-### download_PRIDE_data(pxd_id, file_name, to='.', user='', password='', date_field='publicationDate') → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)
+### download_PRIDE_data(pxd_id, file_name, to='.', user='', password='', date_field='publicationDate', overwrite: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
 This function downloads a project file from the PRIDE repository. To see more of the
 pride API, have a look at
@@ -16,6 +16,8 @@ or EBI’s commandline tool pridepy
   * **password** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – password to access biomedical database server if required.
   * **date_field** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – projects deposited in PRIDE are search based on date, either
     submissionData or publicationDate (default)
+  * **overwrite** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if False (default), skip the download if the file already
+    exists in the target directory. The project metadata is returned regardless.
 
 ### download_file(url: [str](https://docs.python.org/3/builtins/stdtypes.html#str), local_filename: [str](https://docs.python.org/3/builtins/stdtypes.html#str)) → [None](https://docs.python.org/3/builtins/constants.html#None)
 
@@ -24,8 +26,14 @@ Download a file from the internet.
 ### unrar(filepath, to)
 
 Decompress RAR file
-:param str filepath: path to rar file
-:param str to: where to extract all files
+
+Uses the system `unrar x` command, as extraction through `rarfile` can fail
+for some archives (`rarfile` falls back to other tools such as `bsdtar` if
+`unrar` is not on PATH). Falls back to `rarfile` if `unrar` is not found.
+
+* **Parameters:**
+  * **filepath** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – path to rar file
+  * **to** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – where to extract all files
 
 ## Subpackages
 
@@ -128,7 +136,7 @@ Parse KEGG pathway entries into ENTRY -> {NAME, DESCRIPTION}.
 
 Downlaod data from PRIDE database.
 
-### download_PRIDE_data(pxd_id, file_name, to='.', user='', password='', date_field='publicationDate') → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)
+### download_PRIDE_data(pxd_id, file_name, to='.', user='', password='', date_field='publicationDate', overwrite: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
 This function downloads a project file from the PRIDE repository. To see more of the
 pride API, have a look at
@@ -144,11 +152,19 @@ or EBI’s commandline tool pridepy
   * **password** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – password to access biomedical database server if required.
   * **date_field** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – projects deposited in PRIDE are search based on date, either
     submissionData or publicationDate (default)
+  * **overwrite** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if False (default), skip the download if the file already
+    exists in the target directory. The project metadata is returned regardless.
 
 ## acore.io.uncompress module
 
 ### unrar(filepath, to)
 
 Decompress RAR file
-:param str filepath: path to rar file
-:param str to: where to extract all files
+
+Uses the system `unrar x` command, as extraction through `rarfile` can fail
+for some archives (`rarfile` falls back to other tools such as `bsdtar` if
+`unrar` is not on PATH). Falls back to `rarfile` if `unrar` is not found.
+
+* **Parameters:**
+  * **filepath** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – path to rar file
+  * **to** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – where to extract all files
