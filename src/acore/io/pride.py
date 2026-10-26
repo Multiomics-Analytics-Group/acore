@@ -1,12 +1,20 @@
 """Downlaod data from PRIDE database."""
 
+from pathlib import Path
+
 import requests
 
 from .ftp import download_from_ftp
 
 
 def download_PRIDE_data(
-    pxd_id, file_name, to=".", user="", password="", date_field="publicationDate"
+    pxd_id,
+    file_name,
+    to=".",
+    user="",
+    password="",
+    date_field="publicationDate",
+    overwrite: bool = False,
 ) -> dict:
     """
     This function downloads a project file from the PRIDE repository. To see more of the
@@ -22,6 +30,8 @@ def download_PRIDE_data(
     :param str password: password to access biomedical database server if required.
     :param str date_field: projects deposited in PRIDE are search based on date, either
         submissionData or publicationDate (default)
+    :param bool overwrite: if False (default), skip the download if the file already
+        exists in the target directory. The project metadata is returned regardless.
     """
     ftp_pride = (  # same as data ["_links"]["datasetFtpUrl"]["href"]
         "ftp://ftp.pride.ebi.ac.uk/pride/data/archive/YEAR/MONTH/PXDID/FILE_NAME"
@@ -39,6 +49,10 @@ def download_PRIDE_data(
         .replace("PXDID", pxd_id)
         .replace("FILE_NAME", file_name)
     )
-    download_from_ftp(ftp_url, user, password, to, file_name)
+    target = Path(to) / file_name
+    if target.exists() and not overwrite:
+        print(f"File already downloaded, skipping: {target}")
+    else:
+        download_from_ftp(ftp_url, user, password, to, file_name)
 
     return data
