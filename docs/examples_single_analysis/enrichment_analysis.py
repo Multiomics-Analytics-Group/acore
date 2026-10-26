@@ -22,6 +22,8 @@ from pathlib import Path
 
 import dsp_pandas
 import pandas as pd
+import plotly.graph_objects as go
+from vuecore import viz
 
 import acore
 import acore.differential_regulation
@@ -120,14 +122,26 @@ diff_reg.query("rejected")
 # fields: [return_fields](https://www.uniprot.org/help/return_fields)
 
 # %%
+from urllib.error import HTTPError
+
 from acore.io.uniprot import fetch_annotations, process_annotations
 
-fname_annotations = f"downloaded/annotations_{features_to_sample}.csv"
+# annotations are cached in the repository to avoid querying UniProt on each docs build
+fname_annotations = (
+    f"example_data/PXD010372/processed/annotations_{features_to_sample}.csv"
+)
 fname = Path(fname_annotations)
+url_annotations = f"{base_path}/annotations_{features_to_sample}.csv"
 try:
     annotations = pd.read_csv(fname, index_col=0)
     print(f"Loaded annotations from {fname}")
 except FileNotFoundError:
+    try:
+        annotations = pd.read_csv(url_annotations, index_col=0)
+        print(f"Loaded annotations from {url_annotations}")
+    except (FileNotFoundError, HTTPError):
+        annotations = None
+if annotations is None:
     print(f"Fetching annotations for {df_omics.columns.size} UniProt IDs.")
     # adding 'go' leads to duplicates which are filtered out by `process_annotations`
     FIELDS = "go_p,go_c,go_f,go"
@@ -161,7 +175,8 @@ annotations.groupby("annotation").size().value_counts(ascending=False)
 # %% [markdown]
 # # Enrichment analysis
 # Is done separately for upregulated genes in each group as it's assumed that biological
-# processes are regulated in one direction together.
+# processes are regulated in one direction together. The minimum absolut log2 fold
+# change is `0.553` for the statistically significant protein groups in this example.
 
 # %% tags=["hide-input"]
 diff_reg.query("rejected")[
@@ -191,10 +206,11 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     min_detected_in_set=2,
     lfc_cutoff=1,
 )
+ret
 
 # %% [markdown]
 # we can decrease the cutoff for the log2 fold change to 0.5 and see that we retain
-# more annotations.
+# all targets from the differential expression analysis.
 
 # %%
 ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
@@ -204,6 +220,7 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     min_detected_in_set=2,
     lfc_cutoff=0.5,  # ! the default is 1
 )
+ret
 
 # %% [markdown]
 # And even more if we do not restrict the analysis of finding at least two proteins
@@ -217,7 +234,75 @@ ret = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     min_detected_in_set=1,
     lfc_cutoff=0.5,  # ! the default is 1
 )
+ret
 
+# %% [markdown]
+# ## Multiple testing correction: Benjamini-Hochberg vs. empirical FDR (eFDR)
+# The classic Benjamini-Hochberg (BH) procedure (`correction="fdr_bh"`, the default)
+# corrects the p-values of all tested annotations using only the p-values themselves.
+# The empirical FDR (eFDR, `correction="efdr"`) instead estimates the FDR from
+# permutations, as done in the [mulea](https://github.com/ELTEbioinformatics/mulea) R
+# package ([Turek et al. 2024](https://doi.org/10.1093/bib/bbae301)): in each permutation a random
+# foreground set of the original size is drawn from all measured features and the test
+# is repeated for all annotations. For each p-value threshold $t$ the eFDR is the
+# average number of annotations with a p-value $\leq t$ in the permuted data divided
+# by the number of annotations with a p-value $\leq t$ in the observed data.
+# This takes into account the overlap between annotations (one feature belongs to many
+# GO terms) and the discreteness of Fisher's exact test p-values, which violate the
+# assumptions of the BH procedure.
+#
+# To use it, set `correction="efdr"` and the number of `permutations`
+# (use a large number, e.g. 10000, for stable estimates). Set a `seed` to make the
+# permutations reproducible.
+
+# %%
+enrichment_kwargs = dict(
+    regulation_data=diff_reg,
+    annotation=annotations,
+    pval_col="padj",
+    min_detected_in_set=1,
+    lfc_cutoff=0.5,
+)
+ora_bh = acore.enrichment_analysis.run_up_down_regulation_enrichment(
+    **enrichment_kwargs, correction="fdr_bh"
+)
+ora_efdr = acore.enrichment_analysis.run_up_down_regulation_enrichment(
+    **enrichment_kwargs, correction="efdr", permutations=1000, seed=42
+)
+
+# %% [markdown]
+# Both runs test the same annotations and share the same Fisher's exact test p-values.
+# Only the adjusted p-values (`padj`) and thereby the `rejected` decision differ.
+# Here the comparison for the annotations with the smallest p-values:
+
+# %%
+keys = ["comparison", "direction", "terms"]
+comparison_ora = (
+    ora_bh.set_index(keys)[["foreground", "pvalue", "padj", "rejected"]]
+    .join(
+        ora_efdr.set_index(keys)[["padj", "rejected"]],
+        lsuffix=" BH",
+        rsuffix=" eFDR",
+    )
+    .sort_values("pvalue")
+)
+comparison_ora.head(10)
+
+# %% [markdown]
+# Number of annotations considered significant (adjusted p-value <= 0.05) by each
+# procedure:
+
+# %%
+comparison_ora[["rejected BH", "rejected eFDR"]].sum().to_frame("n significant")
+
+# %% [markdown]
+# In this small example most annotations are supported by a single protein group and
+# share the same discrete p-value of 0.02. In the permuted data many annotations reach
+# this p-value just by chance, so the eFDR of these annotations is 1 and none of them
+# is called significant, whereas BH, which treats the p-values as independent
+# continuous values, only just misses the cutoff. An example where eFDR calls more
+# annotations significant than BH is shown in the
+# [comparison with mulea](nb_ref_efdr_mulea).
 
 # %% [markdown]
 # ## Site specific enrichment analysis
@@ -305,7 +390,7 @@ match.group(1)
 enrichtments = acore.enrichment_analysis.run_ssgsea(
     data=df_omics,
     annotation=annotations,
-    min_size=1,
+    min_size=2,
 )
 enrichtments
 
@@ -350,37 +435,59 @@ loadings
 # for this, which is also developed by the Multiomics Analytics Group.
 
 # %%
-import plotly.graph_objects as go
-from vuecore import viz
-
-args = {"factor": 2, "loadings": 1}  # increase number of loadings or scaling factor
+args = {"factor": 2, "loadings": 2}  # increase number of loadings or scaling factor
 # #! pca_results has three items, but docstring requests only two -> double check
 figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
 figure = go.Figure(data=figure["data"], layout=figure["layout"])
 figure
 
 # %% [markdown]
-# # Compare two distributions - KS test
+# # GSEA (Gene Set Enrichment Analysis)
+# GSEA ranks all measured features (e.g. proteins) by a continuous metric such as the
+# log2 fold-change from differential expression analysis and tests whether the members of
+# a gene set are enriched at the top or bottom of this ranked list.
 #
-# The Kolmogorov-Smirnov test is a non-parametric test that compares two distributions.
-# - we compare the distributions of the two differently upregulated protein groups
-# This is not the best example for comparing distributions, but it shows how to use the
-# KS test.
+# Unlike overrepresentation analysis (ORA), GSEA does **not** require a significance
+# cutoff to define a foreground set: it uses the full ranked list and is therefore less
+# sensitive to the choice of an arbitrary threshold.
+#
+# Here we use `gseapy.prerank` under the hood, which implements the classic weighted
+# Kolmogorov–Smirnov enrichment statistic described in
+# [Subramanian et al. (2005)](https://doi.org/10.1073/pnas.0506580102).
+#
+# See [`gseapy.prerank`](https://gseapy.readthedocs.io/en/latest/run.html#gseapy.prerank)
+# for more details.
 
 # %%
-# plot two histograms of intensity values here
-sel_pgs = ["O43175", "P39059"]
-view = df_omics[sel_pgs].sub(df_omics[sel_pgs].mean())
-ax = view.plot.hist(bins=20, alpha=0.5)
+gsea_results = acore.enrichment_analysis.run_gsea(
+    regulation_data=diff_reg,
+    annotation=annotations,
+    identifier="identifier",
+    ranking_col="log2FC",
+    annotation_col="annotation",
+    identifier_col="identifier",
+    min_size=1,
+    permutation_num=100,
+    seed=42,
+    correction_alpha=0.05,
+)
+gsea_results
 
 # %% [markdown]
-# Let us compare the two centered distributions using the KS test.
+# The normalised enrichment score (NES) summarises the enrichment: positive values
+# indicate that the gene set is enriched among the **up**-regulated features and negative
+# values indicate enrichment among the **down**-regulated features.
+
+# %% [markdown]
+# gseapy reports a permutation-based `FDR q-val` for each gene set (derived from the NES
+# null distribution), so no further correction is needed. The `rejected` column flags
+# gene sets with `FDR q-val <= correction_alpha`.
 
 # %%
-acore.enrichment_analysis.run_kolmogorov_smirnov(view[sel_pgs[0]], view[sel_pgs[1]])
+gsea_results[["Term", "NES", "NOM p-val", "FDR q-val", "rejected"]]
 
-# %% [markdown]
-# The result suggests that the two distributions are from the same distribution.
+# %%
+ax = gsea_results["NES"].plot.hist(title="Distribution of NES", xlabel="NES")
 
 # %% [markdown]
 # Done.

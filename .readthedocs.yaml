@@ -10,9 +10,13 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
-  apt_packages:
-   - unrar
- 
+  jobs:
+    build:
+      # same as the default Read the Docs command, but executing notebooks in
+      # parallel (-j auto) to speed up the build
+      html:
+        - cd docs && python -m sphinx -T -j auto -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
+
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
    configuration: docs/conf.py

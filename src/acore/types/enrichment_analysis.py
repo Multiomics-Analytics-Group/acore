@@ -12,8 +12,8 @@ class EnrichmentAnalysisSchema(DataFrameModel):
     background: int = Field(ge=0)
     foreground_pop: int = Field(gt=0)
     background_pop: int = Field(gt=0)
-    pvalue: float = Field(gt=0, le=1)
-    padj: float = Field(gt=0, le=1)
+    pvalue: float = Field(ge=0, le=1)
+    padj: float = Field(ge=0, le=1)
     rejected: bool = Field(nullable=False)
     direction: str
     comparison: str

@@ -1,5 +1,6 @@
 import unittest
 
+import numpy as np
 import pandas as pd
 import pytest
 from scipy import stats
@@ -68,8 +69,8 @@ def test_run_regulation_enrichment():
             "background": [1, 0, 0],
             "foreground_pop": [4, 4, 4],
             "background_pop": [6, 6, 6],
-            "pvalue": [1.0, 0.4666666666666667, 1.0],
-            "padj": [1.0, 1.0, 1.0],
+            "pvalue": [0.7999999999999999, 0.4, 0.6666666666666667],
+            "padj": [0.7999999999999999, 0.7999999999999999, 0.7999999999999999],
             "rejected": [False, False, False],
         }
     ).convert_dtypes(convert_boolean=False)
@@ -140,18 +141,18 @@ def test_run_regulation_enrichment_pep():
 
     expected = pd.DataFrame(
         {
-            "terms": ["path3", "path1"],  # path2 has no peptides in foreground
+            "terms": ["path1", "path3"],  # path2 has no peptides in foreground
             "identifiers": [
                 # forground peptides concatenated by comma
-                "gene6_pep1,gene9_pep1",
                 "gene1_pep1,gene2_pep1,gene3_pep1",
+                "gene6_pep1,gene9_pep1",
             ],
-            "foreground": [2, 3],
-            "background": [0, 1],
+            "foreground": [3, 2],
+            "background": [1, 0],
             "foreground_pop": [5, 5],
             "background_pop": [8, 8],
-            "pvalue": [0.4642857142857143, 1.0],
-            "padj": [0.9285714285714286, 1.0],
+            "pvalue": [0.5, 0.35714285714285715],
+            "padj": [0.5, 0.5],
             "rejected": [False, False],
         }
     ).convert_dtypes(convert_boolean=False)
@@ -456,36 +457,36 @@ def test_run_up_down_regulation_enrichment_large():
                     0.07094943240454077,
                     0.07094943240454077,
                     0.07094943240454077,
-                    0.07094943240454077,
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0,
+                    0.9961300309597523,
+                    0.5250257997936016,
+                    0.8722910216718266,
+                    0.8722910216718266,
+                    0.8722910216718266,
+                    0.8722910216718266,
                     0.08771929824561403,
                     0.08771929824561403,
                     0.08771929824561403,
                     0.08771929824561403,
-                    0.5087719298245614,
-                    1.0,
+                    0.3859649122807018,
+                    0.45614035087719307,
                 ],
                 "padj": [
-                    0.14189886480908154,
-                    0.14189886480908154,
-                    0.14189886480908154,
-                    0.14189886480908154,
-                    0.14189886480908154,
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0,
+                    0.17737358101135192,
+                    0.17737358101135192,
+                    0.17737358101135192,
+                    0.17737358101135192,
+                    0.9961300309597523,
+                    0.9692122463020295,
+                    0.9692122463020295,
+                    0.9692122463020295,
+                    0.9692122463020295,
+                    0.9692122463020295,
                     0.13157894736842105,
                     0.13157894736842105,
                     0.13157894736842105,
                     0.13157894736842105,
-                    0.6105263157894737,
-                    1.0,
+                    0.45614035087719307,
+                    0.45614035087719307,
                 ],
                 "rejected": [
                     False,
@@ -600,3 +601,409 @@ def test_run_regulation_enrichment_with_duplicates():
             annotation=annotation,
             min_detected_in_set=1,
         )
+
+
+# ---------------------------------------------------------------------------
+# Tests for eFDR integration
+# ---------------------------------------------------------------------------
+
+
+def _make_enrichment_fixtures():
+    """Return annotation and regulation DataFrames for eFDR tests."""
+    annotation = pd.DataFrame(
+        {
+            "annotation": [
+                "path1",
+                "path1",
+                "path1",
+                "path2",
+                "path2",
+                "path3",
+                "path3",
+            ],
+            "identifier": [
+                "gene1",
+                "gene2",
+                "gene3",
+                "gene1",
+                "gene5",
+                "gene6",
+                "gene9",
+            ],
+            "source": ["GO", "GO", "GO", "GO_P", "GO_P", "GO_P", "GO_P"],
+        }
+    )
+    regulation_res = pd.DataFrame(
+        {
+            "identifier": ["gene1", "gene2", "gene3", "gene4", "gene5", "gene6"],
+            "rejected": [True, True, False, False, True, True],
+        }
+    )
+    return annotation, regulation_res
+
+
+def test_run_enrichment_efdr_raises_without_permutations():
+    """run_enrichment with correction='efdr' and permutations=0 should raise."""
+    annotation, regulation_res = _make_enrichment_fixtures()
+    with pytest.raises(ValueError, match="permutations"):
+        ea.run_regulation_enrichment(
+            regulation_data=regulation_res,
+            annotation=annotation,
+            min_detected_in_set=1,
+            correction="efdr",
+            permutations=0,
+        )
+
+
+def test_run_enrichment_efdr_returns_dataframe():
+    """run_regulation_enrichment with correction='efdr' should return a DataFrame
+    with the same columns as the standard correction."""
+    annotation, regulation_res = _make_enrichment_fixtures()
+    result = ea.run_regulation_enrichment(
+        regulation_data=regulation_res,
+        annotation=annotation,
+        min_detected_in_set=1,
+        correction="efdr",
+        permutations=20,
+    )
+    expected_cols = {
+        "terms",
+        "identifiers",
+        "foreground",
+        "background",
+        "foreground_pop",
+        "background_pop",
+        "pvalue",
+        "padj",
+        "rejected",
+    }
+    assert expected_cols.issubset(set(result.columns))
+    assert len(result) > 0
+
+
+def test_run_enrichment_efdr_padj_in_unit_interval():
+    """eFDR-corrected adjusted p-values (padj) must lie in [0, 1]."""
+    annotation, regulation_res = _make_enrichment_fixtures()
+    result = ea.run_regulation_enrichment(
+        regulation_data=regulation_res,
+        annotation=annotation,
+        min_detected_in_set=1,
+        correction="efdr",
+        permutations=20,
+    )
+    assert (result["padj"] >= 0.0).all() and (result["padj"] <= 1.0).all()
+
+
+def test_run_enrichment_efdr_monotone_padj():
+    """After sorting by pvalue, padj must be non-decreasing (monotonicity)."""
+    annotation, regulation_res = _make_enrichment_fixtures()
+    result = ea.run_regulation_enrichment(
+        regulation_data=regulation_res,
+        annotation=annotation,
+        min_detected_in_set=1,
+        correction="efdr",
+        permutations=50,
+    )
+    result_sorted = result.sort_values("pvalue")
+    padj = result_sorted["padj"].to_numpy()
+    assert np.all(
+        np.diff(padj) >= -1e-12
+    ), f"padj is not monotonically non-decreasing: {padj}"
+
+
+def test_run_enrichment_efdr_shared_features_across_terms():
+    """Permutations are done on features, not annotation rows. Features annotated
+    with many terms must not lead to invalid Fisher tables."""
+    n_features = 20
+    features = [f"gene{i}" for i in range(n_features)]
+    annotation = pd.DataFrame(
+        {
+            "annotation": [f"path{i % 5}" for i in range(n_features)]
+            + [f"other{i % 4}" for i in range(n_features)],
+            "identifier": features + features,
+        }
+    )
+    regulation_res = pd.DataFrame(
+        {"identifier": features, "rejected": [i < 3 for i in range(n_features)]}
+    )
+    result = ea.run_regulation_enrichment(
+        regulation_data=regulation_res,
+        annotation=annotation,
+        min_detected_in_set=1,
+        correction="efdr",
+        permutations=30,
+    )
+    assert len(result) > 0
+    assert (result["padj"].between(0.0, 1.0)).all()
+
+
+def _make_planted_enrichment(n_features=600, n_terms=20, n_foreground=40, seed=0):
+    """Random annotation with two terms enriched in the foreground."""
+    rng = np.random.default_rng(seed)
+    features = np.array([f"gene{i}" for i in range(n_features)])
+    members = {
+        f"term{t}": rng.choice(features, size=rng.integers(5, 40), replace=False)
+        for t in range(n_terms)
+    }
+    foreground = set(rng.choice(features, size=n_foreground - 12, replace=False))
+    foreground |= set(members["term0"][:7]) | set(members["term1"][:5])
+    annotation = pd.DataFrame(
+        [(term, g) for term, genes in members.items() for g in genes],
+        columns=["annotation", "identifier"],
+    )
+    regulation = pd.DataFrame(
+        {"identifier": features, "rejected": [g in foreground for g in features]}
+    )
+    return annotation, regulation, members
+
+
+def test_run_enrichment_efdr_seed_reproducible():
+    annotation, regulation, _ = _make_planted_enrichment()
+    kwargs = dict(
+        regulation_data=regulation,
+        min_detected_in_set=1,
+        correction="efdr",
+        permutations=200,
+    )
+    first = ea.run_regulation_enrichment(annotation=annotation.copy(), seed=3, **kwargs)
+    second = ea.run_regulation_enrichment(
+        annotation=annotation.copy(), seed=3, **kwargs
+    )
+    other = ea.run_regulation_enrichment(annotation=annotation.copy(), seed=4, **kwargs)
+    pd.testing.assert_frame_equal(first, second)
+    assert not np.allclose(first["padj"], other["padj"])
+
+
+def test_run_enrichment_tests_overrepresentation():
+    """One-sided test reproduces the hypergeometric overrepresentation p-value."""
+    from scipy import stats
+
+    annotation, regulation, members = _make_planted_enrichment()
+    result = ea.run_regulation_enrichment(
+        regulation_data=regulation,
+        annotation=annotation,
+        min_detected_in_set=1,
+    ).set_index("terms")
+    n_total, n_fg = len(regulation), int(regulation["rejected"].sum())
+    for term, row in result.iterrows():
+        expected = stats.hypergeom.sf(
+            row["foreground"] - 1, n_total, len(members[term]), n_fg
+        )
+        assert row["pvalue"] == pytest.approx(expected)
+
+
+def test_run_enrichment_efdr_matches_mulea_algorithm():
+    """Compare to an independent implementation of the eFDR of the mulea R package
+    (Turek et al. 2024): random foreground of the same size drawn from all
+    background features, all terms tested in every permutation, one-sided test,
+    eFDR = expected number of hits / observed number of hits at the p-value."""
+    from scipy import stats
+
+    annotation, regulation, members = _make_planted_enrichment()
+    n_total, n_fg = len(regulation), int(regulation["rejected"].sum())
+    terms = list(members)
+    sizes = np.array([len(members[t]) for t in terms])
+    index = {g: i for i, g in enumerate(regulation["identifier"])}
+    membership = np.zeros((n_total, len(terms)), dtype=int)
+    for j, term in enumerate(terms):
+        membership[[index[g] for g in members[term]], j] = 1
+
+    def hypergeom_p(counts):
+        return stats.hypergeom.sf(counts - 1, n_total, sizes, n_fg)
+
+    observed_counts = membership[regulation["rejected"].to_numpy()].sum(axis=0)
+    observed = hypergeom_p(observed_counts)
+    rng = np.random.default_rng(0)
+    n_perm = 2000
+    permuted = np.concatenate(
+        [
+            hypergeom_p(membership[rng.choice(n_total, n_fg, replace=False)].sum(0))
+            for _ in range(n_perm)
+        ]
+    )
+    r_exp = np.array([(permuted <= p).sum() / n_perm for p in observed])
+    r_obs = np.array([(observed <= p).sum() for p in observed])
+    reference = pd.Series(np.minimum(r_exp / r_obs, 1.0), index=terms)
+
+    result = ea.run_regulation_enrichment(
+        regulation_data=regulation,
+        annotation=annotation,
+        min_detected_in_set=1,
+        correction="efdr",
+        permutations=n_perm,
+        seed=1,
+    ).set_index("terms")
+    common = result.index
+    assert {"term0", "term1"} <= set(common)
+    top = reference[common].sort_values().index[:3]
+    np.testing.assert_allclose(
+        result.loc[top, "padj"], reference[top], atol=0.02, rtol=0.25
+    )
+    assert set(result.index[result["rejected"].astype(bool)]) == set(
+        reference.index[reference <= 0.05]
+    ) & set(common)
+
+
+def test_run_up_down_regulation_enrichment_efdr_whole_number_padj():
+    """eFDR values of exactly 0 or 1 are valid and must not break the schema."""
+    annotation, _, members = _make_planted_enrichment()
+    features = [f"gene{i}" for i in range(600)]
+    up = set(list(members["term0"])[:2])
+    regulation = pd.DataFrame(
+        {
+            "identifier": features,
+            "group1": "a",
+            "group2": "b",
+            "padj": np.where(pd.Series(features).isin(up), 0.01, 0.9),
+            "log2FC": np.where(pd.Series(features).isin(up), 2.0, 0.0),
+        }
+    )
+    result = ea.run_up_down_regulation_enrichment(
+        regulation_data=regulation,
+        annotation=annotation,
+        pval_col="padj",
+        min_detected_in_set=1,
+        correction="efdr",
+        permutations=50,
+        seed=0,
+    )
+    assert result["padj"].between(0, 1).all()
+    assert (result["padj"] == 0).any()
+
+
+def test_run_gsea_basic():
+    """Integration test for run_gsea: checks that the function returns
+    a DataFrame with the expected columns and one row per gene set."""
+    regulation_data = pd.DataFrame(
+        {
+            "identifier": ["gene1", "gene2", "gene3", "gene4", "gene5", "gene6"],
+            "log2FC": [3.0, 2.5, 1.0, -1.0, -2.5, -3.0],
+        }
+    )
+    annotation = pd.DataFrame(
+        {
+            "annotation": ["path1", "path1", "path1", "path2", "path2", "path2"],
+            "identifier": ["gene1", "gene2", "gene3", "gene4", "gene5", "gene6"],
+        }
+    )
+
+    result = ea.run_gsea(
+        regulation_data=regulation_data,
+        annotation=annotation,
+        identifier="identifier",
+        ranking_col="log2FC",
+        annotation_col="annotation",
+        identifier_col="identifier",
+        min_size=2,
+        permutation_num=10,
+        seed=42,
+    )
+
+    assert isinstance(result, pd.DataFrame)
+    assert not result.empty
+    expected_cols = {"Term", "ES", "NES", "NOM p-val", "FDR q-val", "Lead_genes"}
+    assert expected_cols.issubset(result.columns)
+    assert "rejected" in result.columns
+    fdr = result["FDR q-val"].astype(float)
+    assert (result["rejected"] == (fdr <= 0.05)).all()
+    assert set(result["Term"]) == {"path1", "path2"}
+    # path1 genes are up-regulated -> positive NES
+    nes_path1 = result.loc[result["Term"] == "path1", "NES"].iloc[0]
+    nes_path2 = result.loc[result["Term"] == "path2", "NES"].iloc[0]
+    assert nes_path1 > 0, "path1 (up-regulated genes) should have a positive NES"
+    assert nes_path2 < 0, "path2 (down-regulated genes) should have a negative NES"
+
+
+def test_run_gsea_raises_on_empty_data():
+    """run_gsea should raise ValueError when regulation_data is empty."""
+    with pytest.raises(ValueError, match="regulation_data is empty"):
+        ea.run_gsea(
+            regulation_data=pd.DataFrame(),
+            annotation=pd.DataFrame({"annotation": [], "identifier": []}),
+        )
+
+
+def test_run_gsea_raises_on_missing_identifier_col():
+    """run_gsea should raise ValueError when identifier column is missing."""
+    regulation_data = pd.DataFrame({"gene": ["g1"], "log2FC": [1.0]})
+    annotation = pd.DataFrame({"annotation": ["path1"], "identifier": ["g1"]})
+    with pytest.raises(ValueError, match="identifier"):
+        ea.run_gsea(
+            regulation_data=regulation_data,
+            annotation=annotation,
+            identifier="identifier",  # not a column in regulation_data
+        )
+
+
+def test_run_gsea_raises_on_duplicate_identifiers():
+    """run_gsea should raise ValueError when identifier column has duplicates."""
+    regulation_data = pd.DataFrame(
+        {"identifier": ["gene1", "gene1"], "log2FC": [1.0, 2.0]}
+    )
+    annotation = pd.DataFrame({"annotation": ["path1"], "identifier": ["gene1"]})
+    with pytest.raises(ValueError, match="duplicate"):
+        ea.run_gsea(
+            regulation_data=regulation_data,
+            annotation=annotation,
+        )
+
+
+def test_enrichment_efdr_matches_pooled_reference():
+    """The same tail and eligibility rules apply to observed and permuted terms."""
+    from acore.enrichment_analysis.permutations_enrichment import (
+        _compute_efdr_for_enrichment,
+    )
+    from acore.multiple_testing import compute_efdr
+
+    data = pd.DataFrame(
+        {
+            "identifier": ["g0", "g1", "g2", "g3", "g1", "g4"],
+            "annotation": ["a", "a", "a", "b", "b", "b"],
+        }
+    )
+    observed = [0.05, 0.3, 1.0]
+    rng = np.random.default_rng(3)
+    pooled = []
+    for _ in range(30):
+        drawn = set(rng.choice(8, 3, replace=False))
+        pvalues = []
+        for members in ({0, 1, 2}, {1, 3, 4}):
+            n_fg = len(members & drawn)
+            p = stats.fisher_exact(
+                [[n_fg, 3 - n_fg], [3 - n_fg, 2 + n_fg]], alternative="greater"
+            ).pvalue
+            pvalues.append(1.0 if n_fg < 2 else p)
+        pooled.append(pvalues)
+    expected = compute_efdr(observed, pooled)
+    actual = _compute_efdr_for_enrichment(
+        data,
+        observed,
+        foreground_pop=3,
+        background_pop=8,
+        min_detected_in_set=2,
+        annotation_col="annotation",
+        identifier_col="identifier",
+        permutations=30,
+        alpha=0.05,
+        seed=3,
+    )
+    np.testing.assert_array_equal(actual[0], expected[0])
+    np.testing.assert_allclose(actual[1], expected[1])
+
+
+def test_run_enrichment_greater_keeps_foreground_cutoff():
+    data = pd.DataFrame(
+        {
+            "annotation": ["absent", "rare", "common", "common"],
+            "identifier": ["g0", "g1", "g1", "g2"],
+            "group": ["bg", "fg", "fg", "fg"],
+        }
+    )
+    result = ea.run_enrichment(data, "fg", "bg", 2, 3)
+    assert result["terms"].tolist() == ["common"]
+
+
+@pytest.mark.parametrize("alternative", ["less", "two-sided"])
+def test_run_enrichment_does_not_accept_other_alternatives(alternative):
+    with pytest.raises(TypeError, match="alternative"):
+        ea.run_enrichment(pd.DataFrame(), "fg", "bg", 2, 3, alternative=alternative)

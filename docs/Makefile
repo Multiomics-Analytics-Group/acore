@@ -15,5 +15,5 @@ build:
 	sphinx-apidoc --force --implicit-namespaces --module-first -o reference ../src/acore
 	python fetch_files.py
 	python split_readme.py
-	sphinx-build -n -W --keep-going -b html ./ ./_build/
+	sphinx-build -n -W --keep-going -j auto -b html ./ ./_build/
 

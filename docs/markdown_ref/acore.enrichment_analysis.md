@@ -23,6 +23,76 @@ odds, pvalue = stats.fisher_exact(group1=[a, b],
                 )
 ```
 
+### run_gsea(regulation_data: DataFrame, annotation: DataFrame, identifier: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', ranking_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'log2FC', annotation_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'annotation', identifier_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', min_size: [int](https://docs.python.org/3/builtins/functions.html#int) = 15, max_size: [int](https://docs.python.org/3/builtins/functions.html#int) = 500, permutation_num: [int](https://docs.python.org/3/builtins/functions.html#int) = 1000, seed: [int](https://docs.python.org/3/builtins/functions.html#int) = 42, weight: [float](https://docs.python.org/3/builtins/functions.html#float) = 1.0, ascending: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, correction_alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05) → DataFrame
+
+Run Gene Set Enrichment Analysis (GSEA) on a pre-ranked gene list using
+[gseapy.prerank](https://gseapy.readthedocs.io/en/latest/run.html#gseapy.prerank).
+
+Genes are ranked by ranking_col (e.g. log2 fold-change from differential
+expression analysis) and enrichment is computed for each gene set defined in
+annotation. Unlike overrepresentation analysis (ORA), GSEA does not require
+a significance cutoff to split genes into foreground/background; it uses the
+full ranked list instead.
+
+* **Parameters:**
+  * **regulation_data** (*pd.DataFrame*) – DataFrame with differential regulation
+    results. Must contain the column specified by identifier and the
+    column specified by ranking_col. Each identifier must appear at most
+    once (duplicates are not allowed).
+  * **annotation** (*pd.DataFrame*) – DataFrame with functional annotations.
+    Must contain annotation_col and identifier_col.
+  * **identifier** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – Column in regulation_data containing feature
+    identifiers. These must match the identifiers in annotation_col of
+    the annotation DataFrame.
+  * **ranking_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – Column in regulation_data used to rank the
+    features (e.g. `'log2FC'`). Features are ranked in descending order
+    by default so that strongly up-regulated features appear at the top.
+  * **annotation_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – Column in annotation containing annotation
+    term names (e.g. pathway names).
+  * **identifier_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – Column in annotation containing feature
+    identifiers that map to identifier in regulation_data.
+  * **min_size** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – Minimum number of features in a gene set that are also
+    present in the ranking. Gene sets smaller than this threshold are
+    excluded.
+  * **max_size** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – Maximum number of features in a gene set that are also
+    present in the ranking. Gene sets larger than this threshold are
+    excluded.
+  * **permutation_num** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – Number of permutations used to estimate nominal
+    p-values. Higher values give more precise p-values but increase runtime.
+    Default: 1000.
+  * **seed** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – Random seed for reproducibility. Default: 42.
+  * **weight** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – Exponent for the enrichment score weighting.
+    `weight=1` (default) corresponds to weighted GSEA; `weight=0`
+    gives classic (unweighted) GSEA.
+  * **ascending** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – Sort order for the ranking. `False` (default)
+    means descending (highest ranking metric first, suited for log2FC).
+  * **correction_alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – FDR q-value cutoff used to define the
+    `'rejected'` column. Default: 0.05.
+* **Returns:**
+  DataFrame with one row per gene set. Columns are: `'Term'`,
+  `'ES'` (enrichment score), `'NES'` (normalised enrichment score),
+  `'NOM p-val'` (nominal p-value), `'FDR q-val'` (gseapy’s
+  permutation-based FDR q-value), `'FWER p-val'`, `'Tag %'`,
+  `'Gene %'`, `'Lead_genes'` (semi-colon-separated leading-edge genes)
+  and `'rejected'` (`'FDR q-val' <= correction_alpha`).
+* **Return type:**
+  pd.DataFrame
+
+Example:
+
+```default
+result = run_gsea(
+    regulation_data=diff_reg,
+    annotation=annotations,
+    identifier='identifier',
+    ranking_col='log2FC',
+    annotation_col='annotation',
+    identifier_col='identifier',
+    min_size=5,
+    permutation_num=100,
+)
+```
+
 ### run_kolmogorov_smirnov(dist1: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[float](https://docs.python.org/3/builtins/functions.html#float)], dist2: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[float](https://docs.python.org/3/builtins/functions.html#float)], alternative: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'two-sided') → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[float](https://docs.python.org/3/builtins/functions.html#float), [float](https://docs.python.org/3/builtins/functions.html#float)]
 
 Compute the Kolmogorov-Smirnov statistic on 2 samples.
@@ -90,10 +160,11 @@ result = run_site_regulation_enrichment(regulation_data,
 )
 ```
 
-### run_up_down_regulation_enrichment(regulation_data: DataFrame, annotation: DataFrame, identifier: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', groups: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] = ('group1', 'group2'), annotation_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'annotation', pval_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'pval', group_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', log2fc_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'log2FC', method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fisher', min_detected_in_set: [int](https://docs.python.org/3/builtins/functions.html#int) = 2, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', correction_alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, lfc_cutoff: [float](https://docs.python.org/3/builtins/functions.html#float) = 1) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[EnrichmentAnalysisSchema](acore.types.md#acore.types.enrichment_analysis.EnrichmentAnalysisSchema)]
+### run_up_down_regulation_enrichment(regulation_data: DataFrame, annotation: DataFrame, identifier: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', groups: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] = ('group1', 'group2'), annotation_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'annotation', pval_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'pval', group_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', log2fc_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'log2FC', method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fisher', min_detected_in_set: [int](https://docs.python.org/3/builtins/functions.html#int) = 2, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', correction_alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, lfc_cutoff: [float](https://docs.python.org/3/builtins/functions.html#float) = 1, permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 0, seed: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[EnrichmentAnalysisSchema](acore.types.md#acore.types.enrichment_analysis.EnrichmentAnalysisSchema)]
 
 This function runs a simple enrichment analysis for significantly regulated proteins
 distinguishing between upregulation per group defined by the groups.
+Only overrepresentation is tested using one-sided Fisher’s exact tests.
 
 * **Parameters:**
   * **regulation_data** ([*pandas.DataFrame*](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame)) – pandas.DataFrame resulting from differential regulation
@@ -112,9 +183,15 @@ distinguishing between upregulation per group defined by the groups.
     if feature belongs to foreground or background.
   * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method used to compute enrichment
     (only ‘fisher’ is supported currently).
-  * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method to be used for multiple-testing correction
+  * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method to be used for multiple-testing correction.
+    Use `'efdr'` to apply empirical FDR via permutation (requires
+    `permutations > 0`).
   * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – adjusted p-value cutoff to define significance
   * **lfc_cutoff** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – log fold-change cutoff to define practical significance
+  * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate the empirical FDR
+    when `correction='efdr'`. Ignored for other correction methods.
+  * **seed** ([*int*](https://docs.python.org/3/builtins/functions.html#int) *|* *None*) – seed of the random number generator used for the
+    permutations when `correction='efdr'`, for reproducible results.
 * **Returns:**
   DataFrame adhering to EnrichmentAnalysisSchema
 * **Return type:**
@@ -172,3 +249,5 @@ Example:
 ```default
 result = _annotate_features(features, in_foreground, in_background)
 ```
+
+## acore.enrichment_analysis.permutations_enrichment module

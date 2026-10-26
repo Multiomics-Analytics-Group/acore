@@ -20,9 +20,15 @@
 #
 # An omnibus analysis across groups
 # is combined with posthoc analysis between each set of the separate groups.
+# The omnibus test's adjusted p-value and rejection flag are in `padj` and
+# `rejected`; pairwise posthoc results use `posthoc pvalue adj` and
+# `posthoc rejected`.
+# `Method` records the selected omnibus test (`One-way anova` here); use
+# `run_ancova` when covariates should be included in the omnibus model.
 #
 # The function is the same as for the two groups case. The `group1` and
-# `group2` columns give the posthoc comparison.
+# `group2` columns give the posthoc comparison, also available as
+# `posthoc comparison` in the form `group1~~group2`.
 #
 
 # %% tags=["hide-output"]
@@ -53,7 +59,6 @@ subject_col: str | int = 0
 factor_and_covars: list[str] = [group, *covariates]
 
 # %% [markdown]
-# # ANOVA analysis for two groups
 # Use combined dataset for ANOVA analysis.
 
 # %% tags=["hide-input"]
@@ -83,8 +88,18 @@ omics_and_meta[factor_and_covars]
 
 
 # %% [markdown]
-# ## With four groups
-# Acore make each combinatorial comparison between groups in the group column.
+# # Run ANOVA with four groups
+# Acore runs an omnibus test asking if any of the groups are significantly different, so
+# if a feature as any effect (F-test between a regression with group dummies and without
+# any) and also runs pairwise (posthoc) tests to identify which groups are different and
+# in which direction. The omnibus test's adjusted p-value and rejection flag are in
+# `padj` and `rejected`; pairwise posthoc results use `posthoc pvalue adj` and `posthoc
+# rejected`. `Method` records the selected omnibus test (`One-way anova` here); use
+# `run_ancova` when covariates should be included in the omnibus model.
+#
+# The function is the same as for the two groups case. The `group1` and `group2` columns
+# give the posthoc comparison, also available as `posthoc comparison` in the form
+# `group1~~group2`.
 
 
 # %%
@@ -102,12 +117,14 @@ anova = (
 anova.head().T
 
 # %% [markdown]
-# ### pairwise t-test results:
+# ## pairwise (posthoc) t-test results
+# posthoc t-test results to identify which groups are different and in which direction.
 
 # %% tags=["hide-input"]
 cols_pairwise_ttest = [
     # "group1",
     # "group2",
+    "posthoc comparison",
     "mean(group1)",
     "std(group1)",
     "mean(group2)",
@@ -119,6 +136,7 @@ cols_pairwise_ttest = [
     "posthoc tail",
     "posthoc pvalue",
     "posthoc pvalue adj",
+    "posthoc rejected",
     "posthoc BF10",
     "posthoc effsize",
     # "identifier",
@@ -143,23 +161,28 @@ view = anova.filter(regex=regex_filter)
 view
 
 # %% [markdown]
-# ## Volcano plot of ANOVA results
-# - volcano plot of ANOVA (omnibus test) results
-# - more than one group present in the example.
+# ## Posthoc volcano plot: WRP versus WT
+# Select one pairwise comparison so each identifier has one point.
+# The x-axis shows its `log2FC`, the y-axis its posthoc p-value, and
+# the color its posthoc FDR significance decision (`posthoc rejected`).
+# Change `comparison` to another value from the `posthoc comparison` column.
 
 
 # %% tags=["hide-input"]
+comparison = "WRP~~WT"
+pairwise_results = anova.loc[anova["posthoc comparison"] == comparison].reset_index()
+
 scatter_plot_adv = vuecore.plots.basic.scatter.create_scatter_plot(
-    data=anova.reset_index(),
+    data=pairwise_results,
     x="log2FC",
-    y="-log10 pvalue",
-    color="rejected",
-    title="Simple Volcano Plot",
-    subtitle="Visualizing ANOVA results",
+    y="-log10 posthoc pvalue",
+    color="posthoc rejected",
+    title="Posthoc Volcano Plot",
+    subtitle=comparison.replace("~~", " versus "),
     labels={
-        "log2FC": "Log2 Fold Change",
-        "-log10 pvalue": "-log10(p-value)",
-        "rejected": "FDR corrected Significant",
+        "log2FC": f"log2 fold change ({comparison.replace('~~', ' / ')})",
+        "-log10 posthoc pvalue": "-log10(posthoc p-value)",
+        "posthoc rejected": "Posthoc FDR corrected significant",
         "identifier": "Protein Identifier",
     },
     hover_data=["identifier", "group1", "group2"],

@@ -60,6 +60,13 @@ nb_execution_raise_on_error = True
 nb_merge_streams = True
 # maximum execution time per cell in seconds
 nb_execution_timeout = 240
+# Notebooks which mainly download data from external APIs (PRIDE, journal websites)
+# are not executed during the docs build. They are tested in the separate
+# 'Test API notebooks' GitHub Actions workflow (.github/workflows/api_notebooks.yml).
+nb_execution_excludepatterns = [
+    "example_data/Download_PRIDE_data.ipynb",
+    "example_data/ovarian_cancer.ipynb",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
