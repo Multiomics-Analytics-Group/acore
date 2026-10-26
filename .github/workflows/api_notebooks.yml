@@ -24,9 +24,16 @@ on:
       - "tests_api/**"
       - ".github/workflows/api_notebooks.yml"
 
+# cancel runs superseded by a newer push to the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   api-notebooks:
     runs-on: ubuntu-latest
+    # external APIs can hang, so do not wait for the default 6h limit
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,7 +54,7 @@ jobs:
       - name: Execute API notebooks
         working-directory: docs
         run: |
-          jupyter execute --inplace \
+          jupyter execute --inplace --timeout=600 \
             example_data/Download_PRIDE_data.ipynb \
             example_data/ovarian_cancer.ipynb \
             examples_single_analysis/enrichment_analysis.ipynb
