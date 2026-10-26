@@ -124,10 +124,11 @@ For information visit
   * **data** – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe.
-    Default is [‘sample’, ‘subject’] if None.
+    Default is [] if None.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
   * **annotation_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation.
-    Default is [‘sample’] if None.
+    Default is [] if None. Can be columns or index
+    level names; missing ones are ignored with a warning.
   * **components** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of components to keep.
   * **dropna** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if True removes all columns with any missing values.
 * **Returns:**
@@ -153,12 +154,13 @@ For more information visit
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe.
 
-Default is [‘sample’, ‘subject’] if None.
+Default is [] if None.
 :param str group: column label containing group identifiers.
 :param int components: dimension of the embedded space.
 :param list annotation_cols: list of columns to be added in the scatter plot annotation.
 
-> Default is [‘sample’] if None.
+> Default is [] if None. Can be columns or index
+> level names; missing ones are ignored with a warning.
 * **Parameters:**
   * **perplexity** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – related to the number of nearest neighbors that is used
     in other manifold learning algorithms.
@@ -196,10 +198,11 @@ For more information vist [https://umap-learn.readthedocs.io](https://umap-learn
   * **data** – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe.
-    Default is [‘sample’, ‘subject’] if None.
+    Default is [] if None.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
   * **annotation_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation.
-    Default is [‘sample’] if None.
+    Default is [] if None. Can be columns or index
+    level names; missing ones are ignored with a warning.
   * **n_neighbors** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of neighboring points used
     in local approximations of manifold structure.
   * **min_dist** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – controls how tightly the embedding is allowed compress points together.
