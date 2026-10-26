@@ -28,6 +28,31 @@ result = imputation_KNN(data,
 )
 ```
 
+### imputation_half_minimum(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+
+Replace missing values with half the per-column minimum of observed values.
+
+* **Parameters:**
+  * **data** – DataFrame with samples as rows and features as columns.
+  * **on_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to impute. If None, all numeric columns are used.
+    Non-numeric columns in `on_cols` will raise a TypeError.
+  * **on_rows** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
+    imputed. When provided, the per-column minimum is also computed
+    from only those rows, so each subset gets its own half-minimum
+    (e.g. blanks are imputed with half the blank-minimum).
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
+    appears in both `on_cols` and `drop_cols` it will be dropped
+    and a warning is emitted.
+* **Returns:**
+  DataFrame with missing values replaced by half the per-column minimum.
+
+Example:
+
+```default
+result = imputation_half_minimum(data, on_cols=['featureA', 'featureB'])
+result = imputation_half_minimum(data, on_rows=['blank1', 'blank2'])
+```
+
 ### imputation_mixed_norm_KNN(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, shift: [float](https://docs.python.org/3/builtins/functions.html#float) = 1.8, nstd: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.3, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', cutoff: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.6, random_state: [int](https://docs.python.org/3/builtins/functions.html#int) = 112736, n_neighbors: [int](https://docs.python.org/3/builtins/functions.html#int) = 3)
 
 Missing values are replaced in two steps:
@@ -119,31 +144,6 @@ Replace missing values with zeros.
 
 result = imputation_zeros(data, on_cols=[‘featureA’, ‘featureB’])
 result = imputation_zeros(data, on_rows=[‘QC1’, ‘QC2’, ‘blank1’])
-
-### imputation_half_minimum(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
-
-Replace missing values with half the per-column minimum of observed values.
-
-* **Parameters:**
-  * **data** – DataFrame with samples as rows and features as columns.
-  * **on_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to impute. If None, all numeric columns are used.
-    Non-numeric columns in `on_cols` will raise a TypeError.
-  * **on_rows** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
-    imputed. When provided, the per-column minimum is also computed
-    from only those rows, so each subset gets its own half-minimum
-    (e.g. blanks are imputed with half the blank-minimum).
-  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
-    appears in both `on_cols` and `drop_cols` it will be dropped
-    and a warning is emitted.
-* **Returns:**
-  DataFrame with missing values replaced by half the per-column minimum.
-
-Example:
-
-```default
-result = imputation_half_minimum(data, on_cols=['featureA', 'featureB'])
-result = imputation_half_minimum(data, on_rows=['blank1', 'blank2'])
-```
 
 ### median_impute(X: DataFrame) → DataFrame
 
