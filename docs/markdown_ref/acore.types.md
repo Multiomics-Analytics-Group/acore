@@ -201,7 +201,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -220,9 +220,6 @@ Convert this model’s schema to JSON.
 #### *classmethod* to_json_schema()
 
 Serialize schema metadata into json-schema format.
-
-* **Parameters:**
-  **dataframe_schema** – schema to write to json-schema format.
 
 #### NOTE
 This function is currently does not fully specify a pandera schema,
@@ -437,7 +434,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -478,9 +475,6 @@ Convert this model’s schema to JSON.
 #### *classmethod* to_json_schema()
 
 Serialize schema metadata into json-schema format.
-
-* **Parameters:**
-  **dataframe_schema** – schema to write to json-schema format.
 
 #### NOTE
 This function is currently does not fully specify a pandera schema,
@@ -683,7 +677,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -702,9 +696,6 @@ Convert this model’s schema to JSON.
 #### *classmethod* to_json_schema()
 
 Serialize schema metadata into json-schema format.
-
-* **Parameters:**
-  **dataframe_schema** – schema to write to json-schema format.
 
 #### NOTE
 This function is currently does not fully specify a pandera schema,
@@ -915,7 +906,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -934,9 +925,6 @@ Convert this model’s schema to JSON.
 #### *classmethod* to_json_schema()
 
 Serialize schema metadata into json-schema format.
-
-* **Parameters:**
-  **dataframe_schema** – schema to write to json-schema format.
 
 #### NOTE
 This function is currently does not fully specify a pandera schema,
@@ -1131,7 +1119,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -1150,9 +1138,6 @@ Convert this model’s schema to JSON.
 #### *classmethod* to_json_schema()
 
 Serialize schema metadata into json-schema format.
-
-* **Parameters:**
-  **dataframe_schema** – schema to write to json-schema format.
 
 #### NOTE
 This function is currently does not fully specify a pandera schema,
@@ -1341,7 +1326,7 @@ Load a schema from YAML.
 * **Returns:**
   the backend-specific schema object.
 
-#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict) | [None](https://docs.python.org/3/builtins/constants.html#None)
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 Provide metadata for columns and schema level
 
@@ -1362,9 +1347,6 @@ Convert this model’s schema to JSON.
 #### *classmethod* to_json_schema()
 
 Serialize schema metadata into json-schema format.
-
-* **Parameters:**
-  **dataframe_schema** – schema to write to json-schema format.
 
 #### NOTE
 This function is currently does not fully specify a pandera schema,

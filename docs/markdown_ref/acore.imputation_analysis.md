@@ -144,3 +144,18 @@ Example:
 result = imputation_half_minimum(data, on_cols=['featureA', 'featureB'])
 result = imputation_half_minimum(data, on_rows=['blank1', 'blank2'])
 ```
+
+## Submodules
+
+## acore.imputation_analysis.common module
+
+### select_imputation_targets(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None), on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None), drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)) → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[DataFrame, [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)], [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)]
+
+Copy data, drop drop_cols and resolve which columns and rows to impute.
+
+* **Returns:**
+  tuple of the copied DataFrame (without drop_cols), the numeric columns
+  to impute and the row labels found in the index (None if on_rows
+  is None).
+* **Raises:**
+  [**TypeError**](https://docs.python.org/3/builtins/exceptions.html#TypeError) – if on_cols contains non-numeric columns.
