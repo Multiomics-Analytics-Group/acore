@@ -27,6 +27,7 @@ from acore.imputation_analysis import (
     imputation_mixed_norm_KNN,
     imputation_normal_distribution,
     imputation_zeros,
+    median_impute,
 )
 
 # ---------------------------------------------------------------------------
@@ -272,6 +273,35 @@ def test_imputation_KNN_alone_false_retains_nan_columns():
     assert result_keep["B"].isna().any()
 
 
+def test_imputation_KNN_group_cutoff_applied_per_group():
+    # Column A has 2/3 valid values in group X but 0/3 in group Y.
+    # With cutoff=0.5 it is imputed in X only; Y stays NaN.
+    df = pd.DataFrame(
+        {
+            "A": [1.0, 2.0, nan, nan, nan, nan],
+            "B": [10.0, 11.0, 12.0, 13.0, 14.0, 15.0],
+            "group": ["X", "X", "X", "Y", "Y", "Y"],
+        }
+    )
+    result = imputation_KNN(df, group="group", cutoff=0.5, alone=False, n_neighbors=2)
+    assert not result.loc[[0, 1, 2], "A"].isna().any()
+    assert result.loc[[3, 4, 5], "A"].isna().all()
+    assert result.loc[2, "A"] == pytest.approx(1.5)  # mean of two neighbours
+
+
+def test_imputation_KNN_drop_cols_not_imputed():
+    df = pd.DataFrame(
+        {
+            "A": [1.0, 2.0, nan, 4.0],
+            "B": [10.0, nan, 12.0, 13.0],
+            "meta": [1.0, nan, 3.0, 4.0],
+        }
+    )
+    result = imputation_KNN(df, drop_cols=["meta"], cutoff=0.3, alone=False)
+    assert not result[["A", "B"]].isna().any().any()
+    assert result["meta"].isna().sum() == 1  # left untouched
+
+
 def test_imputation_KNN_no_missing_unchanged():
     df = pd.DataFrame({"A": [1.0, 2.0, 3.0], "B": [4.0, 5.0, 6.0]})
     result = imputation_KNN(df, cutoff=0.5)
@@ -320,6 +350,66 @@ def test_imputation_mixed_norm_KNN_with_group():
     result = imputation_mixed_norm_KNN(df, group="group", cutoff=0.3, random_state=42)
     assert result.isna().sum().sum() == 0
     assert "group" not in result.columns
+
+
+def test_imputation_mixed_norm_KNN_with_group_and_drop_cols():
+    df = pd.DataFrame(
+        {
+            "A": [1.0, 2.0, nan, 4.0, 5.0, nan],
+            "B": [10.0, nan, 12.0, 13.0, nan, 15.0],
+            "C": [100.0, 110.0, 120.0, 130.0, 140.0, 150.0],
+            "subject": [1, 2, 3, 4, 5, 6],
+            "group": ["X", "X", "X", "Y", "Y", "Y"],
+        }
+    )
+    result = imputation_mixed_norm_KNN(
+        df, drop_cols=["subject"], group="group", cutoff=0.3, random_state=42
+    )
+    assert result.isna().sum().sum() == 0
+    assert "group" not in result.columns
+    assert "subject" not in result.columns
+
+
+def test_imputation_mixed_norm_KNN_drop_cols_none_with_group():
+    df = pd.DataFrame(
+        {
+            "A": [1.0, 2.0, nan, 4.0, 5.0, nan],
+            "B": [10.0, nan, 12.0, 13.0, nan, 15.0],
+            "group": ["X", "X", "X", "Y", "Y", "Y"],
+        }
+    )
+    result = imputation_mixed_norm_KNN(
+        df, drop_cols=None, group="group", cutoff=0.3, random_state=42
+    )
+    assert result.isna().sum().sum() == 0
+    assert "group" not in result.columns
+
+
+# ---------------------------------------------------------------------------
+# median_impute
+# ---------------------------------------------------------------------------
+
+
+def test_median_impute_fills_with_column_median():
+    df = pd.DataFrame({"A": [1.0, 3.0, nan, 5.0], "B": [nan, 2.0, 4.0, 6.0]})
+    result = median_impute(df)
+    assert isinstance(result, pd.DataFrame)
+    assert result.loc[2, "A"] == pytest.approx(3.0)
+    assert result.loc[0, "B"] == pytest.approx(4.0)
+    assert list(result.columns) == ["A", "B"]
+
+
+def test_median_impute_keeps_observed_values_and_index(small_data):
+    result = median_impute(small_data)
+    assert not result.isna().any().any()
+    assert result.index.equals(small_data.index)
+    assert result.loc["s1", "A"] == pytest.approx(1.0)
+    assert result.loc["s3", "A"] == pytest.approx(1.5)
+
+
+def test_median_impute_no_missing_unchanged():
+    df = pd.DataFrame({"A": [1.0, 2.0], "B": [3.0, 4.0]})
+    pd.testing.assert_frame_equal(median_impute(df), df)
 
 
 # ---------------------------------------------------------------------------
