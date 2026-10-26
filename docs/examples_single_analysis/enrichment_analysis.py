@@ -126,9 +126,11 @@ from urllib.error import HTTPError
 
 from acore.io.uniprot import fetch_annotations, process_annotations
 
-fname_annotations = f"downloaded/annotations_{features_to_sample}.csv"
+# annotations are cached in the repository to avoid querying UniProt on each docs build
+fname_annotations = (
+    f"example_data/PXD010372/processed/annotations_{features_to_sample}.csv"
+)
 fname = Path(fname_annotations)
-# annotations cached in the repository (to avoid querying UniProt on each docs build)
 url_annotations = f"{base_path}/annotations_{features_to_sample}.csv"
 try:
     annotations = pd.read_csv(fname, index_col=0)

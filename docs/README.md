@@ -58,5 +58,5 @@ weekly and on changes to `src/acore/io`.
 
 The enrichment analysis example loads cached UniProt annotations from
 `example_data/PXD010372/processed/annotations_100.csv` and only queries UniProt if
-that file is not available. A freshly fetched file is uploaded as an artifact by the
-`Test API notebooks` workflow.
+that file is not available. In that case the fetched annotations are saved to this
+path (and uploaded as an artifact by the `Test API notebooks` workflow).
