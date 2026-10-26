@@ -6,7 +6,6 @@ import pandas as pd
 # https://pypi.org/project/pycombat/
 # https://github.com/epigenelabs/inmoose is the update from combat.pycombat on PyPI
 # from combat.pycombat import pycombat
-from inmoose.pycombat import pycombat_norm
 
 __all__ = ["combat_batch_correction"]
 
@@ -33,6 +32,8 @@ def combat_batch_correction(
                 )
 
     """
+    from inmoose.pycombat import pycombat_norm  # slow import, so only when needed
+
     # :param index_cols: list of columns that don't need to be corrected (i.e group)
     df_corrected = pd.DataFrame()
     # index_cols = [c for c in index_cols if c != batch_col]

@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import scipy.stats
-import umap
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
@@ -460,6 +459,8 @@ def run_umap(
 
     if not X.size:
         return result, args
+
+    import umap  # slow import (numba compilation), so only import when needed
 
     X = umap.UMAP(
         n_neighbors=n_neighbors, min_dist=min_dist, metric=metric
