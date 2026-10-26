@@ -160,13 +160,8 @@ def imputation_mixed_norm_KNN(
         n_neighbors=n_neighbors,
     )
     # drop group column for normal data imputation
-    if drop_cols is None and not drop_cols:
-        if group is None:
-            _drop_cols = []
-        else:
-            _drop_cols = [group]
-    else:
-        _drop_cols = drop_cols.copy()
+    _drop_cols = list(drop_cols) if drop_cols else []
+    if group is not None and group not in _drop_cols:
         _drop_cols.append(group)
     df = imputation_normal_distribution(
         df,
