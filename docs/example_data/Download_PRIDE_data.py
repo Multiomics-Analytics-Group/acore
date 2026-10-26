@@ -5,9 +5,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.17.2
+#       jupytext_version: 1.19.3
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: acore_py14
 #     language: python
 #     name: python3
 # ---
@@ -21,6 +21,13 @@
 # and quickly formated to start analyzing them with the functionality in the analytics core.
 #
 # > based on CKG recipe: [Download PRIDE Data](https://ckg.readthedocs.io/en/latest/notebooks/recipes/Download_PRIDE_data.html)
+
+# %% [markdown]
+# ```{warning}
+# The outputs shown in this notebook are cached: it is not executed during the
+# documentation build. To refresh them, re-run the notebook locally and commit the
+# updated `.ipynb` file.
+# ```
 
 # %% tags=["hide-output"]
 # %pip install acore

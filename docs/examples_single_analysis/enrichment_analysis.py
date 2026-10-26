@@ -122,14 +122,26 @@ diff_reg.query("rejected")
 # fields: [return_fields](https://www.uniprot.org/help/return_fields)
 
 # %%
+from urllib.error import HTTPError
+
 from acore.io.uniprot import fetch_annotations, process_annotations
 
-fname_annotations = f"downloaded/annotations_{features_to_sample}.csv"
+# annotations are cached in the repository to avoid querying UniProt on each docs build
+fname_annotations = (
+    f"example_data/PXD010372/processed/annotations_{features_to_sample}.csv"
+)
 fname = Path(fname_annotations)
+url_annotations = f"{base_path}/annotations_{features_to_sample}.csv"
 try:
     annotations = pd.read_csv(fname, index_col=0)
     print(f"Loaded annotations from {fname}")
 except FileNotFoundError:
+    try:
+        annotations = pd.read_csv(url_annotations, index_col=0)
+        print(f"Loaded annotations from {url_annotations}")
+    except (FileNotFoundError, HTTPError):
+        annotations = None
+if annotations is None:
     print(f"Fetching annotations for {df_omics.columns.size} UniProt IDs.")
     # adding 'go' leads to duplicates which are filtered out by `process_annotations`
     FIELDS = "go_p,go_c,go_f,go"
