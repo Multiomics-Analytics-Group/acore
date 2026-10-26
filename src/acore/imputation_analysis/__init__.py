@@ -15,9 +15,9 @@ from acore.imputation_analysis.strategies import (
 
 __all__ = [
     "imputation_KNN",
+    "imputation_half_minimum",
     "imputation_mixed_norm_KNN",
     "imputation_normal_distribution",
     "imputation_zeros",
-    "imputation_half_minimum",
     "median_impute",
 ]
