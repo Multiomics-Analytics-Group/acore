@@ -12,6 +12,7 @@ on:
     paths:
       - "src/acore/io/**"
       - "docs/example_data/**"
+      - "docs/examples_single_analysis/enrichment_analysis.*"
       - "tests_api/**"
       - ".github/workflows/api_notebooks.yml"
   pull_request:
@@ -19,6 +20,7 @@ on:
     paths:
       - "src/acore/io/**"
       - "docs/example_data/**"
+      - "docs/examples_single_analysis/enrichment_analysis.*"
       - "tests_api/**"
       - ".github/workflows/api_notebooks.yml"
 
