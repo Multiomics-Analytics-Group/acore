@@ -145,7 +145,16 @@ Replace missing values with zeros.
 result = imputation_zeros(data, on_cols=[‘featureA’, ‘featureB’])
 result = imputation_zeros(data, on_rows=[‘QC1’, ‘QC2’, ‘blank1’])
 
-### median_impute(X: DataFrame) → DataFrame
+### median_impute(X: DataFrame, keep_empty_features: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
+
+Replace missing values with the median of each column.
+
+* **Parameters:**
+  * **X** – Numeric dataframe with samples as rows and features as columns.
+  * **keep_empty_features** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – If True, retain entirely missing columns and
+    fill them with zero. Otherwise, drop them.
+* **Returns:**
+  Imputed dataframe with the original row index and retained columns.
 
 ## Submodules
 
@@ -164,7 +173,16 @@ Copy data, drop drop_cols and resolve which columns and rows to impute.
 
 ## acore.imputation_analysis.strategies module
 
-### median_impute(X: DataFrame) → DataFrame
+### median_impute(X: DataFrame, keep_empty_features: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
+
+Replace missing values with the median of each column.
+
+* **Parameters:**
+  * **X** – Numeric dataframe with samples as rows and features as columns.
+  * **keep_empty_features** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – If True, retain entirely missing columns and
+    fill them with zero. Otherwise, drop them.
+* **Returns:**
+  Imputed dataframe with the original row index and retained columns.
 
 ### imputation_KNN(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, cutoff=0.6, alone=True, n_neighbors=3)
 
