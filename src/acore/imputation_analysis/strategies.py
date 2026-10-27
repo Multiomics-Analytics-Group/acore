@@ -11,9 +11,18 @@ from . import common
 logger = logging.getLogger(__name__)
 
 
-def median_impute(X: pd.DataFrame) -> pd.DataFrame:
+def median_impute(X: pd.DataFrame, keep_empty_features: bool = True) -> pd.DataFrame:
+    """Replace missing values with the median of each column.
+
+    :param X: Numeric dataframe with samples as rows and features as columns.
+    :param bool keep_empty_features: If True, retain entirely missing columns and
+                                     fill them with zero. Otherwise, drop them.
+    :return: Imputed dataframe with the original row index and retained columns.
+    """
     X_imputed = (
-        sklearn.impute.SimpleImputer(strategy="median")
+        sklearn.impute.SimpleImputer(
+            strategy="median", keep_empty_features=keep_empty_features
+        )
         .set_output(transform="pandas")
         .fit_transform(X)
     )
