@@ -12,19 +12,31 @@ logger = logging.getLogger(__name__)
 
 
 def median_impute(X: pd.DataFrame, keep_empty_features: bool = True) -> pd.DataFrame:
-    """Replace missing values with the median of each column.
+    """Replace missing values with the median of each column in each numeric one.
 
-    :param X: Numeric dataframe with samples as rows and features as columns.
+    Non-numeric columns are dropped with a logged warning, without attempting
+    to convert them to numbers.
+
+    :param X: Dataframe with samples as rows and features as columns.
     :param bool keep_empty_features: If True, retain entirely missing columns and
                                      fill them with zero. Otherwise, drop them.
-    :return: Imputed dataframe with the original row index and retained columns.
+    :return: Imputed dataframe with the original row index and retained numeric
+             columns. If there are no numeric columns, return an empty dataframe
+             with the original row index.
     """
+    X_numeric = X.select_dtypes(include="number").copy()
+    non_numeric = X.select_dtypes(exclude="number").columns.tolist()
+    if non_numeric:
+        logger.warning("Non-numeric columns dropped for imputation: %s", non_numeric)
+    if X_numeric.shape[1] == 0:
+        return X_numeric
+
     X_imputed = (
         sklearn.impute.SimpleImputer(
             strategy="median", keep_empty_features=keep_empty_features
         )
         .set_output(transform="pandas")
-        .fit_transform(X)
+        .fit_transform(X_numeric)
     )
     return X_imputed
 
