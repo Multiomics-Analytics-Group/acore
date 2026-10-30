@@ -11,6 +11,7 @@ def select_imputation_targets(
     on_cols: Iterable[str] | None,
     on_rows: Iterable[str] | None,
     drop_cols: Iterable[str] | None,
+    group: str | None = None,
 ) -> tuple[pd.DataFrame, list[str], list[str] | None]:
     """Copy `data`, drop `drop_cols` and resolve which columns and rows to impute.
 
@@ -18,6 +19,7 @@ def select_imputation_targets(
                      to impute and the row labels found in the index (`None` if `on_rows`
                      is `None`).
     :raises TypeError: if `on_cols` contains non-numeric columns.
+    :raises ValueError: if `group` is not a column of `data` after dropping `drop_cols`.
     """
     if drop_cols:
         if on_cols is not None:
@@ -30,18 +32,25 @@ def select_imputation_targets(
     else:
         df = data.copy()
 
+    if group is not None and group not in df.columns:
+        raise ValueError(
+            f"`group` column {group!r} not found in columns (or in `drop_cols`)."
+        )
+
     if on_cols is None:
         for col in df.columns[df.dtypes == object]:
             try:
                 df[col] = pd.to_numeric(df[col])
             except (ValueError, TypeError):
                 pass
-        cols = df.select_dtypes(include="number").columns.tolist()
-        non_numeric = df.select_dtypes(exclude="number").columns.tolist()
+        cols = [c for c in df.select_dtypes(include="number").columns if c != group]
+        non_numeric = [
+            c for c in df.select_dtypes(exclude="number").columns if c != group
+        ]
         if non_numeric:
             logger.warning(f"Non-numeric columns ignored for imputation: {non_numeric}")
     else:
-        cols = [c for c in on_cols if c in df.columns]
+        cols = [c for c in on_cols if c in df.columns and c != group]
         non_numeric = [c for c in cols if not pd.api.types.is_numeric_dtype(df[c])]
         if non_numeric:
             raise TypeError(f"Non-numeric columns passed to `on_cols`: {non_numeric}")

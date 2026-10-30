@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 def median_impute(
     X: pd.DataFrame,
     drop_cols: Iterable[str] | None = None,
+    group: str | None = None,
     keep_empty_features: bool = True,
 ) -> pd.DataFrame:
     """Replace missing values with the median of each column.
@@ -22,30 +23,54 @@ def median_impute(
     :param list drop_cols: column labels to be dropped before imputation, e.g.
                            non-numeric metadata columns. All remaining columns
                            must be numeric.
-    :param bool keep_empty_features: If True, retain entirely missing columns and
-                                     fill them with zero. Otherwise, drop them.
+    :param str group: column label containing group identifiers. If set, the median
+                      is computed within each group. Columns that are entirely missing
+                      within a group are left as NaN for that group. Rows with a
+                      missing group identifier are not imputed. The group column is
+                      excluded from imputation and returned as the first column.
+    :param bool keep_empty_features: If True, retain columns that are entirely missing
+                                     (in all rows) and fill them with zero. Otherwise,
+                                     drop them.
     :return: Imputed dataframe with the original row index and all columns except
              `drop_cols` (and entirely missing columns if `keep_empty_features`
              is False).
     :raises ValueError: if columns remaining after dropping `drop_cols` are
-                        non-numeric.
+                        non-numeric, or `group` is not a column (or is in `drop_cols`).
     """
     df = X.drop(columns=drop_cols) if drop_cols else X
+    if group is not None:
+        if group not in df.columns:
+            raise ValueError(
+                f"`group` column {group!r} not found in columns (or in `drop_cols`)."
+            )
+        labels = df[group]
+        df = df.drop(columns=group)
     non_numeric = df.select_dtypes(exclude="number").columns.tolist()
     if non_numeric:
         raise ValueError(
             f"Non-numeric columns found, add them to `drop_cols`: {non_numeric}"
         )
     if df.shape[1] == 0:
-        return df.copy()
-
-    return (
-        sklearn.impute.SimpleImputer(
-            strategy="median", keep_empty_features=keep_empty_features
+        imputed = df.copy()
+    elif group is None:
+        imputed = (
+            sklearn.impute.SimpleImputer(
+                strategy="median", keep_empty_features=keep_empty_features
+            )
+            .set_output(transform="pandas")
+            .fit_transform(df)
         )
-        .set_output(transform="pandas")
-        .fit_transform(df)
-    )
+    else:
+        imputed = df.astype(float).fillna(df.groupby(labels).transform("median"))
+        empty = df.columns[df.isna().all()]
+        if keep_empty_features:
+            imputed[empty] = 0.0
+        else:
+            imputed = imputed.drop(columns=empty)
+
+    if group is not None:
+        imputed.insert(0, group, labels)
+    return imputed
 
 
 def imputation_KNN(
@@ -201,7 +226,7 @@ def imputation_mixed_norm_KNN(
     return df
 
 
-# ? This one is not using the grouping?
+# This one is not using the grouping as it is supposed to be per sample.
 def imputation_normal_distribution(
     data: pd.DataFrame,
     drop_cols: Iterable[str] | None = None,
@@ -325,6 +350,7 @@ def imputation_half_minimum(
     drop_cols: Iterable[str] | None = None,
     on_cols: Iterable[str] | None = None,
     on_rows: Iterable[str] | None = None,
+    group: str | None = None,
 ):
     """
     Replace missing values with half the per-column minimum of observed values.
@@ -339,31 +365,49 @@ def imputation_half_minimum(
                          imputed. When provided, the per-column minimum is also computed
                          from only those rows, so each subset gets its own half-minimum
                          (e.g. blanks are imputed with half the blank-minimum).
+    :param str group: column label containing group identifiers. If set, the minimum is
+                      computed within each group (and within ``on_rows``, if given).
+                      Columns without observed values in a group are left as NaN for
+                      that group. Rows with a missing group identifier are not imputed.
+                      The group column itself is never imputed and is kept in the output.
     :return: DataFrame with missing values replaced by half the per-column minimum.
 
     Example::
 
         result = imputation_half_minimum(data, on_cols=['featureA', 'featureB'])
         result = imputation_half_minimum(data, on_rows=['blank1', 'blank2'])
+        result = imputation_half_minimum(data, group='group')
     """
-    df, cols, rows = common.select_imputation_targets(data, on_cols, on_rows, drop_cols)
+    df, cols, rows = common.select_imputation_targets(
+        data, on_cols, on_rows, drop_cols, group=group
+    )
+
+    target = df.loc[rows, cols] if on_rows is not None else df[cols]
+    where = "in the selected rows " if on_rows is not None else ""
+    if group is None:
+        all_nan = [c for c in cols if target[c].isna().all()]
+        if all_nan:
+            logger.warning(
+                f"Columns with no observed values {where}cannot"
+                f" be imputed and are left as NaN: {all_nan}"
+            )
+        half_mins = target.min(axis=0, skipna=True) / 2
+    else:
+        labels = df.loc[target.index, group] if on_rows is not None else df[group]
+        grouped = target.groupby(labels)
+        observed = grouped.min()
+        missing = observed.isna().stack()
+        all_nan = missing[missing].index.tolist()
+        if all_nan:
+            logger.warning(
+                f"(group, column) pairs with no observed values"
+                f" {where}cannot be imputed and are left as NaN: {all_nan}"
+            )
+        half_mins = grouped.transform("min") / 2
 
     if on_rows is not None:
-        subset = df.loc[rows, cols]
-        all_nan = [c for c in cols if subset[c].isna().all()]
-        if all_nan:
-            logger.warning(
-                f"Columns with no observed values in the selected rows cannot be imputed and are left as NaN: {all_nan}"
-            )
-        half_col_mins = subset.min(axis=0, skipna=True) / 2
-        df.loc[rows, cols] = subset.fillna(half_col_mins)
+        df.loc[rows, cols] = target.fillna(half_mins)
     else:
-        all_nan = [c for c in cols if df[c].isna().all()]
-        if all_nan:
-            logger.warning(
-                f"Columns with no observed values cannot be imputed and are left as NaN: {all_nan}"
-            )
-        half_col_mins = df[cols].min(axis=0, skipna=True) / 2
-        df[cols] = df[cols].fillna(half_col_mins)
+        df[cols] = target.fillna(half_mins)
 
     return df

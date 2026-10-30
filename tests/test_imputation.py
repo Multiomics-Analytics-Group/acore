@@ -450,6 +450,33 @@ def test_median_impute_all_columns_dropped():
     pd.testing.assert_frame_equal(result, df.iloc[:, :0])
 
 
+def test_median_impute_group():
+    df = pd.DataFrame(
+        {
+            "group": ["a", "a", "a", "b", "b", "b"],
+            "A": [1.0, nan, 3.0, 10.0, nan, 30.0],
+            "B": [nan, nan, nan, 1.0, 2.0, nan],
+            "C": [nan] * 6,
+        }
+    )
+    result = median_impute(df, group="group")
+    assert list(result.columns) == ["group", "A", "B", "C"]
+    assert result["A"].tolist() == [1.0, 2.0, 3.0, 10.0, 20.0, 30.0]
+    # entirely missing within group a -> stays NaN there
+    assert result["B"].isna().tolist() == [True, True, True, False, False, False]
+    assert result.loc[5, "B"] == pytest.approx(1.5)
+    assert (result["C"] == 0).all()
+    assert "C" not in median_impute(df, group="group", keep_empty_features=False)
+
+
+def test_median_impute_group_errors():
+    df = pd.DataFrame({"group": ["a", "b"], "A": [1.0, nan]})
+    with pytest.raises(ValueError, match="group"):
+        median_impute(df, group="missing")
+    with pytest.raises(ValueError, match="group"):
+        median_impute(df, group="group", drop_cols=["group"])
+
+
 def test_median_impute_numeric_columns_do_not_warn(small_data, caplog):
     with caplog.at_level(logging.WARNING):
         median_impute(small_data)
@@ -591,3 +618,41 @@ def test_imputation_zeros_unknown_row_index_warning(caplog):
         result = imputation_zeros(df, on_rows=["r1", "r2", "ghost"])
     assert any("ghost" in msg for msg in caplog.messages)
     assert result.loc["r2", "A"] == 0.0
+
+
+def test_imputation_half_minimum_group(caplog):
+    df = pd.DataFrame(
+        {
+            "group": ["a", "a", "b", "b"],
+            "A": [2.0, nan, 10.0, nan],
+            "B": [nan, nan, 4.0, nan],
+        }
+    )
+    with caplog.at_level(logging.WARNING):
+        result = imputation_half_minimum(df, group="group")
+    assert result["group"].tolist() == ["a", "a", "b", "b"]
+    assert result["A"].tolist() == [2.0, 1.0, 10.0, 5.0]
+    assert result["B"].isna().tolist() == [True, True, False, False]
+    assert result.loc[3, "B"] == pytest.approx(2.0)
+    assert "('a', 'B')" in caplog.text
+
+
+def test_imputation_half_minimum_group_with_on_rows():
+    df = pd.DataFrame(
+        {
+            "group": ["a", "a", "a", "b", "b"],
+            "A": [2.0, 4.0, nan, 8.0, nan],
+        },
+        index=["r1", "r2", "r3", "r4", "r5"],
+    )
+    result = imputation_half_minimum(df, group="group", on_rows=["r2", "r3", "r5"])
+    # minimum for group a taken from r2 only; r1 untouched; group b has none in rows
+    assert result.loc["r3", "A"] == pytest.approx(2.0)
+    assert result.loc["r1", "A"] == pytest.approx(2.0)
+    assert np.isnan(result.loc["r5", "A"])
+
+
+def test_imputation_half_minimum_group_missing_column():
+    df = pd.DataFrame({"A": [1.0, nan]})
+    with pytest.raises(ValueError, match="group"):
+        imputation_half_minimum(df, group="group")
