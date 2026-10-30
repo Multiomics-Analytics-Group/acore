@@ -280,22 +280,22 @@ replacemissingfromgaussian.html
 
 def imputation_zeros(
     data: pd.DataFrame,
+    drop_cols: Iterable[str] | None = None,
     on_cols: Iterable[str] | None = None,
     on_rows: Iterable[str] | None = None,
-    drop_cols: Iterable[str] | None = None,
 ):
     """
     Replace missing values with zeros.
 
     :param data: DataFrame with samples as rows and features as columns.
+    :param list drop_cols: columns to permanently drop before imputation. If a column
+                           appears in both "on_cols" and "drop_cols" it will be dropped
+                           and a warning is emitted.
     :param list on_cols: columns to fill with zeros. If `None`, all numeric columns are filled.
                          Non-numeric columns in "on_cols" will raise a TypeError.
     :param list on_rows: row index labels to restrict imputation to. If `None`, all rows are
                          imputed. Useful for imputing only a subset of samples (e.g. QCs,
                          blanks, controls) while leaving others untouched.
-    :param list drop_cols: columns to permanently drop before imputation. If a column
-                           appears in both "on_cols" and "drop_cols" it will be dropped
-                           and a warning is emitted.
     :return: DataFrame with missing values in the target columns replaced by zero.
 
     Example:
@@ -315,23 +315,23 @@ def imputation_zeros(
 
 def imputation_half_minimum(
     data: pd.DataFrame,
+    drop_cols: Iterable[str] | None = None,
     on_cols: Iterable[str] | None = None,
     on_rows: Iterable[str] | None = None,
-    drop_cols: Iterable[str] | None = None,
 ):
     """
     Replace missing values with half the per-column minimum of observed values.
 
     :param data: DataFrame with samples as rows and features as columns.
+    :param list drop_cols: columns to permanently drop before imputation. If a column
+                           appears in both ``on_cols`` and ``drop_cols`` it will be dropped
+                           and a warning is emitted.
     :param list on_cols: columns to impute. If None, all numeric columns are used.
                          Non-numeric columns in ``on_cols`` will raise a TypeError.
     :param list on_rows: row index labels to restrict imputation to. If None, all rows are
                          imputed. When provided, the per-column minimum is also computed
                          from only those rows, so each subset gets its own half-minimum
                          (e.g. blanks are imputed with half the blank-minimum).
-    :param list drop_cols: columns to permanently drop before imputation. If a column
-                           appears in both ``on_cols`` and ``drop_cols`` it will be dropped
-                           and a warning is emitted.
     :return: DataFrame with missing values replaced by half the per-column minimum.
 
     Example::
