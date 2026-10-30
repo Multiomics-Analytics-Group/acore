@@ -29,7 +29,7 @@ result = imputation_KNN(data,
 )
 ```
 
-### imputation_half_minimum(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+### imputation_half_minimum(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Replace missing values with half the per-column minimum of observed values.
 
@@ -38,18 +38,18 @@ Replace missing values with half the per-column minimum of observed values.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
     appears in both `on_cols` and `drop_cols` it will be dropped
     and a warning is emitted.
-  * **on_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to impute. If None, all numeric columns are used.
-    Non-numeric columns in `on_cols` will raise a TypeError.
-  * **on_rows** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
-    imputed. When provided, the per-column minimum is also computed
-    from only those rows, so each subset gets its own half-minimum
-    (e.g. blanks are imputed with half the blank-minimum).
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. If set, the minimum is
     computed within each group (and within `on_rows`, if given).
     Columns without observed values in a group are left as NaN for
     that group. Rows with a missing group identifier are not imputed.
     The group column itself is never imputed and is returned as the
     first column.
+  * **on_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to impute. If None, all numeric columns are used.
+    Non-numeric columns in `on_cols` will raise a TypeError.
+  * **on_rows** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
+    imputed. When provided, the per-column minimum is also computed
+    from only those rows, so each subset gets its own half-minimum
+    (e.g. blanks are imputed with half the blank-minimum).
 * **Returns:**
   DataFrame with missing values replaced by half the per-column minimum.
 
@@ -97,7 +97,7 @@ result = imputation_mixed_norm_KNN(data,
 )
 ```
 
-### imputation_normal_distribution(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, shift: [float](https://docs.python.org/3/builtins/functions.html#float) = 1.8, nstd: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.3, random_state: [int](https://docs.python.org/3/builtins/functions.html#int) = 112736)
+### imputation_normal_distribution(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, shift: [float](https://docs.python.org/3/builtins/functions.html#float) = 1.8, nstd: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.3, random_state: [int](https://docs.python.org/3/builtins/functions.html#int) = 112736)
 
 Missing values will be replaced by random numbers that are drawn from a normal
 distribution. The imputation is done for each sample (across all proteins)
@@ -113,6 +113,9 @@ negatives in differential expression analysis that considers imputed values.
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of column labels to be dropped from the imputation.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. It is not used for
+    the imputation, but excluded from it and returned as the first
+    column.
   * **shift** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – specifies the amount by which the distribution used for the
     random numbers is shifted downwards. This is in units of the
     standard deviation of the valid data.
@@ -122,6 +125,8 @@ negatives in differential expression analysis that considers imputed values.
     numbers is half of the standard deviation of the data.
 * **Returns:**
   Pandas dataframe with samples as rows and protein identifiers as columns.
+* **Raises:**
+  [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – if group is not a column of data.
 
 Example:
 
@@ -132,7 +137,7 @@ result = imputation_normal_distribution(data,
 )
 ```
 
-### imputation_zeros(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+### imputation_zeros(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Replace missing values with zeros.
 
@@ -141,6 +146,9 @@ Replace missing values with zeros.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
     appears in both “on_cols” and “drop_cols” it will be dropped
     and a warning is emitted.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. It is not imputed,
+    is kept even if listed in “drop_cols”, and is returned as the
+    first column.
   * **on_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to fill with zeros. If None, all numeric columns are filled.
     Non-numeric columns in “on_cols” will raise a TypeError.
   * **on_rows** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
@@ -200,7 +208,9 @@ Copy data, drop drop_cols and resolve which columns and rows to impute.
 Imputation strategies for missing values in tabular data.
 
 The methods here depend a bit on the omics type. If the function has a group
-parameter, you can impute per group.
+parameter, you can impute per group. If that is not feasible, you can pass the group
+parameter, but it will only ensure that the group column is returned as the first column
+in the output dataframe.
 
 ### median_impute(X: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, keep_empty_features: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
 
@@ -292,7 +302,7 @@ result = imputation_mixed_norm_KNN(data,
 )
 ```
 
-### imputation_normal_distribution(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, shift: [float](https://docs.python.org/3/builtins/functions.html#float) = 1.8, nstd: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.3, random_state: [int](https://docs.python.org/3/builtins/functions.html#int) = 112736)
+### imputation_normal_distribution(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, shift: [float](https://docs.python.org/3/builtins/functions.html#float) = 1.8, nstd: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.3, random_state: [int](https://docs.python.org/3/builtins/functions.html#int) = 112736)
 
 Missing values will be replaced by random numbers that are drawn from a normal
 distribution. The imputation is done for each sample (across all proteins)
@@ -308,6 +318,9 @@ negatives in differential expression analysis that considers imputed values.
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of column labels to be dropped from the imputation.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. It is not used for
+    the imputation, but excluded from it and returned as the first
+    column.
   * **shift** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – specifies the amount by which the distribution used for the
     random numbers is shifted downwards. This is in units of the
     standard deviation of the valid data.
@@ -317,6 +330,8 @@ negatives in differential expression analysis that considers imputed values.
     numbers is half of the standard deviation of the data.
 * **Returns:**
   Pandas dataframe with samples as rows and protein identifiers as columns.
+* **Raises:**
+  [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – if group is not a column of data.
 
 Example:
 
@@ -327,7 +342,7 @@ result = imputation_normal_distribution(data,
 )
 ```
 
-### imputation_zeros(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+### imputation_zeros(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Replace missing values with zeros.
 
@@ -336,6 +351,9 @@ Replace missing values with zeros.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
     appears in both “on_cols” and “drop_cols” it will be dropped
     and a warning is emitted.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. It is not imputed,
+    is kept even if listed in “drop_cols”, and is returned as the
+    first column.
   * **on_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to fill with zeros. If None, all numeric columns are filled.
     Non-numeric columns in “on_cols” will raise a TypeError.
   * **on_rows** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
@@ -349,7 +367,7 @@ Replace missing values with zeros.
 result = imputation_zeros(data, on_cols=[‘featureA’, ‘featureB’])
 result = imputation_zeros(data, on_rows=[‘QC1’, ‘QC2’, ‘blank1’])
 
-### imputation_half_minimum(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+### imputation_half_minimum(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Replace missing values with half the per-column minimum of observed values.
 
@@ -358,18 +376,18 @@ Replace missing values with half the per-column minimum of observed values.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
     appears in both `on_cols` and `drop_cols` it will be dropped
     and a warning is emitted.
-  * **on_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to impute. If None, all numeric columns are used.
-    Non-numeric columns in `on_cols` will raise a TypeError.
-  * **on_rows** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
-    imputed. When provided, the per-column minimum is also computed
-    from only those rows, so each subset gets its own half-minimum
-    (e.g. blanks are imputed with half the blank-minimum).
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. If set, the minimum is
     computed within each group (and within `on_rows`, if given).
     Columns without observed values in a group are left as NaN for
     that group. Rows with a missing group identifier are not imputed.
     The group column itself is never imputed and is returned as the
     first column.
+  * **on_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to impute. If None, all numeric columns are used.
+    Non-numeric columns in `on_cols` will raise a TypeError.
+  * **on_rows** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
+    imputed. When provided, the per-column minimum is also computed
+    from only those rows, so each subset gets its own half-minimum
+    (e.g. blanks are imputed with half the blank-minimum).
 * **Returns:**
   DataFrame with missing values replaced by half the per-column minimum.
 
