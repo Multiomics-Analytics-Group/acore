@@ -9,7 +9,8 @@ information visit [fancyimpute](https://github.com/iskandr/fancyimpute/blob/HEAD
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers, restricted to be one
-    single column for now.
+    single column for now. If present, it is returned as the first
+    column.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped. Final dataframe should only
     have gene/protein/etc identifiers as columns.
   * **cutoff** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – minimum fraction of valid values required to impute
@@ -28,7 +29,7 @@ result = imputation_KNN(data,
 )
 ```
 
-### imputation_half_minimum(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+### imputation_half_minimum(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Replace missing values with half the per-column minimum of observed values.
 
@@ -43,6 +44,12 @@ Replace missing values with half the per-column minimum of observed values.
     imputed. When provided, the per-column minimum is also computed
     from only those rows, so each subset gets its own half-minimum
     (e.g. blanks are imputed with half the blank-minimum).
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. If set, the minimum is
+    computed within each group (and within `on_rows`, if given).
+    Columns without observed values in a group are left as NaN for
+    that group. Rows with a missing group identifier are not imputed.
+    The group column itself is never imputed and is returned as the
+    first column.
 * **Returns:**
   DataFrame with missing values replaced by half the per-column minimum.
 
@@ -51,6 +58,7 @@ Example:
 ```default
 result = imputation_half_minimum(data, on_cols=['featureA', 'featureB'])
 result = imputation_half_minimum(data, on_rows=['blank1', 'blank2'])
+result = imputation_half_minimum(data, group='group')
 ```
 
 ### imputation_mixed_norm_KNN(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, shift: [float](https://docs.python.org/3/builtins/functions.html#float) = 1.8, nstd: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.3, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', cutoff: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.6, random_state: [int](https://docs.python.org/3/builtins/functions.html#int) = 112736, n_neighbors: [int](https://docs.python.org/3/builtins/functions.html#int) = 3)
@@ -65,7 +73,8 @@ Missing values are replaced in two steps:
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. If present, it is
+    returned as the first column.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of column labels to be set as dataframe index.
   * **shift** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – specifies the amount by which the distribution used for the
     random numbers is shifted downwards. This is in units of the
@@ -145,7 +154,7 @@ Replace missing values with zeros.
 result = imputation_zeros(data, on_cols=[‘featureA’, ‘featureB’])
 result = imputation_zeros(data, on_rows=[‘QC1’, ‘QC2’, ‘blank1’])
 
-### median_impute(X: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, keep_empty_features: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
+### median_impute(X: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, keep_empty_features: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
 
 Replace missing values with the median of each column.
 
@@ -154,21 +163,27 @@ Replace missing values with the median of each column.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped before imputation, e.g.
     non-numeric metadata columns. All remaining columns
     must be numeric.
-  * **keep_empty_features** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – If True, retain entirely missing columns and
-    fill them with zero. Otherwise, drop them.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. If set, the median
+    is computed within each group. Columns that are entirely missing
+    within a group are left as NaN for that group. Rows with a
+    missing group identifier are not imputed. The group column is
+    excluded from imputation and returned as the first column.
+  * **keep_empty_features** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – If True, retain columns that are entirely missing
+    (in all rows) and fill them with zero. Otherwise,
+    drop them.
 * **Returns:**
   Imputed dataframe with the original row index and all columns except
   drop_cols (and entirely missing columns if keep_empty_features
   is False).
 * **Raises:**
   [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – if columns remaining after dropping drop_cols are
-  non-numeric.
+  non-numeric, or group is not a column (or is in drop_cols).
 
 ## Submodules
 
 ## acore.imputation_analysis.common module
 
-### select_imputation_targets(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None), on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None), drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)) → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[DataFrame, [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)], [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)]
+### select_imputation_targets(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None), on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None), drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None), group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None) → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[DataFrame, [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)], [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)]
 
 Copy data, drop drop_cols and resolve which columns and rows to impute.
 
@@ -177,11 +192,17 @@ Copy data, drop drop_cols and resolve which columns and rows to impute.
   to impute and the row labels found in the index (None if on_rows
   is None).
 * **Raises:**
-  [**TypeError**](https://docs.python.org/3/builtins/exceptions.html#TypeError) – if on_cols contains non-numeric columns.
+  * [**TypeError**](https://docs.python.org/3/builtins/exceptions.html#TypeError) – if on_cols contains non-numeric columns.
+  * [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – if group is not a column of data after dropping drop_cols.
 
 ## acore.imputation_analysis.strategies module
 
-### median_impute(X: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, keep_empty_features: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
+Imputation strategies for missing values in tabular data.
+
+The methods here depend a bit on the omics type. If the function has a group
+parameter, you can impute per group.
+
+### median_impute(X: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, keep_empty_features: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
 
 Replace missing values with the median of each column.
 
@@ -190,15 +211,21 @@ Replace missing values with the median of each column.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped before imputation, e.g.
     non-numeric metadata columns. All remaining columns
     must be numeric.
-  * **keep_empty_features** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – If True, retain entirely missing columns and
-    fill them with zero. Otherwise, drop them.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. If set, the median
+    is computed within each group. Columns that are entirely missing
+    within a group are left as NaN for that group. Rows with a
+    missing group identifier are not imputed. The group column is
+    excluded from imputation and returned as the first column.
+  * **keep_empty_features** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – If True, retain columns that are entirely missing
+    (in all rows) and fill them with zero. Otherwise,
+    drop them.
 * **Returns:**
   Imputed dataframe with the original row index and all columns except
   drop_cols (and entirely missing columns if keep_empty_features
   is False).
 * **Raises:**
   [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – if columns remaining after dropping drop_cols are
-  non-numeric.
+  non-numeric, or group is not a column (or is in drop_cols).
 
 ### imputation_KNN(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, cutoff=0.6, alone=True, n_neighbors=3)
 
@@ -209,7 +236,8 @@ information visit [fancyimpute](https://github.com/iskandr/fancyimpute/blob/HEAD
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers, restricted to be one
-    single column for now.
+    single column for now. If present, it is returned as the first
+    column.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped. Final dataframe should only
     have gene/protein/etc identifiers as columns.
   * **cutoff** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – minimum fraction of valid values required to impute
@@ -240,7 +268,8 @@ Missing values are replaced in two steps:
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. If present, it is
+    returned as the first column.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of column labels to be set as dataframe index.
   * **shift** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – specifies the amount by which the distribution used for the
     random numbers is shifted downwards. This is in units of the
@@ -320,7 +349,7 @@ Replace missing values with zeros.
 result = imputation_zeros(data, on_cols=[‘featureA’, ‘featureB’])
 result = imputation_zeros(data, on_rows=[‘QC1’, ‘QC2’, ‘blank1’])
 
-### imputation_half_minimum(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+### imputation_half_minimum(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Replace missing values with half the per-column minimum of observed values.
 
@@ -335,6 +364,12 @@ Replace missing values with half the per-column minimum of observed values.
     imputed. When provided, the per-column minimum is also computed
     from only those rows, so each subset gets its own half-minimum
     (e.g. blanks are imputed with half the blank-minimum).
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. If set, the minimum is
+    computed within each group (and within `on_rows`, if given).
+    Columns without observed values in a group are left as NaN for
+    that group. Rows with a missing group identifier are not imputed.
+    The group column itself is never imputed and is returned as the
+    first column.
 * **Returns:**
   DataFrame with missing values replaced by half the per-column minimum.
 
@@ -343,4 +378,5 @@ Example:
 ```default
 result = imputation_half_minimum(data, on_cols=['featureA', 'featureB'])
 result = imputation_half_minimum(data, on_rows=['blank1', 'blank2'])
+result = imputation_half_minimum(data, group='group')
 ```
