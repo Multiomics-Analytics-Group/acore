@@ -191,7 +191,8 @@ def imputation_mixed_norm_KNN(
 
     :param data: pandas dataframe with samples as rows and protein identifiers as
                  columns (with additional columns 'group', 'sample' and 'subject').
-    :param str group: column label containing group identifiers.
+    :param str group: column label containing group identifiers. If present, it is
+                      returned as the first column.
     :param list drop_cols: list of column labels to be set as dataframe index.
     :param float shift: specifies the amount by which the distribution used for the
                         random numbers is shifted downwards. This is in units of the
@@ -214,7 +215,7 @@ def imputation_mixed_norm_KNN(
     if isinstance(drop_cols, tuple):
         drop_cols = list(drop_cols)
 
-    df = imputation_KNN(
+    knn_df = imputation_KNN(
         data,
         drop_cols=drop_cols,
         group=group,
@@ -227,12 +228,14 @@ def imputation_mixed_norm_KNN(
     if group is not None and group not in _drop_cols:
         _drop_cols.append(group)
     df = imputation_normal_distribution(
-        df,
+        knn_df,
         drop_cols=_drop_cols,
         shift=shift,
         nstd=nstd,
         random_state=random_state,
     )
+    if group is not None and group in knn_df.columns:
+        df.insert(0, group, knn_df[group])
     return df
 
 
