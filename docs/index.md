@@ -14,7 +14,6 @@
 :hidden:
 
 api_examples_module/index.md
-api_examples_module/0_inputs.ipynb
 ```
 
 ```{toctree}
@@ -23,18 +22,6 @@ api_examples_module/0_inputs.ipynb
 :hidden:
 
 examples_single_analysis/index.md
-examples_single_analysis/filter_metabolomics
-examples_single_analysis/normalization_analysis
-examples_single_analysis/batch_correction
-examples_single_analysis/imputation
-examples_single_analysis/imputation_metabolomics
-examples_single_analysis/exploratory_analysis
-examples_single_analysis/drift_correction
-examples_single_analysis/diff_regulation_anova_ttest_two_groups
-examples_single_analysis/diff_regulation_anova_more_than_two_groups
-examples_single_analysis/diff_regulation_ancova
-examples_single_analysis/enrichment_analysis
-examples_single_analysis/permutation_testing
 ```
 
 ```{toctree}
@@ -50,6 +37,7 @@ PXD040621 <downloaded/PXD040621_analysis>
 :caption: Method discussions
 
 method_discussions/enrichment_analysis_efdr_mulea
+method_discussions/index.md
 
 ```
 
@@ -58,10 +46,7 @@ method_discussions/enrichment_analysis_efdr_mulea
 :caption: Example dataset (preprocessing)
 :hidden:
 
-example_data/Download_PRIDE_data
-example_data/ovarian_cancer
-example_data/alzheimer_proteomics
-example_data/MTBLS13411
+example_data/index.md
 ```
 
 ```{toctree}
