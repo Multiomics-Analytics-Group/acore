@@ -1,3 +1,9 @@
+"""Imputation strategies for missing values in tabular data.
+
+The methods here depend a bit on the omics type. If the function has a group
+parameter, you can impute per group.
+"""
+
 import logging
 from collections.abc import Iterable
 
@@ -90,7 +96,8 @@ def imputation_KNN(
     :param data: pandas dataframe with samples as rows and protein identifiers as
                  columns (with additional columns 'group', 'sample' and 'subject').
     :param str group: column label containing group identifiers, restricted to be one
-                      single column for now.
+                      single column for now. If present, it is returned as the first
+                      column.
     :param list drop_cols: column labels to be dropped. Final dataframe should only
                            have gene/protein/etc identifiers as columns.
     :param float cutoff: minimum fraction of valid values required to impute
@@ -157,6 +164,9 @@ def imputation_KNN(
     # Re-attach passthrough columns (including group/sample/subject, etc.)
     if passthrough_cols:
         df_numeric = df_numeric.join(df[passthrough_cols])
+
+    if group is not None and group in df_numeric.columns:
+        df_numeric = df_numeric[[group, *df_numeric.columns.drop(group)]]
 
     return df_numeric
 
@@ -369,7 +379,8 @@ def imputation_half_minimum(
                       computed within each group (and within ``on_rows``, if given).
                       Columns without observed values in a group are left as NaN for
                       that group. Rows with a missing group identifier are not imputed.
-                      The group column itself is never imputed and is kept in the output.
+                      The group column itself is never imputed and is returned as the
+                      first column.
     :return: DataFrame with missing values replaced by half the per-column minimum.
 
     Example::
@@ -410,4 +421,6 @@ def imputation_half_minimum(
     else:
         df[cols] = target.fillna(half_mins)
 
+    if group is not None:
+        df = df[[group, *df.columns.drop(group)]]
     return df
