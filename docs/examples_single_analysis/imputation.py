@@ -30,6 +30,8 @@
 # - `data`: `pd.DataFrame` with samples as rows and features as columns, which can
 #   can contain a `group` column.
 # - `drop_cols`: optional iterable of column names excluded from imputation.
+# - `group`: optional column name with the group identifiers. Some functions impute
+#   within each group, all of them return it as the first column.
 
 
 # %% tags=["hide-output"]
@@ -115,6 +117,8 @@ group: str = "collection_site"
 subject_col: str = "Sample ID"
 drop_cols: list[str] = ["AD"]
 factor_and_covars: list[str] = [group, *covariates]
+# metadata columns which are not imputed, but kept in the data (besides the group)
+meta_cols: list[str] = [*covariates, *drop_cols]
 group_label: Optional[str] = "site"  # optional: rename target variable
 
 # %% [markdown]
@@ -171,10 +175,9 @@ ax2.tick_params(axis="y", labelcolor="C1")
 # Show samples and features with at least 3 missing values
 
 # %% tags=["hide-input"]
-omics_and_y = omics_and_meta.drop(columns=[*covariates, *drop_cols])
 assert omics_and_meta.notna().any(axis=None), "Nothing to impute"
-omics_and_y.loc[omics_and_y.isna().sum(axis=1) >= 3].loc[
-    :, omics_and_y.isna().sum(axis=0) >= 3
+omics_and_meta.loc[omics_and_meta.isna().sum(axis=1) >= 3].loc[
+    :, omics_and_meta.isna().sum(axis=0) >= 3
 ]
 
 # %% [markdown]
@@ -194,15 +197,15 @@ omics_and_y.loc[omics_and_y.isna().sum(axis=1) >= 3].loc[
 
 # %%
 cutoff = 0.60
-omics_and_y_imputed = imputation_KNN(
-    data=omics_and_y,
-    drop_cols=[],
+omics_and_meta_imputed = imputation_KNN(
+    data=omics_and_meta,
+    drop_cols=meta_cols,
     group=None,
     cutoff=cutoff,
     alone=False,
 )
-assert omics_and_y_imputed.isna().sum().sum() == 0
-omics_and_y_imputed
+assert omics_and_meta_imputed.isna().sum().sum() == 0
+omics_and_meta_imputed
 
 # %% [markdown]
 # As we have increased the threshold `cutoff` for the fraction of non-missing
@@ -211,14 +214,14 @@ omics_and_y_imputed
 
 # %%
 cutoff = 0.90
-omics_and_y_imputed = imputation_KNN(
-    data=omics_and_y,
-    drop_cols=[],
+omics_and_meta_imputed = imputation_KNN(
+    data=omics_and_meta,
+    drop_cols=meta_cols,
     group=None,
     cutoff=cutoff,
     alone=False,
 )
-n_still_missing = omics_and_y_imputed.isna().sum().sum()
+n_still_missing = omics_and_meta_imputed.isna().sum().sum()
 print(f"Still missing features with cutoff of {cutoff}: {n_still_missing}")
 
 # %% [markdown]
@@ -227,16 +230,16 @@ print(f"Still missing features with cutoff of {cutoff}: {n_still_missing}")
 
 # %%
 cutoff = 0.90
-omics_and_y_imputed = imputation_KNN(
-    data=omics_and_y,
-    drop_cols=[],
+omics_and_meta_imputed = imputation_KNN(
+    data=omics_and_meta,
+    drop_cols=meta_cols,
     group=None,
     cutoff=cutoff,
     alone=True,
 )
-assert omics_and_y_imputed.isna().sum().sum() == 0
-print("Shape of of input data: ", omics_and_y.shape)
-print("Shape of imputed data: ", omics_and_y_imputed.shape)
+assert omics_and_meta_imputed.isna().sum().sum() == 0
+print("Shape of of input data: ", omics_and_meta.shape)
+print("Shape of imputed data: ", omics_and_meta_imputed.shape)
 
 # %% [markdown]
 # ### By group
@@ -248,14 +251,16 @@ print("Shape of imputed data: ", omics_and_y_imputed.shape)
 
 # %% tags=["hide-input"]
 frac_na_by_group = (
-    omics_and_y.groupby(
+    omics_and_meta.drop(columns=meta_cols)
+    .groupby(
         group,
     )
     .apply(lambda x: x.isna().sum() / x.shape[0], include_groups=False)
     .T
 ).sort_values(by="Berlin")
 frac_non_na_by_group = (
-    omics_and_y.groupby(group)
+    omics_and_meta.drop(columns=meta_cols)
+    .groupby(group)
     .apply(lambda x: x.notna().sum() / x.shape[0], include_groups=False)
     .T
 ).sort_values(by="Berlin")
@@ -291,14 +296,14 @@ ax2.tick_params(axis="y", labelcolor="C1")
 # (e.g. protein group) per group can be a good option.
 
 # %%
-omics_and_y_imputed = imputation_KNN(
-    data=omics_and_y,
-    drop_cols=[],
+omics_and_meta_imputed = imputation_KNN(
+    data=omics_and_meta,
+    drop_cols=meta_cols,
     group=group,
     cutoff=0.65,  # selected to leave some missing values for demonstration
     alone=False,
 )
-omics_and_y_imputed.isna().sum().value_counts().sort_index()
+omics_and_meta_imputed.isna().sum().value_counts().sort_index()
 
 # %% [markdown]
 # If we look at the number of missing values still remaining by collection site,
@@ -306,7 +311,7 @@ omics_and_y_imputed.isna().sum().value_counts().sort_index()
 # missing values for these.
 
 # %% tags=["hide-input"]
-omics_and_y_imputed.groupby(group).apply(
+omics_and_meta_imputed.groupby(group).apply(
     lambda x: x.isna().sum(), include_groups=False
 ).T.value_counts().sort_index()
 
@@ -317,14 +322,14 @@ omics_and_y_imputed.groupby(group).apply(
 # missing values.
 
 # %%
-omics_and_y_imputed = imputation_KNN(
-    data=omics_and_y,
-    drop_cols=[],
+omics_and_meta_imputed = imputation_KNN(
+    data=omics_and_meta,
+    drop_cols=meta_cols,
     group=group,
     cutoff=0.90,
     alone=False,
 )
-n_still_missing = omics_and_y_imputed.isna().sum().sum()
+n_still_missing = omics_and_meta_imputed.isna().sum().sum()
 print(f"Still missing features with cutoff of {cutoff}: {n_still_missing}")
 
 # %% [markdown]
@@ -366,10 +371,12 @@ fig.tight_layout()
 # This idea can be applied on a per sample basis using:
 
 # %%
-# does not account for groups as it is done on a per sample basis (along columns)
+# does not account for groups as it is done on a per sample basis (along columns),
+# the group column is only passed to be returned as the first column
 imputation_normal_distribution(
-    data=omics_and_y,
-    drop_cols=[group],
+    data=omics_and_meta,
+    drop_cols=meta_cols,
+    group=group,
 )
 
 # %% [markdown]
@@ -394,7 +401,9 @@ imputation_normal_distribution(
 # for more details.
 
 # %%
-imputation_mixed_norm_KNN(data=omics_and_y, drop_cols=[], group=group, cutoff=0.9)
+imputation_mixed_norm_KNN(
+    data=omics_and_meta, drop_cols=meta_cols, group=group, cutoff=0.9
+)
 
 # %% [markdown]
 # done.

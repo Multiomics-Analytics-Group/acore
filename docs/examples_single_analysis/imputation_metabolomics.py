@@ -85,6 +85,8 @@ def plot_feature_missingness(data):
 
 
 def missingness_summary(df_before, df_after):
+    # compare numeric data only: imputed output can contain a leading group column
+    df_after = df_after[df_before.columns]
     total = df_before.size
     n_before = df_before.isnull().sum().sum()
     n_after = df_after.isnull().sum().sum()
@@ -101,6 +103,7 @@ def missingness_summary(df_before, df_after):
 
 
 def plot_intensity_distribution(data):
+    data = data.select_dtypes(include="number")
     values = data.values.flatten().astype(float)
 
     n_total = data.size
@@ -154,13 +157,25 @@ data_original
 # %% [markdown]
 # In order to run our further analysis, including the filtering functions,
 # we have to transform the data and remove metadata such as mass and retention time.
+#
+# First drop object columns, then transpose to keep columns numeric. This dataset has
+# no sample metadata (e.g. a group column). If it had, you could pass `group="group"`
+# to the imputation functions below and it would be returned as the first column.
 
 # %%
-# first drop object columns, then transpose to keep columns numeric.
-data = data_original.drop(
-    ["Qidx", "SOIidx", "rtmed", "start", "end", "mass", "MaxInt", "formula", "anot"],
-    axis=1,
-).T
+metadata_cols = [
+    "Qidx",
+    "SOIidx",
+    "rtmed",
+    "start",
+    "end",
+    "mass",
+    "MaxInt",
+    "formula",
+    "anot",
+]
+# now columns are samples and rows are features.
+data = data_original.drop(metadata_cols, axis=1).T
 data
 
 # %% [markdown]
@@ -198,11 +213,22 @@ plot_intensity_distribution(data)
 # Here, this method can be applied easily using the function
 # [`imputation_zeros()`](acore.imputation_analysis.imputation_zeros).
 
-# %% tags=["hide-input"]
+# %%
 help(imputation_zeros)
 
 # %%
 data_imputed_zeros = imputation_zeros(data=data)
+data_imputed_zeros
+
+# %% [markdown]
+# Since zero imputation is applied value by value, we can also apply it directly to the
+# original (untransposed) data and let `drop_cols` remove the metadata columns. The result
+# is the same as imputing the transposed numeric data.
+
+# %%
+data_imputed_zeros_orig = imputation_zeros(data_original, drop_cols=metadata_cols)
+pd.testing.assert_frame_equal(data_imputed_zeros_orig.T, data_imputed_zeros)
+print("Imputation with drop_cols on the original data is identical.")
 
 # %% tags=["hide-input"]
 # Total missing count and percentage
@@ -226,6 +252,8 @@ plot_intensity_distribution(data_imputed_zeros)
 # This method is also widely used across the metabolomics community. Here, missing values
 # are imputed with half of the minimum value that has been recorded across the data set.
 #
+# > Note in contrast to proteomics, the intensities were not log2 tranformed first.
+#
 # This is done following the assumption of missing-not-at-random; that measurements may be
 # missing not because they are truly absent in the biological sample but because they are
 # for example below the limit of detection.
@@ -234,11 +262,26 @@ plot_intensity_distribution(data_imputed_zeros)
 # [`imputation_half_minimum()`](acore.imputation_analysis.imputation_half_minimum) is used
 # for this.
 
-# %% tags=["hide-input"]
+# %%
 help(imputation_half_minimum)
 
 # %%
 data_imputed_hm = imputation_half_minimum(data)
+data_imputed_hm
+
+# %% [markdown]
+# Unlike zero imputation, half-minimum imputation is **not** orientation independent: the
+# minimum is computed per column. Applying it to the original (untransposed) data with
+# `drop_cols` uses the minimum of each *sample* instead of each *feature*, so the result
+# differs. The data has to be in samples-as-rows format, as done above.
+
+# %%
+data_imputed_hm_orig = imputation_half_minimum(data_original, drop_cols=metadata_cols)
+is_imputed = data.T.isna().to_numpy()
+imputed_orig = data_imputed_hm_orig.to_numpy()[is_imputed]
+imputed_samples_as_rows = data_imputed_hm.T.to_numpy()[is_imputed]
+n_differ = (imputed_orig != imputed_samples_as_rows).sum()
+print(f"Imputed values that differ: {n_differ:,} / {is_imputed.sum():,}")
 
 # %% tags=["hide-input"]
 # Total missing count and percentage
