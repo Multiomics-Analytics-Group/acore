@@ -349,7 +349,8 @@ def test_imputation_mixed_norm_KNN_with_group():
     )
     result = imputation_mixed_norm_KNN(df, group="group", cutoff=0.3, random_state=42)
     assert result.isna().sum().sum() == 0
-    assert "group" not in result.columns
+    assert result.columns[0] == "group"
+    assert result["group"].tolist() == df["group"].tolist()
 
 
 def test_imputation_mixed_norm_KNN_with_group_and_drop_cols():
@@ -366,7 +367,8 @@ def test_imputation_mixed_norm_KNN_with_group_and_drop_cols():
         df, drop_cols=["subject"], group="group", cutoff=0.3, random_state=42
     )
     assert result.isna().sum().sum() == 0
-    assert "group" not in result.columns
+    assert result.columns[0] == "group"
+    assert result["group"].tolist() == df["group"].tolist()
     assert "subject" not in result.columns
 
 
@@ -382,7 +384,8 @@ def test_imputation_mixed_norm_KNN_drop_cols_none_with_group():
         df, drop_cols=None, group="group", cutoff=0.3, random_state=42
     )
     assert result.isna().sum().sum() == 0
-    assert "group" not in result.columns
+    assert result.columns[0] == "group"
+    assert result["group"].tolist() == df["group"].tolist()
 
 
 # ---------------------------------------------------------------------------

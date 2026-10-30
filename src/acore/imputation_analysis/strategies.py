@@ -1,7 +1,9 @@
 """Imputation strategies for missing values in tabular data.
 
 The methods here depend a bit on the omics type. If the function has a group
-parameter, you can impute per group.
+parameter, you can impute per group. If that is not feasible, you can pass the group
+parameter, but it will only ensure that the group column is returned as the first column
+in the output dataframe.
 """
 
 import logging
@@ -223,19 +225,14 @@ def imputation_mixed_norm_KNN(
         alone=False,
         n_neighbors=n_neighbors,
     )
-    # drop group column for normal data imputation
-    _drop_cols = list(drop_cols) if drop_cols else []
-    if group is not None and group not in _drop_cols:
-        _drop_cols.append(group)
     df = imputation_normal_distribution(
         knn_df,
-        drop_cols=_drop_cols,
+        drop_cols=drop_cols,
+        group=group if group in knn_df.columns else None,
         shift=shift,
         nstd=nstd,
         random_state=random_state,
     )
-    if group is not None and group in knn_df.columns:
-        df.insert(0, group, knn_df[group])
     return df
 
 
@@ -243,6 +240,7 @@ def imputation_mixed_norm_KNN(
 def imputation_normal_distribution(
     data: pd.DataFrame,
     drop_cols: Iterable[str] | None = None,
+    group: str | None = None,
     shift: float = 1.8,
     nstd: float = 0.3,
     random_state: int = 112736,
@@ -264,6 +262,9 @@ replacemissingfromgaussian.html
     :param data: pandas dataframe with samples as rows and protein identifiers as
                  columns (with additional columns 'group', 'sample' and 'subject').
     :param list drop_cols: list of column labels to be dropped from the imputation.
+    :param str group: column label containing group identifiers. It is not used for
+                      the imputation, but excluded from it and returned as the first
+                      column.
     :param float shift: specifies the amount by which the distribution used for the
                         random numbers is shifted downwards. This is in units of the
                         standard deviation of the valid data.
@@ -272,6 +273,7 @@ replacemissingfromgaussian.html
                        that the width of the distribution used for drawing random
                        numbers is half of the standard deviation of the data.
     :return: Pandas dataframe with samples as rows and protein identifiers as columns.
+    :raises ValueError: if `group` is not a column of `data`.
 
     Example::
 
@@ -286,8 +288,14 @@ replacemissingfromgaussian.html
     rng = np.random.default_rng(random_state)
 
     df = data.copy()
+    labels = None
+    if group is not None:
+        if group not in df.columns:
+            raise ValueError(f"`group` column {group!r} not found in columns.")
+        labels = df[group]
+        df = df.drop(columns=group)
     if drop_cols is not None and drop_cols:
-        df = df.drop(columns=drop_cols)
+        df = df.drop(columns=[c for c in drop_cols if c != group])
 
     # ToDo:  Transposing is expensive
     # data_imputed = df.T.sort_index()
@@ -320,12 +328,15 @@ replacemissingfromgaussian.html
 
         df.loc[r, missing_mask] = fill_values
 
+    if labels is not None:
+        df.insert(0, group, labels)
     return df
 
 
 def imputation_zeros(
     data: pd.DataFrame,
     drop_cols: Iterable[str] | None = None,
+    group: str | None = None,
     on_cols: Iterable[str] | None = None,
     on_rows: Iterable[str] | None = None,
 ):
@@ -336,6 +347,9 @@ def imputation_zeros(
     :param list drop_cols: columns to permanently drop before imputation. If a column
                            appears in both "on_cols" and "drop_cols" it will be dropped
                            and a warning is emitted.
+    :param str group: column label containing group identifiers. It is not imputed,
+                      is kept even if listed in "drop_cols", and is returned as the
+                      first column.
     :param list on_cols: columns to fill with zeros. If `None`, all numeric columns are filled.
                          Non-numeric columns in "on_cols" will raise a TypeError.
     :param list on_rows: row index labels to restrict imputation to. If `None`, all rows are
@@ -348,22 +362,28 @@ def imputation_zeros(
         result = imputation_zeros(data, on_cols=['featureA', 'featureB'])
         result = imputation_zeros(data, on_rows=['QC1', 'QC2', 'blank1'])
     """
-    df, cols, rows = common.select_imputation_targets(data, on_cols, on_rows, drop_cols)
+    if group is not None and drop_cols:
+        drop_cols = [c for c in drop_cols if c != group]
+    df, cols, rows = common.select_imputation_targets(
+        data, on_cols, on_rows, drop_cols, group=group
+    )
 
     if on_rows is not None:
         df.loc[rows, cols] = df.loc[rows, cols].fillna(0)
     else:
         df[cols] = df[cols].fillna(0)
 
+    if group is not None:
+        df = df[[group, *df.columns.drop(group)]]
     return df
 
 
 def imputation_half_minimum(
     data: pd.DataFrame,
     drop_cols: Iterable[str] | None = None,
+    group: str | None = None,
     on_cols: Iterable[str] | None = None,
     on_rows: Iterable[str] | None = None,
-    group: str | None = None,
 ):
     """
     Replace missing values with half the per-column minimum of observed values.
@@ -372,18 +392,18 @@ def imputation_half_minimum(
     :param list drop_cols: columns to permanently drop before imputation. If a column
                            appears in both ``on_cols`` and ``drop_cols`` it will be dropped
                            and a warning is emitted.
-    :param list on_cols: columns to impute. If None, all numeric columns are used.
-                         Non-numeric columns in ``on_cols`` will raise a TypeError.
-    :param list on_rows: row index labels to restrict imputation to. If None, all rows are
-                         imputed. When provided, the per-column minimum is also computed
-                         from only those rows, so each subset gets its own half-minimum
-                         (e.g. blanks are imputed with half the blank-minimum).
     :param str group: column label containing group identifiers. If set, the minimum is
                       computed within each group (and within ``on_rows``, if given).
                       Columns without observed values in a group are left as NaN for
                       that group. Rows with a missing group identifier are not imputed.
                       The group column itself is never imputed and is returned as the
                       first column.
+    :param list on_cols: columns to impute. If None, all numeric columns are used.
+                         Non-numeric columns in ``on_cols`` will raise a TypeError.
+    :param list on_rows: row index labels to restrict imputation to. If None, all rows are
+                         imputed. When provided, the per-column minimum is also computed
+                         from only those rows, so each subset gets its own half-minimum
+                         (e.g. blanks are imputed with half the blank-minimum).
     :return: DataFrame with missing values replaced by half the per-column minimum.
 
     Example::
