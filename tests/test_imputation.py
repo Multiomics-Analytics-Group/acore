@@ -412,36 +412,42 @@ def test_median_impute_no_missing_unchanged():
     pd.testing.assert_frame_equal(median_impute(df), df)
 
 
-def test_median_impute_drops_non_numeric_columns(caplog):
+def test_median_impute_drop_cols():
     df = pd.DataFrame(
         {
             "text": ["1", "2", "3"],
             "A": [1.0, nan, 3.0],
-            "category": pd.Categorical(["a", "b", "a"]),
-            "flag": [True, False, True],
-            "date": pd.date_range("2026-01-01", periods=3),
             "B": pd.array([2, None, 6], dtype="Int64"),
         },
         index=["s1", "s2", "s3"],
     )
     original = df.copy(deep=True)
-    with caplog.at_level(logging.WARNING):
-        result = median_impute(df)
+    result = median_impute(df, drop_cols=["text"])
     expected = pd.DataFrame(
         {"A": [1.0, 2.0, 3.0], "B": [2.0, 4.0, 6.0]}, index=df.index
     )
     pd.testing.assert_frame_equal(result, expected)
     pd.testing.assert_frame_equal(df, original)
-    assert "Non-numeric columns dropped for imputation" in caplog.text
-    assert "['text', 'category', 'flag', 'date']" in caplog.text
 
 
-def test_median_impute_no_numeric_columns(caplog):
+def test_median_impute_raises_on_non_numeric_columns():
+    df = pd.DataFrame(
+        {
+            "text": ["1", "2", "3"],
+            "A": [1.0, nan, 3.0],
+            "flag": [True, False, True],
+        }
+    )
+    with pytest.raises(ValueError, match=r"\['text', 'flag'\]"):
+        median_impute(df)
+    with pytest.raises(ValueError, match=r"\['flag'\]"):
+        median_impute(df, drop_cols=["text"])
+
+
+def test_median_impute_all_columns_dropped():
     df = pd.DataFrame({"label": ["a", "b"]}, index=["s1", "s2"])
-    with caplog.at_level(logging.WARNING):
-        result = median_impute(df)
+    result = median_impute(df, drop_cols=["label"])
     pd.testing.assert_frame_equal(result, df.iloc[:, :0])
-    assert "['label']" in caplog.text
 
 
 def test_median_impute_numeric_columns_do_not_warn(small_data, caplog):

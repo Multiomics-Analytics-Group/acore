@@ -11,34 +11,41 @@ from . import common
 logger = logging.getLogger(__name__)
 
 
-def median_impute(X: pd.DataFrame, keep_empty_features: bool = True) -> pd.DataFrame:
-    """Replace missing values with the median of each column in each numeric one.
-
-    Non-numeric columns are dropped with a logged warning, without attempting
-    to convert them to numbers.
+def median_impute(
+    X: pd.DataFrame,
+    drop_cols: Iterable[str] | None = None,
+    keep_empty_features: bool = True,
+) -> pd.DataFrame:
+    """Replace missing values with the median of each column.
 
     :param X: Dataframe with samples as rows and features as columns.
+    :param list drop_cols: column labels to be dropped before imputation, e.g.
+                           non-numeric metadata columns. All remaining columns
+                           must be numeric.
     :param bool keep_empty_features: If True, retain entirely missing columns and
                                      fill them with zero. Otherwise, drop them.
-    :return: Imputed dataframe with the original row index and retained numeric
-             columns. If there are no numeric columns, return an empty dataframe
-             with the original row index.
+    :return: Imputed dataframe with the original row index and all columns except
+             `drop_cols` (and entirely missing columns if `keep_empty_features`
+             is False).
+    :raises ValueError: if columns remaining after dropping `drop_cols` are
+                        non-numeric.
     """
-    X_numeric = X.select_dtypes(include="number").copy()
-    non_numeric = X.select_dtypes(exclude="number").columns.tolist()
+    df = X.drop(columns=drop_cols) if drop_cols else X
+    non_numeric = df.select_dtypes(exclude="number").columns.tolist()
     if non_numeric:
-        logger.warning("Non-numeric columns dropped for imputation: %s", non_numeric)
-    if X_numeric.shape[1] == 0:
-        return X_numeric
+        raise ValueError(
+            f"Non-numeric columns found, add them to `drop_cols`: {non_numeric}"
+        )
+    if df.shape[1] == 0:
+        return df.copy()
 
-    X_imputed = (
+    return (
         sklearn.impute.SimpleImputer(
             strategy="median", keep_empty_features=keep_empty_features
         )
         .set_output(transform="pandas")
-        .fit_transform(X_numeric)
+        .fit_transform(df)
     )
-    return X_imputed
 
 
 def imputation_KNN(
