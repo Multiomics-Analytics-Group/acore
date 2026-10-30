@@ -28,21 +28,21 @@ result = imputation_KNN(data,
 )
 ```
 
-### imputation_half_minimum(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+### imputation_half_minimum(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Replace missing values with half the per-column minimum of observed values.
 
 * **Parameters:**
   * **data** – DataFrame with samples as rows and features as columns.
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
+    appears in both `on_cols` and `drop_cols` it will be dropped
+    and a warning is emitted.
   * **on_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to impute. If None, all numeric columns are used.
     Non-numeric columns in `on_cols` will raise a TypeError.
   * **on_rows** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
     imputed. When provided, the per-column minimum is also computed
     from only those rows, so each subset gets its own half-minimum
     (e.g. blanks are imputed with half the blank-minimum).
-  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
-    appears in both `on_cols` and `drop_cols` it will be dropped
-    and a warning is emitted.
 * **Returns:**
   DataFrame with missing values replaced by half the per-column minimum.
 
@@ -123,20 +123,20 @@ result = imputation_normal_distribution(data,
 )
 ```
 
-### imputation_zeros(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+### imputation_zeros(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Replace missing values with zeros.
 
 * **Parameters:**
   * **data** – DataFrame with samples as rows and features as columns.
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
+    appears in both “on_cols” and “drop_cols” it will be dropped
+    and a warning is emitted.
   * **on_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to fill with zeros. If None, all numeric columns are filled.
     Non-numeric columns in “on_cols” will raise a TypeError.
   * **on_rows** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
     imputed. Useful for imputing only a subset of samples (e.g. QCs,
     blanks, controls) while leaving others untouched.
-  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
-    appears in both “on_cols” and “drop_cols” it will be dropped
-    and a warning is emitted.
 * **Returns:**
   DataFrame with missing values in the target columns replaced by zero.
 
@@ -145,16 +145,24 @@ Replace missing values with zeros.
 result = imputation_zeros(data, on_cols=[‘featureA’, ‘featureB’])
 result = imputation_zeros(data, on_rows=[‘QC1’, ‘QC2’, ‘blank1’])
 
-### median_impute(X: DataFrame, keep_empty_features: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
+### median_impute(X: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, keep_empty_features: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
 
 Replace missing values with the median of each column.
 
 * **Parameters:**
-  * **X** – Numeric dataframe with samples as rows and features as columns.
+  * **X** – Dataframe with samples as rows and features as columns.
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped before imputation, e.g.
+    non-numeric metadata columns. All remaining columns
+    must be numeric.
   * **keep_empty_features** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – If True, retain entirely missing columns and
     fill them with zero. Otherwise, drop them.
 * **Returns:**
-  Imputed dataframe with the original row index and retained columns.
+  Imputed dataframe with the original row index and all columns except
+  drop_cols (and entirely missing columns if keep_empty_features
+  is False).
+* **Raises:**
+  [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – if columns remaining after dropping drop_cols are
+  non-numeric.
 
 ## Submodules
 
@@ -173,16 +181,24 @@ Copy data, drop drop_cols and resolve which columns and rows to impute.
 
 ## acore.imputation_analysis.strategies module
 
-### median_impute(X: DataFrame, keep_empty_features: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
+### median_impute(X: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, keep_empty_features: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
 
 Replace missing values with the median of each column.
 
 * **Parameters:**
-  * **X** – Numeric dataframe with samples as rows and features as columns.
+  * **X** – Dataframe with samples as rows and features as columns.
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped before imputation, e.g.
+    non-numeric metadata columns. All remaining columns
+    must be numeric.
   * **keep_empty_features** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – If True, retain entirely missing columns and
     fill them with zero. Otherwise, drop them.
 * **Returns:**
-  Imputed dataframe with the original row index and retained columns.
+  Imputed dataframe with the original row index and all columns except
+  drop_cols (and entirely missing columns if keep_empty_features
+  is False).
+* **Raises:**
+  [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – if columns remaining after dropping drop_cols are
+  non-numeric.
 
 ### imputation_KNN(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, cutoff=0.6, alone=True, n_neighbors=3)
 
@@ -282,20 +298,20 @@ result = imputation_normal_distribution(data,
 )
 ```
 
-### imputation_zeros(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+### imputation_zeros(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Replace missing values with zeros.
 
 * **Parameters:**
   * **data** – DataFrame with samples as rows and features as columns.
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
+    appears in both “on_cols” and “drop_cols” it will be dropped
+    and a warning is emitted.
   * **on_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to fill with zeros. If None, all numeric columns are filled.
     Non-numeric columns in “on_cols” will raise a TypeError.
   * **on_rows** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
     imputed. Useful for imputing only a subset of samples (e.g. QCs,
     blanks, controls) while leaving others untouched.
-  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
-    appears in both “on_cols” and “drop_cols” it will be dropped
-    and a warning is emitted.
 * **Returns:**
   DataFrame with missing values in the target columns replaced by zero.
 
@@ -304,21 +320,21 @@ Replace missing values with zeros.
 result = imputation_zeros(data, on_cols=[‘featureA’, ‘featureB’])
 result = imputation_zeros(data, on_rows=[‘QC1’, ‘QC2’, ‘blank1’])
 
-### imputation_half_minimum(data: DataFrame, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+### imputation_half_minimum(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Replace missing values with half the per-column minimum of observed values.
 
 * **Parameters:**
   * **data** – DataFrame with samples as rows and features as columns.
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
+    appears in both `on_cols` and `drop_cols` it will be dropped
+    and a warning is emitted.
   * **on_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to impute. If None, all numeric columns are used.
     Non-numeric columns in `on_cols` will raise a TypeError.
   * **on_rows** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – row index labels to restrict imputation to. If None, all rows are
     imputed. When provided, the per-column minimum is also computed
     from only those rows, so each subset gets its own half-minimum
     (e.g. blanks are imputed with half the blank-minimum).
-  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
-    appears in both `on_cols` and `drop_cols` it will be dropped
-    and a warning is emitted.
 * **Returns:**
   DataFrame with missing values replaced by half the per-column minimum.
 
