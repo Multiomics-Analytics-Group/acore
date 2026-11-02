@@ -141,7 +141,7 @@ def plot_intensity_distribution(data):
 # ### Data Loading
 #
 # Load in your data and inspect the resulting dataframe. The example data set can be found
-# in `example_data/DidacMauricio_hilic`.
+# in [`example_data/DidacMauricio_hilic`](example_data/DidacMauricio_hilic).
 #
 # The data set has been filtered already, using the
 # [`acore.filter_metabolomics`](acore.filter_metabolomics) module. That means that
@@ -178,8 +178,12 @@ metadata_cols = [
     "formula",
     "anot",
 ]
-# now columns are samples and rows are features.
-data = data_original.drop(metadata_cols, axis=1)
+# first drop object columns, then transpose to keep columns numeric.
+data = (
+    data_original.drop(metadata_cols, axis=1)
+    .T.rename_axis("SampleID")
+    .rename_axis("FeatureID", axis=1)
+)
 data
 
 # %% [markdown]
@@ -222,16 +226,17 @@ help(imputation_zeros)
 
 # %%
 data_imputed_zeros = imputation_zeros(data=data)
-data_imputed_zeros
 
 # %% [markdown]
 # Since zero imputation is applied value by value, we can also apply it directly to the
 # original (untransposed) data and let `drop_cols` remove the metadata columns. The result
-# is the same as imputing the transposed numeric data.
+# is the same as imputing the transposed numeric data (ignoring the index names).
 
 # %%
 data_imputed_zeros_orig = imputation_zeros(data_original, drop_cols=metadata_cols)
-pd.testing.assert_frame_equal(data_imputed_zeros_orig, data_imputed_zeros)
+pd.testing.assert_frame_equal(
+    data_imputed_zeros_orig.T, data_imputed_zeros, check_names=False
+)
 print("Imputation with drop_cols on the original data is identical.")
 
 # %% tags=["hide-input"]
@@ -278,13 +283,23 @@ data_imputed_hm = imputation_half_minimum(data)
 data_imputed_hm
 
 # %% [markdown]
-# The same result is obtained when applying the function to the original data and
-# letting `drop_cols` remove the metadata columns.
+# Unlike zero imputation, half-minimum imputation is **not** orientation independent: the
+# minimum is computed per column. The function expects samples as rows and features as
+# columns. Applying it to the original data (features as rows, samples as columns) using
+# `drop_cols` to remove the metadata, uses the minimum of each *sample* instead of each
+# *feature*, so the imputed values differ.
+#
+# Both approaches could be valid depending on your assumptions, but the more common
+# approach in metabolomics is to impute per feature to the half-minimum (after
+# normalization, if applicable).
 
 # %%
 data_imputed_hm_orig = imputation_half_minimum(data_original, drop_cols=metadata_cols)
-pd.testing.assert_frame_equal(data_imputed_hm_orig, data_imputed_hm)
-print("Half-minimum imputation with drop_cols on the original data is identical.")
+is_imputed = data.isna().to_numpy()
+imputed_features_as_columns = data_imputed_hm.to_numpy()[is_imputed]
+imputed_features_as_rows = data_imputed_hm_orig.T.to_numpy()[is_imputed]
+n_differ = (imputed_features_as_columns != imputed_features_as_rows).sum()
+print(f"Imputed values that differ: {n_differ:,} / {is_imputed.sum():,}")
 
 # %% tags=["hide-input"]
 # Total missing count and percentage
