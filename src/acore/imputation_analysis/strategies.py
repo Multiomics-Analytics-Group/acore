@@ -61,13 +61,12 @@ def median_impute(
     if df.shape[1] == 0:
         imputed = df.copy()
     elif group is None:
-        imputed = (
-            sklearn.impute.SimpleImputer(
-                strategy="median", keep_empty_features=keep_empty_features
-            )
-            .set_output(transform="pandas")
-            .fit_transform(df)
-        )
+        imputer = sklearn.impute.SimpleImputer(
+            strategy="median", keep_empty_features=keep_empty_features
+        ).set_output(transform="default")
+        values = imputer.fit_transform(df)
+        columns = df.columns if keep_empty_features else df.columns[df.notna().any()]
+        imputed = pd.DataFrame(values, index=df.index, columns=columns)
     else:
         imputed = df.astype(float).fillna(df.groupby(labels).transform("median"))
         empty = df.columns[df.isna().all()]

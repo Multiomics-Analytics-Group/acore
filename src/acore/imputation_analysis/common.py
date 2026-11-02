@@ -39,6 +39,8 @@ def select_imputation_targets(
 
     if on_cols is None:
         for col in df.columns[df.dtypes == object]:
+            if col == group:
+                continue
             try:
                 df[col] = pd.to_numeric(df[col])
             except (ValueError, TypeError):
