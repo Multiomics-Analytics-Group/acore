@@ -40,8 +40,8 @@ from acore.imputation_analysis import (
 )
 
 
-def plot_feature_missingness(data):
-    missing_features = data.isnull().mean(axis=1) * 100
+def plot_feature_missingness(data, axis=0):
+    missing_features = data.isnull().mean(axis=axis) * 100
     missing_features_nonzero = missing_features[missing_features > 0]
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
