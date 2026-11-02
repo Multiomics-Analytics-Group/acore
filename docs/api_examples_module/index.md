@@ -7,3 +7,9 @@ Examples for specific modules, each highlighting the
 
 For in-depth explanations of the functionality, links to the single analysis examples
 are provided within the module examples.
+
+```{toctree}
+:maxdepth: 1
+
+0_inputs.ipynb
+```
