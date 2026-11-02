@@ -16,11 +16,15 @@
 # # Imputation (Metabolomics example)
 
 # %% [markdown]
-# In this notebook, we will showcase the acore functions for imputing data which are specific for metabolomics data analysis. Namely, we will go through imputation with zeros and half-minimum imputation.
+# In this notebook, we will showcase the acore functions for imputing data which are
+# specific for metabolomics data analysis. Namely, we will go through imputation with
+# zeros and half-minimum imputation.
 #
-# For this, we will use a Diabetes example data set from this paper: [Barranco-Altirriba M et al., 2025](https://doi.org/10.3389/fendo.2025.1706886)
+# For this, we will use a Diabetes example data set from this paper: [Barranco-Altirriba
+# M et al., 2025](https://doi.org/10.3389/fendo.2025.1706886)
 #
-# This notebook refers to the [`acore.imputation_analysis`](acore.imputation_analysis) module.
+# This notebook refers to the [`acore.imputation_analysis`](acore.imputation_analysis)
+# module.
 
 # %% tags=["hide-output"]
 # %pip install acore
@@ -37,7 +41,7 @@ from acore.imputation_analysis import (
 
 
 def plot_feature_missingness(data):
-    missing_features = data.isnull().mean() * 100
+    missing_features = data.isnull().mean(axis=1) * 100
     missing_features_nonzero = missing_features[missing_features > 0]
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
@@ -110,7 +114,7 @@ def plot_intensity_distribution(data):
     n_missing = int(np.isnan(values).sum())
     pct_missing = n_missing / n_total * 100
 
-    log_values = np.log10(values[(~np.isnan(values)) & (values > 0)])
+    log_values = np.log2(values[(~np.isnan(values)) & (values > 0)])
 
     fig, (ax_nan, ax_hist) = plt.subplots(
         1, 2, figsize=(11, 5), gridspec_kw={"width_ratios": [1, 8]}, sharey=True
@@ -125,7 +129,7 @@ def plot_intensity_distribution(data):
     ax_hist.hist(
         log_values, bins=100, color="cornflowerblue", edgecolor="none", alpha=0.8
     )
-    ax_hist.set_xlabel("Intensity (log₁₀)")
+    ax_hist.set_xlabel("Intensity ($log_2$)")
     ax_hist.set_title("Intensity distribution (all features, all samples)")
     ax_hist.yaxis.set_visible(False)
 
@@ -175,7 +179,7 @@ metadata_cols = [
     "anot",
 ]
 # now columns are samples and rows are features.
-data = data_original.drop(metadata_cols, axis=1).T
+data = data_original.drop(metadata_cols, axis=1)
 data
 
 # %% [markdown]
@@ -227,7 +231,7 @@ data_imputed_zeros
 
 # %%
 data_imputed_zeros_orig = imputation_zeros(data_original, drop_cols=metadata_cols)
-pd.testing.assert_frame_equal(data_imputed_zeros_orig.T, data_imputed_zeros)
+pd.testing.assert_frame_equal(data_imputed_zeros_orig, data_imputed_zeros)
 print("Imputation with drop_cols on the original data is identical.")
 
 # %% tags=["hide-input"]
@@ -253,14 +257,18 @@ plot_intensity_distribution(data_imputed_zeros)
 # are imputed with half of the minimum value that has been recorded across the data set.
 #
 # > Note in contrast to proteomics, the intensities were not log2 tranformed first.
+# > Therefore for feature x we have $log_2 (\frac{min(x)}{2}) = log_2(min(x)) - 1$ and
+# > thus the half-minimum imputation is equivalent to subtracting 1 from the
+# > log2-transformed minimum value.
 #
-# This is done following the assumption of missing-not-at-random; that measurements may be
-# missing not because they are truly absent in the biological sample but because they are
-# for example below the limit of detection.
+# This is done following the assumption of missing-not-at-random; that measurements may
+# be missing not because they are truly absent in the biological sample but because they
+# are for example below the limit of detection.
 #
 # Here, in acore, the function
-# [`imputation_half_minimum()`](acore.imputation_analysis.imputation_half_minimum) is used
-# for this.
+# [`imputation_half_minimum()`](acore.imputation_analysis.imputation_half_minimum) is
+# used for this.
+
 
 # %%
 help(imputation_half_minimum)
@@ -270,18 +278,13 @@ data_imputed_hm = imputation_half_minimum(data)
 data_imputed_hm
 
 # %% [markdown]
-# Unlike zero imputation, half-minimum imputation is **not** orientation independent: the
-# minimum is computed per column. Applying it to the original (untransposed) data with
-# `drop_cols` uses the minimum of each *sample* instead of each *feature*, so the result
-# differs. The data has to be in samples-as-rows format, as done above.
+# The same result is obtained when applying the function to the original data and
+# letting `drop_cols` remove the metadata columns.
 
 # %%
 data_imputed_hm_orig = imputation_half_minimum(data_original, drop_cols=metadata_cols)
-is_imputed = data.T.isna().to_numpy()
-imputed_orig = data_imputed_hm_orig.to_numpy()[is_imputed]
-imputed_samples_as_rows = data_imputed_hm.T.to_numpy()[is_imputed]
-n_differ = (imputed_orig != imputed_samples_as_rows).sum()
-print(f"Imputed values that differ: {n_differ:,} / {is_imputed.sum():,}")
+pd.testing.assert_frame_equal(data_imputed_hm_orig, data_imputed_hm)
+print("Half-minimum imputation with drop_cols on the original data is identical.")
 
 # %% tags=["hide-input"]
 # Total missing count and percentage
