@@ -16,11 +16,15 @@
 # # Imputation (Metabolomics example)
 
 # %% [markdown]
-# In this notebook, we will showcase the acore functions for imputing data which are specific for metabolomics data analysis. Namely, we will go through imputation with zeros and half-minimum imputation.
+# In this notebook, we will showcase the acore functions for imputing data which are
+# specific for metabolomics data analysis. Namely, we will go through imputation with
+# zeros and half-minimum imputation.
 #
-# For this, we will use a Diabetes example data set from this paper: [Barranco-Altirriba M et al., 2025](https://doi.org/10.3389/fendo.2025.1706886)
+# For this, we will use a Diabetes example data set from this paper: [Barranco-Altirriba
+# M et al., 2025](https://doi.org/10.3389/fendo.2025.1706886)
 #
-# This notebook refers to the [`acore.imputation_analysis`](acore.imputation_analysis) module.
+# This notebook refers to the [`acore.imputation_analysis`](acore.imputation_analysis)
+# module.
 
 # %% tags=["hide-output"]
 # %pip install acore
@@ -36,8 +40,8 @@ from acore.imputation_analysis import (
 )
 
 
-def plot_feature_missingness(data):
-    missing_features = data.isnull().mean() * 100
+def plot_feature_missingness(data, axis=0):
+    missing_features = data.isnull().mean(axis=axis) * 100
     missing_features_nonzero = missing_features[missing_features > 0]
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
@@ -85,6 +89,8 @@ def plot_feature_missingness(data):
 
 
 def missingness_summary(df_before, df_after):
+    # compare numeric data only: imputed output can contain a leading group column
+    df_after = df_after[df_before.columns]
     total = df_before.size
     n_before = df_before.isnull().sum().sum()
     n_after = df_after.isnull().sum().sum()
@@ -101,13 +107,14 @@ def missingness_summary(df_before, df_after):
 
 
 def plot_intensity_distribution(data):
+    data = data.select_dtypes(include="number")
     values = data.values.flatten().astype(float)
 
     n_total = data.size
     n_missing = int(np.isnan(values).sum())
     pct_missing = n_missing / n_total * 100
 
-    log_values = np.log10(values[(~np.isnan(values)) & (values > 0)])
+    log_values = np.log2(values[(~np.isnan(values)) & (values > 0)])
 
     fig, (ax_nan, ax_hist) = plt.subplots(
         1, 2, figsize=(11, 5), gridspec_kw={"width_ratios": [1, 8]}, sharey=True
@@ -122,7 +129,7 @@ def plot_intensity_distribution(data):
     ax_hist.hist(
         log_values, bins=100, color="cornflowerblue", edgecolor="none", alpha=0.8
     )
-    ax_hist.set_xlabel("Intensity (log₁₀)")
+    ax_hist.set_xlabel("Intensity ($log_2$)")
     ax_hist.set_title("Intensity distribution (all features, all samples)")
     ax_hist.yaxis.set_visible(False)
 
@@ -134,7 +141,7 @@ def plot_intensity_distribution(data):
 # ### Data Loading
 #
 # Load in your data and inspect the resulting dataframe. The example data set can be found
-# in `example_data/DidacMauricio_hilic`.
+# in [`example_data/DidacMauricio_hilic`](example_data/DidacMauricio_hilic).
 #
 # The data set has been filtered already, using the
 # [`acore.filter_metabolomics`](acore.filter_metabolomics) module. That means that
@@ -154,13 +161,29 @@ data_original
 # %% [markdown]
 # In order to run our further analysis, including the filtering functions,
 # we have to transform the data and remove metadata such as mass and retention time.
+#
+# First drop object columns, then transpose to keep columns numeric. This dataset has
+# no sample metadata (e.g. a group column). If it had, you could pass `group="group"`
+# to the imputation functions below and it would be returned as the first column.
 
 # %%
+metadata_cols = [
+    "Qidx",
+    "SOIidx",
+    "rtmed",
+    "start",
+    "end",
+    "mass",
+    "MaxInt",
+    "formula",
+    "anot",
+]
 # first drop object columns, then transpose to keep columns numeric.
-data = data_original.drop(
-    ["Qidx", "SOIidx", "rtmed", "start", "end", "mass", "MaxInt", "formula", "anot"],
-    axis=1,
-).T
+data = (
+    data_original.drop(metadata_cols, axis=1)
+    .T.rename_axis("SampleID")
+    .rename_axis("FeatureID", axis=1)
+)
 data
 
 # %% [markdown]
@@ -198,11 +221,23 @@ plot_intensity_distribution(data)
 # Here, this method can be applied easily using the function
 # [`imputation_zeros()`](acore.imputation_analysis.imputation_zeros).
 
-# %% tags=["hide-input"]
+# %%
 help(imputation_zeros)
 
 # %%
 data_imputed_zeros = imputation_zeros(data=data)
+
+# %% [markdown]
+# Since zero imputation is applied value by value, we can also apply it directly to the
+# original (untransposed) data and let `drop_cols` remove the metadata columns. The result
+# is the same as imputing the transposed numeric data (ignoring the index names).
+
+# %%
+data_imputed_zeros_orig = imputation_zeros(data_original, drop_cols=metadata_cols)
+pd.testing.assert_frame_equal(
+    data_imputed_zeros_orig.T, data_imputed_zeros, check_names=False
+)
+print("Imputation with drop_cols on the original data is identical.")
 
 # %% tags=["hide-input"]
 # Total missing count and percentage
@@ -226,19 +261,45 @@ plot_intensity_distribution(data_imputed_zeros)
 # This method is also widely used across the metabolomics community. Here, missing values
 # are imputed with half of the minimum value that has been recorded across the data set.
 #
-# This is done following the assumption of missing-not-at-random; that measurements may be
-# missing not because they are truly absent in the biological sample but because they are
-# for example below the limit of detection.
+# > Note in contrast to proteomics, the intensities were not log2 tranformed first.
+# > Therefore for feature x we have $log_2 (\frac{min(x)}{2}) = log_2(min(x)) - 1$ and
+# > thus the half-minimum imputation is equivalent to subtracting 1 from the
+# > log2-transformed minimum value.
+#
+# This is done following the assumption of missing-not-at-random; that measurements may
+# be missing not because they are truly absent in the biological sample but because they
+# are for example below the limit of detection.
 #
 # Here, in acore, the function
-# [`imputation_half_minimum()`](acore.imputation_analysis.imputation_half_minimum) is used
-# for this.
+# [`imputation_half_minimum()`](acore.imputation_analysis.imputation_half_minimum) is
+# used for this.
 
-# %% tags=["hide-input"]
+
+# %%
 help(imputation_half_minimum)
 
 # %%
 data_imputed_hm = imputation_half_minimum(data)
+data_imputed_hm
+
+# %% [markdown]
+# Unlike zero imputation, half-minimum imputation is **not** orientation independent: the
+# minimum is computed per column. The function expects samples as rows and features as
+# columns. Applying it to the original data (features as rows, samples as columns) using
+# `drop_cols` to remove the metadata, uses the minimum of each *sample* instead of each
+# *feature*, so the imputed values differ.
+#
+# Both approaches could be valid depending on your assumptions, but the more common
+# approach in metabolomics is to impute per feature to the half-minimum (after
+# normalization, if applicable).
+
+# %%
+data_imputed_hm_orig = imputation_half_minimum(data_original, drop_cols=metadata_cols)
+is_imputed = data.isna().to_numpy()
+imputed_features_as_columns = data_imputed_hm.to_numpy()[is_imputed]
+imputed_features_as_rows = data_imputed_hm_orig.T.to_numpy()[is_imputed]
+n_differ = (imputed_features_as_columns != imputed_features_as_rows).sum()
+print(f"Imputed values that differ: {n_differ:,} / {is_imputed.sum():,}")
 
 # %% tags=["hide-input"]
 # Total missing count and percentage
