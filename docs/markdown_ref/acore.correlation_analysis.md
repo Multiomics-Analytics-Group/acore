@@ -27,7 +27,7 @@ Raises ValueError if the value is not present.
 Compute the correlation matrix, returning only unique values (lower triangle).
 Passes kwargs to [pandas.DataFrame.corr](pandas.DataFrame.corr) method.
 
-### calculate_correlations(x, y, method='pearson')
+### calculate_correlations(x: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), y: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'pearson') → [CorrelationCoefficient](#acore.correlation_analysis.CorrelationCoefficient)
 
 Calculates a Spearman (nonparametric)
 or a Pearson (parametric) correlation coefficient
@@ -46,7 +46,7 @@ Example:
 result = calculate_correlations(x, y, method='pearson')
 ```
 
-### run_correlation(df, alpha=0.05, subject=None, group='group', method='pearson', correction='fdr_bh', numeric_only=True, dropna=True)
+### run_correlation(df: DataFrame, alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'pearson', correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', numeric_only: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True, dropna: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
 
 This function calculates pairwise correlations for columns in dataframe,
 and returns it in the shape of a edge list with ‘weight’ as correlation score,
@@ -98,7 +98,7 @@ result = run_multi_correlation(df_dict, alpha=0.05, subject='subject',
     group='group', method='pearson', correction='fdr_bh')
 ```
 
-### calculate_rm_correlation(df, x, y, subject)
+### calculate_rm_correlation(df: DataFrame, x: [str](https://docs.python.org/3/builtins/stdtypes.html#str), y: [str](https://docs.python.org/3/builtins/stdtypes.html#str), subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str))
 
 Computes correlation and p-values between two columns a and b in df with
 repeated measures (rm).
@@ -170,7 +170,7 @@ matrix, see
 * **Return type:**
   pd.DataFrame
 
-### run_efficient_correlation(data, method='pearson')
+### run_efficient_correlation(data: DataFrame, method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'pearson') → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)]
 
 Calculates pairwise correlations and returns lower triangle of the matrix with
 correlation values and p-values. For pearson correlation, p-values are calculated

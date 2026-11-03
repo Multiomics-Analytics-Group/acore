@@ -52,7 +52,7 @@ result = normalize_data_per_group(data, group='group' method='median')
 
 Strategies for data normalization used by normalize_data.
 
-### median_zero_normalization(data, normalize='samples')
+### median_zero_normalization(data: DataFrame, normalize: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = 'samples') → DataFrame
 
 This function normalizes each sample by using its median.
 
@@ -77,7 +77,7 @@ result
     4 -2.000000 -2.000000  4.000000
 ```
 
-### median_normalization(data, normalize='samples')
+### median_normalization(data: DataFrame, normalize: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = 'samples') → DataFrame
 
 This function normalizes each sample by using its median.
 
@@ -102,7 +102,7 @@ result
     4 -2.000000 -2.000000  4.000000
 ```
 
-### zscore_normalization(data, normalize='samples')
+### zscore_normalization(data: DataFrame, normalize: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = 'samples') → DataFrame
 
 This function normalizes each sample by using its mean and standard deviation
 (mean=0, std=1).
@@ -128,7 +128,7 @@ result
         4 -0.577350 -0.577350  1.154701
 ```
 
-### median_polish_normalization(data, max_iter=250)
+### median_polish_normalization(data: DataFrame, max_iter: [int](https://docs.python.org/3/builtins/functions.html#int) = 250) → DataFrame
 
 This function iteratively normalizes each sample and each feature to its
 median until medians converge.
@@ -153,7 +153,7 @@ result
     4  3.0  5.0   8.0
 ```
 
-### quantile_normalization(data) → DataFrame
+### quantile_normalization(data: DataFrame) → DataFrame
 
 Applies quantile normalization to each column in pandas.DataFrame.
 
@@ -176,7 +176,7 @@ result
     4  3.2  3.2  8.6
 ```
 
-### linear_normalization(data, method='l1', normalize='samples') → DataFrame
+### linear_normalization(data: DataFrame, method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'l1', normalize: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = 'samples') → DataFrame
 
 This function scales input data to a unit norm. For more information visit:
 [https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.normalize.html](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.normalize.html)

@@ -69,7 +69,7 @@ Example:
 result = get_coefficient_variation(data, drop_columns=['sample', 'subject'], group='group')
 ```
 
-### extract_number_missing(data, min_valid, drop_cols=None, group='group')
+### extract_number_missing(data: DataFrame, min_valid: [int](https://docs.python.org/3/builtins/functions.html#int), drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = 'group') → [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)]
 
 Counts how many valid values exist in each column and filters column labels with more
 valid values than the minimum threshold defined.
@@ -90,7 +90,7 @@ Example:
 result = extract_number_missing(data, min_valid=3, drop_cols=['sample'], group='group')
 ```
 
-### extract_percentage_missing(data, missing_max, drop_cols=None, group='group', how='all')
+### extract_percentage_missing(data: DataFrame, missing_max: [float](https://docs.python.org/3/builtins/functions.html#float), drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = 'group', how: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'all') → [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)]
 
 Extracts ratio of missing/valid values in each column and filters column labels with
 lower ratio than the minimum threshold defined.
@@ -112,7 +112,7 @@ Example::
 : result = extract_percentage_missing(data, missing_max=0.3,
   : drop_cols=[‘sample’], group=’group’)
 
-### run_pca(data, drop_cols=None, group='group', annotation_cols=None, components=2, dropna=True)
+### run_pca(data: DataFrame, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', annotation_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, components: [int](https://docs.python.org/3/builtins/functions.html#int) = 2, dropna: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[DataFrame, DataFrame, [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray) | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[float](https://docs.python.org/3/builtins/functions.html#float)]], [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [str](https://docs.python.org/3/builtins/stdtypes.html#str)]]
 
 Performs principal component analysis and returns the values of each component for each sample
 and each protein, and the loadings for each protein.
@@ -142,7 +142,7 @@ result = run_pca(data, drop_cols=['sample', 'subject'], group='group',
                  components=2, dropna=True)
 ```
 
-### run_tsne(data, drop_cols=None, group='group', annotation_cols=None, components=2, perplexity=40, max_iter=1000, init='pca', dropna=True)
+### run_tsne(data: DataFrame, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', annotation_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, components: [int](https://docs.python.org/3/builtins/functions.html#int) = 2, perplexity: [int](https://docs.python.org/3/builtins/functions.html#int) = 40, max_iter: [int](https://docs.python.org/3/builtins/functions.html#int) = 1000, init: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'pca', dropna: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), DataFrame], [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [str](https://docs.python.org/3/builtins/stdtypes.html#str)]]
 
 Performs t-distributed Stochastic Neighbor Embedding analysis.
 
@@ -188,7 +188,7 @@ result = run_tsne(data,
                 )
 ```
 
-### run_umap(data, drop_cols=None, group='group', annotation_cols=None, n_neighbors=10, min_dist=0.3, metric='cosine', dropna=True)
+### run_umap(data: DataFrame, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', annotation_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, n_neighbors: [int](https://docs.python.org/3/builtins/functions.html#int) = 10, min_dist: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.3, metric: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'cosine', dropna: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), DataFrame], [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [str](https://docs.python.org/3/builtins/stdtypes.html#str)]]
 
 Performs Uniform Manifold Approximation and Projection.
 

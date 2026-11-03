@@ -32,7 +32,7 @@ Example:
 result = apply_pvalue_correction(pvalues, alpha=0.05, method='bonferroni')
 ```
 
-### apply_pvalue_fdrcorrection(pvalues, alpha=0.05, method='indep')
+### apply_pvalue_fdrcorrection(pvalues: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'indep') → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)]
 
 Performs p-value correction for false discovery rate. For more information visit [https://www.statsmodels.org/devel/generated/statsmodels.stats.multitest.fdrcorrection.html](https://www.statsmodels.org/devel/generated/statsmodels.stats.multitest.fdrcorrection.html).
 
@@ -49,7 +49,7 @@ Example:
 result = apply_pvalue_fdrcorrection(pvalues, alpha=0.05, method='indep')
 ```
 
-### apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method='bh')
+### apply_pvalue_twostage_fdrcorrection(pvalues: [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'bh') → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), [ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)]
 
 Iterated two stage linear step-up procedure with estimation of number of true hypotheses. For more information visit [https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.fdrcorrection_twostage.html](https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.fdrcorrection_twostage.html).
 
@@ -85,7 +85,7 @@ Example:
 result = apply_pvalue_permutation_fdrcorrection(df, observed_pvalues, group='group', alpha=0.05, permutations=50)
 ```
 
-### calculate_anova(df, column, group='group')
+### calculate_anova(df: DataFrame, column: [str](https://docs.python.org/3/builtins/stdtypes.html#str), group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group')
 
 Calculates one-way ANOVA using pingouin.
 
@@ -160,4 +160,4 @@ Get maximum number of permutations according to number of samples.
 * **Return type:**
   [int](https://docs.python.org/3/builtins/functions.html#int)
 
-### correct_pairwise_ttest(df, alpha, correction='fdr_bh', pvalue_col='posthoc pvalue')
+### correct_pairwise_ttest(df: DataFrame, alpha: [float](https://docs.python.org/3/builtins/functions.html#float), correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', pvalue_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'posthoc pvalue') → DataFrame
