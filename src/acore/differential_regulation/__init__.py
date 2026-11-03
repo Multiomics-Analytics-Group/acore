@@ -274,14 +274,14 @@ def run_ancova(
 
 
 def run_repeated_measurements_anova(
-    df,
-    alpha=0.05,
-    drop_cols=None,
-    subject="subject",
-    within="group",
-    permutations=50,
-    correction="fdr_bh",
-    is_logged=True,
+    df: pd.DataFrame,
+    alpha: float = 0.05,
+    drop_cols: list[str] | None = None,
+    subject: str = "subject",
+    within: str = "group",
+    permutations: int = 50,
+    correction: str = "fdr_bh",
+    is_logged: bool = True,
 ) -> pd.DataFrame:
     """
     Performs repeated measurements anova and pairwise posthoc tests for each protein in dataframe.
@@ -349,14 +349,14 @@ def run_repeated_measurements_anova(
 
 
 def run_mixed_anova(
-    df,
-    alpha=0.05,
-    drop_cols=None,
-    subject="subject",
-    within="group",
-    between="group2",
-    correction="fdr_bh",
-):
+    df: pd.DataFrame,
+    alpha: float = 0.05,
+    drop_cols: list[str] | None = None,
+    subject: str = "subject",
+    within: str = "group",
+    between: str = "group2",
+    correction: str = "fdr_bh",
+) -> pd.DataFrame:
     """
     In statistics, a mixed-design analysis of variance model, also known as a split-plot
     ANOVA, is used to test
@@ -421,19 +421,19 @@ def run_mixed_anova(
 
 
 def run_ttest(
-    df,
-    condition1,
-    condition2,
-    alpha=0.05,
-    drop_cols=None,
-    subject="subject",
-    group="group",
-    paired=False,
-    correction="fdr_bh",
-    permutations=0,
-    is_logged=True,
-    non_par=False,
-):
+    df: pd.DataFrame,
+    condition1: str,
+    condition2: str,
+    alpha: float = 0.05,
+    drop_cols: list[str] | None = None,
+    subject: str | None = "subject",
+    group: str = "group",
+    paired: bool = False,
+    correction: str = "fdr_bh",
+    permutations: int = 0,
+    is_logged: bool = True,
+    non_par: bool = False,
+) -> pd.DataFrame:
     """
     Runs t-test (paired/unpaired) for each protein in dataset and performs
     permutation-based (if permutations>0) or Benjamini/Hochberg (if permutations=0)
@@ -555,11 +555,11 @@ def run_ttest(
 
 
 def run_two_way_anova(
-    df,
-    drop_cols=None,
-    subject="subject",
-    group=None,
-):
+    df: pd.DataFrame,
+    drop_cols: list[str] | None = None,
+    subject: str = "subject",
+    group: list[str] | None = None,
+) -> tuple[pd.DataFrame, dict[str, pd.Series]]:
     """
     Run a 2-way ANOVA when data['secondary_group'] is not empty
 

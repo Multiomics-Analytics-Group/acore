@@ -5,7 +5,9 @@ from sklearn import preprocessing
 
 
 # ! update docstring: example is not correct
-def median_zero_normalization(data, normalize="samples"):
+def median_zero_normalization(
+    data: pd.DataFrame, normalize: str | None = "samples"
+) -> pd.DataFrame:
     """
     This function normalizes each sample by using its median.
 
@@ -36,7 +38,9 @@ def median_zero_normalization(data, normalize="samples"):
 
 
 # ! Update docstring: example is not correct
-def median_normalization(data, normalize="samples"):
+def median_normalization(
+    data: pd.DataFrame, normalize: str | None = "samples"
+) -> pd.DataFrame:
     """
     This function normalizes each sample by using its median.
 
@@ -66,7 +70,9 @@ def median_normalization(data, normalize="samples"):
     return norm_data
 
 
-def zscore_normalization(data, normalize="samples"):
+def zscore_normalization(
+    data: pd.DataFrame, normalize: str | None = "samples"
+) -> pd.DataFrame:
     """
     This function normalizes each sample by using its mean and standard deviation
     (mean=0, std=1).
@@ -98,7 +104,9 @@ def zscore_normalization(data, normalize="samples"):
     return norm_data
 
 
-def median_polish_normalization(data, max_iter=250):
+def median_polish_normalization(
+    data: pd.DataFrame, max_iter: int = 250
+) -> pd.DataFrame:
     """
     This function iteratively normalizes each sample and each feature to its
     median until medians converge.
@@ -136,7 +144,7 @@ def median_polish_normalization(data, max_iter=250):
     return norm_data
 
 
-def quantile_normalization(data) -> pd.DataFrame:
+def quantile_normalization(data: pd.DataFrame) -> pd.DataFrame:
     """
     Applies quantile normalization to each column in pandas.DataFrame.
 
@@ -166,7 +174,9 @@ def quantile_normalization(data) -> pd.DataFrame:
 
 # ToDo: check if fillna(0) is necessary for normalize. Imputation should be handled
 # separately.
-def linear_normalization(data, method="l1", normalize="samples") -> pd.DataFrame:
+def linear_normalization(
+    data: pd.DataFrame, method: str = "l1", normalize: str | None = "samples"
+) -> pd.DataFrame:
     """
     This function scales input data to a unit norm. For more information visit:
     https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.normalize.html

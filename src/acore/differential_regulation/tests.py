@@ -60,16 +60,16 @@ def calc_ttest(
 
 
 def calculate_ttest(
-    df,
-    condition1,
-    condition2,
-    paired=False,
-    is_logged=True,
-    non_par=False,
-    tail="two-sided",
-    correction="auto",
-    r=0.707,
-):
+    df: pd.DataFrame,
+    condition1: str,
+    condition2: str,
+    paired: bool = False,
+    is_logged: bool = True,
+    non_par: bool = False,
+    tail: str = "two-sided",
+    correction: str = "auto",
+    r: float = 0.707,
+) -> tuple[float, float, float, float, float, float, float, str]:
     """
     Calculates the t-test for the means of independent samples belonging to two different
     groups using scipy.stats.ttest_ind_.
@@ -166,8 +166,13 @@ def calculate_thsd(df, column, group="group", alpha=0.05, is_logged=True):
 
 
 def calculate_pairwise_ttest(
-    df, column, subject="subject", group="group", correction="none", is_logged=True
-):
+    df: pd.DataFrame,
+    column: str,
+    subject: str = "subject",
+    group: str = "group",
+    correction: str = "none",
+    is_logged: bool = True,
+) -> pd.DataFrame:
     """
     Performs pairwise t-test using pingouin, as a posthoc test,
     and calculates fold-changes using pingouin.pairwise_tests_.
@@ -262,7 +267,7 @@ def complement_posthoc(posthoc, identifier, is_logged):
     return posthoc
 
 
-def calculate_anova(df, column, group="group"):
+def calculate_anova(df: pd.DataFrame, column: str, group: str = "group"):
     """
     Calculates one-way ANOVA using pingouin.
 
@@ -279,7 +284,10 @@ def calculate_anova(df, column, group="group"):
 
 
 def calculate_ancova(
-    data, column, group: str = "group", covariates: list[str] | None = None
+    data: pd.DataFrame,
+    column: str,
+    group: str = "group",
+    covariates: list[str] | None = None,
 ):
     """
     Calculates one-way ANCOVA using pingouin.
@@ -302,7 +310,9 @@ def calculate_ancova(
     return (column, df, df, t, pvalue)
 
 
-def calculate_repeated_measures_anova(df, column, subject="subject", within="group"):
+def calculate_repeated_measures_anova(
+    df: pd.DataFrame, column: str, subject: str = "subject", within: str = "group"
+):
     """
     One-way and two-way repeated measures ANOVA using pingouin stats.
 
@@ -346,7 +356,11 @@ def calculate_repeated_measures_anova(df, column, subject="subject", within="gro
 
 
 def calculate_mixed_anova(
-    df, column, subject="subject", within="group", between="group2"
+    df: pd.DataFrame,
+    column: str,
+    subject: str = "subject",
+    within: str = "group",
+    between: str = "group2",
 ):
     """
     One-way and two-way repeated measures ANOVA using pingouin stats.
@@ -384,7 +398,9 @@ def calculate_mixed_anova(
     return aov_result[["identifier", "DF1", "DF2", "F", "p-unc", "Source"]]
 
 
-def pairwise_ttest_with_covariates(df, column, group, covariates, is_logged):
+def pairwise_ttest_with_covariates(
+    df: pd.DataFrame, column: str, group: str, covariates: list[str], is_logged: bool
+):
     """Pairwise t-test with covariates using statsmodels."""
     formula = f"Q('{column}') ~ C(Q('{group}'))"
     for c in covariates:
@@ -430,15 +446,15 @@ def pairwise_ttest_with_covariates(df, column, group, covariates, is_logged):
 
 
 def format_anova_table(
-    df,
-    aov_results,
+    df: pd.DataFrame,
+    aov_results: list[tuple],
     pairwise_results,
     pairwise_cols,
-    group,
-    permutations,
-    alpha,
-    correction,
-):
+    group: str,
+    permutations: int,
+    alpha: float,
+    correction: str,
+) -> pd.DataFrame:
     """
     Performs p-value correction (permutation-based and FDR) and converts pandas dataframe
     into final format.
@@ -520,7 +536,7 @@ def calculate_pvalue_from_tstats(tstat, dfn):
     return pval
 
 
-def eta_squared(aov):
+def eta_squared(aov: pd.DataFrame) -> pd.DataFrame:
     """
     Calculates the effect size using Eta-squared.
 
@@ -532,7 +548,7 @@ def eta_squared(aov):
     return aov
 
 
-def omega_squared(aov):
+def omega_squared(aov: pd.DataFrame) -> pd.DataFrame:
     """
     Calculates the effect size using Omega-squared.
 

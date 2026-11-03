@@ -84,10 +84,10 @@ def imputation_KNN(
     data: pd.DataFrame,
     drop_cols: Iterable[str] | None = None,
     group: str | None = None,
-    cutoff=0.6,
-    alone=True,
-    n_neighbors=3,
-):
+    cutoff: float = 0.6,
+    alone: bool = True,
+    n_neighbors: int = 3,
+) -> pd.DataFrame:
     """
     K-Nearest Neighbors imputation for pandas dataframes with missing data. For more
     information visit `fancyimpute`_.
@@ -243,7 +243,7 @@ def imputation_normal_distribution(
     shift: float = 1.8,
     nstd: float = 0.3,
     random_state: int = 112736,
-):
+) -> pd.DataFrame:
     """
     Missing values will be replaced by random numbers that are drawn from a normal
     distribution. The imputation is done for each sample (across all proteins)
@@ -338,7 +338,7 @@ def imputation_zeros(
     group: str | None = None,
     on_cols: Iterable[str] | None = None,
     on_rows: Iterable[str] | None = None,
-):
+) -> pd.DataFrame:
     """
     Replace missing values with zeros.
 
@@ -383,7 +383,7 @@ def imputation_half_minimum(
     group: str | None = None,
     on_cols: Iterable[str] | None = None,
     on_rows: Iterable[str] | None = None,
-):
+) -> pd.DataFrame:
     """
     Replace missing values with half the per-column minimum of observed values.
 

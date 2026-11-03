@@ -55,7 +55,9 @@ https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.multiplete
     return (rejected, pval_corrected)
 
 
-def apply_pvalue_fdrcorrection(pvalues, alpha=0.05, method="indep"):
+def apply_pvalue_fdrcorrection(
+    pvalues: np.ndarray, alpha: float = 0.05, method: str = "indep"
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Performs p-value correction for false discovery rate. For more information visit https://www.statsmodels.org/devel/generated/statsmodels.stats.multitest.fdrcorrection.html.
 
@@ -73,7 +75,9 @@ def apply_pvalue_fdrcorrection(pvalues, alpha=0.05, method="indep"):
     return (rejected, padj)
 
 
-def apply_pvalue_twostage_fdrcorrection(pvalues, alpha=0.05, method="bh"):
+def apply_pvalue_twostage_fdrcorrection(
+    pvalues: np.ndarray, alpha: float = 0.05, method: str = "bh"
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Iterated two stage linear step-up procedure with estimation of number of true hypotheses. For more information visit https://www.statsmodels.org/dev/generated/statsmodels.stats.multitest.fdrcorrection_twostage.html.
 
@@ -149,7 +153,7 @@ def apply_pvalue_permutation_fdrcorrection(
     return qvalues
 
 
-def calculate_anova(df, column, group="group"):
+def calculate_anova(df: pd.DataFrame, column: str, group: str = "group"):
     """
     Calculates one-way ANOVA using pingouin.
 
@@ -272,7 +276,12 @@ def get_max_permutations(df, group="group"):
     return max_perm
 
 
-def correct_pairwise_ttest(df, alpha, correction="fdr_bh", pvalue_col="posthoc pvalue"):
+def correct_pairwise_ttest(
+    df: pd.DataFrame,
+    alpha: float,
+    correction: str = "fdr_bh",
+    pvalue_col: str = "posthoc pvalue",
+) -> pd.DataFrame:
     posthoc_df = []
 
     required_col = ["group1", "group2", pvalue_col]
