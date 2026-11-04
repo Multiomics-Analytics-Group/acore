@@ -32,7 +32,9 @@ def corr_lower_triangle(df: pd.DataFrame, **kwargs) -> pd.DataFrame:
     return corr_df.where(lower_triangle)
 
 
-def calculate_correlations(x, y, method="pearson"):
+def calculate_correlations(
+    x: np.ndarray, y: np.ndarray, method: str = "pearson"
+) -> CorrelationCoefficient:
     """
     Calculates a Spearman (nonparametric)
     or a Pearson (parametric) correlation coefficient
@@ -56,15 +58,15 @@ def calculate_correlations(x, y, method="pearson"):
 
 
 def run_correlation(
-    df,
-    alpha=0.05,
-    subject=None,
-    group="group",
-    method="pearson",
-    correction="fdr_bh",
-    numeric_only=True,
-    dropna=True,
-):
+    df: pd.DataFrame,
+    alpha: float = 0.05,
+    subject: str | None = None,
+    group: str = "group",
+    method: str = "pearson",
+    correction: str = "fdr_bh",
+    numeric_only: bool = True,
+    dropna: bool = True,
+) -> pd.DataFrame:
     """
     This function calculates pairwise correlations for columns in dataframe,
     and returns it in the shape of a edge list with 'weight' as correlation score,
@@ -173,7 +175,7 @@ def run_multi_correlation(
     return correlation
 
 
-def calculate_rm_correlation(df, x, y, subject):
+def calculate_rm_correlation(df: pd.DataFrame, x: str, y: str, subject: str):
     """
     Computes correlation and p-values between two columns a and b in df with
     repeated measures (rm).
@@ -313,7 +315,9 @@ def calculate_pvalue_correlation(r, n_obs):
     return p
 
 
-def run_efficient_correlation(data, method="pearson"):
+def run_efficient_correlation(
+    data: pd.DataFrame, method: str = "pearson"
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Calculates pairwise correlations and returns lower triangle of the matrix with
     correlation values and p-values. For pearson correlation, p-values are calculated

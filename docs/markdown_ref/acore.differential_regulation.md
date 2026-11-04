@@ -90,7 +90,7 @@ result = run_anova(df,
 Differential analysis procedure between two groups. Calculaes
 mean per group and t-test for each variable in vars between two groups.
 
-### run_mixed_anova(df, alpha=0.05, drop_cols=None, subject='subject', within='group', between='group2', correction='fdr_bh')
+### run_mixed_anova(df: DataFrame, alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'subject', within: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', between: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group2', correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh') → DataFrame
 
 In statistics, a mixed-design analysis of variance model, also known as a split-plot
 ANOVA, is used to test
@@ -129,7 +129,7 @@ result = run_mixed_anova(df,
         )
 ```
 
-### run_repeated_measurements_anova(df, alpha=0.05, drop_cols=None, subject='subject', within='group', permutations=50, correction='fdr_bh', is_logged=True) → DataFrame
+### run_repeated_measurements_anova(df: DataFrame, alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'subject', within: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 50, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
 
 Performs repeated measurements anova and pairwise posthoc tests for each protein in dataframe.
 
@@ -161,7 +161,7 @@ result = run_repeated_measurements_anova(df,
         )
 ```
 
-### run_ttest(df, condition1, condition2, alpha=0.05, drop_cols=None, subject='subject', group='group', paired=False, correction='fdr_bh', permutations=0, is_logged=True, non_par=False)
+### run_ttest(df: DataFrame, condition1: [str](https://docs.python.org/3/builtins/stdtypes.html#str), condition2: [str](https://docs.python.org/3/builtins/stdtypes.html#str), alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = 'subject', group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', paired: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 0, is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → DataFrame
 
 Runs t-test (paired/unpaired) for each protein in dataset and performs
 permutation-based (if permutations>0) or Benjamini/Hochberg (if permutations=0)
@@ -205,7 +205,7 @@ result = run_ttest(df,
         )
 ```
 
-### run_two_way_anova(df, drop_cols=None, subject='subject', group=None)
+### run_two_way_anova(df: DataFrame, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'subject', group: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None) → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[DataFrame, [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), Series]]
 
 Run a 2-way ANOVA when data[‘secondary_group’] is not empty
 
@@ -250,7 +250,7 @@ Mean comparison between groups
 Calculate t-test for each variable in variables between two groups defined
 by boolean array.
 
-### calculate_ttest(df, condition1, condition2, paired=False, is_logged=True, non_par=False, tail='two-sided', correction='auto', r=0.707)
+### calculate_ttest(df: DataFrame, condition1: [str](https://docs.python.org/3/builtins/stdtypes.html#str), condition2: [str](https://docs.python.org/3/builtins/stdtypes.html#str), paired: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, tail: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'two-sided', correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'auto', r: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.707) → [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[float](https://docs.python.org/3/builtins/functions.html#float), [float](https://docs.python.org/3/builtins/functions.html#float), [float](https://docs.python.org/3/builtins/functions.html#float), [float](https://docs.python.org/3/builtins/functions.html#float), [float](https://docs.python.org/3/builtins/functions.html#float), [float](https://docs.python.org/3/builtins/functions.html#float), [float](https://docs.python.org/3/builtins/functions.html#float), [str](https://docs.python.org/3/builtins/stdtypes.html#str)]
 
 Calculates the t-test for the means of independent samples belonging to two different
 groups using [scipy.stats.ttest_ind](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html.).
@@ -291,7 +291,7 @@ Example:
 result = calculate_thsd(df, column='HBG2~P69892', group='group', alpha=0.05)
 ```
 
-### calculate_pairwise_ttest(df, column, subject='subject', group='group', correction='none', is_logged=True)
+### calculate_pairwise_ttest(df: DataFrame, column: [str](https://docs.python.org/3/builtins/stdtypes.html#str), subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'subject', group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'none', is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
 
 Performs pairwise t-test using pingouin, as a posthoc test,
 and calculates fold-changes using [pingouin.pairwise_tests](https://pingouin-stats.org/generated/pingouin.pairwise_tests.html.).
@@ -328,7 +328,7 @@ Calculates fold-changes after posthoc test.
 * **Returns:**
   Pandas dataframe with additional columns ‘identifier’, ‘log2FC’ and ‘FC’.
 
-### calculate_anova(df, column, group='group')
+### calculate_anova(df: DataFrame, column: [str](https://docs.python.org/3/builtins/stdtypes.html#str), group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group')
 
 Calculates one-way ANOVA using pingouin.
 
@@ -339,7 +339,7 @@ Calculates one-way ANOVA using pingouin.
 * **Returns:**
   Tuple with t-statistics and p-value.
 
-### calculate_ancova(data, column, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', covariates: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+### calculate_ancova(data: DataFrame, column: [str](https://docs.python.org/3/builtins/stdtypes.html#str), group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', covariates: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Calculates one-way ANCOVA using pingouin.
 
@@ -351,7 +351,7 @@ Calculates one-way ANCOVA using pingouin.
 * **Returns:**
   Tuple with column, F-statistics and p-value.
 
-### calculate_repeated_measures_anova(df, column, subject='subject', within='group')
+### calculate_repeated_measures_anova(df: DataFrame, column: [str](https://docs.python.org/3/builtins/stdtypes.html#str), subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'subject', within: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group')
 
 One-way and two-way repeated measures ANOVA using pingouin stats.
 
@@ -374,7 +374,7 @@ result = calculate_repeated_measures_anova(df,
         )
 ```
 
-### calculate_mixed_anova(df, column, subject='subject', within='group', between='group2')
+### calculate_mixed_anova(df: DataFrame, column: [str](https://docs.python.org/3/builtins/stdtypes.html#str), subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'subject', within: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', between: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group2')
 
 One-way and two-way repeated measures ANOVA using pingouin stats.
 
@@ -399,11 +399,11 @@ result = calculate_mixed_anova(df,
         )
 ```
 
-### pairwise_ttest_with_covariates(df, column, group, covariates, is_logged)
+### pairwise_ttest_with_covariates(df: DataFrame, column: [str](https://docs.python.org/3/builtins/stdtypes.html#str), group: [str](https://docs.python.org/3/builtins/stdtypes.html#str), covariates: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)], is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool))
 
 Pairwise t-test with covariates using statsmodels.
 
-### format_anova_table(df, aov_results, pairwise_results, pairwise_cols, group, permutations, alpha, correction)
+### format_anova_table(df: DataFrame, aov_results: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)], pairwise_results, pairwise_cols, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str), permutations: [int](https://docs.python.org/3/builtins/functions.html#int), alpha: [float](https://docs.python.org/3/builtins/functions.html#float), correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str)) → DataFrame
 
 Performs p-value correction (permutation-based and FDR) and converts pandas dataframe
 into final format.
@@ -429,7 +429,7 @@ dfn: degrees of freedrom *n* (values) per protein (keys),
 
 > i.e. number of obervations - number of groups (dict)
 
-### eta_squared(aov)
+### eta_squared(aov: DataFrame) → DataFrame
 
 Calculates the effect size using Eta-squared.
 
@@ -438,7 +438,7 @@ Calculates the effect size using Eta-squared.
 * **Returns:**
   Pandas dataframe with additional Eta-squared column.
 
-### omega_squared(aov)
+### omega_squared(aov: DataFrame) → DataFrame
 
 Calculates the effect size using Omega-squared.
 

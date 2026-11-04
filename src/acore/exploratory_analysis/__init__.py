@@ -120,7 +120,12 @@ def get_coefficient_variation(
     return cvs_df
 
 
-def extract_number_missing(data, min_valid, drop_cols=None, group="group"):
+def extract_number_missing(
+    data: pd.DataFrame,
+    min_valid: int,
+    drop_cols: list[str] | None = None,
+    group: str | None = "group",
+) -> list[str]:
     """
     Counts how many valid values exist in each column and filters column labels with more
     valid values than the minimum threshold defined.
@@ -153,8 +158,12 @@ def extract_number_missing(data, min_valid, drop_cols=None, group="group"):
 
 
 def extract_percentage_missing(
-    data, missing_max, drop_cols=None, group="group", how="all"
-):
+    data: pd.DataFrame,
+    missing_max: float,
+    drop_cols: list[str] | None = None,
+    group: str | None = "group",
+    how: str = "all",
+) -> list[str]:
     """
     Extracts ratio of missing/valid values in each column and filters column labels with
     lower ratio than the minimum threshold defined.
@@ -230,13 +239,13 @@ def _get_annotations(data, annotation_cols, group):
 
 
 def run_pca(
-    data,
-    drop_cols=None,
-    group="group",
-    annotation_cols=None,
-    components=2,
-    dropna=True,
-):
+    data: pd.DataFrame,
+    drop_cols: list[str] | None = None,
+    group: str = "group",
+    annotation_cols: list[str] | None = None,
+    components: int = 2,
+    dropna: bool = True,
+) -> tuple[tuple[pd.DataFrame, pd.DataFrame, np.ndarray | list[float]], dict[str, str]]:
     """
     Performs principal component analysis and returns the values of each component for each sample
     and each protein, and the loadings for each protein.
@@ -319,16 +328,16 @@ def run_pca(
 
 
 def run_tsne(
-    data,
-    drop_cols=None,
-    group="group",
-    annotation_cols=None,
-    components=2,
-    perplexity=40,
-    max_iter=1000,
-    init="pca",
-    dropna=True,
-):
+    data: pd.DataFrame,
+    drop_cols: list[str] | None = None,
+    group: str = "group",
+    annotation_cols: list[str] | None = None,
+    components: int = 2,
+    perplexity: int = 40,
+    max_iter: int = 1000,
+    init: str = "pca",
+    dropna: bool = True,
+) -> tuple[dict[str, pd.DataFrame], dict[str, str]]:
     """
     Performs t-distributed Stochastic Neighbor Embedding analysis.
 
@@ -406,15 +415,15 @@ def run_tsne(
 
 
 def run_umap(
-    data,
-    drop_cols=None,
-    group="group",
-    annotation_cols=None,
-    n_neighbors=10,
-    min_dist=0.3,
-    metric="cosine",
-    dropna=True,
-):
+    data: pd.DataFrame,
+    drop_cols: list[str] | None = None,
+    group: str = "group",
+    annotation_cols: list[str] | None = None,
+    n_neighbors: int = 10,
+    min_dist: float = 0.3,
+    metric: str = "cosine",
+    dropna: bool = True,
+) -> tuple[dict[str, pd.DataFrame], dict[str, str]]:
     """
     Performs Uniform Manifold Approximation and Projection.
 
