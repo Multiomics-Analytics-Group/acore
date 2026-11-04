@@ -32,6 +32,7 @@ def normalize_data_per_group(
     This function normalizes the data by group using the selected method
 
     :param data: DataFrame with the data to be normalized (samples x features)
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param group_col: Column containing the groups, passed to pandas.DataFrame.groupby
     :param str method: normalization method to choose among: median_polish, median,
                         quantile, linear
@@ -60,6 +61,7 @@ def normalize_data(
     data, but keeps the non-numeric columns in the output DataFrame.
 
     :param data: DataFrame with the data to be normalized (samples x features)
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param str method: normalization method to choose among: median (default),
                        median_polish, median_zero, quantile, linear, zscore
     :param str normalize: whether the normalization should be done by 'features' (columns)

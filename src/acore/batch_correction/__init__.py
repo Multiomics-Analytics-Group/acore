@@ -22,7 +22,10 @@ def combat_batch_correction(
     :param data: pandas.DataFrame with samples as rows and protein identifiers as columns.
                  Columns that are not numbers, such as 'sample' and 'group', are kept
                  unchanged in the result.
+                 The table is passed as ``data``; there is no ``df`` parameter.
     :param batch_col: column with the batch identifiers
+        Use the exact column names from the table header; never a name made up from the
+        wording of the task.
     :return: pandas.DataFrame with samples as rows and protein identifiers as columns. The
              batch_col column is removed from the result, so a later step cannot
              group by it; the other non-numeric columns are still there.

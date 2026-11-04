@@ -12,6 +12,7 @@ def median_zero_normalization(
     This function normalizes each sample by using its median.
 
     :param data:
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param str normalize: whether the normalization should be done by 'features' (columns)
                           or 'samples' (rows)
     :return: pandas.DataFrame.
@@ -45,6 +46,7 @@ def median_normalization(
     This function normalizes each sample by using its median.
 
     :param data:
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param str normalize: whether the normalization should be done by 'features' (columns)
                           or 'samples' (rows)
     :return: pandas.DataFrame.
@@ -78,6 +80,7 @@ def zscore_normalization(
     (mean=0, std=1).
 
     :param data:
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param str normalize: whether the normalization should be done by 'features' (columns)
                           or 'samples' (rows)
     :return: pandas.DataFrame.
@@ -112,6 +115,7 @@ def median_polish_normalization(
     median until medians converge.
 
     :param data:
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param int max_iter: number of maximum iterations to prevent infinite loop.
     :return: pandas.DataFrame.
 
@@ -149,6 +153,7 @@ def quantile_normalization(data: pd.DataFrame) -> pd.DataFrame:
     Applies quantile normalization to each column in pandas.DataFrame.
 
     :param data: pandas.DataFrame with features as columns and samples as rows.
+        The table is passed as ``data``; there is no ``df`` parameter.
     :return: pandas.DataFrame
 
     Example::
@@ -182,6 +187,7 @@ def linear_normalization(
     https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.normalize.html
 
     :param data: pandas.DataFrame with samples as rows and features as columns.
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param str method: norm to use to normalize each non-zero sample or non-zero feature
                         (depends on axis).
     :param str normalize: axis used to normalize the data along. If 'samples',

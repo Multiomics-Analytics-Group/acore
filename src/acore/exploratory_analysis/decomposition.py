@@ -63,6 +63,8 @@ def run_pca(
                            not measurements, such as 'sample' and 'subject'. Do not list
                            the group column here: it labels the samples, and dropping
                            it raises KeyError.
+                           Use the exact column names from the table header; never a name
+                           made up from the wording of the task.
     :param str group: column label containing group identifiers. It must still be in
                       data after drop_cols is applied. Use the name of the column
                       the table really has; a table returned by
@@ -167,7 +169,10 @@ def run_tsne(
 
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
                  (with additional columns 'group', 'sample' and 'subject').
+                 The table is passed as ``data``; there is no ``df`` parameter.
     :param list drop_cols: column labels to be dropped from the dataframe.
+        Use the exact column names from the table header; never a name made up from the
+        wording of the task.
     Default is [] if None.
     :param str group: column label containing group identifiers.
     :param int components: dimension of the embedded space.
@@ -261,8 +266,11 @@ def run_umap(
 
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
                  (with additional columns 'group', 'sample' and 'subject').
+                 The table is passed as ``data``; there is no ``df`` parameter.
     :param list drop_cols: column labels to be dropped from the dataframe.
                            Default is [] if None.
+                           Use the exact column names from the table header; never a name
+                           made up from the wording of the task.
     :param str group: column label containing group identifiers.
     :param list annotation_cols: list of columns to be added in the scatter plot annotation.
                                  Default is [] if None. Can be columns or index

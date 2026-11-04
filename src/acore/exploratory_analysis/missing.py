@@ -12,11 +12,14 @@ def extract_number_missing(
     valid values than the minimum threshold defined.
 
     :param data: pandas DataFrame with group as rows and protein identifier as column.
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param str group: column label containing group identifiers.
                       If None, number of valid values is counted across all samples,
                       otherwise is counted per unique group identifier.
     :param int min_valid: minimum number of valid values to be filtered.
     :param list drop_columns: column labels to be dropped.
+        Use the exact column names from the table header; never a name made up from the
+        wording of the task.
     :return: List of column labels above the threshold.
 
     Example::
@@ -50,9 +53,12 @@ def extract_percentage_missing(
     lower ratio than the minimum threshold defined.
 
     :param data: pandas dataframe with group as rows and protein identifier as column.
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param float missing_max: maximum ratio of missing/valid values to be filtered.
     :param list drop_cols: column labels to be dropped from the dataframe.
                            Default is ['sample'] if None.
+                           Use the exact column names from the table header; never a name
+                           made up from the wording of the task.
     :param str group: column label containing group identifiers.
                       If None, ratio is calculated across all samples,
                       otherwise is calculated per unique group identifier.
