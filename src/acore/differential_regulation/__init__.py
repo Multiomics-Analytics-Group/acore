@@ -426,7 +426,7 @@ def run_ttest(
     condition2: str,
     alpha: float = 0.05,
     drop_cols: list[str] | None = None,
-    subject: str | None = "subject",
+    subject: str | None = None,
     group: str = "group",
     paired: bool = False,
     correction: str = "fdr_bh",
@@ -447,7 +447,9 @@ def run_ttest(
     :param list drop_cols: column labels to be dropped from the DataFrame. Pass ``None`` or ``[]``
                            to drop no columns. The ``subject`` column should not be included here
                            as it is handled separately based on the ``paired`` parameter.
-    :param str subject: column with subject identifiers
+    :param str subject: column with subject identifiers. Only needed for a paired test; leave
+                        it as ``None`` for unpaired samples. If a column is named here for an
+                        unpaired test it is dropped from the data.
     :param str group: column with group identifiers (independent variable)
     :param bool paired: paired or unpaired samples
     :param str correction: method of pvalue correction see apply_pvalue_correction for methods
@@ -455,6 +457,7 @@ def run_ttest(
     :param bool is_logged: data is log-transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
+    :raises ValueError: if ``paired`` is True and ``subject`` is None
     :return: Pandas DataFrame with columns 'identifier', 'group1', 'group2',
         'mean(group1)', 'mean(group2)', 'std(group1)', 'std(group2)', 'Log2FC', 'FC',
         'rejected', 'T-statistics', 'p-value', 'correction', '-log10 p-value', and 'method'.
@@ -473,6 +476,9 @@ def run_ttest(
                            permutations=50
                 )
     """
+    if paired and subject is None:
+        raise ValueError("A paired t-test needs the column that identifies each subject.")
+
     drop_cols = drop_cols or []
     columns = [
         "T-Statistics",

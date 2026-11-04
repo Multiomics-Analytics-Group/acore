@@ -161,7 +161,7 @@ result = run_repeated_measurements_anova(df,
         )
 ```
 
-### run_ttest(df: DataFrame, condition1: [str](https://docs.python.org/3/builtins/stdtypes.html#str), condition2: [str](https://docs.python.org/3/builtins/stdtypes.html#str), alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = 'subject', group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', paired: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 0, is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → DataFrame
+### run_ttest(df: DataFrame, condition1: [str](https://docs.python.org/3/builtins/stdtypes.html#str), condition2: [str](https://docs.python.org/3/builtins/stdtypes.html#str), alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', paired: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 0, is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → DataFrame
 
 Runs t-test (paired/unpaired) for each protein in dataset and performs
 permutation-based (if permutations>0) or Benjamini/Hochberg (if permutations=0)
@@ -176,7 +176,7 @@ multiple hypothesis correction.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
     to drop no columns. The `subject` column should not be included here
     as it is handled separately based on the `paired` parameter.
-  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers. Only needed for a paired test; leave it as ``None`` for unpaired samples. If a column is named here for an unpaired test it is dropped from the data.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers (independent variable)
   * **paired** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – paired or unpaired samples
   * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods
