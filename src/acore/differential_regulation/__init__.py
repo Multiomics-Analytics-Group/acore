@@ -455,16 +455,21 @@ def run_ttest(
     permutation-based (if permutations>0) or Benjamini/Hochberg (if permutations=0)
     multiple hypothesis correction.
 
-    This compares exactly two groups of one factor. Use run_anova to compare three or
-    more groups, and run_two_way_anova for a design with two factors.
+    This compares exactly two groups of one factor, so every call needs both
+    ``condition1`` and ``condition2``, two values from the ``group`` column. To compare
+    each of several groups with a reference, call it once per group, for example
+    ``run_ttest(df, condition1='WT', condition2='zwf', group='strain', drop_cols=['sample'])``
+    and again with ``condition2='sucA'``. Read the labels from the table; do not invent
+    them. Use ``run_anova`` to compare three or more groups
+    at once, and ``run_two_way_anova`` for a design with two factors.
 
     :param pd.DataFrame df: Pandas DataFrame with samples as rows and protein identifiers as columns
                (with additional columns 'group', 'sample' and 'subject').
                The table is passed as ``df``; there is no ``data`` parameter.
-    :param str condition1: required; one value of the group column, copied exactly as
+    :param str condition1: required; one value of the ``group`` column, copied exactly as
                            it is written in the table (for example 'WT', not 'wild type'),
                            for the first of the two groups
-    :param str condition2: required; another value of the group column, copied exactly
+    :param str condition2: required; another value of the ``group`` column, copied exactly
                            as written, for the second of the two groups. To compare several
                            groups with one reference, call this function once per pair.
     :param float alpha: error rate for multiple hypothesis correction

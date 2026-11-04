@@ -27,7 +27,7 @@ def combat_batch_correction(
         Use the exact column names from the table header; never a name made up from the
         wording of the task.
     :return: pandas.DataFrame with samples as rows and protein identifiers as columns. The
-             batch_col column is removed from the result, so a later step cannot
+             ``batch_col`` column is removed from the result, so a later step cannot
              group by it; the other non-numeric columns are still there.
 
     Example::
