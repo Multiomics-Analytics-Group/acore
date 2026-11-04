@@ -39,9 +39,10 @@ PXD040621 <downloaded/PXD040621_analysis>
 ```{toctree}
 :maxdepth: 1
 :caption: Method discussions
+:hidden:
 
-method_discussions/enrichment_analysis_efdr_mulea
-method_discussions/index.md
+method_discussions/index
+method_discussions/index_enrichment
 
 ```
 
