@@ -101,7 +101,10 @@ def get_coefficient_variation(
                  (with additional columns 'group', 'sample' and 'subject'). The values
                  should be the original intensities for massspectrometry-based
                  measurements.
+                 The table is passed as ``data``; there is no ``df`` parameter.
     :param list drop_columns: column labels to be dropped from the dataframe
+        Use the exact column names from the table header; never a name made up from the
+        wording of the task.
     :param str group: column label containing group identifiers.
     :return: Pandas dataframe with columns 'name' (protein identifier),
              'x' (coefficient of variation), 'y' (mean) and 'group'.
@@ -131,11 +134,14 @@ def extract_number_missing(
     valid values than the minimum threshold defined.
 
     :param data: pandas DataFrame with group as rows and protein identifier as column.
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param str group: column label containing group identifiers.
                       If None, number of valid values is counted across all samples,
                       otherwise is counted per unique group identifier.
     :param int min_valid: minimum number of valid values to be filtered.
     :param list drop_columns: column labels to be dropped.
+        Use the exact column names from the table header; never a name made up from the
+        wording of the task.
     :return: List of column labels above the threshold.
 
     Example::
@@ -169,9 +175,12 @@ def extract_percentage_missing(
     lower ratio than the minimum threshold defined.
 
     :param data: pandas dataframe with group as rows and protein identifier as column.
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param float missing_max: maximum ratio of missing/valid values to be filtered.
     :param list drop_cols: column labels to be dropped from the dataframe.
                            Default is ['sample'] if None.
+                           Use the exact column names from the table header; never a name
+                           made up from the wording of the task.
     :param str group: column label containing group identifiers.
                       If None, ratio is calculated across all samples,
                       otherwise is calculated per unique group identifier.
@@ -261,6 +270,8 @@ def run_pca(
                            not measurements, such as 'sample' and 'subject'. Do not list
                            the group column here: it labels the samples, and dropping
                            it raises KeyError.
+                           Use the exact column names from the table header; never a name
+                           made up from the wording of the task.
     :param str group: column label containing group identifiers. It must still be in
                       data after drop_cols is applied. Use the name of the column
                       the table really has; a table returned by
@@ -362,7 +373,10 @@ def run_tsne(
 
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
                  (with additional columns 'group', 'sample' and 'subject').
+                 The table is passed as ``data``; there is no ``df`` parameter.
     :param list drop_cols: column labels to be dropped from the dataframe.
+        Use the exact column names from the table header; never a name made up from the
+        wording of the task.
     Default is [] if None.
     :param str group: column label containing group identifiers.
     :param int components: dimension of the embedded space.
@@ -447,8 +461,11 @@ def run_umap(
 
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
                  (with additional columns 'group', 'sample' and 'subject').
+                 The table is passed as ``data``; there is no ``df`` parameter.
     :param list drop_cols: column labels to be dropped from the dataframe.
                            Default is [] if None.
+                           Use the exact column names from the table header; never a name
+                           made up from the wording of the task.
     :param str group: column label containing group identifiers.
     :param list annotation_cols: list of columns to be added in the scatter plot annotation.
                                  Default is [] if None. Can be columns or index

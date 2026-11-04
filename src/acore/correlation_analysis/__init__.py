@@ -73,6 +73,7 @@ def run_correlation(
     and the ajusted p-values.
 
     :param df: pandas dataframe with samples as rows and features as columns.
+        The table is passed as ``df``; there is no ``data`` parameter.
     :param str subject: name of column containing subject identifiers.
     :param str group: name of column containing group identifiers.
     :param str method: method to use for correlation calculation ('pearson', 'spearman').
@@ -181,6 +182,7 @@ def calculate_rm_correlation(df: pd.DataFrame, x: str, y: str, subject: str):
     repeated measures (rm).
 
     :param df: pandas dataframe with subjects as rows and two features and columns.
+        The table is passed as ``df``; there is no ``data`` parameter.
     :param str x: feature a name.
     :param str y: feature b name.
     :param subject: column name containing the covariate variable.
@@ -208,6 +210,7 @@ def run_rm_correlation(df, alpha=0.05, subject="subject", correction="fdr_bh"):
     p-values, degrees of freedom and ajusted p-values.
 
     :param df: pandas dataframe with samples as rows and features as columns.
+        The table is passed as ``df``; there is no ``data`` parameter.
     :param str subject: name of column containing subject identifiers.
     :param float alpha: error rate. Values velow alpha are considered significant.
     :param str correction: type of correction type see apply_pvalue_correction for methods
@@ -324,6 +327,7 @@ def run_efficient_correlation(
     assuming a fixed number of observations.
 
     :param data: pandas dataframe with samples as index and features as columns (numeric data only).
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param str method: method to use for correlation calculation ('pearson', 'spearman').
     :return: Two numpy arrays: correlation and p-values.
 

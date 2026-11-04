@@ -380,6 +380,7 @@ def run_enrichment(
 
     :param data: pandas.DataFrame with annotations for dataset features
         (columns: 'annotation', 'identifier', 'group').
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param str foreground_id: group identifier of features that belong to the foreground.
     :param str background_id: group identifier of features that belong to the background.
     :param int foreground_pop: number of features in the foreground.
@@ -552,6 +553,8 @@ def run_ssgsea(
 
     :param pd.DataFrame data: pandas.DataFrame with the quantified features
                               (i.e. subject x proteins)
+                              The table is passed as ``data``; there is no ``df``
+                              parameter.
     :param str annotation: pandas.DataFrame with the annotation to be used in the
                             enrichment (i.e. CKG pathway annotation file)
     :param list[str] set_index: column/s to be used as index. Enrichment will be

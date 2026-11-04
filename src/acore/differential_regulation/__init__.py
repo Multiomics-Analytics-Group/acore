@@ -86,9 +86,12 @@ def run_anova(
 
     :param pd.DataFrame df: pandas dataframe with samples as rows and protein identifiers as columns
                (with additional columns 'group', 'sample' and 'subject').
+               The table is passed as ``df``; there is no ``data`` parameter.
     :param float alpha: error rate for multiple hypothesis correction
     :param list drop_cols: column labels to be dropped from the dataframe. Pass ``None`` or ``[]``
                            to drop no columns.
+                           Use the exact column names from the table header; never a name
+                           made up from the wording of the task.
     :param str subject: column with subject identifiers
     :param str group: name of the column that holds the group labels. The default is
                       'group'; when the table names that column differently, for example
@@ -211,10 +214,13 @@ def run_ancova(
 
     :param pd.DataFrame df: Pandas DataFrame with samples as rows and protein identifiers and
                covariates as columns (with additional columns 'group', 'sample' and 'subject').
+               The table is passed as ``df``; there is no ``data`` parameter.
     :param list covariates: list of covariates to include in the model (column in df)
     :param float alpha: error rate for multiple hypothesis correction
     :param list drop_cols: column labels to be dropped from the DataFrame. Pass ``None`` or ``[]``
                            to drop no columns.
+                           Use the exact column names from the table header; never a name
+                           made up from the wording of the task.
     :param str subject: column with subject identifiers
     :param str group: name of the column that holds the group labels. The default is
                       'group'; when the table names that column differently, for example
@@ -292,10 +298,13 @@ def run_repeated_measurements_anova(
 
     :param pd.DataFrame df: Pandas DataFrame with samples as rows and protein identifiers as columns
                (with additional columns 'group', 'sample' and 'subject').
+               The table is passed as ``df``; there is no ``data`` parameter.
     :param float alpha: error rate for multiple hypothesis correction
     :param list drop_cols: column labels to be dropped from the DataFrame. Pass ``None`` or ``[]``
                            to drop no columns. The ``subject`` column must not be included here as
                            it is required for the analysis.
+                           Use the exact column names from the table header; never a name
+                           made up from the wording of the task.
     :param str subject: column with subject identifiers
     :param str within: column with within factor identifiers
     :param int permutations: number of permutations used to estimate false discovery rates
@@ -375,9 +384,12 @@ def run_mixed_anova(
 
     :param pd.DataFrame df: Pandas DataFrame with samples as rows and protein identifiers as columns
                (with additional columns 'group', 'sample' and 'subject').
+               The table is passed as ``df``; there is no ``data`` parameter.
     :param float alpha: error rate for multiple hypothesis correction
     :param list drop_cols: column labels to be dropped from the DataFrame. Pass ``None`` or ``[]``
                            to drop no columns.
+                           Use the exact column names from the table header; never a name
+                           made up from the wording of the task.
     :param str subject: column with subject identifiers
     :param str within: column with within factor identifiers
     :param str between: column with between factor identifiers
@@ -448,6 +460,7 @@ def run_ttest(
 
     :param pd.DataFrame df: Pandas DataFrame with samples as rows and protein identifiers as columns
                (with additional columns 'group', 'sample' and 'subject').
+               The table is passed as ``df``; there is no ``data`` parameter.
     :param str condition1: required; one value of the group column, copied exactly as
                            it is written in the table (for example 'WT', not 'wild type'),
                            for the first of the two groups
@@ -458,6 +471,8 @@ def run_ttest(
     :param list drop_cols: column labels to be dropped from the DataFrame. Pass ``None`` or ``[]``
                            to drop no columns. The ``subject`` column should not be included here
                            as it is handled separately based on the ``paired`` parameter.
+                           Use the exact column names from the table header; never a name
+                           made up from the wording of the task.
     :param str subject: column with subject identifiers. The default is 'subject'; the
                         column must exist in the table then, and it is dropped for an
                         unpaired test, so never also list it in ``drop_cols``. Pass
@@ -583,11 +598,16 @@ def run_two_way_anova(
 
     :param pd.DataFrame df: processed pandas DataFrame with samples as rows,
                and proteins and groups as columns.
+               The table is passed as ``df``; there is no ``data`` parameter.
     :param list drop_cols: column names to drop from DataFrame. Pass ``None`` or ``[]``
                            to drop no columns.
+                           Use the exact column names from the table header; never a name
+                           made up from the wording of the task.
     :param str subject: column name containing subject identifiers.
-    :param list group: column names corresponding to independent variable groups.
-                       Defaults to ['group', 'secondary_group'] if None.
+    :param list group: names of the two columns that hold the labels of the two factors
+                       (independent variables), for example ['genotype', 'treatment'].
+                       Defaults to ['group', 'secondary_group'] if None, so name them when
+                       the table calls these columns anything else.
     :return: Two DataFrames, anova results and residuals.
 
     Example::

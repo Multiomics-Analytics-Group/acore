@@ -23,6 +23,7 @@ def filter_by_missingness(
     this feature will get removed.
 
     :param data: pandas data frame with samples as rows and features as columns.
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param percent: percentage chosen for filtering. The default is 80%, meaning that
         at least 80% of the values of every feature need to be present in order for this
         feature to be retained.
@@ -91,6 +92,7 @@ def filter_cv(
     across QC samples, meaning analytical noise exceeds biological variability.
 
     :param data: pandas data frame with samples as rows and features as columns.
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param samples: list of row index labels (from data.index) identifying the
         biological sample rows, e.g. ["S1", "S2", "S3"].
     :param qcs: list of row index labels identifying the quality control rows,
@@ -140,6 +142,7 @@ def filter_blanks(
     the measurements in the samples cannot be trusted to be biologically relevant.
 
     :param data: pandas DataFrame containing data with samples as rows and features as columns
+        The table is passed as ``data``; there is no ``df`` parameter.
     :param blanks: list of row index labels (from data.index) identifying the blanks
         measurement rows, e.g. ["Blank1", "Blank2"]
     :param samples: list of row index labels (from data.index) identifying the biological
