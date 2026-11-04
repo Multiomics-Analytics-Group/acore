@@ -502,6 +502,9 @@ def run_ttest(
     else:
         if subject is not None:
             df = df.drop([subject], axis=1)
+        # An unpaired test has no use for identifier columns such as a text
+        # subject; keeping them would fail when the means are computed.
+        df = df.select_dtypes(include="number")
 
     scores = df.T.apply(
         func=calculate_ttest,

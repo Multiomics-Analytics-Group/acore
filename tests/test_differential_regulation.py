@@ -207,6 +207,17 @@ class TestRunTtestSubjectOptional(unittest.TestCase):
         # Then the results are identical
         pd.testing.assert_frame_equal(left_out, explicit_none)
 
+    def test_unpaired_test_ignores_a_text_identifier_column_left_in_the_table(self):
+        # Given a table with a text subject column that was not dropped
+        df = self.df_without_subject.copy()
+        df["subject"] = ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"]
+
+        # When an unpaired test is run without naming it as the subject
+        result = dr.run_ttest(df, condition1="A", condition2="B", group="group")
+
+        # Then only the numeric column is tested
+        self.assertEqual(result["identifier"].tolist(), ["protein"])
+
     def test_paired_test_without_subject_says_a_subject_is_needed(self):
         # Given a table with no subject column
         df = self.df_without_subject
