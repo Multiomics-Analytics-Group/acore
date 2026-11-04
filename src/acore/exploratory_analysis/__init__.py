@@ -254,17 +254,33 @@ def run_pca(
     https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html.
 
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
-                 (with additional columns 'group', 'sample' and 'subject').
+                 (with additional columns 'group', 'sample' and 'subject'). The table is
+                 passed as ``data``; this function has no ``df`` parameter.
     :param list drop_cols: column labels to be dropped from the dataframe.
-                           Default is [] if None.
-    :param str group: column label containing group identifiers.
+                           Default is [] if None. Drop the identifier columns that are
+                           not measurements, such as 'sample' and 'subject'. Do not list
+                           the group column here: it labels the samples, and dropping
+                           it raises KeyError.
+    :param str group: column label containing group identifiers. It must still be in
+                      data after drop_cols is applied. Use the name of the column
+                      the table really has; a table returned by
+                      combat_batch_correction no longer has its batch column.
     :param list annotation_cols: list of columns to be added in the scatter plot annotation.
                                  Default is [] if None. Can be columns or index
                                  level names; missing ones are ignored with a warning.
+                                 Columns listed here are kept in the returned components
+                                 table and are not used as features. A column such as
+                                 ``sample`` appears in the result only when listed here;
+                                 listing it in ``drop_cols`` removes it from the result.
     :param int components: number of components to keep.
     :param bool dropna: if True removes all columns with any missing values.
     :return: tuple: 1) three pandas dataframes: components, loadings and variance; 2)
-             xaxis and yaxis titles with components loadings for plotly.
+             xaxis and yaxis titles with components loadings for plotly. The components
+             table has one row per sample and the columns ``group`` (the labels from the
+             ``group`` column), ``x`` (first component) and ``y`` (second component), plus
+             ``z`` for a third and the names ``3``, ``4``, ... beyond it, and any
+             ``annotation_cols``. Its columns are not named ``PC1`` or ``PC2``; plot it
+             with ``x='x'`` and ``y='y'``.
 
     Example::
 

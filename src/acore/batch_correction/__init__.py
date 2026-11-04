@@ -20,16 +20,16 @@ def combat_batch_correction(
     https://github.com/epigenelabs/inmoose
 
     :param data: pandas.DataFrame with samples as rows and protein identifiers as columns.
+                 Columns that are not numbers, such as 'sample' and 'group', are kept
+                 unchanged in the result.
     :param batch_col: column with the batch identifiers
-    :return: pandas.DataFrame with samples as rows and protein identifiers as columns.
+    :return: pandas.DataFrame with samples as rows and protein identifiers as columns. The
+             batch_col column is removed from the result, so a later step cannot
+             group by it; the other non-numeric columns are still there.
 
     Example::
 
-        result = combat_batch_correction(
-                    data,
-                    batch_col="batch",
-                    index_cols=["subject", "sample", "group"],
-                )
+        result = combat_batch_correction(data, batch_col="batch")
 
     """
     from inmoose.pycombat import pycombat_norm  # slow import, so only when needed
