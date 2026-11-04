@@ -268,14 +268,16 @@ def run_pca(
     :param list drop_cols: column labels to be dropped from the dataframe.
                            Default is [] if None. Drop the identifier columns that are
                            not measurements, such as 'sample' and 'subject'. Do not list
-                           the group column here: it labels the samples, and dropping
-                           it raises KeyError.
+                           the ``group`` column here: it labels the samples, and dropping
+                           it raises ``KeyError``. To color by 'site', pass
+                           ``group='site'`` and ``drop_cols=['sample']``, not
+                           ``drop_cols=['sample', 'site']``.
                            Use the exact column names from the table header; never a name
                            made up from the wording of the task.
     :param str group: column label containing group identifiers. It must still be in
-                      data after drop_cols is applied. Use the name of the column
+                      ``data`` after ``drop_cols`` is applied. Use the name of the column
                       the table really has; a table returned by
-                      combat_batch_correction no longer has its batch column.
+                      ``combat_batch_correction`` no longer has its batch column.
     :param list annotation_cols: list of columns to be added in the scatter plot annotation.
                                  Default is [] if None. Can be columns or index
                                  level names; missing ones are ignored with a warning.
