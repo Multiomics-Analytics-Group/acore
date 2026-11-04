@@ -5,7 +5,7 @@
 :relative-docs: docs
 :relative-images:
 :start-line: 0
-:end-line: 40
+:end-line: 62
 ```
 
 ```{toctree}
@@ -13,6 +13,7 @@
 :caption: Module examples
 :hidden:
 
+api_examples_module/overview.md
 api_examples_module/index.md
 ```
 
@@ -21,7 +22,10 @@ api_examples_module/index.md
 :caption: Analysis examples
 :hidden:
 
-examples_single_analysis/index.md
+examples_single_analysis/index_preprocessing.md
+examples_single_analysis/index_imputation.md
+examples_single_analysis/index_diff_reg.md
+examples_single_analysis/enrichment_analysis.ipynb
 ```
 
 ```{toctree}
