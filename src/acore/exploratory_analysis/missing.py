@@ -16,8 +16,11 @@ def extract_number_missing(
     :param str group: column label containing group identifiers.
                       If None, number of valid values is counted across all samples,
                       otherwise is counted per unique group identifier.
-    :param int min_valid: minimum number of valid values to be filtered.
-    :param list drop_columns: column labels to be dropped.
+    :param int min_valid: required, there is no default, so pass it in every call, for
+                          example ``min_valid=3``. A column is kept when it has at least
+                          this many valid values in at least one group (in all samples
+                          if ``group`` is None).
+    :param list drop_cols: column labels to be dropped. Default is ['sample'] if None.
         Use the exact column names from the table header; never a name made up from the
         wording of the task.
     :return: List of column labels above the threshold.
