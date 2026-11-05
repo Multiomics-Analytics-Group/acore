@@ -31,8 +31,6 @@ def median_impute(
     :param list drop_cols: column labels to be dropped before imputation, e.g.
                            non-numeric metadata columns. All remaining columns
                            must be numeric.
-                           Use the exact column names from the table header; never a name
-                           made up from the wording of the task.
     :param str group: column label containing group identifiers. If set, the median
                       is computed within each group. Columns that are entirely missing
                       within a group are left as NaN for that group. Rows with a
@@ -98,14 +96,11 @@ def imputation_KNN(
 
     :param data: pandas dataframe with samples as rows and protein identifiers as
                  columns (with additional columns 'group', 'sample' and 'subject').
-                 The table is passed as ``data``; there is no ``df`` parameter.
     :param str group: column label containing group identifiers, restricted to be one
                       single column for now. If present, it is returned as the first
                       column.
     :param list drop_cols: column labels to be dropped. Final dataframe should only
                            have gene/protein/etc identifiers as columns.
-                           Use the exact column names from the table header; never a name
-                           made up from the wording of the task.
     :param float cutoff: minimum fraction of valid values required to impute
                          a each column.
     :param bool alone: if True removes all columns with any missing values after initial
@@ -197,12 +192,9 @@ def imputation_mixed_norm_KNN(
 
     :param data: pandas dataframe with samples as rows and protein identifiers as
                  columns (with additional columns 'group', 'sample' and 'subject').
-                 The table is passed as ``data``; there is no ``df`` parameter.
     :param str group: column label containing group identifiers. If present, it is
                       returned as the first column.
     :param list drop_cols: list of column labels to be set as dataframe index.
-        Use the exact column names from the table header; never a name made up from the
-        wording of the task.
     :param float shift: specifies the amount by which the distribution used for the
                         random numbers is shifted downwards. This is in units of the
                         standard deviation of the valid data.
@@ -268,10 +260,8 @@ replacemissingfromgaussian.html
 
     :param data: pandas dataframe with samples as rows and protein identifiers as
                  columns (with additional columns 'group', 'sample' and 'subject').
-                 The table is passed as ``data``; there is no ``df`` parameter.
     :param list drop_cols: list of column labels to be dropped from the imputation.
-        Use the exact column names from the table header; never a name made up from the
-        wording of the task. Every name must be a column of the table: a missing one such
+        Every name must be a column of the table: a missing one such
         as 'subject' fails with ``['subject'] not found in axis``, and not every table has
         'subject' or 'sample'. List every text column except ``group``, because a text
         column left in the table fails with ``could not convert string to float: 'AD'``.
@@ -365,12 +355,10 @@ def imputation_zeros(
     Replace missing values with zeros.
 
     :param data: DataFrame with samples as rows and features as columns.
-        The table is passed as ``data``; there is no ``df`` parameter.
     :param list drop_cols: columns to permanently drop before imputation. If a column
                            appears in both "on_cols" and "drop_cols" it will be dropped
                            and a warning is emitted.
-                           Use the exact column names from the table header; never a name
-                           made up from the wording of the task. Every name must be a
+                           Every name must be a
                            column of the table: a missing one such as 'subject' fails with
                            ``['subject'] not found in axis``, and not every table has
                            'subject' or 'sample'. Text columns need not be listed, only
@@ -417,12 +405,9 @@ def imputation_half_minimum(
     Replace missing values with half the per-column minimum of observed values.
 
     :param data: DataFrame with samples as rows and features as columns.
-        The table is passed as ``data``; there is no ``df`` parameter.
     :param list drop_cols: columns to permanently drop before imputation. If a column
                            appears in both ``on_cols`` and ``drop_cols`` it will be dropped
                            and a warning is emitted.
-                           Use the exact column names from the table header; never a name
-                           made up from the wording of the task.
     :param str group: column label containing group identifiers. If set, the minimum is
                       computed within each group (and within ``on_rows``, if given).
                       Columns without observed values in a group are left as NaN for

@@ -97,10 +97,7 @@ def get_coefficient_variation(
                  (with additional columns 'group', 'sample' and 'subject'). The values
                  should be the original intensities for massspectrometry-based
                  measurements.
-                 The table is passed as ``data``; there is no ``df`` parameter.
     :param list drop_columns: column labels to be dropped from the dataframe
-        Use the exact column names from the table header; never a name made up from the
-        wording of the task.
     :param str group: column label containing group identifiers.
     :return: Pandas dataframe with columns 'name' (protein identifier),
              'x' (coefficient of variation), 'y' (mean) and 'group'.
