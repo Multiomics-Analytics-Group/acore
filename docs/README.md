@@ -56,7 +56,8 @@ They are executed in the separate `Test API notebooks` GitHub Actions workflow
 (`.github/workflows/api_notebooks.yml`) together with the API tests in `tests_api`,
 weekly and on changes to `src/acore/io`.
 
-The enrichment analysis example loads cached UniProt annotations from
+The enrichment analysis notebooks (`api/enrichment_analysis` and
+`analyses/ovarian_cancer_enrichment`) load cached UniProt annotations from
 `example_data/PXD010372/processed/annotations_100.csv` and only queries UniProt if
 that file is not available. In that case the fetched annotations are saved to this
 path (and uploaded as an artifact by the `Test API notebooks` workflow).

@@ -10,30 +10,33 @@
 
 ```{toctree}
 :maxdepth: 1
-:caption: Module examples
+:caption: Getting started
 :hidden:
 
-api_examples_module/overview.md
-api_examples_module/index.md
+getting_started/input_formats.ipynb
 ```
 
 ```{toctree}
 :maxdepth: 1
-:caption: Analysis examples
+:caption: API examples
 :hidden:
 
-examples_single_analysis/index_preprocessing.md
-examples_single_analysis/index_imputation.md
-examples_single_analysis/index_diff_reg.md
-examples_single_analysis/enrichment_analysis.ipynb
+api/overview
+api/index_preprocessing.md
+api/index_imputation.md
+api/index_diff_reg.md
+api/enrichment_analysis.ipynb
+api/index_testing.md
 ```
 
 ```{toctree}
-:maxdepth: 1
-:caption: Entire Reanalysis
+:maxdepth: 2
+:caption: Analyses
 :hidden:
 
-PXD040621 <downloaded/PXD040621_analysis>
+analyses/overview.md
+analyses/ovarian_cancer_enrichment.ipynb
+analyses/PXD040621 proteomics reanalysis </downloaded/PXD040621_analysis>
 ```
 
 ```{toctree}
@@ -43,7 +46,6 @@ PXD040621 <downloaded/PXD040621_analysis>
 
 method_discussions/index
 method_discussions/index_enrichment
-
 ```
 
 ```{toctree}
@@ -51,7 +53,9 @@ method_discussions/index_enrichment
 :caption: Example dataset (preprocessing)
 :hidden:
 
-example_data/index.md
+example_data/overview.md
+example_data/index_proteomics.md
+example_data/index_metabolomics.md
 ```
 
 ```{toctree}
@@ -78,4 +82,8 @@ contributing
 authors
 history
 README.md
+```
+
+```
+
 ```

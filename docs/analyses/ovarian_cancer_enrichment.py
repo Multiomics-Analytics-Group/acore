@@ -1,6 +1,11 @@
 # %% [markdown]
-# # Enrichment analysis
-# requires
+# # Ovarian cancer: differential regulation and enrichment analysis
+#
+# A complete enrichment analysis on proteomics data, from differential regulation to
+# overrepresentation analysis, ssGSEA and GSEA. A short overview of the functions is
+# given in the [enrichment analysis API example](../api/enrichment_analysis.ipynb).
+#
+# Enrichment analysis requires
 # - some cluster of proteins/genes (e.g. upregulated proteins/genes in a certain condition)
 # - functional annotations, i.e. a category summarizing a set of proteins/genes.
 #
