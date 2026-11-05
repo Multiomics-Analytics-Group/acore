@@ -292,11 +292,21 @@ def calculate_ancova(
     """
     Calculates one-way ANCOVA using pingouin.
 
-    :param df: pandas dataframe with group as rows and protein identifier as column
-    :param str column: name of the column in df to run ANOVA on
-    :param str group: column with group identifiers
-    :param list covariates: list of covariates (columns in df)
+    :param data: pandas dataframe with group as rows and protein identifier as column.
+                 The table is passed as ``data``; there is no ``df`` parameter.
+    :param str column: name of the one measurement column in data to run ANOVA on, for
+                       example 'CRP'. It must be a different column from ``group`` and
+                       from every covariate: ``column='arm', group='arm'`` fails with
+                       ``categorical data cannot be >1-dimensional``.
+    :param str group: column with group identifiers, as written in the table header
+    :param list covariates: list of covariates (columns in data), always a list of
+                            column names, for example ``['age']``
     :return: Tuple with column, F-statistics and p-value.
+
+    Example::
+
+        # columns: arm, age, CRP, IL6 and more measurements
+        result = calculate_ancova(data, column='CRP', group='arm', covariates=['age'])
     """
     if covariates is None:
         covariates = []

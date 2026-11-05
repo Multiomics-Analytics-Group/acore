@@ -271,7 +271,12 @@ replacemissingfromgaussian.html
                  The table is passed as ``data``; there is no ``df`` parameter.
     :param list drop_cols: list of column labels to be dropped from the imputation.
         Use the exact column names from the table header; never a name made up from the
-        wording of the task.
+        wording of the task. Every name must be a column of the table: a missing one such
+        as 'subject' fails with ``['subject'] not found in axis``, and not every table has
+        'subject' or 'sample'. List every text column except ``group``, because a text
+        column left in the table fails with ``could not convert string to float: 'AD'``.
+        Dropped columns are not in the result. For example
+        ``drop_cols=['sample', 'site']`` with ``group='group'``.
     :param str group: column label containing group identifiers. It is not used for
                       the imputation, but excluded from it and returned as the first
                       column.
@@ -290,6 +295,12 @@ replacemissingfromgaussian.html
         result = imputation_normal_distribution(data,
                     drop_cols=['group', 'sample', 'subject'],
                     shift = 1.8, nstd = 0.3
+        )
+
+        # columns: sample, site, group and the proteins, with no 'subject' column
+        result = imputation_normal_distribution(data,
+                    drop_cols=['sample', 'site'],
+                    group='group'
         )
     """
     if isinstance(drop_cols, tuple):
@@ -359,7 +370,11 @@ def imputation_zeros(
                            appears in both "on_cols" and "drop_cols" it will be dropped
                            and a warning is emitted.
                            Use the exact column names from the table header; never a name
-                           made up from the wording of the task.
+                           made up from the wording of the task. Every name must be a
+                           column of the table: a missing one such as 'subject' fails with
+                           ``['subject'] not found in axis``, and not every table has
+                           'subject' or 'sample'. Text columns need not be listed, only
+                           numeric columns are filled.
     :param str group: column label containing group identifiers. It is not imputed,
                       is kept even if listed in "drop_cols", and is returned as the
                       first column.

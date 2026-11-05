@@ -68,15 +68,27 @@ def run_correlation(
     dropna: bool = True,
 ) -> pd.DataFrame:
     """
+    Correlates every pair of numeric columns and returns an edge list of the results.
+
     This function calculates pairwise correlations for columns in dataframe,
     and returns it in the shape of a edge list with 'weight' as correlation score,
-    and the ajusted p-values.
+    and the ajusted p-values. It takes no ``x`` or ``y``: to read off one pair, pick the
+    row of the result whose 'node1' and 'node2' are the two columns.
 
     :param df: pandas dataframe with samples as rows and features as columns.
         The table is passed as ``df``; there is no ``data`` parameter.
-    :param str subject: name of column containing subject identifiers.
-    :param str group: name of column containing group identifiers.
-    :param str method: method to use for correlation calculation ('pearson', 'spearman').
+    :param str subject: name of column containing subject identifiers. Leave it unset
+        (``None``) for the usual correlation of all numeric columns. Setting it asks for a
+        repeated measures correlation, used when every subject appears in more than one
+        row. Known issue: with fewer than 200 columns and more than two subjects, that
+        route fails with ``KeyError: None of [Index([1.0, 0.0, ...])] are in the
+        [columns]`` (the 1.0 and 0.0 are its own 'rejected' flags, not an argument), so
+        do not set ``subject``.
+    :param str group: name of column containing group identifiers. It is only used
+        together with ``subject``, to check whether the samples are paired.
+    :param str method: method to use for correlation calculation: 'pearson' or 'spearman'
+        only. Any other name, such as 'kendall', fails with ``cannot access local
+        variable 'p'``.
     :param float alpha: error rate. Values velow alpha are considered significant.
     :param str correction: type of correction see apply_pvalue_correction for methods
     :param bool numeric_only: if True, only numeric columns are considered
@@ -88,8 +100,7 @@ def run_correlation(
 
     Example::
 
-        result = run_correlation(df, alpha=0.05, subject='subject', group='group',
-                    method='pearson', correction='fdr_bh')
+        result = run_correlation(df, alpha=0.05, method='pearson', correction='fdr_bh')
     """
     correlation = pd.DataFrame()
     # The Repeated measurements correlation calculation is too time consuming so it

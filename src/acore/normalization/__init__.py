@@ -61,7 +61,9 @@ def normalize_data(
     data, but keeps the non-numeric columns in the output DataFrame.
 
     :param data: DataFrame with the data to be normalized (samples x features)
-        The table is passed as ``data``; there is no ``df`` parameter.
+        The table is passed as ``data``; there is no ``df`` parameter. Text columns such
+        as 'sample' or 'group' can stay in the table, they are kept unchanged in the
+        result, and there is no ``drop_cols`` parameter.
     :param str method: normalization method to choose among: median (default),
                        median_polish, median_zero, quantile, linear, zscore
     :param str normalize: whether the normalization should be done by 'features' (columns)
