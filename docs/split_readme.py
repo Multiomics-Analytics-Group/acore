@@ -106,7 +106,7 @@ def process_readme(readme_path, output_dir):
                 seen_files.add(filename)
             else:
                 with fpath.open("a") as f:
-                    f.write(myst_content)
+                    f.write(f"\n\n{myst_content}")
                 print(f"Appended to {filename}")
 
         else:
