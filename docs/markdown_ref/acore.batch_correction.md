@@ -11,14 +11,11 @@ This function corrects processed data for batch effects. For more information vi
   * **data** – pandas.DataFrame with samples as rows and protein identifiers as columns.
     Columns that are not numbers, such as ‘sample’ and ‘group’, are kept
     unchanged in the result.
-    The table is passed as `data`; there is no `df` parameter.
     It must have no missing values (NaN): otherwise the call fails with
     `The count matrix contains NaN values`. Run an imputation first, for
     example `imputation_KNN`, and pass its result here, not the original
     table.
   * **batch_col** – column with the batch identifiers
-    Use the exact column names from the table header; never a name made up from the
-    wording of the task.
 * **Returns:**
   pandas.DataFrame with samples as rows and protein identifiers as columns. The
   `batch_col` column is removed from the result, so a later step cannot

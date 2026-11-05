@@ -57,14 +57,14 @@ row of the result whose ‘node1’ and ‘node2’ are the two columns.
 
 * **Parameters:**
   * **df** – pandas dataframe with samples as rows and features as columns.
-    The table is passed as `df`; there is no `data` parameter.
-  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of column containing subject identifiers. Leave it unset
-    (`None`) for the usual correlation of all numeric columns. Setting it asks for a
-    repeated measures correlation, used when every subject appears in more than one
-    row. Known issue: with fewer than 200 columns and more than two subjects, that
-    route fails with `KeyError: None of [Index([1.0, 0.0, ...])] are in the
-    [columns]` (the 1.0 and 0.0 are its own ‘rejected’ flags, not an argument), so
-    do not set `subject`.
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of column containing subject identifiers. Keep it `None`
+    (the default) unless you want a repeated measures correlation, used when every
+    subject appears in more than one row. With `None`, text columns such as
+    ‘sample’ or ‘subject’ are skipped by `numeric_only`; drop a numeric
+    non-measurement column from `df` before the call. Note: with fewer than 200
+    columns and more than two subjects, the repeated measures route fails with
+    `KeyError: None of [Index([1.0, 0.0, ...])] are in the [columns]` (the 1.0
+    and 0.0 are the ‘rejected’ flags of the result).
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of column containing group identifiers. It is only used
     together with `subject`, to check whether the samples are paired.
   * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method to use for correlation calculation: ‘pearson’ or ‘spearman’
@@ -117,7 +117,6 @@ repeated measures (rm).
 
 * **Parameters:**
   * **df** – pandas dataframe with subjects as rows and two features and columns.
-    The table is passed as `df`; there is no `data` parameter.
   * **x** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – feature a name.
   * **y** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – feature b name.
   * **subject** – column name containing the covariate variable.
@@ -138,7 +137,6 @@ p-values, degrees of freedom and ajusted p-values.
 
 * **Parameters:**
   * **df** – pandas dataframe with samples as rows and features as columns.
-    The table is passed as `df`; there is no `data` parameter.
   * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of column containing subject identifiers.
   * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate. Values velow alpha are considered significant.
   * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – type of correction type see apply_pvalue_correction for methods
@@ -192,7 +190,6 @@ assuming a fixed number of observations.
 
 * **Parameters:**
   * **data** – pandas dataframe with samples as index and features as columns (numeric data only).
-    The table is passed as `data`; there is no `df` parameter.
   * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method to use for correlation calculation (‘pearson’, ‘spearman’).
 * **Returns:**
   Two numpy arrays: correlation and p-values.

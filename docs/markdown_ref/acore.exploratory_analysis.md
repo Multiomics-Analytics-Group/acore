@@ -57,10 +57,7 @@ Extracts the coefficients of variation in each group.
     (with additional columns ‘group’, ‘sample’ and ‘subject’). The values
     should be the original intensities for massspectrometry-based
     measurements.
-    The table is passed as `data`; there is no `df` parameter.
   * **drop_columns** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe
-    Use the exact column names from the table header; never a name made up from the
-    wording of the task.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
 * **Returns:**
   Pandas dataframe with columns ‘name’ (protein identifier),
@@ -79,7 +76,6 @@ valid values than the minimum threshold defined.
 
 * **Parameters:**
   * **data** – pandas DataFrame with group as rows and protein identifier as column.
-    The table is passed as `data`; there is no `df` parameter.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
     If None, number of valid values is counted across all samples,
     otherwise is counted per unique group identifier.
@@ -88,8 +84,6 @@ valid values than the minimum threshold defined.
     this many valid values in at least one group (in all samples
     if `group` is None).
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped. Default is [‘sample’] if None.
-    Use the exact column names from the table header; never a name made up from the
-    wording of the task.
 * **Returns:**
   List of column labels above the threshold.
 
@@ -106,12 +100,9 @@ lower ratio than the minimum threshold defined.
 
 * **Parameters:**
   * **data** – pandas dataframe with group as rows and protein identifier as column.
-    The table is passed as `data`; there is no `df` parameter.
   * **missing_max** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – maximum ratio of missing/valid values to be filtered.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe.
     Default is [‘sample’] if None.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
     If None, ratio is calculated across all samples,
     otherwise is calculated per unique group identifier.
@@ -134,8 +125,7 @@ For information visit
 
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as columns
-    (with additional columns ‘group’, ‘sample’ and ‘subject’). The table is
-    passed as `data`; this function has no `df` parameter.
+    (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe.
     Default is [] if None. Drop the identifier columns that are
     not measurements, such as ‘sample’ and ‘subject’. Do not list
@@ -143,18 +133,15 @@ For information visit
     it raises `KeyError`. To color by ‘site’, pass
     `group='site'` and `drop_cols=['sample']`, not
     `drop_cols=['sample', 'site']`.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task. Names that are not
+    Names that are not
     columns are ignored, and text columns are never used as
     features, so list only numeric columns that are not
     measurements, such as ‘age’.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. It must still be in
     `data` after `drop_cols` is applied. Use the name of the column
     the table really has, as written in its header. The default is
-    ‘group’. A word from the question such as ‘diagnosis’, ‘visit’ or
-    ‘collection site’ is not a header: use ‘group’ when the table has
-    that column, whose labels are often the diagnosis or the visit, or
-    the header’s own name, for example ‘site’. A table returned by
+    ‘group’. Use the column’s own name when it is not ‘group’, for
+    example ‘site’. A table returned by
     `combat_batch_correction` no longer has its batch column; to color
     by the batch, run this function on the table before the correction.
   * **annotation_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation.
@@ -192,23 +179,18 @@ For more information visit
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-    The table is passed as `data`; there is no `df` parameter.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe.
     Default is [] if None.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task. Names that are not
+    Names that are not
     columns are ignored, and text columns are never used as
     features, so list only numeric columns that are not
     measurements, such as ‘age’. Do not list the `group` column
     here: it labels the samples, and dropping it raises
     `KeyError`.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers, as written in the table
-    header. The default is ‘group’. A word from the question such as
-    ‘diagnosis’, ‘visit’ or ‘collection site’ is not a header: use
-    ‘group’ when the table has that column, whose labels are often the
-    diagnosis or the visit, or the header’s own name, for example
-    ‘site’. Without such a column the call fails with `None of
-    ['diagnosis'] are in the columns`.
+    header. The default is ‘group’. Use the column’s own name when it
+    is not ‘group’, for example ‘site’. A name that is not a column
+    fails with `None of ['diagnosis'] are in the columns`.
   * **components** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – dimension of the embedded space.
   * **annotation_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation.
     Default is [] if None. Can be columns or index
@@ -248,23 +230,18 @@ For more information vist [https://umap-learn.readthedocs.io](https://umap-learn
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-    The table is passed as `data`; there is no `df` parameter.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe.
     Default is [] if None.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task. Names that are not
+    Names that are not
     columns are ignored, and text columns are never used as
     features, so list only numeric columns that are not
     measurements, such as ‘age’. Do not list the `group` column
     here: it labels the samples, and dropping it raises
     `KeyError`.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers, as written in the table
-    header. The default is ‘group’. A word from the question such as
-    ‘diagnosis’, ‘visit’ or ‘collection site’ is not a header: use
-    ‘group’ when the table has that column, whose labels are often the
-    diagnosis or the visit, or the header’s own name, for example
-    ‘site’. Without such a column the call fails with `None of
-    ['diagnosis'] are in the columns`.
+    header. The default is ‘group’. Use the column’s own name when it
+    is not ‘group’, for example ‘site’. A name that is not a column
+    fails with `None of ['diagnosis'] are in the columns`.
   * **annotation_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation.
     Default is [] if None. Can be columns or index
     level names; missing ones are ignored with a warning.

@@ -14,7 +14,6 @@ if permutations>0 and Benjamini/Hochberg if permutations=0.
 * **Parameters:**
   * **df** (*pd.DataFrame*) – Pandas DataFrame with samples as rows and protein identifiers and
     covariates as columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-    The table is passed as `df`; there is no `data` parameter.
   * **covariates** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of covariates to include in the model (column in df).
     Always a list of column names, also for one covariate:
     `covariates=['age']`, not `'age'`. The parameter is
@@ -23,8 +22,7 @@ if permutations>0 and Benjamini/Hochberg if permutations=0.
   * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate for multiple hypothesis correction
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
     to drop no columns.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task. List every column that is
+    List every column that is
     not a measurement, except `group` and the covariates: a text
     column such as ‘sample’, ‘subject’ or another label column
     left in the table fails with `endog has evaluated to an array
@@ -34,11 +32,9 @@ if permutations>0 and Benjamini/Hochberg if permutations=0.
   * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – not used by this function. A subject column is removed through
     `drop_cols` like any other identifier.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column that holds the group labels, as written in the
-    table header. The default is ‘group’; pass another name only
-    when the header has it, for example ‘strain’ or ‘arm’. A word
-    from the question such as ‘condition’, ‘diagnosis’ or ‘visit’ is
-    not a header unless the table has that column: the labels of a
-    diagnosis or a visit are often in the column called ‘group’.
+    table header. The default is ‘group’; pass another name when the
+    labels are in a differently named column, for example ‘strain’ or
+    ‘arm’.
   * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate false discovery rates.
   * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
     use methods available in acore.multiple_testing
@@ -84,12 +80,10 @@ if permutations>0 and Benjamini/Hochberg if permutations=0.
 * **Parameters:**
   * **df** (*pd.DataFrame*) – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-    The table is passed as `df`; there is no `data` parameter.
   * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate for multiple hypothesis correction
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe. Pass `None` or `[]`
     to drop no columns.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task. List every column that is
+    List every column that is
     not a measurement, except `group`: a text column such as
     ‘sample’, ‘subject’ or ‘arm’ left in the table fails with
     `ufunc 'divide' not supported`, and a numeric one such as
@@ -98,11 +92,9 @@ if permutations>0 and Benjamini/Hochberg if permutations=0.
     For example `drop_cols=['sample', 'subject']`.
   * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column that holds the group labels, as written in the
-    table header. The default is ‘group’; pass another name only
-    when the header has it, for example ‘strain’ or ‘arm’. A word
-    from the question such as ‘condition’, ‘diagnosis’ or ‘visit’ is
-    not a header unless the table has that column: the labels of a
-    diagnosis or a visit are often in the column called ‘group’.
+    table header. The default is ‘group’; pass another name when the
+    labels are in a differently named column, for example ‘strain’ or
+    ‘arm’.
   * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate false discovery rates.
   * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
     use methods available in acore.multiple_testing
@@ -152,12 +144,9 @@ type of mixed-effects model ([source](https://en.wikipedia.org/wiki/Mixed-design
 * **Parameters:**
   * **df** (*pd.DataFrame*) – Pandas DataFrame with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-    The table is passed as `df`; there is no `data` parameter.
   * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate for multiple hypothesis correction
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
     to drop no columns.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task.
   * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers
   * **within** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with within factor identifiers
   * **between** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with between factor identifiers
@@ -187,13 +176,11 @@ Performs repeated measurements anova and pairwise posthoc tests for each protein
 * **Parameters:**
   * **df** (*pd.DataFrame*) – Pandas DataFrame with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-    The table is passed as `df`; there is no `data` parameter.
   * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate for multiple hypothesis correction
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
     to drop no columns. The `subject` column must not be included here as
     it is required for the analysis.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task. List every other column
+    List every other column
     that is not a measurement, except `within`: a text column
     such as ‘sample’ or ‘arm’ left in the table fails with
     `DV must be numeric`, and a numeric one such as ‘age’ would
@@ -203,12 +190,11 @@ Performs repeated measurements anova and pairwise posthoc tests for each protein
     (for example ‘subject’, not ‘subject_id’ unless the table has it).
     Every subject has several rows, one per level of `within`.
   * **within** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column that holds the repeated conditions, such as
-    the visits or time points T0, T1, T2. It is a header of the table,
-    often ‘group’ even when the question says ‘visit’: ‘visit’ is not
-    a header unless the table has that column.
+    the visits or time points T0, T1, T2. It must be a column of the
+    table.
   * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate false discovery
     rates. Pass `0` to use Benjamini/Hochberg correction
-    instead. Known issue: the default of 50 fails in this
+    instead. Note: the default of 50 fails in this
     function with `KeyError: ['F', 'p-unc'] not in index`.
   * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
     use methods available in acore.multiple_testing
@@ -242,19 +228,17 @@ This compares exactly two groups of one factor, so every call needs both
 each of several groups with a reference, call it once per group, for example
 `run_ttest(df, condition1='WT', condition2='zwf', group='strain', subject=None,
 drop_cols=['sample'])` for a table without a `subject` column, and again with
-`condition2='sucA'`. Read the labels from the table; do not invent them. Use
+`condition2='sucA'`. Use
 `run_anova` to compare three or more groups at once, and `run_two_way_anova` for
 a design with two factors.
 
 * **Parameters:**
   * **df** (*pd.DataFrame*) – Pandas DataFrame with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-    The table is passed as `df`; there is no `data` parameter.
   * **condition1** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – required; one value of the `group` column, copied exactly as
     it is written in the table (for example ‘WT’, not ‘wild type’),
-    for the first of the two groups. Read the distinct values of
-    that column first: a word from the question such as ‘controls’
-    or ‘knockout 1’ is not a label unless the column contains it.
+    for the first of the two groups. It must be a value that
+    occurs in that column.
   * **condition2** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – required; another value of the `group` column, copied exactly
     as written, for the second of the two groups. To compare several
     groups with one reference, call this function once per pair.
@@ -262,8 +246,7 @@ a design with two factors.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
     to drop no columns. The `subject` column should not be included here
     as it is handled separately based on the `paired` parameter.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task. List every other column
+    List every other column
     that is not a measurement, except `group`: a text column such
     as ‘sample’ or ‘treatment’ left in the table fails with
     `ufunc 'divide' not supported`, and a numeric one such as
@@ -279,11 +262,9 @@ a design with two factors.
     test needs it.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column that holds the group labels (independent
     variable), as written in the table header. The default is ‘group’;
-    pass another name only when the header has it, for example ‘strain’
-    or ‘genotype’. A word from the question such as ‘condition’,
-    ‘diagnosis’ or ‘visit’ is not a header unless the table has that
-    column: sepsis/healthy or AD/control labels are often in the column
-    called ‘group’. `condition1` and `condition2` are values in this
+    pass another name when the labels are in a differently named
+    column, for example ‘strain’ or ‘genotype’. `condition1` and
+    `condition2` are values in this
     column.
   * **paired** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – paired or unpaired samples
   * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods
@@ -329,11 +310,9 @@ Run a 2-way ANOVA when data[‘secondary_group’] is not empty
 * **Parameters:**
   * **df** (*pd.DataFrame*) – processed pandas DataFrame with samples as rows,
     and proteins and groups as columns.
-    The table is passed as `df`; there is no `data` parameter.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column names to drop from DataFrame. Pass `None` or `[]`
     to drop no columns.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task. List every column that
+    List every column that
     is not a measurement, except `subject` and the two `group`
     columns: a text column such as ‘sample’ left in the table
     fails, and a numeric one such as ‘age’ would be tested like a
@@ -343,10 +322,8 @@ Run a 2-way ANOVA when data[‘secondary_group’] is not empty
   * **group** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – names of the two columns that hold the labels of the two factors
     (independent variables), for example [‘genotype’, ‘treatment’].
     Defaults to [‘group’, ‘secondary_group’] if None, so name them when
-    the table calls these columns anything else. Both names are headers
-    of the table: when the visits are in a column called ‘group’ and
-    the arms in ‘arm’, pass `['arm', 'group']`, not `['arm',
-    'visit']` as the question may word it.
+    the table calls these columns anything else. Both must be columns
+    of the table.
 * **Returns:**
   Two DataFrames, anova results and residuals.
 
@@ -476,7 +453,6 @@ Calculates one-way ANCOVA using pingouin.
 
 * **Parameters:**
   * **data** – pandas dataframe with group as rows and protein identifier as column.
-    The table is passed as `data`; there is no `df` parameter.
   * **column** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the one measurement column in data to run ANOVA on, for
     example ‘CRP’. It must be a different column from `group` and
     from every covariate: `column='arm', group='arm'` fails with

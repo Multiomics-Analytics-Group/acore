@@ -8,14 +8,11 @@ information visit [fancyimpute](https://github.com/iskandr/fancyimpute/blob/HEAD
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-    The table is passed as `data`; there is no `df` parameter.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers, restricted to be one
     single column for now. If present, it is returned as the first
     column.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped. Final dataframe should only
     have gene/protein/etc identifiers as columns.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task.
   * **cutoff** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – minimum fraction of valid values required to impute
     a each column.
   * **alone** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if True removes all columns with any missing values after initial
@@ -38,12 +35,9 @@ Replace missing values with half the per-column minimum of observed values.
 
 * **Parameters:**
   * **data** – DataFrame with samples as rows and features as columns.
-    The table is passed as `data`; there is no `df` parameter.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
     appears in both `on_cols` and `drop_cols` it will be dropped
     and a warning is emitted.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. If set, the minimum is
     computed within each group (and within `on_rows`, if given).
     Columns without observed values in a group are left as NaN for
@@ -79,12 +73,9 @@ Missing values are replaced in two steps:
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-    The table is passed as `data`; there is no `df` parameter.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. If present, it is
     returned as the first column.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of column labels to be set as dataframe index.
-    Use the exact column names from the table header; never a name made up from the
-    wording of the task.
   * **shift** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – specifies the amount by which the distribution used for the
     random numbers is shifted downwards. This is in units of the
     standard deviation of the valid data.
@@ -121,10 +112,8 @@ negatives in differential expression analysis that considers imputed values.
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-    The table is passed as `data`; there is no `df` parameter.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of column labels to be dropped from the imputation.
-    Use the exact column names from the table header; never a name made up from the
-    wording of the task. Every name must be a column of the table: a missing one such
+    Every name must be a column of the table: a missing one such
     as ‘subject’ fails with `['subject'] not found in axis`, and not every table has
     ‘subject’ or ‘sample’. List every text column except `group`, because a text
     column left in the table fails with `could not convert string to float: 'AD'`.
@@ -166,12 +155,10 @@ Replace missing values with zeros.
 
 * **Parameters:**
   * **data** – DataFrame with samples as rows and features as columns.
-    The table is passed as `data`; there is no `df` parameter.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
     appears in both “on_cols” and “drop_cols” it will be dropped
     and a warning is emitted.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task. Every name must be a
+    Every name must be a
     column of the table: a missing one such as ‘subject’ fails with
     `['subject'] not found in axis`, and not every table has
     ‘subject’ or ‘sample’. Text columns need not be listed, only
@@ -201,8 +188,6 @@ Replace missing values with the median of each column.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped before imputation, e.g.
     non-numeric metadata columns. All remaining columns
     must be numeric.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. If set, the median
     is computed within each group. Columns that are entirely missing
     within a group are left as NaN for that group. Rows with a
@@ -253,8 +238,6 @@ Replace missing values with the median of each column.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped before imputation, e.g.
     non-numeric metadata columns. All remaining columns
     must be numeric.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. If set, the median
     is computed within each group. Columns that are entirely missing
     within a group are left as NaN for that group. Rows with a
@@ -279,14 +262,11 @@ information visit [fancyimpute](https://github.com/iskandr/fancyimpute/blob/HEAD
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-    The table is passed as `data`; there is no `df` parameter.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers, restricted to be one
     single column for now. If present, it is returned as the first
     column.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped. Final dataframe should only
     have gene/protein/etc identifiers as columns.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task.
   * **cutoff** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – minimum fraction of valid values required to impute
     a each column.
   * **alone** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if True removes all columns with any missing values after initial
@@ -315,12 +295,9 @@ Missing values are replaced in two steps:
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-    The table is passed as `data`; there is no `df` parameter.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. If present, it is
     returned as the first column.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of column labels to be set as dataframe index.
-    Use the exact column names from the table header; never a name made up from the
-    wording of the task.
   * **shift** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – specifies the amount by which the distribution used for the
     random numbers is shifted downwards. This is in units of the
     standard deviation of the valid data.
@@ -357,10 +334,8 @@ negatives in differential expression analysis that considers imputed values.
 * **Parameters:**
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-    The table is passed as `data`; there is no `df` parameter.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of column labels to be dropped from the imputation.
-    Use the exact column names from the table header; never a name made up from the
-    wording of the task. Every name must be a column of the table: a missing one such
+    Every name must be a column of the table: a missing one such
     as ‘subject’ fails with `['subject'] not found in axis`, and not every table has
     ‘subject’ or ‘sample’. List every text column except `group`, because a text
     column left in the table fails with `could not convert string to float: 'AD'`.
@@ -402,12 +377,10 @@ Replace missing values with zeros.
 
 * **Parameters:**
   * **data** – DataFrame with samples as rows and features as columns.
-    The table is passed as `data`; there is no `df` parameter.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
     appears in both “on_cols” and “drop_cols” it will be dropped
     and a warning is emitted.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task. Every name must be a
+    Every name must be a
     column of the table: a missing one such as ‘subject’ fails with
     `['subject'] not found in axis`, and not every table has
     ‘subject’ or ‘sample’. Text columns need not be listed, only
@@ -434,12 +407,9 @@ Replace missing values with half the per-column minimum of observed values.
 
 * **Parameters:**
   * **data** – DataFrame with samples as rows and features as columns.
-    The table is passed as `data`; there is no `df` parameter.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
     appears in both `on_cols` and `drop_cols` it will be dropped
     and a warning is emitted.
-    Use the exact column names from the table header; never a name
-    made up from the wording of the task.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. If set, the minimum is
     computed within each group (and within `on_rows`, if given).
     Columns without observed values in a group are left as NaN for
