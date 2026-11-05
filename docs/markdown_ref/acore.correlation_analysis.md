@@ -48,15 +48,28 @@ result = calculate_correlations(x, y, method='pearson')
 
 ### run_correlation(df: DataFrame, alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'pearson', correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', numeric_only: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True, dropna: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
 
+Correlates every pair of numeric columns and returns an edge list of the results.
+
 This function calculates pairwise correlations for columns in dataframe,
 and returns it in the shape of a edge list with ‘weight’ as correlation score,
-and the ajusted p-values.
+and the ajusted p-values. It takes no `x` or `y`: to read off one pair, pick the
+row of the result whose ‘node1’ and ‘node2’ are the two columns.
 
 * **Parameters:**
   * **df** – pandas dataframe with samples as rows and features as columns.
-  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of column containing subject identifiers.
-  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of column containing group identifiers.
-  * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method to use for correlation calculation (‘pearson’, ‘spearman’).
+    The table is passed as `df`; there is no `data` parameter.
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of column containing subject identifiers. Leave it unset
+    (`None`) for the usual correlation of all numeric columns. Setting it asks for a
+    repeated measures correlation, used when every subject appears in more than one
+    row. Known issue: with fewer than 200 columns and more than two subjects, that
+    route fails with `KeyError: None of [Index([1.0, 0.0, ...])] are in the
+    [columns]` (the 1.0 and 0.0 are its own ‘rejected’ flags, not an argument), so
+    do not set `subject`.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of column containing group identifiers. It is only used
+    together with `subject`, to check whether the samples are paired.
+  * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method to use for correlation calculation: ‘pearson’ or ‘spearman’
+    only. Any other name, such as ‘kendall’, fails with `cannot access local
+    variable 'p'`.
   * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate. Values velow alpha are considered significant.
   * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – type of correction see apply_pvalue_correction for methods
   * **numeric_only** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if True, only numeric columns are considered
@@ -70,8 +83,7 @@ and the ajusted p-values.
 Example:
 
 ```default
-result = run_correlation(df, alpha=0.05, subject='subject', group='group',
-            method='pearson', correction='fdr_bh')
+result = run_correlation(df, alpha=0.05, method='pearson', correction='fdr_bh')
 ```
 
 ### run_multi_correlation(df_dict, alpha=0.05, subject='subject', on=None, group='group', method='pearson', correction='fdr_bh')
@@ -105,6 +117,7 @@ repeated measures (rm).
 
 * **Parameters:**
   * **df** – pandas dataframe with subjects as rows and two features and columns.
+    The table is passed as `df`; there is no `data` parameter.
   * **x** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – feature a name.
   * **y** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – feature b name.
   * **subject** – column name containing the covariate variable.
@@ -125,6 +138,7 @@ p-values, degrees of freedom and ajusted p-values.
 
 * **Parameters:**
   * **df** – pandas dataframe with samples as rows and features as columns.
+    The table is passed as `df`; there is no `data` parameter.
   * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of column containing subject identifiers.
   * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate. Values velow alpha are considered significant.
   * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – type of correction type see apply_pvalue_correction for methods
@@ -178,6 +192,7 @@ assuming a fixed number of observations.
 
 * **Parameters:**
   * **data** – pandas dataframe with samples as index and features as columns (numeric data only).
+    The table is passed as `data`; there is no `df` parameter.
   * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method to use for correlation calculation (‘pearson’, ‘spearman’).
 * **Returns:**
   Two numpy arrays: correlation and p-values.

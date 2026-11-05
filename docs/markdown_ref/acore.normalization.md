@@ -14,6 +14,9 @@ data, but keeps the non-numeric columns in the output DataFrame.
 
 * **Parameters:**
   * **data** – DataFrame with the data to be normalized (samples x features)
+    The table is passed as `data`; there is no `df` parameter. Text columns such
+    as ‘sample’ or ‘group’ can stay in the table, they are kept unchanged in the
+    result, and there is no `drop_cols` parameter.
   * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – normalization method to choose among: median (default),
     median_polish, median_zero, quantile, linear, zscore
   * **normalize** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – whether the normalization should be done by ‘features’ (columns)
@@ -33,6 +36,7 @@ This function normalizes the data by group using the selected method
 
 * **Parameters:**
   * **data** – DataFrame with the data to be normalized (samples x features)
+    The table is passed as `data`; there is no `df` parameter.
   * **group_col** – Column containing the groups, passed to pandas.DataFrame.groupby
   * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – normalization method to choose among: median_polish, median,
     quantile, linear
@@ -57,7 +61,7 @@ Strategies for data normalization used by normalize_data.
 This function normalizes each sample by using its median.
 
 * **Parameters:**
-  * **data**
+  * **data** – The table is passed as `data`; there is no `df` parameter.
   * **normalize** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – whether the normalization should be done by ‘features’ (columns)
     or ‘samples’ (rows)
 * **Returns:**
@@ -82,7 +86,12 @@ result
 This function normalizes each sample by using its median.
 
 * **Parameters:**
-  * **data**
+  * **data** – pandas.DataFrame with numbers only, samples as rows and features as
+    columns. The table is passed as `data`; there is no `df` parameter. This
+    function has no `drop_cols` parameter and fails on a text column such as
+    ‘sample’ or ‘group’ (`Cannot convert [['P000' 'site_A' ...`). To normalize a
+    table that also has text columns, call `normalize_data(data, method='median')`,
+    which normalizes the numeric columns and keeps the text columns in the result.
   * **normalize** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – whether the normalization should be done by ‘features’ (columns)
     or ‘samples’ (rows)
 * **Returns:**
@@ -108,7 +117,7 @@ This function normalizes each sample by using its mean and standard deviation
 (mean=0, std=1).
 
 * **Parameters:**
-  * **data**
+  * **data** – The table is passed as `data`; there is no `df` parameter.
   * **normalize** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – whether the normalization should be done by ‘features’ (columns)
     or ‘samples’ (rows)
 * **Returns:**
@@ -134,7 +143,7 @@ This function iteratively normalizes each sample and each feature to its
 median until medians converge.
 
 * **Parameters:**
-  * **data**
+  * **data** – The table is passed as `data`; there is no `df` parameter.
   * **max_iter** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of maximum iterations to prevent infinite loop.
 * **Returns:**
   pandas.DataFrame.
@@ -159,6 +168,7 @@ Applies quantile normalization to each column in pandas.DataFrame.
 
 * **Parameters:**
   **data** – pandas.DataFrame with features as columns and samples as rows.
+  The table is passed as `data`; there is no `df` parameter.
 * **Returns:**
   pandas.DataFrame
 
@@ -183,6 +193,7 @@ This function scales input data to a unit norm. For more information visit:
 
 * **Parameters:**
   * **data** – pandas.DataFrame with samples as rows and features as columns.
+    The table is passed as `data`; there is no `df` parameter.
   * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – norm to use to normalize each non-zero sample or non-zero feature
     (depends on axis).
   * **normalize** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – axis used to normalize the data along. If ‘samples’,

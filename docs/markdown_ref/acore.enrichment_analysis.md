@@ -162,35 +162,55 @@ result = run_site_regulation_enrichment(regulation_data,
 
 ### run_up_down_regulation_enrichment(regulation_data: DataFrame, annotation: DataFrame, identifier: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'identifier', groups: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] = ('group1', 'group2'), annotation_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'annotation', pval_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'pval', group_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', log2fc_col: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'log2FC', method: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fisher', min_detected_in_set: [int](https://docs.python.org/3/builtins/functions.html#int) = 2, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', correction_alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, lfc_cutoff: [float](https://docs.python.org/3/builtins/functions.html#float) = 1, permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 0, seed: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[EnrichmentAnalysisSchema](acore.types.md#acore.types.enrichment_analysis.EnrichmentAnalysisSchema)]
 
+Tests up- and downregulated features of a differential analysis for enriched terms.
+
 This function runs a simple enrichment analysis for significantly regulated proteins
 distinguishing between upregulation per group defined by the groups.
 Only overrepresentation is tested using one-sided Fisher’s exact tests.
 
 * **Parameters:**
   * **regulation_data** ([*pandas.DataFrame*](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame)) – pandas.DataFrame resulting from differential regulation
-    analysis (CKG’s regulation table).
+    analysis (CKG’s regulation table), such as the result of `run_ttest`: one row
+    per feature, with the feature `identifier`, the two columns named in `groups`,
+    the `pval_col` column and the `log2fc_col` column. It is not a membership
+    list with a ‘group’ column of ‘foreground’ and ‘background’ (that table is the
+    `data` of `run_enrichment`) and not a table of measurements: both fail with
+    `KeyError: 'group1'`.
   * **annotation** ([*pandas.DataFrame*](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame)) – pandas.DataFrame with annotations for features
-    (columns: ‘annotation’, ‘identifier’ (feature identifiers), and ‘source’).
-  * **identifier** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column from annotation containing feature identifiers.
-  * **groups** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list) *[*[*str*](https://docs.python.org/3/builtins/stdtypes.html#str) *]*) – 
-
-    column names from regulation_data containing group identifiers.
-    See [pandas.DataFrame.groupby](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.groupby.html) for more information.
+    (columns: ‘annotation’, ‘identifier’ (feature identifiers), and ‘source’). Its
+    identifiers must be written exactly as in `regulation_data`. If nothing is
+    enriched, the call fails with `column 'terms' not in dataframe`. That happens
+    when no identifier matches, for example when one table has site-level names
+    such as ‘AKT1~P31749_S495-1’ and the other protein-level names such as
+    ‘AKT1~P31749’.
+  * **identifier** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column with feature identifiers; both
+    `regulation_data` and `annotation` need a column of this name.
+  * **groups** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list) *[*[*str*](https://docs.python.org/3/builtins/stdtypes.html#str) *]*) – the names of exactly two columns of `regulation_data` that
+    say which two groups a row compares. The default `['group1', 'group2']` fits the
+    result of `run_ttest`. They are column names, not group labels such as ‘EGF’ or
+    ‘control’, and one name such as `['group']` fails with `groups should contains
+    exactly two columns`. They are passed to `pandas.DataFrame.groupby`.
   * **annotation_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column from annotation containing annotation terms.
-  * **rejected_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column from regulation_data containing boolean for
-    rejected null hypothesis.
-  * **group_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column name for new column in annotation dataframe determining
-    if feature belongs to foreground or background.
+  * **pval_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column of `regulation_data` with the p-values that
+    are compared with `correction_alpha`. The default ‘pval’ is not a column of the
+    result of `run_ttest`: pass `pval_col='pvalue'` (or ‘padj’) for it.
+  * **group_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of a new column that is added to `annotation` to mark
+    each feature as foreground or background. It is an output name, so leave it at
+    ‘group’; do not pass an existing column such as ‘source’.
+  * **log2fc_col** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column of `regulation_data` with the log2 fold
+    changes. The default ‘log2FC’ is the column of the result of `run_ttest`.
   * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method used to compute enrichment
     (only ‘fisher’ is supported currently).
+  * **min_detected_in_set** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – minimum number of regulated features a term needs.
   * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method to be used for multiple-testing correction.
     Use `'efdr'` to apply empirical FDR via permutation (requires
     `permutations > 0`).
-  * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – adjusted p-value cutoff to define significance
+  * **correction_alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – p-value cutoff to define a regulated feature and
+    significance level of the correction.
   * **lfc_cutoff** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – log fold-change cutoff to define practical significance
   * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate the empirical FDR
     when `correction='efdr'`. Ignored for other correction methods.
-  * **seed** ([*int*](https://docs.python.org/3/builtins/functions.html#int) *|* *None*) – seed of the random number generator used for the
+  * **seed** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – seed of the random number generator used for the
     permutations when `correction='efdr'`, for reproducible results.
 * **Returns:**
   DataFrame adhering to EnrichmentAnalysisSchema
@@ -200,18 +220,19 @@ Only overrepresentation is tested using one-sided Fisher’s exact tests.
 Example:
 
 ```default
+# regulation_data is the result of run_ttest; annotation has the columns
+# 'identifier' and 'annotation'
 result = run_up_down_regulation_enrichment(
     regulation_data,
     annotation,
     identifier='identifier',
-    groups=['group1',
-    'group2'],
+    groups=['group1', 'group2'],
     annotation_col='annotation',
-    rejected_col='rejected',
-    group_col='group',
+    pval_col='pvalue',
+    log2fc_col='log2FC',
     method='fisher',
     correction='fdr_bh',
-    alpha=0.05,
+    correction_alpha=0.05,
     lfc_cutoff=1,
 )
 ```

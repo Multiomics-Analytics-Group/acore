@@ -14,6 +14,7 @@ the measurements in the samples cannot be trusted to be biologically relevant.
 
 * **Parameters:**
   * **data** – pandas DataFrame containing data with samples as rows and features as columns
+    The table is passed as `data`; there is no `df` parameter.
   * **blanks** – list of row index labels (from data.index) identifying the blanks
     measurement rows, e.g. [“Blank1”, “Blank2”]
   * **samples** – list of row index labels (from data.index) identifying the biological
@@ -31,6 +32,7 @@ this feature will get removed.
 
 * **Parameters:**
   * **data** – pandas data frame with samples as rows and features as columns.
+    The table is passed as `data`; there is no `df` parameter.
   * **percent** – percentage chosen for filtering. The default is 80%, meaning that
     at least 80% of the values of every feature need to be present in order for this
     feature to be retained.
@@ -71,6 +73,7 @@ across QC samples, meaning analytical noise exceeds biological variability.
 
 * **Parameters:**
   * **data** – pandas data frame with samples as rows and features as columns.
+    The table is passed as `data`; there is no `df` parameter.
   * **samples** – list of row index labels (from data.index) identifying the
     biological sample rows, e.g. [“S1”, “S2”, “S3”].
   * **qcs** – list of row index labels identifying the quality control rows,
