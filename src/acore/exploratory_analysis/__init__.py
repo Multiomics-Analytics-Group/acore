@@ -134,8 +134,11 @@ def extract_number_missing(
     :param str group: column label containing group identifiers.
                       If None, number of valid values is counted across all samples,
                       otherwise is counted per unique group identifier.
-    :param int min_valid: minimum number of valid values to be filtered.
-    :param list drop_columns: column labels to be dropped.
+    :param int min_valid: required, there is no default, so pass it in every call, for
+                          example ``min_valid=3``. A column is kept when it has at least
+                          this many valid values in at least one group (in all samples
+                          if ``group`` is None).
+    :param list drop_cols: column labels to be dropped. Default is ['sample'] if None.
     :return: List of column labels above the threshold.
 
     Example::
@@ -256,15 +259,39 @@ def run_pca(
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
                  (with additional columns 'group', 'sample' and 'subject').
     :param list drop_cols: column labels to be dropped from the dataframe.
-                           Default is [] if None.
-    :param str group: column label containing group identifiers.
+                           Default is [] if None. Drop the identifier columns that are
+                           not measurements, such as 'sample' and 'subject'. Do not list
+                           the ``group`` column here: it labels the samples, and dropping
+                           it raises ``KeyError``. To color by 'site', pass
+                           ``group='site'`` and ``drop_cols=['sample']``, not
+                           ``drop_cols=['sample', 'site']``.
+                           Names that are not
+                           columns are ignored, and text columns are never used as
+                           features, so list only numeric columns that are not
+                           measurements, such as 'age'.
+    :param str group: column label containing group identifiers. It must still be in
+                      ``data`` after ``drop_cols`` is applied. Use the name of the column
+                      the table really has, as written in its header. The default is
+                      'group'. Use the column's own name when it is not 'group', for
+                      example 'site'. A table returned by
+                      ``combat_batch_correction`` no longer has its batch column; to color
+                      by the batch, run this function on the table before the correction.
     :param list annotation_cols: list of columns to be added in the scatter plot annotation.
                                  Default is [] if None. Can be columns or index
                                  level names; missing ones are ignored with a warning.
+                                 Columns listed here are kept in the returned components
+                                 table and are not used as features. A column such as
+                                 ``sample`` appears in the result only when listed here;
+                                 listing it in ``drop_cols`` removes it from the result.
     :param int components: number of components to keep.
     :param bool dropna: if True removes all columns with any missing values.
     :return: tuple: 1) three pandas dataframes: components, loadings and variance; 2)
-             xaxis and yaxis titles with components loadings for plotly.
+             xaxis and yaxis titles with components loadings for plotly. The components
+             table has one row per sample and the columns ``group`` (the labels from the
+             ``group`` column), ``x`` (first component) and ``y`` (second component), plus
+             ``z`` for a third and the names ``3``, ``4``, ... beyond it, and any
+             ``annotation_cols``. Its columns are not named ``PC1`` or ``PC2``; plot it
+             with ``x='x'`` and ``y='y'``.
 
     Example::
 
@@ -347,8 +374,17 @@ def run_tsne(
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
                  (with additional columns 'group', 'sample' and 'subject').
     :param list drop_cols: column labels to be dropped from the dataframe.
-    Default is [] if None.
-    :param str group: column label containing group identifiers.
+                           Default is [] if None.
+                           Names that are not
+                           columns are ignored, and text columns are never used as
+                           features, so list only numeric columns that are not
+                           measurements, such as 'age'. Do not list the ``group`` column
+                           here: it labels the samples, and dropping it raises
+                           ``KeyError``.
+    :param str group: column label containing group identifiers, as written in the table
+                      header. The default is 'group'. Use the column's own name when it
+                      is not 'group', for example 'site'. A name that is not a column
+                      fails with ``None of ['diagnosis'] are in the columns``.
     :param int components: dimension of the embedded space.
     :param list annotation_cols: list of columns to be added in the scatter plot annotation.
                                  Default is [] if None. Can be columns or index
@@ -433,7 +469,16 @@ def run_umap(
                  (with additional columns 'group', 'sample' and 'subject').
     :param list drop_cols: column labels to be dropped from the dataframe.
                            Default is [] if None.
-    :param str group: column label containing group identifiers.
+                           Names that are not
+                           columns are ignored, and text columns are never used as
+                           features, so list only numeric columns that are not
+                           measurements, such as 'age'. Do not list the ``group`` column
+                           here: it labels the samples, and dropping it raises
+                           ``KeyError``.
+    :param str group: column label containing group identifiers, as written in the table
+                      header. The default is 'group'. Use the column's own name when it
+                      is not 'group', for example 'site'. A name that is not a column
+                      fails with ``None of ['diagnosis'] are in the columns``.
     :param list annotation_cols: list of columns to be added in the scatter plot annotation.
                                  Default is [] if None. Can be columns or index
                                  level names; missing ones are ignored with a warning.

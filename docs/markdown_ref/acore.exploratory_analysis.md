@@ -79,8 +79,11 @@ valid values than the minimum threshold defined.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
     If None, number of valid values is counted across all samples,
     otherwise is counted per unique group identifier.
-  * **min_valid** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – minimum number of valid values to be filtered.
-  * **drop_columns** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped.
+  * **min_valid** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – required, there is no default, so pass it in every call, for
+    example `min_valid=3`. A column is kept when it has at least
+    this many valid values in at least one group (in all samples
+    if `group` is None).
+  * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped. Default is [‘sample’] if None.
 * **Returns:**
   List of column labels above the threshold.
 
@@ -124,16 +127,40 @@ For information visit
   * **data** – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe.
-    Default is [] if None.
-  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
+    Default is [] if None. Drop the identifier columns that are
+    not measurements, such as ‘sample’ and ‘subject’. Do not list
+    the `group` column here: it labels the samples, and dropping
+    it raises `KeyError`. To color by ‘site’, pass
+    `group='site'` and `drop_cols=['sample']`, not
+    `drop_cols=['sample', 'site']`.
+    Names that are not
+    columns are ignored, and text columns are never used as
+    features, so list only numeric columns that are not
+    measurements, such as ‘age’.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. It must still be in
+    `data` after `drop_cols` is applied. Use the name of the column
+    the table really has, as written in its header. The default is
+    ‘group’. Use the column’s own name when it is not ‘group’, for
+    example ‘site’. A table returned by
+    `combat_batch_correction` no longer has its batch column; to color
+    by the batch, run this function on the table before the correction.
   * **annotation_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation.
     Default is [] if None. Can be columns or index
     level names; missing ones are ignored with a warning.
+    Columns listed here are kept in the returned components
+    table and are not used as features. A column such as
+    `sample` appears in the result only when listed here;
+    listing it in `drop_cols` removes it from the result.
   * **components** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of components to keep.
   * **dropna** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – if True removes all columns with any missing values.
 * **Returns:**
   tuple: 1) three pandas dataframes: components, loadings and variance; 2)
-  xaxis and yaxis titles with components loadings for plotly.
+  xaxis and yaxis titles with components loadings for plotly. The components
+  table has one row per sample and the columns `group` (the labels from the
+  `group` column), `x` (first component) and `y` (second component), plus
+  `z` for a third and the names `3`, `4`, … beyond it, and any
+  `annotation_cols`. Its columns are not named `PC1` or `PC2`; plot it
+  with `x='x'` and `y='y'`.
 
 Example:
 
@@ -153,15 +180,21 @@ For more information visit
   * **data** – pandas dataframe with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe.
-
-Default is [] if None.
-:param str group: column label containing group identifiers.
-:param int components: dimension of the embedded space.
-:param list annotation_cols: list of columns to be added in the scatter plot annotation.
-
-> Default is [] if None. Can be columns or index
-> level names; missing ones are ignored with a warning.
-* **Parameters:**
+    Default is [] if None.
+    Names that are not
+    columns are ignored, and text columns are never used as
+    features, so list only numeric columns that are not
+    measurements, such as ‘age’. Do not list the `group` column
+    here: it labels the samples, and dropping it raises
+    `KeyError`.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers, as written in the table
+    header. The default is ‘group’. Use the column’s own name when it
+    is not ‘group’, for example ‘site’. A name that is not a column
+    fails with `None of ['diagnosis'] are in the columns`.
+  * **components** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – dimension of the embedded space.
+  * **annotation_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation.
+    Default is [] if None. Can be columns or index
+    level names; missing ones are ignored with a warning.
   * **perplexity** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – related to the number of nearest neighbors that is used
     in other manifold learning algorithms.
     Consider selecting a value between 5 and 50.
@@ -199,7 +232,16 @@ For more information vist [https://umap-learn.readthedocs.io](https://umap-learn
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe.
     Default is [] if None.
-  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers.
+    Names that are not
+    columns are ignored, and text columns are never used as
+    features, so list only numeric columns that are not
+    measurements, such as ‘age’. Do not list the `group` column
+    here: it labels the samples, and dropping it raises
+    `KeyError`.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers, as written in the table
+    header. The default is ‘group’. Use the column’s own name when it
+    is not ‘group’, for example ‘site’. A name that is not a column
+    fails with `None of ['diagnosis'] are in the columns`.
   * **annotation_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of columns to be added in the scatter plot annotation.
     Default is [] if None. Can be columns or index
     level names; missing ones are ignored with a warning.

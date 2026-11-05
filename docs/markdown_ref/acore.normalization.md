@@ -13,7 +13,9 @@ This function normalizes the data using the selected method. Normalizes only num
 data, but keeps the non-numeric columns in the output DataFrame.
 
 * **Parameters:**
-  * **data** – DataFrame with the data to be normalized (samples x features)
+  * **data** – DataFrame with the data to be normalized (samples x features).
+    Text columns such as ‘sample’ or ‘group’ can stay in the table, they are kept
+    unchanged in the result, and there is no `drop_cols` parameter.
   * **method** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – normalization method to choose among: median (default),
     median_polish, median_zero, quantile, linear, zscore
   * **normalize** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – whether the normalization should be done by ‘features’ (columns)
@@ -82,7 +84,11 @@ result
 This function normalizes each sample by using its median.
 
 * **Parameters:**
-  * **data**
+  * **data** – pandas.DataFrame with numbers only, samples as rows and features as
+    columns. This function has no `drop_cols` parameter and fails on a text column such as
+    ‘sample’ or ‘group’ (`Cannot convert [['P000' 'site_A' ...`). To normalize a
+    table that also has text columns, call `normalize_data(data, method='median')`,
+    which normalizes the numeric columns and keeps the text columns in the result.
   * **normalize** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – whether the normalization should be done by ‘features’ (columns)
     or ‘samples’ (rows)
 * **Returns:**
