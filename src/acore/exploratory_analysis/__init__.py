@@ -101,10 +101,7 @@ def get_coefficient_variation(
                  (with additional columns 'group', 'sample' and 'subject'). The values
                  should be the original intensities for massspectrometry-based
                  measurements.
-                 The table is passed as ``data``; there is no ``df`` parameter.
     :param list drop_columns: column labels to be dropped from the dataframe
-        Use the exact column names from the table header; never a name made up from the
-        wording of the task.
     :param str group: column label containing group identifiers.
     :return: Pandas dataframe with columns 'name' (protein identifier),
              'x' (coefficient of variation), 'y' (mean) and 'group'.
@@ -134,7 +131,6 @@ def extract_number_missing(
     valid values than the minimum threshold defined.
 
     :param data: pandas DataFrame with group as rows and protein identifier as column.
-        The table is passed as ``data``; there is no ``df`` parameter.
     :param str group: column label containing group identifiers.
                       If None, number of valid values is counted across all samples,
                       otherwise is counted per unique group identifier.
@@ -143,8 +139,6 @@ def extract_number_missing(
                           this many valid values in at least one group (in all samples
                           if ``group`` is None).
     :param list drop_cols: column labels to be dropped. Default is ['sample'] if None.
-        Use the exact column names from the table header; never a name made up from the
-        wording of the task.
     :return: List of column labels above the threshold.
 
     Example::
@@ -178,12 +172,9 @@ def extract_percentage_missing(
     lower ratio than the minimum threshold defined.
 
     :param data: pandas dataframe with group as rows and protein identifier as column.
-        The table is passed as ``data``; there is no ``df`` parameter.
     :param float missing_max: maximum ratio of missing/valid values to be filtered.
     :param list drop_cols: column labels to be dropped from the dataframe.
                            Default is ['sample'] if None.
-                           Use the exact column names from the table header; never a name
-                           made up from the wording of the task.
     :param str group: column label containing group identifiers.
                       If None, ratio is calculated across all samples,
                       otherwise is calculated per unique group identifier.
@@ -266,8 +257,7 @@ def run_pca(
     https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html.
 
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
-                 (with additional columns 'group', 'sample' and 'subject'). The table is
-                 passed as ``data``; this function has no ``df`` parameter.
+                 (with additional columns 'group', 'sample' and 'subject').
     :param list drop_cols: column labels to be dropped from the dataframe.
                            Default is [] if None. Drop the identifier columns that are
                            not measurements, such as 'sample' and 'subject'. Do not list
@@ -275,18 +265,15 @@ def run_pca(
                            it raises ``KeyError``. To color by 'site', pass
                            ``group='site'`` and ``drop_cols=['sample']``, not
                            ``drop_cols=['sample', 'site']``.
-                           Use the exact column names from the table header; never a name
-                           made up from the wording of the task. Names that are not
+                           Names that are not
                            columns are ignored, and text columns are never used as
                            features, so list only numeric columns that are not
                            measurements, such as 'age'.
     :param str group: column label containing group identifiers. It must still be in
                       ``data`` after ``drop_cols`` is applied. Use the name of the column
                       the table really has, as written in its header. The default is
-                      'group'. A word from the question such as 'diagnosis', 'visit' or
-                      'collection site' is not a header: use 'group' when the table has
-                      that column, whose labels are often the diagnosis or the visit, or
-                      the header's own name, for example 'site'. A table returned by
+                      'group'. Use the column's own name when it is not 'group', for
+                      example 'site'. A table returned by
                       ``combat_batch_correction`` no longer has its batch column; to color
                       by the batch, run this function on the table before the correction.
     :param list annotation_cols: list of columns to be added in the scatter plot annotation.
@@ -386,23 +373,18 @@ def run_tsne(
 
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
                  (with additional columns 'group', 'sample' and 'subject').
-                 The table is passed as ``data``; there is no ``df`` parameter.
     :param list drop_cols: column labels to be dropped from the dataframe.
                            Default is [] if None.
-                           Use the exact column names from the table header; never a name
-                           made up from the wording of the task. Names that are not
+                           Names that are not
                            columns are ignored, and text columns are never used as
                            features, so list only numeric columns that are not
                            measurements, such as 'age'. Do not list the ``group`` column
                            here: it labels the samples, and dropping it raises
                            ``KeyError``.
     :param str group: column label containing group identifiers, as written in the table
-                      header. The default is 'group'. A word from the question such as
-                      'diagnosis', 'visit' or 'collection site' is not a header: use
-                      'group' when the table has that column, whose labels are often the
-                      diagnosis or the visit, or the header's own name, for example
-                      'site'. Without such a column the call fails with ``None of
-                      ['diagnosis'] are in the columns``.
+                      header. The default is 'group'. Use the column's own name when it
+                      is not 'group', for example 'site'. A name that is not a column
+                      fails with ``None of ['diagnosis'] are in the columns``.
     :param int components: dimension of the embedded space.
     :param list annotation_cols: list of columns to be added in the scatter plot annotation.
                                  Default is [] if None. Can be columns or index
@@ -485,23 +467,18 @@ def run_umap(
 
     :param data: pandas dataframe with samples as rows and protein identifiers as columns
                  (with additional columns 'group', 'sample' and 'subject').
-                 The table is passed as ``data``; there is no ``df`` parameter.
     :param list drop_cols: column labels to be dropped from the dataframe.
                            Default is [] if None.
-                           Use the exact column names from the table header; never a name
-                           made up from the wording of the task. Names that are not
+                           Names that are not
                            columns are ignored, and text columns are never used as
                            features, so list only numeric columns that are not
                            measurements, such as 'age'. Do not list the ``group`` column
                            here: it labels the samples, and dropping it raises
                            ``KeyError``.
     :param str group: column label containing group identifiers, as written in the table
-                      header. The default is 'group'. A word from the question such as
-                      'diagnosis', 'visit' or 'collection site' is not a header: use
-                      'group' when the table has that column, whose labels are often the
-                      diagnosis or the visit, or the header's own name, for example
-                      'site'. Without such a column the call fails with ``None of
-                      ['diagnosis'] are in the columns``.
+                      header. The default is 'group'. Use the column's own name when it
+                      is not 'group', for example 'site'. A name that is not a column
+                      fails with ``None of ['diagnosis'] are in the columns``.
     :param list annotation_cols: list of columns to be added in the scatter plot annotation.
                                  Default is [] if None. Can be columns or index
                                  level names; missing ones are ignored with a warning.
