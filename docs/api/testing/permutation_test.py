@@ -51,7 +51,7 @@
 # Preparation Details](#data-preparation-details) are in the dropdown below.
 #
 # The preprocessed and subsetted data for this example is provided in CSV,
-# [`Ju2018_GO0017001_enf_inf_paired_demo_only.csv`](example_data/mgnify/Ju2018_GO0017001_enf_inf_paired_demo_only.csv).
+# [`Ju2018_GO0017001_enf_inf_paired_demo_only.csv`](../example_data/mgnify/Ju2018_GO0017001_enf_inf_paired_demo_only.csv).
 # The data dictionary is below:
 #
 # | column            | description                                                                                                       | dtype |
@@ -110,7 +110,7 @@ import pandas as pd
 # reading in the data
 df_data = pd.read_csv(
     # "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/refs/heads/anglup-learning/"
-    "example_data/mgnify/Ju2018_GO0017001_enf_inf_paired_demo_only.csv"
+    "../example_data/mgnify/Ju2018_GO0017001_enf_inf_paired_demo_only.csv"
 )
 # sanity check
 df_data

@@ -22,11 +22,11 @@ getting_started/input_formats.ipynb
 :hidden:
 
 api/overview
-api/index_preprocessing.md
-api/index_imputation.md
-api/index_diff_reg.md
+api/preprocessing/index.md
+api/imputation/index.md
+api/diff_reg/index.md
 api/enrichment_analysis.ipynb
-api/index_testing.md
+api/testing/index.md
 ```
 
 ```{toctree}

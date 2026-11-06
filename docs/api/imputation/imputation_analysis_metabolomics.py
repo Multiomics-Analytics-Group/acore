@@ -141,7 +141,7 @@ def plot_intensity_distribution(data):
 # ### Data Loading
 #
 # Load in your data and inspect the resulting dataframe. The example data set can be found
-# in [`example_data/DidacMauricio_hilic`](example_data/DidacMauricio_hilic).
+# in [`example_data/DidacMauricio_hilic`](../example_data/DidacMauricio_hilic).
 #
 # The data set has been filtered already, using the
 # [`acore.filter_metabolomics`](acore.filter_metabolomics) module. That means that
@@ -154,7 +154,7 @@ data_path = (
     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
     "refs/heads/main/"
 )
-data_path = "../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filtered.csv"
+data_path = "../../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filtered.csv"
 data_original = pd.read_csv(data_path, index_col=0)
 data_original
 
