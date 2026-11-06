@@ -66,9 +66,7 @@ data_path = (
     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
     "refs/heads/main/"
 )
-data_path = (
-    "../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled.csv"
-)
+data_path = "../../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled.csv"
 data_original = pd.read_csv(data_path)
 
 # %% [markdown]
