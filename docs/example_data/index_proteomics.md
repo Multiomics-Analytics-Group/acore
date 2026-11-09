@@ -17,7 +17,7 @@ supplementary data. See the article here:
 > Marion Curtis, Multi-level Proteomics Identifies CT45 as a Chemosensitivity Mediator
 > and Immunotherapy Target in Ovarian Cancer, Cell, Volume 175, Issue 1, 2018,
 >
-> https://doi.org/10.1016/j.cell.2018.08.065.
+> [doi.org/10.1016/j.cell.2018.08.065](https://doi.org/10.1016/j.cell.2018.08.065)
 
 ## Alzheimer's proteomics reanalysis
 
