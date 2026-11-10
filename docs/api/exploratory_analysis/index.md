@@ -2,7 +2,10 @@
 
 ```{toctree}
 :maxdepth: 1
-:caption: Imputation
+:caption: Exploratory Analysis
 
-exploratory_analysis.ipynb
+decomposition.ipynb
+variation.ipynb
+missing.ipynb
+correlation.ipynb
 ```

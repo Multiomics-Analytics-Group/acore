@@ -25,6 +25,22 @@ supplementary data. See the article here:
 :start-line: 5
 ```
 
+You can use the dumped file with metadata and a sample of 100 proteins from the study
+directly loading it from the acore repository using
+
+```python
+import pandas as pd
+
+df = pd.read_csv(
+    "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/refs/heads/main/"
+    "example_data/alzheimer_proteomics/alzheimer_example_omics_and_clinic.csv",
+    index_col="Sample ID"
+)
+
+meta = df.iloc[:,:4]
+omics= df.drop(meta.columns, axis=1)
+```
+
 ```{toctree}
 :maxdepth: 1
 :hidden:

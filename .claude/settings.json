@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(simplify)",
+      "Skill(simplify:*)",
+      "Bash(python -c \"import pandera; print\\(pandera.__version__\\)\")",
+      "Bash(pip show *)",
+      "Bash(python -c \"import hypothesis\")",
+      "Bash(python3 -c ' *)",
+      "Bash(python -m pytest tests/test_enrichment_plot.py -q)",
+      "Bash(python -c ' *)",
+      "Bash(MPLBACKEND=Agg python src/vuecore/enrichment_analysis/static.py)",
+      "Bash(python -c \"import acore; print\\(acore.__file__\\)\")",
+      "Bash(MPLBACKEND=Agg python -m pytest tests/test_enrichment_plot.py -q)",
+      "Bash(python -c \"import vuecore.enrichment_analysis.interactive; import vuecore.enrichment_analysis.static; print\\('ok'\\)\")",
+      "Bash(jupyter nbconvert *)",
+      "Bash(git -C /Users/heweb/Documents/repos/acore log --oneline main..updt_enrichment_analysis)",
+      "Bash(git log *)",
+      "Bash(python -m pytest tests/test_permutation_test.py::test_paired_permutation_reject -q)",
+      "Bash(python -m pytest tests/test_permutation_test.py -q -k paired)",
+      "Bash(python -m pytest tests/test_permutation_test.py -q)",
+      "Bash(python3 docs/examples_single_analysis/permutation_testing.py)",
+      "Bash(ruff check *)",
+      "Bash(python -)",
+      "Bash(python -m pytest tests/test_config_manager.py -q)",
+      "Bash(python -m pytest tests -q)"
+    ]
+  }
+}
