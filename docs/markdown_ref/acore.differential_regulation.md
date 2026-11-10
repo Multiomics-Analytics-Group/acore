@@ -4,7 +4,8 @@ Differential regulation module.
 
 ### run_ancova(df: DataFrame, covariates: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)], alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'subject', group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 0, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AncovaSchema](acore.types.md#acore.types.differential_analysis.AncovaSchema)]
 
-Performs statistical test for each protein in a dataset.
+Compares groups for each protein with a one-way ANCOVA, adjusting for covariates.
+
 Checks what type of data is the input (paired, unpaired or repeated measurements)
 and performs posthoc tests for multiclass data.
 Multiple hypothesis correction uses permutation-based
@@ -13,12 +14,27 @@ if permutations>0 and Benjamini/Hochberg if permutations=0.
 * **Parameters:**
   * **df** (*pd.DataFrame*) – Pandas DataFrame with samples as rows and protein identifiers and
     covariates as columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **covariates** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of covariates to include in the model (column in df)
+  * **covariates** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of covariates to include in the model (column in df).
+    Always a list of column names, also for one covariate:
+    `covariates=['age']`, not `'age'`. The parameter is
+    called `covariates`, not `covariate`. A covariate is a
+    column of the table, so do not also list it in `drop_cols`.
   * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate for multiple hypothesis correction
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
     to drop no columns.
-  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers
-  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers
+    List every column that is
+    not a measurement, except `group` and the covariates: a text
+    column such as ‘sample’, ‘subject’ or another label column
+    left in the table fails with `endog has evaluated to an array
+    with multiple columns`, and a numeric one that is not a
+    covariate would be tested like a protein. For example
+    `drop_cols=['sample', 'subject']`.
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – not used by this function. A subject column is removed through
+    `drop_cols` like any other identifier.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column that holds the group labels, as written in the
+    table header. The default is ‘group’; pass another name when the
+    labels are in a differently named column, for example ‘strain’ or
+    ‘arm’.
   * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate false discovery rates.
   * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
     use methods available in acore.multiple_testing
@@ -39,13 +55,21 @@ result = run_ancova(df,
                     drop_cols=["sample",'subject'],
                     subject='subject',
                     group='group',
-                    permutations=50
+                    permutations=0
+        )
+
+# columns: sample, subject, group, arm, age and the proteins; compare the arms
+result = run_ancova(df,
+                    covariates=['age'],
+                    group='arm',
+                    drop_cols=['sample', 'subject', 'group']
         )
 ```
 
 ### run_anova(df: DataFrame, alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 0, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AnovaSchema](acore.types.md#acore.types.differential_analysis.AnovaSchema)] | [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[AnovaSchemaMultiGroup](acore.types.md#acore.types.differential_analysis.AnovaSchemaMultiGroup)]
 
-Performs statistical test for each protein in a dataset.
+Compares two or more groups for each protein (t-test for two, one-way ANOVA for more).
+
 Checks what type of data is the input (paired, unpaired or repeated measurements) and
 performs posthoc tests for multiclass data (i.e., when there are more than two groups,
 posthoc tests such as pairwise t-tests or Tukey’s HSD are used to determine which specific
@@ -59,8 +83,18 @@ if permutations>0 and Benjamini/Hochberg if permutations=0.
   * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate for multiple hypothesis correction
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the dataframe. Pass `None` or `[]`
     to drop no columns.
+    List every column that is
+    not a measurement, except `group`: a text column such as
+    ‘sample’, ‘subject’ or ‘arm’ left in the table fails with
+    `ufunc 'divide' not supported`, and a numeric one such as
+    ‘age’ would be tested like a protein. There is one column per
+    protein, so no ‘protein’ or ‘protein_id’ column exists to drop.
+    For example `drop_cols=['sample', 'subject']`.
   * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers
-  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column that holds the group labels, as written in the
+    table header. The default is ‘group’; pass another name when the
+    labels are in a differently named column, for example ‘strain’ or
+    ‘arm’.
   * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate false discovery rates.
   * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
     use methods available in acore.multiple_testing
@@ -81,7 +115,13 @@ result = run_anova(df,
                    drop_cols=["sample",'subject'],
                    subject='subject',
                    group='group',
-                   permutations=50
+                   permutations=0
+        )
+
+# columns: sample, subject, group, arm, age and the proteins; compare the arms
+result = run_anova(df,
+                   group='arm',
+                   drop_cols=['sample', 'subject', 'group', 'age']
         )
 ```
 
@@ -140,9 +180,22 @@ Performs repeated measurements anova and pairwise posthoc tests for each protein
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
     to drop no columns. The `subject` column must not be included here as
     it is required for the analysis.
-  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers
-  * **within** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with within factor identifiers
-  * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate false discovery rates
+    List every other column
+    that is not a measurement, except `within`: a text column
+    such as ‘sample’ or ‘arm’ left in the table fails with
+    `DV must be numeric`, and a numeric one such as ‘age’ would
+    be tested like a protein. For example
+    `drop_cols=['sample', 'arm', 'age']`.
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers, as written in the table header
+    (for example ‘subject’, not ‘subject_id’ unless the table has it).
+    Every subject has several rows, one per level of `within`.
+  * **within** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column that holds the repeated conditions, such as
+    the visits or time points T0, T1, T2. It must be a column of the
+    table.
+  * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate false discovery
+    rates. Pass `0` to use Benjamini/Hochberg correction
+    instead. Note: the default of 50 fails in this
+    function with `KeyError: ['F', 'p-unc'] not in index`.
   * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
     use methods available in acore.multiple_testing
   * **is_logged** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – whether data is log-transformed
@@ -152,32 +205,67 @@ Performs repeated measurements anova and pairwise posthoc tests for each protein
 Example:
 
 ```default
+# columns: sample, subject, group (T0, T1, T2), arm, age and the proteins
 result = run_repeated_measurements_anova(df,
                                          alpha=0.05,
-                                         drop_cols=['sample'],
+                                         drop_cols=['sample', 'arm', 'age'],
                                          subject='subject',
                                          within='group',
-                                         permutations=50
+                                         permutations=0
         )
 ```
 
 ### run_ttest(df: DataFrame, condition1: [str](https://docs.python.org/3/builtins/stdtypes.html#str), condition2: [str](https://docs.python.org/3/builtins/stdtypes.html#str), alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = 'subject', group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', paired: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 0, is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True, non_par: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → DataFrame
 
+Runs a t-test between exactly two groups; needs both condition1 and condition2.
+
 Runs t-test (paired/unpaired) for each protein in dataset and performs
 permutation-based (if permutations>0) or Benjamini/Hochberg (if permutations=0)
 multiple hypothesis correction.
 
+This compares exactly two groups of one factor, so every call needs both
+`condition1` and `condition2`, two values from the `group` column. To compare
+each of several groups with a reference, call it once per group, for example
+`run_ttest(df, condition1='WT', condition2='zwf', group='strain', subject=None,
+drop_cols=['sample'])` for a table without a `subject` column, and again with
+`condition2='sucA'`. Use
+`run_anova` to compare three or more groups at once, and `run_two_way_anova` for
+a design with two factors.
+
 * **Parameters:**
   * **df** (*pd.DataFrame*) – Pandas DataFrame with samples as rows and protein identifiers as columns
     (with additional columns ‘group’, ‘sample’ and ‘subject’).
-  * **condition1** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – first of two conditions of the independent variable
-  * **condition2** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – second of two conditions of the independent variable
+  * **condition1** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – required; one value of the `group` column, copied exactly as
+    it is written in the table (for example ‘WT’, not ‘wild type’),
+    for the first of the two groups. It must be a value that
+    occurs in that column.
+  * **condition2** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – required; another value of the `group` column, copied exactly
+    as written, for the second of the two groups. To compare several
+    groups with one reference, call this function once per pair.
   * **alpha** ([*float*](https://docs.python.org/3/builtins/functions.html#float)) – error rate for multiple hypothesis correction
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column labels to be dropped from the DataFrame. Pass `None` or `[]`
     to drop no columns. The `subject` column should not be included here
     as it is handled separately based on the `paired` parameter.
-  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers
-  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers (independent variable)
+    List every other column
+    that is not a measurement, except `group`: a text column such
+    as ‘sample’ or ‘treatment’ left in the table fails with
+    `ufunc 'divide' not supported`, and a numeric one such as
+    ‘age’ would be tested like a protein. There is one column per
+    protein, so no ‘protein’ or ‘protein_id’ column exists to drop.
+    For example `drop_cols=['sample']`.
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with subject identifiers. The default is ‘subject’; the
+    column must exist in the table then, and it is dropped for an
+    unpaired test, so never also list it in `drop_cols`. Pass
+    `subject=None` when the table has no such column, as in a
+    table with only ‘sample’, ‘strain’ and the measurements. Both
+    mistakes fail with `['subject'] not found in axis`. A paired
+    test needs it.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column that holds the group labels (independent
+    variable), as written in the table header. The default is ‘group’;
+    pass another name when the labels are in a differently named
+    column, for example ‘strain’ or ‘genotype’. `condition1` and
+    `condition2` are values in this
+    column.
   * **paired** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – paired or unpaired samples
   * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods
   * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate false discovery rates.
@@ -192,16 +280,26 @@ multiple hypothesis correction.
 Example:
 
 ```default
+# columns: sample, subject, group ('sepsis' or 'healthy') and the proteins
 result = run_ttest(df,
-                   condition1='group1',
-                   condition2='group2',
+                   condition1='sepsis',
+                   condition2='healthy',
                    alpha = 0.05,
                    drop_cols=['sample'],
                    subject='subject',
                    group='group',
                    paired=False,
                    correction='fdr_bh',
-                   permutations=50
+                   permutations=0
+        )
+
+# columns: sample, strain ('WT', 'zwf', ...) and the metabolites; no subject
+result = run_ttest(df,
+                   condition1='WT',
+                   condition2='zwf',
+                   group='strain',
+                   subject=None,
+                   drop_cols=['sample']
         )
 ```
 
@@ -214,19 +312,29 @@ Run a 2-way ANOVA when data[‘secondary_group’] is not empty
     and proteins and groups as columns.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column names to drop from DataFrame. Pass `None` or `[]`
     to drop no columns.
-  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column name containing subject identifiers.
-  * **group** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – column names corresponding to independent variable groups.
-    Defaults to [‘group’, ‘secondary_group’] if None.
+    List every column that
+    is not a measurement, except `subject` and the two `group`
+    columns: a text column such as ‘sample’ left in the table
+    fails, and a numeric one such as ‘age’ would be tested like a
+    protein. For example `drop_cols=['sample']`.
+  * **subject** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column name containing subject identifiers. It must be a column
+    of the table, because the function uses it as an index.
+  * **group** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – names of the two columns that hold the labels of the two factors
+    (independent variables), for example [‘genotype’, ‘treatment’].
+    Defaults to [‘group’, ‘secondary_group’] if None, so name them when
+    the table calls these columns anything else. Both must be columns
+    of the table.
 * **Returns:**
   Two DataFrames, anova results and residuals.
 
 Example:
 
 ```default
+# columns: sample, subject, genotype, treatment and the metabolites
 result = run_two_way_anova(data,
                            drop_cols=['sample'],
                            subject='subject',
-                           group=['group', 'secondary_group']
+                           group=['genotype', 'treatment']
         )
 ```
 
@@ -344,12 +452,23 @@ Calculates one-way ANOVA using pingouin.
 Calculates one-way ANCOVA using pingouin.
 
 * **Parameters:**
-  * **df** – pandas dataframe with group as rows and protein identifier as column
-  * **column** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the column in df to run ANOVA on
-  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers
-  * **covariates** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of covariates (columns in df)
+  * **data** – pandas dataframe with group as rows and protein identifier as column.
+  * **column** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – name of the one measurement column in data to run ANOVA on, for
+    example ‘CRP’. It must be a different column from `group` and
+    from every covariate: `column='arm', group='arm'` fails with
+    `categorical data cannot be >1-dimensional`.
+  * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column with group identifiers, as written in the table header
+  * **covariates** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of covariates (columns in data), always a list of
+    column names, for example `['age']`
 * **Returns:**
   Tuple with column, F-statistics and p-value.
+
+Example:
+
+```default
+# columns: arm, age, CRP, IL6 and more measurements
+result = calculate_ancova(data, column='CRP', group='arm', covariates=['age'])
+```
 
 ### calculate_repeated_measures_anova(df: DataFrame, column: [str](https://docs.python.org/3/builtins/stdtypes.html#str), subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'subject', within: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group')
 
