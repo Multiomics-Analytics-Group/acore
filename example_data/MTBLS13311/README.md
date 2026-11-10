@@ -6,8 +6,23 @@ From MetaboLights, see:
 Supports differential analysis, except ANCOVA as no covariates are available.
 
 ```python
+from pathlib import Path
+
+import pandas as pd
+
 factor = 'Factor Value[Strain type]'
 group = 'group' # was generated based on sample names
+
+# read from local folder if it exists, otherwise directly from GitHub
+local_dir = Path('example_data/MTBLS13311')
+github_url = (
+    'https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/'
+    'main/example_data/MTBLS13311'
+)
+base = local_dir if local_dir.is_dir() else github_url
+
+omics = pd.read_csv(f'{base}/MTBLS13411_processed_data.csv', index_col=0)
+metadata = pd.read_csv(f'{base}/MTBLS13411_meta_data.csv', index_col=0)
 ```
 
 Processed data files available:

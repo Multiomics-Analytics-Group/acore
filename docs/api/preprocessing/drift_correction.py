@@ -250,7 +250,7 @@ data_path = (
 )
 
 df_original = pd.read_csv(
-    "../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled_imputed.csv",
+    "../../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled_imputed.csv",
     index_col=0,
 )
 
@@ -288,7 +288,7 @@ df
 
 # %%
 sample_order = pd.read_csv(
-    "../../example_data/DidacMauricio_hilic/DidacMauricio_hilic_pos_injectionorder.csv"
+    "../../../example_data/DidacMauricio_hilic/DidacMauricio_hilic_pos_injectionorder.csv"
 )
 sample_order["File Name"] = sample_order["SampleName"]
 sample_order["Sample ID"] = sample_order["injectionOrder"]
@@ -437,7 +437,7 @@ plot_loess_example_curve(
 # %%
 # Load data
 df_original = pd.read_csv(
-    "../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled_imputed.csv",
+    "../../../example_data/DidacMauricio_hilic/DM_FIS2018_Hilic_pos_results2023_filled_imputed.csv",
     index_col=0,
 )
 

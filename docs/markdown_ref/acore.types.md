@@ -138,6 +138,10 @@ action to take when an optional column is missing from the dataframe.
 
 validate columns order
 
+#### parser_source *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
+
+default `source` for `ParsedField` columns that do not set one
+
 #### strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in the validated dataframe -
@@ -368,6 +372,10 @@ action to take when an optional column is missing from the dataframe.
 #### ordered *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 validate columns order
+
+#### parser_source *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
+
+default `source` for `ParsedField` columns that do not set one
 
 #### strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
@@ -622,6 +630,10 @@ action to take when an optional column is missing from the dataframe.
 
 validate columns order
 
+#### parser_source *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
+
+default `source` for `ParsedField` columns that do not set one
+
 #### strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in the validated dataframe -
@@ -851,6 +863,10 @@ action to take when an optional column is missing from the dataframe.
 
 validate columns order
 
+#### parser_source *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
+
+default `source` for `ParsedField` columns that do not set one
+
 #### strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in the validated dataframe -
@@ -1064,6 +1080,10 @@ action to take when an optional column is missing from the dataframe.
 
 validate columns order
 
+#### parser_source *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
+
+default `source` for `ParsedField` columns that do not set one
+
 #### strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 
 make sure all specified columns are in the validated dataframe -
@@ -1270,6 +1290,10 @@ action to take when an optional column is missing from the dataframe.
 #### ordered *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
 validate columns order
+
+#### parser_source *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
+
+default `source` for `ParsedField` columns that do not set one
 
 #### strict *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['filter']* *= False*
 

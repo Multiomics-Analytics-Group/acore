@@ -4,6 +4,6 @@
 :maxdepth: 1
 :caption: Imputation
 
-imputation.ipynb
-imputation_metabolomics.ipynb
+imputation_analysis.ipynb
+imputation_analysis_metabolomics.ipynb
 ```

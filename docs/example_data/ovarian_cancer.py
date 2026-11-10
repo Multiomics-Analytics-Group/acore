@@ -114,9 +114,7 @@ pgs
 # saved it as a csv file. You can load it for our GitHub repository:
 
 # %%
-fname_meta = Path(
-    "../examples_single_analysis/example_data/PXD010372/processed/meta_patients.csv"
-)
+fname_meta = Path("../../example_data/PXD010372/processed/meta_patients.csv")
 pd.read_csv(fname_meta, index_col=0)
 
 # %% [markdown]

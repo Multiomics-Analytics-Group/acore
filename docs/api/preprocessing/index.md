@@ -9,7 +9,7 @@ types and how they are connected holistically.
 :caption: Filtering and normalization
 
 filter_metabolomics.ipynb
-normalization_analysis.ipynb
+normalization.ipynb
 batch_correction.ipynb
 exploratory_analysis.ipynb
 drift_correction.ipynb

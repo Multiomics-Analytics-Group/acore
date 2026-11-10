@@ -31,7 +31,7 @@ In case you add a new module or update one, please check the following tasks:
 - [ ] Create **Pandera schema** in a file with subpackage name in the `src/acore/types` folder.
       Optimal is to have only one output schema of results per subpackage or module.
 - [ ] Add a relatively small and public dataset to the `data` folder, or reuse an existing one for testing
-- [ ] Create an **api example jupyter notebook** in the `docs/api_examples_module` folder with that data
+- [ ] Create an **API example notebook** (synced as percent format) in the `docs/api` folder with that data
 - [ ] Use **jupytext** to sync the Jupyter notebook with a Python script
 - [ ] Update `index.md` file in the `docs` folder with the new example
 - [ ] Create **test script** in the `/tests` folder with the name of the subpackage or module
