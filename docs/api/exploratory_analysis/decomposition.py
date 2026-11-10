@@ -26,9 +26,12 @@ import pandas as pd
 import acore.exploratory_analysis as ea
 from acore.types.exploratory_analysis import (
     AnnotationResult,
+    ThreeComponentSchema,
+    ThreeLoadingsSchema,
     TwoComponentSchema,
     TwoLoadingsSchema,
     TwoVariance,
+    VarianceRatio,
 )
 
 # %% [markdown]
@@ -136,6 +139,27 @@ TwoComponentSchema(pcs).rename(columns=map_names)
 
 # %%
 TwoLoadingsSchema(loadings).rename(columns=map_names)
+
+# %% [markdown]
+# ### More than two components
+# With more than two components, the results contain an additional `z` column (and
+# `3`, `4`, ... for further components). The annotation then also has a `z_title`.
+# The `ThreeComponentSchema` and `ThreeLoadingsSchema` validate these results, and
+# `VarianceRatio` checks that the explained variances are fractions between 0 and 1.
+
+# %%
+results_dfs_3, annotation_3 = ea.decomposition.run_pca(
+    data, drop_cols=[], annotation_cols=[], group="group", components=3, dropna=True
+)
+pcs_3, loadings_3, var_explained_3 = results_dfs_3
+VarianceRatio(pd.Series(var_explained_3, index=["PC1", "PC2", "PC3"]))
+AnnotationResult(**annotation_3)
+
+# %%
+ThreeComponentSchema(pcs_3)
+
+# %%
+ThreeLoadingsSchema(loadings_3)
 
 # %% [markdown]
 # ## Uniform Manifold Approximation and Projection (UMAP)
