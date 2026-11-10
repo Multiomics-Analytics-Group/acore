@@ -108,10 +108,17 @@ class TestDimensionalityReduction(unittest.TestCase):
 
     def test_run_tsne(self):
         components = 2
-        # ! MAC ARM64 yields these results (using the similar installation)
+        # method="exact" is used as the default Barnes-Hut approximation (float32)
+        # gives different results on arm64 and x64 for this tiny dataset.
         expected_result = pd.DataFrame(
             {
                 "group": ["A", "A", "B", "B"],
+                "x": [40.735077, 207.908371, 23.888744, -143.473709],
+                "y": [192.089203, 8.426460, -158.064987, 25.697359],
+            }
+        )
+        # not that
+
         result, _ = ea.decomposition.run_tsne(
             self.data,
             drop_cols=["sample", "subject"],
@@ -121,6 +128,8 @@ class TestDimensionalityReduction(unittest.TestCase):
             max_iter=1000,
             init="pca",
             dropna=True,
+            method="exact",
+            random_state=0,
         )
         result = result["tsne"]
         pd.testing.assert_frame_equal(
