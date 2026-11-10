@@ -1,7 +1,7 @@
 # %% [markdown]
 # # Exploratory Analysis
 #
-# Using a metabolomics dataset ([MTBLS13411](../../example_data/MTBLS13411.md)) as an
+# Using a metabolomics dataset ([MTBLS13411](../../../example_data/MTBLS13411.md)) as an
 # example, we show how to use the exploratory analysis
 # for the four groups present in the data. The groups are derived based on the sample
 # names, but you could also merge them from available metadata.
@@ -99,7 +99,7 @@ map_names = {
     "x": "PC1",
     "y": "PC2",
 }
-results_dfs, annotation = ea.run_pca(
+results_dfs, annotation = ea.decomposition.run_pca(
     data, drop_cols=[], annotation_cols=[], group="group", components=2, dropna=True
 )
 pcs, loadings, var_explained = results_dfs
@@ -156,7 +156,7 @@ map_names = {
     "x": "UMAP1",
     "y": "UMAP2",
 }
-result, annotation = ea.run_umap(
+result, annotation = ea.decomposition.run_umap(
     data,
     drop_cols=["sample", "subject"],
     group="group",
@@ -189,7 +189,7 @@ data_exp = data.drop(columns=["group"]).apply(lambda x: np.exp2(x)).join(data["g
 data_exp
 
 # %%
-res = ea.get_coefficient_variation(data=data_exp, group="group")
+res = ea.variation.get_coefficient_variation(data=data_exp, group="group")
 res
 
 # %%
@@ -198,6 +198,7 @@ res.describe()
 # %%
 map_names = {"x": "mean_log2", "y": "coef_of_var", "group": "group"}
 fig, ax = make_plot(res, **map_names)
+
 
 # %% [markdown]
 # ## Correlation analysis
@@ -381,7 +382,7 @@ _ = ax.legend()
 hist_series = []
 for col in view.columns[:4]:
     s = view[col]
-    ret = ea.get_histogram_series(s, bins)
+    ret = ea.variation.get_histogram_series(s, bins)
     hist_series.append(ret.rename(col))
 
 hist_df = pd.concat(hist_series, axis=1)

@@ -416,7 +416,7 @@ nes
 # %%
 import acore.exploratory_analysis as ea
 
-pca_result, pca_annotation = ea.run_pca(
+pca_result, pca_annotation = ea.decomposition.run_pca(
     data=nes.join(df_meta[[group]]),
     drop_cols=[],
     annotation_cols=[],
