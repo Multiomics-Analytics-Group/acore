@@ -69,7 +69,7 @@ def columns_to_drop(
     data: pd.DataFrame,
     columns: Iterable | None,
     parameter: str,
-    required: dict[str, str] | None = None,
+    required: dict[str, str | list[str] | None] | None = None,
 ):
     """
     Return the columns to drop that are in the data, warning about the others.
@@ -82,8 +82,9 @@ def columns_to_drop(
     :param data: DataFrame the columns are dropped from.
     :param columns: column labels passed to drop, or None.
     :param parameter: argument name, used in the warning.
-    :param required: argument name and the column the function uses for it, for
-                     the columns that must stay. They are kept and warned about.
+    :param required: argument name and the column, or list of columns, the function
+                     uses for it, for the columns that must stay. They are kept and
+                     warned about.
     :return: list of the labels that are columns of ``data``, in the order given,
              without the required columns.
 
@@ -107,11 +108,12 @@ def columns_to_drop(
         )
     present_columns = [column for column in columns if column in data.columns]
 
-    required_by_column = {
-        column: argument
-        for argument, column in (required or {}).items()
-        if column is not None
-    }
+    required_by_column = {}
+    for argument, needed in (required or {}).items():
+        if needed is None:
+            continue
+        for column in [needed] if isinstance(needed, str) else needed:
+            required_by_column[column] = argument
     for column in present_columns:
         if column in required_by_column:
             warnings.warn(

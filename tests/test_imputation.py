@@ -659,3 +659,23 @@ def test_imputation_half_minimum_group_missing_column():
     df = pd.DataFrame({"A": [1.0, nan]})
     with pytest.raises(ValueError, match="group"):
         imputation_half_minimum(df, group="group")
+
+
+def test_imputation_normal_distribution_leaves_text_columns_alone():
+    # Given a table with a text column of sample names and one missing value
+    data = pd.DataFrame(
+        {
+            "sample": ["P000", "P001", "P002", "P003"],
+            "a": [1.0, 2.0, nan, 4.0],
+            "b": [2.0, 3.0, 4.0, 5.0],
+            "c": [3.0, 1.0, 2.0, 6.0],
+        }
+    )
+
+    # When it is imputed without listing the text column in drop_cols
+    result = imputation_normal_distribution(data, random_state=0)
+
+    # Then the text column is kept as it was, and the missing value is filled
+    assert result["sample"].tolist() == ["P000", "P001", "P002", "P003"]
+    assert not result[["a", "b", "c"]].isna().any().any()
+    assert list(result.columns) == ["sample", "a", "b", "c"]

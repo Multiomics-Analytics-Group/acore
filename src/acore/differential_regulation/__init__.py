@@ -720,6 +720,10 @@ def run_two_way_anova(
     if group is None:
         group = ["group", "secondary_group"]
     drop_cols = drop_cols or []
+    acore.utils.check_columns_in_data(df, subject=subject, group=group)
+    drop_cols = acore.utils.columns_to_drop(
+        df, drop_cols, "drop_cols", required={"subject": subject, "group": group}
+    )
     data = df.copy()
     factor_a, factor_b = group
     data = data.set_index([subject] + group)

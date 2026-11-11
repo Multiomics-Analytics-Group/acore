@@ -519,3 +519,47 @@ def test_run_repeated_measurements_anova_keeps_the_subject_column_listed_in_drop
 
     # Then the column is kept, with a warning, and the analysis runs
     assert set(result["identifier"]) == {"protein"}
+
+
+@pytest.fixture
+def two_factor_table():
+    rng = np.random.default_rng(2)
+    return pd.DataFrame(
+        {
+            "sample": [f"S{number}" for number in range(24)],
+            "subject": [f"P{number:02d}" for number in range(24)],
+            "genotype": (["WT"] * 6 + ["zwf"] * 6) * 2,
+            "treatment": ["control"] * 12 + ["H2O2"] * 12,
+            "protein": rng.normal(10.0, 1.0, size=24),
+        }
+    )
+
+
+def test_run_two_way_anova_keeps_the_subject_and_factor_columns_listed_in_drop_cols(
+    two_factor_table,
+):
+    # Given the subject and a factor column listed in drop_cols beside the sample names
+    # When the two-way ANOVA is run
+    with pytest.warns(UserWarning, match=r"drop_cols lists 'subject'"):
+        anova, _residuals = dr.run_two_way_anova(
+            two_factor_table,
+            subject="subject",
+            group=["genotype", "treatment"],
+            drop_cols=["sample", "subject", "genotype"],
+        )
+
+    # Then they are kept, with a warning, and the interaction of the factors is tested
+    assert any(":" in source for source in anova["source"])
+
+
+def test_run_two_way_anova_names_a_missing_factor_column(two_factor_table):
+    # Given a table without a 'dose' column
+    # When it is named as a factor
+    with pytest.raises(ValueError) as error:
+        dr.run_two_way_anova(
+            two_factor_table, subject="subject", group=["genotype", "dose"], drop_cols=["sample"]
+        )
+
+    # Then the message names the argument and lists the available columns
+    assert "group=['dose']" in str(error.value)
+    assert "Available columns:" in str(error.value)
