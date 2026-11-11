@@ -1,3 +1,4 @@
+import warnings
 from collections.abc import Iterable
 
 import numpy as np
@@ -17,6 +18,84 @@ def convertToEdgeList(data, cols):
     edge_list.columns = cols
 
     return edge_list
+
+
+MAX_LISTED_COLUMNS = 20
+
+
+def check_columns_in_data(data: pd.DataFrame, **parameters) -> None:
+    """
+    Raise a ValueError naming every requested column that is not in the data.
+
+    Pandas reports a wrong column name as a bare ``KeyError`` that names neither
+    the argument at fault nor the columns that could have been used instead.
+
+    :param data: DataFrame the columns are looked up in.
+    :param parameters: argument name and the column label, or list of column
+                       labels, passed for it. Arguments set to None are skipped.
+    :raises ValueError: if any requested column is not in ``data.columns``.
+
+    Example::
+
+        check_columns_in_data(data, group="group", drop_cols=["sample"])
+
+    """
+    for parameter, requested in parameters.items():
+        if requested is None:
+            continue
+
+        # a tuple that is itself a column label (MultiIndex columns) is one column
+        is_column_label = isinstance(requested, tuple) and requested in data.columns
+        requested_is_list = pd.api.types.is_list_like(requested) and not is_column_label
+        requested_columns = list(requested) if requested_is_list else [requested]
+        missing_columns = [
+            column for column in requested_columns if column not in data.columns
+        ]
+        if not missing_columns:
+            continue
+
+        # a list argument is reported as a list, a single column as one label
+        missing = missing_columns if requested_is_list else missing_columns[0]
+        listed_columns = list(data.columns[:MAX_LISTED_COLUMNS])
+        hidden_count = len(data.columns) - len(listed_columns)
+        hidden_message = f" and {hidden_count} more" if hidden_count > 0 else ""
+        raise ValueError(
+            f"{parameter}={missing!r} is not in the data columns. "
+            f"Available columns: {listed_columns}{hidden_message}"
+        )
+
+
+def columns_to_drop(data: pd.DataFrame, columns: Iterable | None, parameter: str):
+    """
+    Return the columns to drop that are in the data, warning about the others.
+
+    A column that is already missing leaves the data as the caller wants it, so
+    for an argument that only lists columns to drop it is not an error.
+
+    :param data: DataFrame the columns are dropped from.
+    :param columns: column labels passed to drop, or None.
+    :param parameter: argument name, used in the warning.
+    :return: list of the labels that are columns of ``data``, in the order given.
+
+    Example::
+
+        drop_cols = columns_to_drop(data, drop_cols, "drop_cols")
+
+    """
+    if columns is None:
+        return []
+    # an iterator can be read only once, and the caller reads the result again
+    columns = [columns] if isinstance(columns, str) else list(columns)
+
+    missing_columns = [column for column in columns if column not in data.columns]
+    if missing_columns:
+        warnings.warn(
+            f"{parameter}={missing_columns!r} is not in the data columns, "
+            "so there is nothing to drop there.",
+            UserWarning,
+            stacklevel=3,
+        )
+    return [column for column in columns if column in data.columns]
 
 
 # TODO move to dsp_pandas

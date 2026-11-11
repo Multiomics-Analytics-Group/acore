@@ -391,6 +391,46 @@ This function converts a pandas dataframe to an edge list where index becomes th
 * **Returns:**
   Pandas dataframe with columns cols.
 
+### check_columns_in_data(data: DataFrame, \*\*parameters) → [None](https://docs.python.org/3/builtins/constants.html#None)
+
+Raise a ValueError naming every requested column that is not in the data.
+
+Pandas reports a wrong column name as a bare `KeyError` that names neither
+the argument at fault nor the columns that could have been used instead.
+
+* **Parameters:**
+  * **data** – DataFrame the columns are looked up in.
+  * **parameters** – argument name and the column label, or list of column
+    labels, passed for it. Arguments set to None are skipped.
+* **Raises:**
+  [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – if any requested column is not in `data.columns`.
+
+Example:
+
+```default
+check_columns_in_data(data, group="group", drop_cols=["sample"])
+```
+
+### columns_to_drop(data: DataFrame, columns: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable) | [None](https://docs.python.org/3/builtins/constants.html#None), parameter: [str](https://docs.python.org/3/builtins/stdtypes.html#str))
+
+Return the columns to drop that are in the data, warning about the others.
+
+A column that is already missing leaves the data as the caller wants it, so
+for an argument that only lists columns to drop it is not an error.
+
+* **Parameters:**
+  * **data** – DataFrame the columns are dropped from.
+  * **columns** – column labels passed to drop, or None.
+  * **parameter** – argument name, used in the warning.
+* **Returns:**
+  list of the labels that are columns of `data`, in the order given.
+
+Example:
+
+```default
+drop_cols = columns_to_drop(data, drop_cols, "drop_cols")
+```
+
 ### check_is_paired(df, subject, group)
 
 Check if samples are paired.
