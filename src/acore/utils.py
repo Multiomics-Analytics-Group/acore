@@ -65,17 +65,27 @@ def check_columns_in_data(data: pd.DataFrame, **parameters) -> None:
         )
 
 
-def columns_to_drop(data: pd.DataFrame, columns: Iterable | None, parameter: str):
+def columns_to_drop(
+    data: pd.DataFrame,
+    columns: Iterable | None,
+    parameter: str,
+    required: dict[str, str] | None = None,
+):
     """
     Return the columns to drop that are in the data, warning about the others.
 
     A column that is already missing leaves the data as the caller wants it, so
-    for an argument that only lists columns to drop it is not an error.
+    for an argument that only lists columns to drop it is not an error. A column
+    the function needs, such as its subject column, is not dropped: listing it
+    as "not a measurement" would only make the call fail later on its absence.
 
     :param data: DataFrame the columns are dropped from.
     :param columns: column labels passed to drop, or None.
     :param parameter: argument name, used in the warning.
-    :return: list of the labels that are columns of ``data``, in the order given.
+    :param required: argument name and the column the function uses for it, for
+                     the columns that must stay. They are kept and warned about.
+    :return: list of the labels that are columns of ``data``, in the order given,
+             without the required columns.
 
     Example::
 
@@ -95,7 +105,22 @@ def columns_to_drop(data: pd.DataFrame, columns: Iterable | None, parameter: str
             UserWarning,
             stacklevel=3,
         )
-    return [column for column in columns if column in data.columns]
+    present_columns = [column for column in columns if column in data.columns]
+
+    required_by_column = {
+        column: argument
+        for argument, column in (required or {}).items()
+        if column is not None
+    }
+    for column in present_columns:
+        if column in required_by_column:
+            warnings.warn(
+                f"{parameter} lists {column!r}, which is the column of "
+                f"'{required_by_column[column]}'; it is kept, as it is needed.",
+                UserWarning,
+                stacklevel=3,
+            )
+    return [column for column in present_columns if column not in required_by_column]
 
 
 # TODO move to dsp_pandas

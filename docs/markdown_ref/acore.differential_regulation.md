@@ -169,7 +169,7 @@ result = run_mixed_anova(df,
         )
 ```
 
-### run_repeated_measurements_anova(df: DataFrame, alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'subject', within: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 50, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
+### run_repeated_measurements_anova(df: DataFrame, alpha: [float](https://docs.python.org/3/builtins/functions.html#float) = 0.05, drop_cols: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, subject: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'subject', within: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'group', permutations: [int](https://docs.python.org/3/builtins/functions.html#int) = 0, correction: [str](https://docs.python.org/3/builtins/stdtypes.html#str) = 'fdr_bh', is_logged: [bool](https://docs.python.org/3/builtins/functions.html#bool) = True) → DataFrame
 
 Performs repeated measurements anova and pairwise posthoc tests for each protein in dataframe.
 
@@ -193,9 +193,10 @@ Performs repeated measurements anova and pairwise posthoc tests for each protein
     the visits or time points T0, T1, T2. It must be a column of the
     table.
   * **permutations** ([*int*](https://docs.python.org/3/builtins/functions.html#int)) – number of permutations used to estimate false discovery
-    rates. Pass `0` to use Benjamini/Hochberg correction
-    instead. Note: the default of 50 fails in this
-    function with `KeyError: ['F', 'p-unc'] not in index`.
+    rates. The default `0` uses Benjamini/Hochberg correction.
+    The permutation correction shuffles one group index and
+    does not suit repeated measures, where a value above `0`
+    fails with `KeyError: ['F', 'p-unc'] not in index`.
   * **correction** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – method of pvalue correction see apply_pvalue_correction for methods,
     use methods available in acore.multiple_testing
   * **is_logged** ([*bool*](https://docs.python.org/3/builtins/functions.html#bool)) – whether data is log-transformed

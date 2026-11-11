@@ -1,5 +1,6 @@
 import unittest
 
+import numpy as np
 import pandas as pd
 import pingouin as pg
 import pytest
@@ -432,9 +433,89 @@ def test_run_ttest_log2fc_is_the_mean_of_condition1_minus_the_mean_of_condition2
     )
 
     # When A is compared with B, and B with A
-    a_with_b = dr.run_ttest(data, condition1="A", condition2="B", subject=None, drop_cols=[])
-    b_with_a = dr.run_ttest(data, condition1="B", condition2="A", subject=None, drop_cols=[])
+    a_with_b = dr.run_ttest(
+        data, condition1="A", condition2="B", subject=None, drop_cols=[]
+    )
+    b_with_a = dr.run_ttest(
+        data, condition1="B", condition2="A", subject=None, drop_cols=[]
+    )
 
     # Then log2FC is positive where condition1 is higher, and flips with the order
     assert a_with_b["log2FC"].iloc[0] == pytest.approx(2.0)
     assert b_with_a["log2FC"].iloc[0] == pytest.approx(-2.0)
+
+
+def test_run_repeated_measurements_anova_runs_with_its_default_permutations():
+    # Given 24 subjects measured at three visits
+    rng = np.random.default_rng(0)
+    visits = ["T0", "T1", "T2"]
+    data = pd.DataFrame(
+        {
+            "subject": [f"P{number:02d}" for number in range(24) for _ in visits],
+            "group": visits * 24,
+            "protein": rng.normal(10.0, 1.0, size=72),
+        }
+    )
+
+    # When it is run without choosing the number of permutations
+    result = dr.run_repeated_measurements_anova(data, subject="subject", within="group")
+
+    # Then it returns a row for the protein at each pair of visits, without the
+    # permutation correction
+    assert set(result["identifier"]) == {"protein"}
+    assert len(result) == 3
+    assert not result["correction"].str.contains("permutation").any()
+
+
+@pytest.fixture
+def cohort_of_two_arms():
+    rng = np.random.default_rng(1)
+    visits = ["T0", "T1", "T2"]
+    subjects = [f"P{number:02d}" for number in range(24)]
+    return pd.DataFrame(
+        {
+            "subject": [subject for subject in subjects for _ in visits],
+            "group": visits * 24,
+            "arm": [
+                ("treated" if number % 2 else "placebo")
+                for number in range(24)
+                for _ in visits
+            ],
+            "protein": rng.normal(10.0, 1.0, size=72),
+        }
+    )
+
+
+def test_run_mixed_anova_keeps_the_within_column_listed_in_drop_cols(
+    cohort_of_two_arms,
+):
+    # Given a table whose visits are in the column 'group', listed in drop_cols too
+    # When the mixed ANOVA is run on it
+    with pytest.warns(UserWarning, match=r"drop_cols.*'group'.*within"):
+        result = dr.run_mixed_anova(
+            cohort_of_two_arms,
+            subject="subject",
+            within="group",
+            between="arm",
+            drop_cols=["group"],
+        )
+
+    # Then the column is kept, with a warning, and the analysis runs
+    assert set(result["identifier"]) == {"protein"}
+
+
+def test_run_repeated_measurements_anova_keeps_the_subject_column_listed_in_drop_cols(
+    cohort_of_two_arms,
+):
+    # Given the subject column listed in drop_cols
+    # When the repeated measures ANOVA is run on the table
+    with pytest.warns(UserWarning, match=r"drop_cols.*'subject'.*subject"):
+        result = dr.run_repeated_measurements_anova(
+            cohort_of_two_arms.drop(columns=["arm"]),
+            subject="subject",
+            within="group",
+            drop_cols=["subject"],
+        )
+
+    # Then the column is kept, with a warning, and the analysis runs
+    assert set(result["identifier"]) == {"protein"}

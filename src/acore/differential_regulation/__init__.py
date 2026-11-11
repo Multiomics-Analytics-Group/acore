@@ -323,7 +323,7 @@ def run_repeated_measurements_anova(
     drop_cols: list[str] | None = None,
     subject: str = "subject",
     within: str = "group",
-    permutations: int = 50,
+    permutations: int = 0,
     correction: str = "fdr_bh",
     is_logged: bool = True,
 ) -> pd.DataFrame:
@@ -349,9 +349,10 @@ def run_repeated_measurements_anova(
                        the visits or time points T0, T1, T2. It must be a column of the
                        table.
     :param int permutations: number of permutations used to estimate false discovery
-                             rates. Pass ``0`` to use Benjamini/Hochberg correction
-                             instead. Note: the default of 50 fails in this
-                             function with ``KeyError: ['F', 'p-unc'] not in index``.
+                             rates. The default ``0`` uses Benjamini/Hochberg correction.
+                             The permutation correction shuffles one group index and
+                             does not suit repeated measures, where a value above ``0``
+                             fails with ``KeyError: ['F', 'p-unc'] not in index``.
     :param str correction: method of pvalue correction see apply_pvalue_correction for methods,
                            use methods available in acore.multiple_testing
     :param bool is_logged: whether data is log-transformed
@@ -370,7 +371,9 @@ def run_repeated_measurements_anova(
     """
     drop_cols = drop_cols or []
     acore.utils.check_columns_in_data(df, subject=subject, within=within)
-    drop_cols = acore.utils.columns_to_drop(df, drop_cols, "drop_cols")
+    drop_cols = acore.utils.columns_to_drop(
+        df, drop_cols, "drop_cols", required={"subject": subject, "within": within}
+    )
     df = df.drop(drop_cols, axis=1).dropna(axis=1)
     aov_results = []
     pairwise_results = []
@@ -456,7 +459,12 @@ def run_mixed_anova(
     acore.utils.check_columns_in_data(
         df, subject=subject, within=within, between=between
     )
-    drop_cols = acore.utils.columns_to_drop(df, drop_cols, "drop_cols")
+    drop_cols = acore.utils.columns_to_drop(
+        df,
+        drop_cols,
+        "drop_cols",
+        required={"subject": subject, "within": within, "between": between},
+    )
     df = df.drop(drop_cols, axis=1).dropna(axis=1)
     aov_results = []
     index = [within, subject, between]
