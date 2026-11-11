@@ -490,7 +490,7 @@ def run_ttest(
     condition2: str,
     alpha: float = 0.05,
     drop_cols: list[str] | None = None,
-    subject: str | None = "subject",
+    subject: str | None = None,
     group: str = "group",
     paired: bool = False,
     correction: str = "fdr_bh",
@@ -534,13 +534,10 @@ def run_ttest(
                            'age' would be tested like a protein. There is one column per
                            protein, so no 'protein' or 'protein_id' column exists to drop.
                            For example ``drop_cols=['sample']``.
-    :param str subject: column with subject identifiers. The default is 'subject'; the
-                        column must exist in the table then, and it is dropped for an
-                        unpaired test, so never also list it in ``drop_cols``. Pass
-                        ``subject=None`` when the table has no such column, as in a
-                        table with only 'sample', 'strain' and the measurements. Both
-                        mistakes fail with ``['subject'] not found in axis``. A paired
-                        test needs it.
+    :param str subject: column with subject identifiers. Only needed for a paired test;
+                        leave it as ``None`` for unpaired samples. If a column is named
+                        here for an unpaired test it is dropped from the data, so never
+                        also list it in ``drop_cols``.
     :param str group: name of the column that holds the group labels (independent
                       variable), as written in the table header. The default is 'group';
                       pass another name when the labels are in a differently named
@@ -553,6 +550,7 @@ def run_ttest(
     :param bool is_logged: data is log-transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
+    :raises ValueError: if ``paired`` is True and ``subject`` is None
     :return: Pandas DataFrame with columns 'identifier', 'group1', 'group2',
         'mean(group1)', 'mean(group2)', 'std(group1)', 'std(group2)', 'Log2FC', 'FC',
         'rejected', 'T-statistics', 'p-value', 'correction', '-log10 p-value', and 'method'.
@@ -581,6 +579,9 @@ def run_ttest(
                            drop_cols=['sample']
                 )
     """
+    if paired and subject is None:
+        raise ValueError("A paired t-test needs the column that identifies each subject.")
+
     drop_cols = drop_cols or []
     acore.utils.check_columns_in_data(df, group=group, subject=subject)
     drop_cols = acore.utils.columns_to_drop(df, drop_cols, "drop_cols")
@@ -606,6 +607,9 @@ def run_ttest(
     else:
         if subject is not None:
             df = df.drop([subject], axis=1)
+        # An unpaired test has no use for identifier columns such as a text
+        # subject; keeping them would fail when the means are computed.
+        df = df.select_dtypes(include="number")
 
     scores = df.T.apply(
         func=calculate_ttest,

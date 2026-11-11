@@ -172,6 +172,66 @@ class TestCalculateTtest(unittest.TestCase):
         self.assertEqual(result.values.tolist(), expected_result.values.tolist())
 
 
+class TestRunTtestSubjectOptional(unittest.TestCase):
+    """Tests that run_ttest needs no subject column unless the test is paired."""
+
+    def setUp(self):
+        self.df_without_subject = pd.DataFrame(
+            {
+                "group": ["A", "A", "A", "A", "B", "B", "B", "B"],
+                "protein": [1.4, 2.3, 4.5, 7.5, 6.2, 7.4, 9.6, 11.6],
+            }
+        )
+
+    def test_unpaired_test_runs_when_subject_is_not_given(self):
+        # Given a table with no subject column
+        df = self.df_without_subject
+
+        # When an unpaired test is run without naming a subject
+        result = dr.run_ttest(df, condition1="A", condition2="B", group="group")
+
+        # Then it returns the test result
+        self.assertIsInstance(result, pd.DataFrame)
+        self.assertIn("identifier", result.columns)
+
+    def test_unpaired_test_matches_the_result_when_subject_is_none(self):
+        # Given a table with no subject column
+        df = self.df_without_subject
+
+        # When the subject is left out and when it is passed as None
+        left_out = dr.run_ttest(df, condition1="A", condition2="B", group="group")
+        explicit_none = dr.run_ttest(
+            df, condition1="A", condition2="B", group="group", subject=None
+        )
+
+        # Then the results are identical
+        pd.testing.assert_frame_equal(left_out, explicit_none)
+
+    def test_unpaired_test_ignores_a_text_identifier_column_left_in_the_table(self):
+        # Given a table with a text subject column that was not dropped
+        df = self.df_without_subject.copy()
+        df["subject"] = ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"]
+
+        # When an unpaired test is run without naming it as the subject
+        result = dr.run_ttest(df, condition1="A", condition2="B", group="group")
+
+        # Then only the numeric column is tested
+        self.assertEqual(result["identifier"].tolist(), ["protein"])
+
+    def test_paired_test_without_subject_says_a_subject_is_needed(self):
+        # Given a table with no subject column
+        df = self.df_without_subject
+
+        # When a paired test is run without naming a subject
+        with self.assertRaises(ValueError) as raised:
+            dr.run_ttest(
+                df, condition1="A", condition2="B", group="group", paired=True
+            )
+
+        # Then the error says what is missing
+        self.assertIn("subject", str(raised.exception))
+
+
 class TestDropColsOptional(unittest.TestCase):
     """Tests that drop_cols=None and drop_cols=[] are handled correctly in all functions."""
 
