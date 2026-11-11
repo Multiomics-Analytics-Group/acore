@@ -2,6 +2,7 @@ import unittest
 
 import pandas as pd
 import pingouin as pg
+import pytest
 
 import acore.differential_regulation as dr
 
@@ -419,3 +420,21 @@ class TestDropColsOptional(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_run_ttest_log2fc_is_the_mean_of_condition1_minus_the_mean_of_condition2():
+    # Given two groups of four samples, whose means are 12 and 10
+    data = pd.DataFrame(
+        {
+            "group": ["A"] * 4 + ["B"] * 4,
+            "protein": [11.0, 12.0, 12.0, 13.0, 9.0, 10.0, 10.0, 11.0],
+        }
+    )
+
+    # When A is compared with B, and B with A
+    a_with_b = dr.run_ttest(data, condition1="A", condition2="B", subject=None, drop_cols=[])
+    b_with_a = dr.run_ttest(data, condition1="B", condition2="A", subject=None, drop_cols=[])
+
+    # Then log2FC is positive where condition1 is higher, and flips with the order
+    assert a_with_b["log2FC"].iloc[0] == pytest.approx(2.0)
+    assert b_with_a["log2FC"].iloc[0] == pytest.approx(-2.0)
