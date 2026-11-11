@@ -142,6 +142,8 @@
   * [Submodules](acore.md#submodules)
   * [acore.utils module](acore.md#module-acore.utils)
     * [`convertToEdgeList()`](acore.md#acore.utils.convertToEdgeList)
+    * [`check_columns_in_data()`](acore.md#acore.utils.check_columns_in_data)
+    * [`columns_to_drop()`](acore.md#acore.utils.columns_to_drop)
     * [`check_is_paired()`](acore.md#acore.utils.check_is_paired)
     * [`transform_into_wide_format()`](acore.md#acore.utils.transform_into_wide_format)
     * [`transform_into_long_format()`](acore.md#acore.utils.transform_into_long_format)
