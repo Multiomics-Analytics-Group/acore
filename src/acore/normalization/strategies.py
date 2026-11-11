@@ -44,7 +44,11 @@ def median_normalization(
     """
     This function normalizes each sample by using its median.
 
-    :param data:
+    :param data: pandas.DataFrame with numbers only, samples as rows and features as
+        columns. This function has no ``drop_cols`` parameter and fails on a text column such as
+        'sample' or 'group' (``Cannot convert [['P000' 'site_A' ...``). To normalize a
+        table that also has text columns, call ``normalize_data(data, method='median')``,
+        which normalizes the numeric columns and keeps the text columns in the result.
     :param str normalize: whether the normalization should be done by 'features' (columns)
                           or 'samples' (rows)
     :return: pandas.DataFrame.

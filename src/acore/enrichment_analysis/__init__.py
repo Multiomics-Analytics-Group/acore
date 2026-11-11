@@ -144,53 +144,73 @@ def run_up_down_regulation_enrichment(
     seed: int | None = None,
 ) -> DataFrame[EnrichmentAnalysisSchema]:
     """
+    Tests up- and downregulated features of a differential analysis for enriched terms.
+
     This function runs a simple enrichment analysis for significantly regulated proteins
     distinguishing between upregulation per group defined by the `groups`.
     Only overrepresentation is tested using one-sided Fisher's exact tests.
 
     :param pandas.DataFrame regulation_data: pandas.DataFrame resulting from differential regulation
-        analysis (CKG's regulation table).
+        analysis (CKG's regulation table), such as the result of ``run_ttest``: one row
+        per feature, with the feature ``identifier``, the two columns named in ``groups``,
+        the ``pval_col`` column and the ``log2fc_col`` column. It is not a membership
+        list with a 'group' column of 'foreground' and 'background' (that table is the
+        ``data`` of ``run_enrichment``) and not a table of measurements: both fail with
+        ``KeyError: 'group1'``.
     :param pandas.DataFrame annotation: pandas.DataFrame with annotations for features
-        (columns: 'annotation', 'identifier' (feature identifiers), and 'source').
-    :param str identifier: name of the column from annotation containing feature identifiers.
-    :param list[str] groups: column names from regulation_data containing group identifiers.
-            See `pandas.DataFrame.groupby`_ for more information.
-            
-            .. _pandas.DataFrame.groupby: https://pandas.pydata.org/pandas-docs/stable/\
-reference/api/pandas.DataFrame.groupby.html
+        (columns: 'annotation', 'identifier' (feature identifiers), and 'source'). Its
+        identifiers must be written exactly as in ``regulation_data``. If nothing is
+        enriched, the call fails with ``column 'terms' not in dataframe``. That happens
+        when no identifier matches, for example when one table has site-level names
+        such as 'AKT1~P31749_S495-1' and the other protein-level names such as
+        'AKT1~P31749'.
+    :param str identifier: name of the column with feature identifiers; both
+        ``regulation_data`` and ``annotation`` need a column of this name.
+    :param list[str] groups: the names of exactly two columns of ``regulation_data`` that
+        say which two groups a row compares. The default ``['group1', 'group2']`` fits the
+        result of ``run_ttest``. They are column names, not group labels such as 'EGF' or
+        'control', and one name such as ``['group']`` fails with ``groups should contains
+        exactly two columns``. They are passed to ``pandas.DataFrame.groupby``.
     :param str annotation_col: name of the column from annotation containing annotation terms.
-    :param str rejected_col: name of the column from regulation_data containing boolean for
-        rejected null hypothesis.
-    :param str group_col: column name for new column in annotation dataframe determining
-        if feature belongs to foreground or background.
+    :param str pval_col: name of the column of ``regulation_data`` with the p-values that
+        are compared with ``correction_alpha``. The default 'pval' is not a column of the
+        result of ``run_ttest``: pass ``pval_col='pvalue'`` (or 'padj') for it.
+    :param str group_col: name of a new column that is added to ``annotation`` to mark
+        each feature as foreground or background. It is an output name, so leave it at
+        'group'; do not pass an existing column such as 'source'.
+    :param str log2fc_col: name of the column of ``regulation_data`` with the log2 fold
+        changes. The default 'log2FC' is the column of the result of ``run_ttest``.
     :param str method: method used to compute enrichment
         (only 'fisher' is supported currently).
+    :param int min_detected_in_set: minimum number of regulated features a term needs.
     :param str correction: method to be used for multiple-testing correction.
         Use ``'efdr'`` to apply empirical FDR via permutation (requires
         ``permutations > 0``).
-    :param float alpha: adjusted p-value cutoff to define significance
+    :param float correction_alpha: p-value cutoff to define a regulated feature and
+        significance level of the correction.
     :param float lfc_cutoff: log fold-change cutoff to define practical significance
     :param int permutations: number of permutations used to estimate the empirical FDR
         when ``correction='efdr'``. Ignored for other correction methods.
-    :param int | None seed: seed of the random number generator used for the
+    :param int seed: seed of the random number generator used for the
         permutations when ``correction='efdr'``, for reproducible results.
     :return: DataFrame adhering to EnrichmentAnalysisSchema
     :rtype: DataFrame[EnrichmentAnalysisSchema]
 
     Example::
 
+        # regulation_data is the result of run_ttest; annotation has the columns
+        # 'identifier' and 'annotation'
         result = run_up_down_regulation_enrichment(
             regulation_data,
             annotation,
             identifier='identifier',
-            groups=['group1',
-            'group2'],
+            groups=['group1', 'group2'],
             annotation_col='annotation',
-            rejected_col='rejected',
-            group_col='group',
+            pval_col='pvalue',
+            log2fc_col='log2FC',
             method='fisher',
             correction='fdr_bh',
-            alpha=0.05,
+            correction_alpha=0.05,
             lfc_cutoff=1,
         )
     """
@@ -298,7 +318,7 @@ def run_regulation_enrichment(
         ``permutations > 0``).
     :param int permutations: number of permutations used to estimate the empirical FDR
         when ``correction='efdr'``. Ignored for other correction methods.
-    :param int | None seed: seed of the random number generator used for the
+    :param int seed: seed of the random number generator used for the
         permutations when ``correction='efdr'``, for reproducible results.
     :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
         'background', 'foreground_pop', 'background_pop', 'pvalue', 'padj' and 'rejected'.
@@ -402,7 +422,7 @@ generated/statsmodels.stats.multitest.multipletests.html
     :param float correction_alpha: adjusted p-value cutoff to define significance.
     :param int permutations: number of permutations used to estimate the empirical FDR
         when ``correction='efdr'``. Ignored for other correction methods.
-    :param int | None seed: seed of the random number generator used for the
+    :param int seed: seed of the random number generator used for the
         permutations when ``correction='efdr'``, for reproducible results.
         Must be greater than 0 when ``correction='efdr'``.
     :return: pandas.DataFrame with columns: annotation terms, features,

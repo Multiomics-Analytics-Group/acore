@@ -76,7 +76,8 @@ def run_anova(
     non_par: bool = False,
 ) -> DataFrame[AnovaSchema] | DataFrame[AnovaSchemaMultiGroup]:
     """
-    Performs statistical test for each protein in a dataset.
+    Compares two or more groups for each protein (t-test for two, one-way ANOVA for more).
+
     Checks what type of data is the input (paired, unpaired or repeated measurements) and
     performs posthoc tests for multiclass data (i.e., when there are more than two groups,
     posthoc tests such as pairwise t-tests or Tukey's HSD are used to determine which specific
@@ -89,8 +90,18 @@ def run_anova(
     :param float alpha: error rate for multiple hypothesis correction
     :param list drop_cols: column labels to be dropped from the dataframe. Pass ``None`` or ``[]``
                            to drop no columns.
+                           List every column that is
+                           not a measurement, except ``group``: a text column such as
+                           'sample', 'subject' or 'arm' left in the table fails with
+                           ``ufunc 'divide' not supported``, and a numeric one such as
+                           'age' would be tested like a protein. There is one column per
+                           protein, so no 'protein' or 'protein_id' column exists to drop.
+                           For example ``drop_cols=['sample', 'subject']``.
     :param str subject: column with subject identifiers
-    :param str group: column with group identifiers
+    :param str group: name of the column that holds the group labels, as written in the
+                      table header. The default is 'group'; pass another name when the
+                      labels are in a differently named column, for example 'strain' or
+                      'arm'.
     :param int permutations: number of permutations used to estimate false discovery rates.
     :param str correction: method of pvalue correction see apply_pvalue_correction for methods,
                             use methods available in acore.multiple_testing
@@ -108,7 +119,13 @@ def run_anova(
                            drop_cols=["sample",'subject'],
                            subject='subject',
                            group='group',
-                           permutations=50
+                           permutations=0
+                )
+
+        # columns: sample, subject, group, arm, age and the proteins; compare the arms
+        result = run_anova(df,
+                           group='arm',
+                           drop_cols=['sample', 'subject', 'group', 'age']
                 )
     """
     drop_cols = drop_cols or []
@@ -201,7 +218,8 @@ def run_ancova(
     non_par: bool = False,
 ) -> DataFrame[AncovaSchema]:
     """
-    Performs statistical test for each protein in a dataset.
+    Compares groups for each protein with a one-way ANCOVA, adjusting for covariates.
+
     Checks what type of data is the input (paired, unpaired or repeated measurements)
     and performs posthoc tests for multiclass data.
     Multiple hypothesis correction uses permutation-based
@@ -209,12 +227,27 @@ def run_ancova(
 
     :param pd.DataFrame df: Pandas DataFrame with samples as rows and protein identifiers and
                covariates as columns (with additional columns 'group', 'sample' and 'subject').
-    :param list covariates: list of covariates to include in the model (column in df)
+    :param list covariates: list of covariates to include in the model (column in df).
+                            Always a list of column names, also for one covariate:
+                            ``covariates=['age']``, not ``'age'``. The parameter is
+                            called ``covariates``, not ``covariate``. A covariate is a
+                            column of the table, so do not also list it in ``drop_cols``.
     :param float alpha: error rate for multiple hypothesis correction
     :param list drop_cols: column labels to be dropped from the DataFrame. Pass ``None`` or ``[]``
                            to drop no columns.
-    :param str subject: column with subject identifiers
-    :param str group: column with group identifiers
+                           List every column that is
+                           not a measurement, except ``group`` and the covariates: a text
+                           column such as 'sample', 'subject' or another label column
+                           left in the table fails with ``endog has evaluated to an array
+                           with multiple columns``, and a numeric one that is not a
+                           covariate would be tested like a protein. For example
+                           ``drop_cols=['sample', 'subject']``.
+    :param str subject: not used by this function. A subject column is removed through
+                        ``drop_cols`` like any other identifier.
+    :param str group: name of the column that holds the group labels, as written in the
+                      table header. The default is 'group'; pass another name when the
+                      labels are in a differently named column, for example 'strain' or
+                      'arm'.
     :param int permutations: number of permutations used to estimate false discovery rates.
     :param str correction: method of pvalue correction see apply_pvalue_correction for methods,
                            use methods available in acore.multiple_testing
@@ -232,7 +265,14 @@ def run_ancova(
                             drop_cols=["sample",'subject'],
                             subject='subject',
                             group='group',
-                            permutations=50
+                            permutations=0
+                )
+
+        # columns: sample, subject, group, arm, age and the proteins; compare the arms
+        result = run_ancova(df,
+                            covariates=['age'],
+                            group='arm',
+                            drop_cols=['sample', 'subject', 'group']
                 )
     """
     drop_cols = drop_cols or []
@@ -292,9 +332,22 @@ def run_repeated_measurements_anova(
     :param list drop_cols: column labels to be dropped from the DataFrame. Pass ``None`` or ``[]``
                            to drop no columns. The ``subject`` column must not be included here as
                            it is required for the analysis.
-    :param str subject: column with subject identifiers
-    :param str within: column with within factor identifiers
-    :param int permutations: number of permutations used to estimate false discovery rates
+                           List every other column
+                           that is not a measurement, except ``within``: a text column
+                           such as 'sample' or 'arm' left in the table fails with
+                           ``DV must be numeric``, and a numeric one such as 'age' would
+                           be tested like a protein. For example
+                           ``drop_cols=['sample', 'arm', 'age']``.
+    :param str subject: column with subject identifiers, as written in the table header
+                        (for example 'subject', not 'subject_id' unless the table has it).
+                        Every subject has several rows, one per level of ``within``.
+    :param str within: name of the column that holds the repeated conditions, such as
+                       the visits or time points T0, T1, T2. It must be a column of the
+                       table.
+    :param int permutations: number of permutations used to estimate false discovery
+                             rates. Pass ``0`` to use Benjamini/Hochberg correction
+                             instead. Note: the default of 50 fails in this
+                             function with ``KeyError: ['F', 'p-unc'] not in index``.
     :param str correction: method of pvalue correction see apply_pvalue_correction for methods,
                            use methods available in acore.multiple_testing
     :param bool is_logged: whether data is log-transformed
@@ -302,12 +355,13 @@ def run_repeated_measurements_anova(
 
     Example::
 
+        # columns: sample, subject, group (T0, T1, T2), arm, age and the proteins
         result = run_repeated_measurements_anova(df,
                                                  alpha=0.05,
-                                                 drop_cols=['sample'],
+                                                 drop_cols=['sample', 'arm', 'age'],
                                                  subject='subject',
                                                  within='group',
-                                                 permutations=50
+                                                 permutations=0
                 )
     """
     drop_cols = drop_cols or []
@@ -435,20 +489,54 @@ def run_ttest(
     non_par: bool = False,
 ) -> pd.DataFrame:
     """
+    Runs a t-test between exactly two groups; needs both condition1 and condition2.
+
     Runs t-test (paired/unpaired) for each protein in dataset and performs
     permutation-based (if permutations>0) or Benjamini/Hochberg (if permutations=0)
     multiple hypothesis correction.
 
+    This compares exactly two groups of one factor, so every call needs both
+    ``condition1`` and ``condition2``, two values from the ``group`` column. To compare
+    each of several groups with a reference, call it once per group, for example
+    ``run_ttest(df, condition1='WT', condition2='zwf', group='strain', subject=None,
+    drop_cols=['sample'])`` for a table without a ``subject`` column, and again with
+    ``condition2='sucA'``. Use
+    ``run_anova`` to compare three or more groups at once, and ``run_two_way_anova`` for
+    a design with two factors.
+
     :param pd.DataFrame df: Pandas DataFrame with samples as rows and protein identifiers as columns
                (with additional columns 'group', 'sample' and 'subject').
-    :param str condition1: first of two conditions of the independent variable
-    :param str condition2: second of two conditions of the independent variable
+    :param str condition1: required; one value of the ``group`` column, copied exactly as
+                           it is written in the table (for example 'WT', not 'wild type'),
+                           for the first of the two groups. It must be a value that
+                           occurs in that column.
+    :param str condition2: required; another value of the ``group`` column, copied exactly
+                           as written, for the second of the two groups. To compare several
+                           groups with one reference, call this function once per pair.
     :param float alpha: error rate for multiple hypothesis correction
     :param list drop_cols: column labels to be dropped from the DataFrame. Pass ``None`` or ``[]``
                            to drop no columns. The ``subject`` column should not be included here
                            as it is handled separately based on the ``paired`` parameter.
-    :param str subject: column with subject identifiers
-    :param str group: column with group identifiers (independent variable)
+                           List every other column
+                           that is not a measurement, except ``group``: a text column such
+                           as 'sample' or 'treatment' left in the table fails with
+                           ``ufunc 'divide' not supported``, and a numeric one such as
+                           'age' would be tested like a protein. There is one column per
+                           protein, so no 'protein' or 'protein_id' column exists to drop.
+                           For example ``drop_cols=['sample']``.
+    :param str subject: column with subject identifiers. The default is 'subject'; the
+                        column must exist in the table then, and it is dropped for an
+                        unpaired test, so never also list it in ``drop_cols``. Pass
+                        ``subject=None`` when the table has no such column, as in a
+                        table with only 'sample', 'strain' and the measurements. Both
+                        mistakes fail with ``['subject'] not found in axis``. A paired
+                        test needs it.
+    :param str group: name of the column that holds the group labels (independent
+                      variable), as written in the table header. The default is 'group';
+                      pass another name when the labels are in a differently named
+                      column, for example 'strain' or 'genotype'. ``condition1`` and
+                      ``condition2`` are values in this
+                      column.
     :param bool paired: paired or unpaired samples
     :param str correction: method of pvalue correction see apply_pvalue_correction for methods
     :param int permutations: number of permutations used to estimate false discovery rates.
@@ -461,16 +549,26 @@ def run_ttest(
 
     Example::
 
+        # columns: sample, subject, group ('sepsis' or 'healthy') and the proteins
         result = run_ttest(df,
-                           condition1='group1',
-                           condition2='group2',
+                           condition1='sepsis',
+                           condition2='healthy',
                            alpha = 0.05,
                            drop_cols=['sample'],
                            subject='subject',
                            group='group',
                            paired=False,
                            correction='fdr_bh',
-                           permutations=50
+                           permutations=0
+                )
+
+        # columns: sample, strain ('WT', 'zwf', ...) and the metabolites; no subject
+        result = run_ttest(df,
+                           condition1='WT',
+                           condition2='zwf',
+                           group='strain',
+                           subject=None,
+                           drop_cols=['sample']
                 )
     """
     drop_cols = drop_cols or []
@@ -567,17 +665,27 @@ def run_two_way_anova(
                and proteins and groups as columns.
     :param list drop_cols: column names to drop from DataFrame. Pass ``None`` or ``[]``
                            to drop no columns.
-    :param str subject: column name containing subject identifiers.
-    :param list group: column names corresponding to independent variable groups.
-                       Defaults to ['group', 'secondary_group'] if None.
+                           List every column that
+                           is not a measurement, except ``subject`` and the two ``group``
+                           columns: a text column such as 'sample' left in the table
+                           fails, and a numeric one such as 'age' would be tested like a
+                           protein. For example ``drop_cols=['sample']``.
+    :param str subject: column name containing subject identifiers. It must be a column
+                        of the table, because the function uses it as an index.
+    :param list group: names of the two columns that hold the labels of the two factors
+                       (independent variables), for example ['genotype', 'treatment'].
+                       Defaults to ['group', 'secondary_group'] if None, so name them when
+                       the table calls these columns anything else. Both must be columns
+                       of the table.
     :return: Two DataFrames, anova results and residuals.
 
     Example::
 
+        # columns: sample, subject, genotype, treatment and the metabolites
         result = run_two_way_anova(data,
                                    drop_cols=['sample'],
                                    subject='subject',
-                                   group=['group', 'secondary_group']
+                                   group=['genotype', 'treatment']
                 )
     """
     if group is None:

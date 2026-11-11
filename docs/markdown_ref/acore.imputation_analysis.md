@@ -113,6 +113,12 @@ negatives in differential expression analysis that considers imputed values.
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of column labels to be dropped from the imputation.
+    Every name must be a column of the table: a missing one such
+    as ‘subject’ fails with `['subject'] not found in axis`, and not every table has
+    ‘subject’ or ‘sample’. List every text column except `group`, because a text
+    column left in the table fails with `could not convert string to float: 'AD'`.
+    Dropped columns are not in the result. For example
+    `drop_cols=['sample', 'site']` with `group='group'`.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. It is not used for
     the imputation, but excluded from it and returned as the first
     column.
@@ -135,6 +141,12 @@ result = imputation_normal_distribution(data,
             drop_cols=['group', 'sample', 'subject'],
             shift = 1.8, nstd = 0.3
 )
+
+# columns: sample, site, group and the proteins, with no 'subject' column
+result = imputation_normal_distribution(data,
+            drop_cols=['sample', 'site'],
+            group='group'
+)
 ```
 
 ### imputation_zeros(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None) → DataFrame
@@ -146,6 +158,11 @@ Replace missing values with zeros.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
     appears in both “on_cols” and “drop_cols” it will be dropped
     and a warning is emitted.
+    Every name must be a
+    column of the table: a missing one such as ‘subject’ fails with
+    `['subject'] not found in axis`, and not every table has
+    ‘subject’ or ‘sample’. Text columns need not be listed, only
+    numeric columns are filled.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. It is not imputed,
     is kept even if listed in “drop_cols”, and is returned as the
     first column.
@@ -318,6 +335,12 @@ negatives in differential expression analysis that considers imputed values.
   * **data** – pandas dataframe with samples as rows and protein identifiers as
     columns (with additional columns ‘group’, ‘sample’ and ‘subject’).
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – list of column labels to be dropped from the imputation.
+    Every name must be a column of the table: a missing one such
+    as ‘subject’ fails with `['subject'] not found in axis`, and not every table has
+    ‘subject’ or ‘sample’. List every text column except `group`, because a text
+    column left in the table fails with `could not convert string to float: 'AD'`.
+    Dropped columns are not in the result. For example
+    `drop_cols=['sample', 'site']` with `group='group'`.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. It is not used for
     the imputation, but excluded from it and returned as the first
     column.
@@ -340,6 +363,12 @@ result = imputation_normal_distribution(data,
             drop_cols=['group', 'sample', 'subject'],
             shift = 1.8, nstd = 0.3
 )
+
+# columns: sample, site, group and the proteins, with no 'subject' column
+result = imputation_normal_distribution(data,
+            drop_cols=['sample', 'site'],
+            group='group'
+)
 ```
 
 ### imputation_zeros(data: DataFrame, drop_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_cols: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None, on_rows: [Iterable](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)] | [None](https://docs.python.org/3/builtins/constants.html#None) = None) → DataFrame
@@ -351,6 +380,11 @@ Replace missing values with zeros.
   * **drop_cols** ([*list*](https://docs.python.org/3/builtins/stdtypes.html#list)) – columns to permanently drop before imputation. If a column
     appears in both “on_cols” and “drop_cols” it will be dropped
     and a warning is emitted.
+    Every name must be a
+    column of the table: a missing one such as ‘subject’ fails with
+    `['subject'] not found in axis`, and not every table has
+    ‘subject’ or ‘sample’. Text columns need not be listed, only
+    numeric columns are filled.
   * **group** ([*str*](https://docs.python.org/3/builtins/stdtypes.html#str)) – column label containing group identifiers. It is not imputed,
     is kept even if listed in “drop_cols”, and is returned as the
     first column.
