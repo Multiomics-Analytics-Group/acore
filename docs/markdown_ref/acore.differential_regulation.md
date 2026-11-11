@@ -224,11 +224,15 @@ permutation-based (if permutations>0) or Benjamini/Hochberg (if permutations=0)
 multiple hypothesis correction.
 
 This compares exactly two groups of one factor, so every call needs both
-`condition1` and `condition2`, two values from the `group` column. To compare
-each of several groups with a reference, call it once per group, for example
-`run_ttest(df, condition1='WT', condition2='zwf', group='strain', subject=None,
+`condition1` and `condition2`, two values from the `group` column. `log2FC` is
+the mean of `condition1` minus the mean of `condition2` (the data are log2 values),
+so it is positive where `condition1` is higher: to read it as the change in a
+knockout relative to the wild type, pass the knockout as `condition1` and the wild
+type as `condition2`. To compare each of several groups with a reference, call it
+once per group, for example
+`run_ttest(df, condition1='zwf', condition2='WT', group='strain', subject=None,
 drop_cols=['sample'])` for a table without a `subject` column, and again with
-`condition2='sucA'`. Use
+`condition1='sucA'`. Use
 `run_anova` to compare three or more groups at once, and `run_two_way_anova` for
 a design with two factors.
 
@@ -290,10 +294,11 @@ result = run_ttest(df,
                    permutations=0
         )
 
-# columns: sample, strain ('WT', 'zwf', ...) and the metabolites; no subject
+# columns: sample, strain ('WT', 'zwf', ...) and the metabolites; no subject;
+# log2FC is zwf minus WT
 result = run_ttest(df,
-                   condition1='WT',
-                   condition2='zwf',
+                   condition1='zwf',
+                   condition2='WT',
                    group='strain',
                    subject=None,
                    drop_cols=['sample']
