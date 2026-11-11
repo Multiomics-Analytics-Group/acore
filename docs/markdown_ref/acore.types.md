@@ -296,7 +296,7 @@ Schema for more than two groups
 
 #### *class* Config
 
-Bases: [`Config`](#acore.types.exploratory_analysis.TwoLoadingsSchema.Config)
+Bases: [`Config`](#acore.types.exploratory_analysis.ThreeLoadingsSchema.Config)
 
 #### add_missing_columns *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
@@ -1214,7 +1214,7 @@ Schema for the PCA loadings DataFrame.
 
 #### *class* Config
 
-Bases: [`Config`](#acore.types.exploratory_analysis.TwoLoadingsSchema.Config)
+Bases: [`Config`](#acore.types.exploratory_analysis.ThreeLoadingsSchema.Config)
 
 #### add_missing_columns *: [bool](https://docs.python.org/3/builtins/functions.html#bool)* *= False*
 
@@ -1421,7 +1421,224 @@ Validate a DataFrame based on the schema specification.
 
 #### y *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'y'*
 
-### *class* AnnotationResult(, x_title: [str](https://docs.python.org/3/builtins/stdtypes.html#str), y_title: [str](https://docs.python.org/3/builtins/stdtypes.html#str), group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+### *class* ThreeComponentSchema(\*args, \*\*kwargs)
+
+Bases: [`TwoComponentSchema`](#acore.types.exploratory_analysis.TwoComponentSchema)
+
+Schema for the components DataFrame if three (or more) components are requested.
+Further components are named “3”, “4”, … and are not validated.
+
+#### z *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'z'*
+
+#### *class* Config
+
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
+
+#### strict *= False*
+
+#### name *= 'ThreeComponentSchema'*
+
+#### *classmethod* build_schema_(\*\*kwargs) → [DataFrameSchema](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.container.DataFrameSchema.html#pandera.api.pandas.container.DataFrameSchema)
+
+#### *classmethod* empty(\*\_args) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
+
+Create an empty DataFrame with the schema of this model.
+
+#### *classmethod* example(\*\*kwargs) → DataFrameBase[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
+
+Generate an example of this data model specification.
+
+#### *classmethod* from_json(source)
+
+Load a schema from JSON.
+
+* **Parameters:**
+  **source** – str, Path, or file stream with JSON content.
+* **Returns:**
+  the backend-specific schema object.
+
+#### *classmethod* from_yaml(yaml_schema)
+
+Load a schema from YAML.
+
+* **Parameters:**
+  **yaml_schema** – str, Path, or file stream with YAML content.
+* **Returns:**
+  the backend-specific schema object.
+
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
+
+Provide metadata for columns and schema level
+
+#### group *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= 'group'*
+
+#### *classmethod* pydantic_validate(schema_model: [Any](https://docs.python.org/3/library/typing.html#typing.Any)) → [DataFrameModel](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.dataframe.model.DataFrameModel.html#pandera.api.dataframe.model.DataFrameModel)
+
+Verify that the input is a compatible dataframe model.
+
+#### *classmethod* strategy(\*\*kwargs)
+
+Create a data synthesis strategy.
+
+#### *classmethod* to_json(target: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, \*\*kwargs)
+
+Convert this model’s schema to JSON.
+
+#### *classmethod* to_json_schema()
+
+Serialize schema metadata into json-schema format.
+
+#### NOTE
+This function is currently does not fully specify a pandera schema,
+and is primarily used internally to render OpenAPI docs via the
+FastAPI integration.
+
+#### *classmethod* to_schema() → TSchema
+
+Create `DataFrameSchema` from the `DataFrameModel`.
+
+#### *classmethod* to_yaml(stream: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+
+Convert this model’s schema to YAML.
+
+#### *classmethod* validate(check_obj: DataFrame, head: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, tail: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, sample: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, random_state: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, lazy: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, inplace: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
+
+Validate a DataFrame based on the schema specification.
+
+* **Parameters:**
+  * **check_obj** (*pd.DataFrame*) – the dataframe to be validated.
+  * **head** – validate the first n rows. Rows overlapping with tail or
+    sample are de-duplicated.
+  * **tail** – validate the last n rows. Rows overlapping with head or
+    sample are de-duplicated.
+  * **sample** – validate a random sample of n rows. Rows overlapping
+    with head or tail are de-duplicated.
+  * **random_state** – random seed for the `sample` argument.
+  * **lazy** – if True, lazily evaluates dataframe against all validation
+    checks and raises a `SchemaErrors`. Otherwise, raise
+    `SchemaError` as soon as one occurs.
+  * **inplace** – if True, applies coercion to the object of validation,
+    otherwise creates a copy of the data.
+* **Returns:**
+  validated `DataFrame`
+* **Raises:**
+  **SchemaError** – when `DataFrame` violates built-in or custom
+  checks.
+
+#### x *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'x'*
+
+#### y *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'y'*
+
+### *class* ThreeLoadingsSchema(\*args, \*\*kwargs)
+
+Bases: [`ThreeComponentSchema`](#acore.types.exploratory_analysis.ThreeComponentSchema)
+
+Schema for the PCA loadings DataFrame if three (or more) components are requested.
+
+#### value *: [float](https://docs.python.org/3/builtins/functions.html#float) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= 'value'*
+
+#### *class* Config
+
+Bases: [`Config`](#acore.types.exploratory_analysis.ThreeComponentSchema.Config)
+
+#### name *= 'ThreeLoadingsSchema'*
+
+#### strict *= False*
+
+#### *classmethod* build_schema_(\*\*kwargs) → [DataFrameSchema](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.pandas.container.DataFrameSchema.html#pandera.api.pandas.container.DataFrameSchema)
+
+#### *classmethod* empty(\*\_args) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
+
+Create an empty DataFrame with the schema of this model.
+
+#### *classmethod* example(\*\*kwargs) → DataFrameBase[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
+
+Generate an example of this data model specification.
+
+#### *classmethod* from_json(source)
+
+Load a schema from JSON.
+
+* **Parameters:**
+  **source** – str, Path, or file stream with JSON content.
+* **Returns:**
+  the backend-specific schema object.
+
+#### *classmethod* from_yaml(yaml_schema)
+
+Load a schema from YAML.
+
+* **Parameters:**
+  **yaml_schema** – str, Path, or file stream with YAML content.
+* **Returns:**
+  the backend-specific schema object.
+
+#### *classmethod* get_metadata() → [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[Any](https://docs.python.org/3/library/typing.html#typing.Any), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]
+
+Provide metadata for columns and schema level
+
+#### group *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= 'group'*
+
+#### *classmethod* pydantic_validate(schema_model: [Any](https://docs.python.org/3/library/typing.html#typing.Any)) → [DataFrameModel](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.api.dataframe.model.DataFrameModel.html#pandera.api.dataframe.model.DataFrameModel)
+
+Verify that the input is a compatible dataframe model.
+
+#### *classmethod* strategy(\*\*kwargs)
+
+Create a data synthesis strategy.
+
+#### *classmethod* to_json(target: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, \*\*kwargs)
+
+Convert this model’s schema to JSON.
+
+#### *classmethod* to_json_schema()
+
+Serialize schema metadata into json-schema format.
+
+#### NOTE
+This function is currently does not fully specify a pandera schema,
+and is primarily used internally to render OpenAPI docs via the
+FastAPI integration.
+
+#### *classmethod* to_schema() → TSchema
+
+Create `DataFrameSchema` from the `DataFrameModel`.
+
+#### *classmethod* to_yaml(stream: [PathLike](https://docs.python.org/3/library/os.html#os.PathLike) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+
+Convert this model’s schema to YAML.
+
+#### *classmethod* validate(check_obj: DataFrame, head: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, tail: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, sample: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, random_state: [int](https://docs.python.org/3/builtins/functions.html#int) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, lazy: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False, inplace: [bool](https://docs.python.org/3/builtins/functions.html#bool) = False) → [DataFrame](https://pandera.readthedocs.io/en/stable/reference/generated/pandera.typing.DataFrame.html#pandera.typing.DataFrame)[[Self](https://docs.python.org/3/library/typing.html#typing.Self)]
+
+Validate a DataFrame based on the schema specification.
+
+* **Parameters:**
+  * **check_obj** (*pd.DataFrame*) – the dataframe to be validated.
+  * **head** – validate the first n rows. Rows overlapping with tail or
+    sample are de-duplicated.
+  * **tail** – validate the last n rows. Rows overlapping with head or
+    sample are de-duplicated.
+  * **sample** – validate a random sample of n rows. Rows overlapping
+    with head or tail are de-duplicated.
+  * **random_state** – random seed for the `sample` argument.
+  * **lazy** – if True, lazily evaluates dataframe against all validation
+    checks and raises a `SchemaErrors`. Otherwise, raise
+    `SchemaError` as soon as one occurs.
+  * **inplace** – if True, applies coercion to the object of validation,
+    otherwise creates a copy of the data.
+* **Returns:**
+  validated `DataFrame`
+* **Raises:**
+  **SchemaError** – when `DataFrame` violates built-in or custom
+  checks.
+
+#### x *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'x'*
+
+#### y *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'y'*
+
+#### z *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'z'*
+
+### *class* AnnotationResult(, x_title: [str](https://docs.python.org/3/builtins/stdtypes.html#str), y_title: [str](https://docs.python.org/3/builtins/stdtypes.html#str), z_title: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Bases: [`BaseModel`](https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel)
 
@@ -1430,6 +1647,8 @@ Represents the annotation result from exploratory analysis.
 #### x_title *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
 
 #### y_title *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
+
+#### z_title *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)*
 
 #### group *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)*
 
