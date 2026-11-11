@@ -308,6 +308,16 @@ replacemissingfromgaussian.html
     if drop_cols is not None and drop_cols:
         df = df.drop(columns=[c for c in drop_cols if c != group])
 
+    # The distribution is fitted to each sample's values across the features, so a
+    # text column, such as the sample names, cannot take part; it is kept as it is.
+    all_columns = list(df.columns)
+    text_columns = df.select_dtypes(exclude="number")
+    if not text_columns.empty:
+        logger.warning(
+            "Non-numeric columns ignored for imputation: %s", list(text_columns.columns)
+        )
+    df = df.select_dtypes(include="number")
+
     # ToDo:  Transposing is expensive
     # data_imputed = df.T.sort_index()
 
@@ -339,6 +349,8 @@ replacemissingfromgaussian.html
 
         df.loc[r, missing_mask] = fill_values
 
+    if not text_columns.empty:
+        df = pd.concat([df, text_columns], axis=1)[all_columns]
     if labels is not None:
         df.insert(0, group, labels)
     return df

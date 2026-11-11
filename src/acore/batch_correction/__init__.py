@@ -15,6 +15,7 @@ __all__ = ["combat_batch_correction"]
 def combat_batch_correction(
     data: pd.DataFrame,
     batch_col: str,
+    keep_batch_col: bool = False,
     # index_cols: list[str],
 ) -> pd.DataFrame:
     """
@@ -31,9 +32,13 @@ def combat_batch_correction(
                  example ``imputation_KNN``, and pass its result here, not the original
                  table.
     :param batch_col: column with the batch identifiers
+    :param keep_batch_col: keep the ``batch_col`` column in the result. Pass ``True``
+                           to colour or group a later step, such as a PCA of the
+                           corrected data, by the batch it came from.
     :return: pandas.DataFrame with samples as rows and protein identifiers as columns. The
-             ``batch_col`` column is removed from the result, so a later step cannot
-             group by it; the other non-numeric columns are still there.
+             ``batch_col`` column is removed from the result unless ``keep_batch_col``
+             is ``True``, so by default a later step cannot group by it; the other
+             non-numeric columns are still there.
 
     Example::
 
@@ -64,6 +69,8 @@ def combat_batch_correction(
         index=df.index,
     )
     df_corrected = df_corrected.join(df[info_cols])
+    if keep_batch_col:
+        df_corrected[batch_col] = data[batch_col]
     # df_corrected = df_corrected  # .reset_index()  # ? would also not reset index here
 
     return df_corrected

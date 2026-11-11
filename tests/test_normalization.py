@@ -27,6 +27,30 @@ def test_combat_batch_correction():
     assert actual == expected
 
 
+def test_combat_batch_correction_keeps_the_batch_column_when_asked():
+    # Given a table with two batches
+    data = pd.DataFrame.from_dict(
+        {
+            0: {"a": 2, "b": 4, "c": 4, "batch": "A"},
+            1: {"a": 5, "b": 4, "c": 14, "batch": "B"},
+            2: {"a": 4, "b": 6, "c": 8, "batch": "A"},
+            3: {"a": 3, "b": 5, "c": 8, "batch": "A"},
+            4: {"a": 3, "b": 3, "c": 9, "batch": "B"},
+        },
+        orient="index",
+    )
+
+    # When it is corrected, once asking to keep the batch column and once not
+    kept = batch_correction.combat_batch_correction(data, "batch", keep_batch_col=True)
+    dropped = batch_correction.combat_batch_correction(data, "batch")
+
+    # Then the batch labels stay in the first result, so a later step can group by
+    # them, with the corrected numbers unchanged; the default still removes them
+    assert kept["batch"].tolist() == data["batch"].tolist()
+    assert "batch" not in dropped.columns
+    assert kept[["a", "b", "c"]].equals(dropped[["a", "b", "c"]])
+
+
 def test_median_normalization_along_columns():
     data = pd.DataFrame(
         {
