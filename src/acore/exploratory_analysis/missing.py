@@ -1,5 +1,7 @@
 import pandas as pd
 
+from acore.utils import check_columns_in_data, columns_to_drop
+
 
 def extract_number_missing(
     data: pd.DataFrame,
@@ -31,9 +33,10 @@ def extract_number_missing(
     if group is None:
         groups = data.loc[:, data.notnull().sum(axis=0) >= min_valid]
     else:
+        check_columns_in_data(data, group=group)
+        drop_cols = columns_to_drop(data, drop_cols, "drop_cols")
         groups = data.copy()
-        if len(set(drop_cols).intersection(groups.columns.tolist())) == len(drop_cols):
-            groups = groups.drop(drop_cols, axis=1)
+        groups = groups.drop(drop_cols, axis=1)
         groups = groups.set_index(group).notnull().groupby(level=0).sum()
         groups = groups[groups >= min_valid]
 
@@ -72,6 +75,8 @@ def extract_percentage_missing(
     if group is None:
         groups = data.loc[:, data.isnull().mean() <= missing_max].columns
     else:
+        check_columns_in_data(data, group=group)
+        drop_cols = columns_to_drop(data, drop_cols, "drop_cols")
         groups = data.copy()
         groups = groups.drop(drop_cols, axis=1)
         groups = groups.set_index(group)

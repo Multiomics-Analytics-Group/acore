@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import scipy.stats
 
+from acore.utils import check_columns_in_data, columns_to_drop
+
 
 def get_histogram_series(s: pd.Series, bins: np.ndarray) -> pd.Series:
     hist_data, bin_edges = np.histogram(s, bins=bins)
@@ -106,8 +108,10 @@ def get_coefficient_variation(
 
         result = get_coefficient_variation(data, drop_columns=['sample', 'subject'], group='group')
     """
+    check_columns_in_data(data, group=group)
     formated_df = data
     if drop_columns is not None:
+        drop_columns = columns_to_drop(data, drop_columns, "drop_columns")
         formated_df = data.drop(drop_columns, axis=1)
     cvs = formated_df.groupby(group).apply(func=calculate_coef_of_var_and_mean)
     cvs = cvs.reset_index()[["name", "mean_log2", "mean", "coef_of_var", group]]

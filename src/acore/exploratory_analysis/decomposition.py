@@ -5,10 +5,13 @@ import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
+from acore.utils import check_columns_in_data, columns_to_drop
+
 
 def _get_annotations(data, annotation_cols, group):
     """Select annotation columns (or index levels) with a positional index and
     return the columns which should not be used as features."""
+    check_columns_in_data(data, group=group)
     index_names = [name for name in data.index.names if name is not None]
     missing_annotation_cols = [
         col
@@ -110,6 +113,7 @@ def run_pca(
 
     df = data.copy()
     annotations, non_feature_cols = _get_annotations(data, annotation_cols, group)
+    drop_cols = columns_to_drop(data, drop_cols, "drop_cols")
     drop_cols_int = list((set(drop_cols) | non_feature_cols).intersection(df.columns))
     if len(drop_cols_int) > 0:
         df = df.drop(drop_cols_int, axis=1)
@@ -229,6 +233,7 @@ def run_tsne(
     args = {}
     df = data.copy()
     annotations, non_feature_cols = _get_annotations(data, annotation_cols, group)
+    drop_cols = columns_to_drop(data, drop_cols, "drop_cols")
     df = df.drop(
         list((set(drop_cols) | non_feature_cols).intersection(df.columns)), axis=1
     )
@@ -322,6 +327,7 @@ def run_umap(
     args = {}
     df = data.copy()
     annotations, non_feature_cols = _get_annotations(data, annotation_cols, group)
+    drop_cols = columns_to_drop(data, drop_cols, "drop_cols")
     df = df.drop(
         list((set(drop_cols) | non_feature_cols).intersection(df.columns)), axis=1
     )

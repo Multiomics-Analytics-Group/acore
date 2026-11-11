@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import pandas as pd
 
+from acore.utils import check_columns_in_data
+
 # PyPI pycombat as described in the docstring was never used:
 # https://pypi.org/project/pycombat/
 # https://github.com/epigenelabs/inmoose is the update from combat.pycombat on PyPI
@@ -42,6 +44,7 @@ def combat_batch_correction(
         result = combat_batch_correction(imputed, batch_col="site")
 
     """
+    check_columns_in_data(data, batch_col=batch_col)
     from inmoose.pycombat import pycombat_norm  # slow import, so only when needed
 
     # :param index_cols: list of columns that don't need to be corrected (i.e group)

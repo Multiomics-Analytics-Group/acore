@@ -3,6 +3,8 @@ from collections.abc import Iterable
 
 import pandas as pd
 
+from acore.utils import columns_to_drop
+
 logger = logging.getLogger(__name__)
 
 
@@ -21,6 +23,7 @@ def select_imputation_targets(
     :raises TypeError: if `on_cols` contains non-numeric columns.
     :raises ValueError: if `group` is not a column of `data` after dropping `drop_cols`.
     """
+    drop_cols = columns_to_drop(data, drop_cols, "drop_cols")
     if drop_cols:
         if on_cols is not None:
             overlap = set(on_cols) & set(drop_cols)
