@@ -6,6 +6,8 @@ import scipy.stats
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
+from acore.utils import check_columns_in_data, columns_to_drop
+
 
 def get_histogram_series(s: pd.Series, bins: np.ndarray) -> pd.Series:
     hist_data, bin_edges = np.histogram(s, bins=bins)
@@ -110,8 +112,10 @@ def get_coefficient_variation(
 
         result = get_coefficient_variation(data, drop_columns=['sample', 'subject'], group='group')
     """
+    check_columns_in_data(data, group=group)
     formated_df = data
     if drop_columns is not None:
+        drop_columns = columns_to_drop(data, drop_columns, "drop_columns")
         formated_df = data.drop(drop_columns, axis=1)
     cvs = formated_df.groupby(group).apply(func=calculate_coef_of_var_and_mean)
     cvs = cvs.reset_index()[["name", "mean_log2", "mean", "coef_of_var", group]]
@@ -147,9 +151,10 @@ def extract_number_missing(
     if group is None:
         groups = data.loc[:, data.notnull().sum(axis=0) >= min_valid]
     else:
+        check_columns_in_data(data, group=group)
+        drop_cols = columns_to_drop(data, drop_cols, "drop_cols")
         groups = data.copy()
-        if len(set(drop_cols).intersection(groups.columns.tolist())) == len(drop_cols):
-            groups = groups.drop(drop_cols, axis=1)
+        groups = groups.drop(drop_cols, axis=1)
         groups = groups.set_index(group).notnull().groupby(level=0).sum()
         groups = groups[groups >= min_valid]
 
@@ -188,6 +193,8 @@ def extract_percentage_missing(
     if group is None:
         groups = data.loc[:, data.isnull().mean() <= missing_max].columns
     else:
+        check_columns_in_data(data, group=group)
+        drop_cols = columns_to_drop(data, drop_cols, "drop_cols")
         groups = data.copy()
         groups = groups.drop(drop_cols, axis=1)
         groups = groups.set_index(group)
@@ -207,6 +214,7 @@ def extract_percentage_missing(
 def _get_annotations(data, annotation_cols, group):
     """Select annotation columns (or index levels) with a positional index and
     return the columns which should not be used as features."""
+    check_columns_in_data(data, group=group)
     index_names = [name for name in data.index.names if name is not None]
     missing_annotation_cols = [
         col
@@ -284,6 +292,7 @@ def run_pca(
 
     df = data.copy()
     annotations, non_feature_cols = _get_annotations(data, annotation_cols, group)
+    drop_cols = columns_to_drop(data, drop_cols, "drop_cols")
     drop_cols_int = list((set(drop_cols) | non_feature_cols).intersection(df.columns))
     if len(drop_cols_int) > 0:
         df = df.drop(drop_cols_int, axis=1)
@@ -384,6 +393,7 @@ def run_tsne(
     args = {}
     df = data.copy()
     annotations, non_feature_cols = _get_annotations(data, annotation_cols, group)
+    drop_cols = columns_to_drop(data, drop_cols, "drop_cols")
     df = df.drop(
         list((set(drop_cols) | non_feature_cols).intersection(df.columns)), axis=1
     )
@@ -466,6 +476,7 @@ def run_umap(
     args = {}
     df = data.copy()
     annotations, non_feature_cols = _get_annotations(data, annotation_cols, group)
+    drop_cols = columns_to_drop(data, drop_cols, "drop_cols")
     df = df.drop(
         list((set(drop_cols) | non_feature_cols).intersection(df.columns)), axis=1
     )

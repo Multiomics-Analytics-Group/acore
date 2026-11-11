@@ -112,6 +112,8 @@ def run_anova(
                 )
     """
     drop_cols = drop_cols or []
+    acore.utils.check_columns_in_data(df, group=group, subject=subject)
+    drop_cols = acore.utils.columns_to_drop(df, drop_cols, "drop_cols")
     res = pd.DataFrame()
     if subject is not None and acore.utils.check_is_paired(df, subject, group):
         paired = True
@@ -236,6 +238,8 @@ def run_ancova(
                 )
     """
     drop_cols = drop_cols or []
+    acore.utils.check_columns_in_data(df, group=group, covariates=covariates)
+    drop_cols = acore.utils.columns_to_drop(df, drop_cols, "drop_cols")
     df = df.drop(drop_cols, axis=1)
     for cova in covariates:
         if df[cova].dtype != np.number:
@@ -311,6 +315,8 @@ def run_repeated_measurements_anova(
                 )
     """
     drop_cols = drop_cols or []
+    acore.utils.check_columns_in_data(df, subject=subject, within=within)
+    drop_cols = acore.utils.columns_to_drop(df, drop_cols, "drop_cols")
     df = df.drop(drop_cols, axis=1).dropna(axis=1)
     aov_results = []
     pairwise_results = []
@@ -393,6 +399,10 @@ def run_mixed_anova(
                 )
     """
     drop_cols = drop_cols or []
+    acore.utils.check_columns_in_data(
+        df, subject=subject, within=within, between=between
+    )
+    drop_cols = acore.utils.columns_to_drop(df, drop_cols, "drop_cols")
     df = df.drop(drop_cols, axis=1).dropna(axis=1)
     aov_results = []
     index = [within, subject, between]
@@ -474,6 +484,8 @@ def run_ttest(
                 )
     """
     drop_cols = drop_cols or []
+    acore.utils.check_columns_in_data(df, group=group, subject=subject)
+    drop_cols = acore.utils.columns_to_drop(df, drop_cols, "drop_cols")
     columns = [
         "T-Statistics",
         "pvalue",

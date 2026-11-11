@@ -93,6 +93,8 @@ def run_correlation(
     correlation = pd.DataFrame()
     # The Repeated measurements correlation calculation is too time consuming so it
     # only runs if the number of features is less than 200
+    if subject is not None:
+        utils.check_columns_in_data(df, subject=subject, group=group)
     if subject is not None and utils.check_is_paired(df, subject, group):
         if len(df[subject].unique()) > 2 and len(df.columns) < 200:
             correlation = run_rm_correlation(
