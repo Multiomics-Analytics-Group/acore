@@ -45,7 +45,17 @@ data.drop(columns=clinic_cols + [group]).isna().mean().describe()
 keep = ea.missing.extract_number_missing(
     data, min_valid=170, drop_cols=clinic_cols, group=None
 )
-len(keep), data.shape[1] - len(clinic_cols) - 1
+msg = (
+    "{} features have at least {} valid values across"
+    " all samples ( {} were dropped)."
+)
+print(
+    msg.format(
+        len(keep),
+        170,
+        data.shape[1] - len(clinic_cols) - 1 - len(keep),
+    )
+)
 
 # %% [markdown]
 # Per group, a feature is kept if at least one group has `min_valid` valid values.
@@ -54,7 +64,8 @@ len(keep), data.shape[1] - len(clinic_cols) - 1
 keep = ea.missing.extract_number_missing(
     data, min_valid=80, drop_cols=clinic_cols, group=group
 )
-len(keep)
+print(msg.format(len(keep), 170, data.shape[1] - len(clinic_cols) - 1 - len(keep)))
+
 
 # %% [markdown]
 # ## Percentage of missing values
@@ -64,7 +75,12 @@ len(keep)
 keep = ea.missing.extract_percentage_missing(
     data, missing_max=0.1, drop_cols=clinic_cols, group=None
 )
-len(keep)
+msg = (
+    "{} features have at most {:.1%} missing values across"
+    " all samples ( {} were dropped)."
+)
+print(msg.format(len(keep), 0.1, data.shape[1] - len(clinic_cols) - 1 - len(keep)))
+
 
 # %% [markdown]
 # Per group, `how="all"` keeps a feature if it passes the threshold in at least one

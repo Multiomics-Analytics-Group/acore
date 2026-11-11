@@ -39,6 +39,7 @@ from acore.types.exploratory_analysis import (
 
 
 # %%
+# relace wit vuecore plot
 def make_plot(
     embeddings,
     x: str,
@@ -119,6 +120,7 @@ annotation
 # Show PCA for the two first components, highlighting the groups
 
 # %%
+# replace wit vuecore plot
 fig, ax = make_plot(pcs, annotation=annotation, **map_names)
 
 # %% [markdown]

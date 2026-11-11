@@ -168,6 +168,9 @@ pd.DataFrame(p)
 r, p = ca.run_efficient_correlation(data.iloc[:, :3], method="pearson")
 pd.DataFrame(p)
 
+# %% [markdown]
+# you can verify the results against [`scipy.stats.pearsonr`](scipy.stats.pearsonr)
+
 # %%
 r_20, p_20 = scipy.stats.pearsonr(data.iloc[:, 0], data.iloc[:, 2])
 assert r[2, 0] - r_20 < 1e-8
