@@ -69,7 +69,12 @@ class TestDimensionalityReduction(unittest.TestCase):
             ),
             pd.Series([0.71760534, 0.26139782]),
         )
-        exp_dict = {"x_title": "PC1 (0.72)", "y_title": "PC2 (0.26)", "group": "group"}
+        exp_dict = {
+            "x": "PC1 (0.72)",
+            "y": "PC2 (0.26)",
+            "value": "feature_communality",
+            "group": "group",
+        }
         result, annotation = ea.decomposition.run_pca(
             self.data,
             drop_cols=[],

@@ -47,7 +47,7 @@ def make_plot(
             ax=ax,
         )
     if annotation is not None:
-        _ = ax.set(ylabel=annotation.y_title, xlabel=annotation.x_title)
+        _ = ax.set(ylabel=annotation.y, xlabel=annotation.x)
     return fig, ax
 
 

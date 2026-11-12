@@ -19,7 +19,6 @@
 
 # %%
 from pprint import pprint
-from typing import Optional
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -40,27 +39,19 @@ from acore.types.exploratory_analysis import (
 
 
 # %%
-# relace wit vuecore plot
-def make_plot(
-    embeddings,
-    x: str,
-    y: str,
-    annotation: Optional[dict[str, str]] = None,
-    group: str = "group",
-    **kwargs,
-):
+# replace with vuecore plot
+def make_plot(embeddings, annotation: AnnotationResult):
     """Utility function for static plot of dimensionality reductions."""
+    map_names = annotation.model_dump(exclude_none=True)
     fig, ax = plt.subplots()
     for i, (group, group_df) in enumerate(embeddings.groupby("group")):
         ax = group_df.rename(columns=map_names).plot.scatter(
-            x=x,
-            y=y,
+            x=annotation.x,
+            y=annotation.y,
             label=group,
             c=f"C{i}",
             ax=ax,
         )
-    if annotation is not None:
-        _ = ax.set(ylabel=annotation.y_title, xlabel=annotation.x_title)
     return fig, ax
 
 
@@ -91,12 +82,6 @@ data["group"].value_counts()
 # Show first two principal components of the data.
 
 # %%
-# map_names gives the column names for the plot axes (which default to "x" and "y")
-map_names = {
-    "value": "feature_communiality",
-    "x": "PC1",
-    "y": "PC2",
-}
 results_dfs, annotation = ea.decomposition.run_pca(
     data, drop_cols=[], annotation_cols=[], group="group", components=2, dropna=True
 )
@@ -117,6 +102,7 @@ TwoVariance(pd.Series(var_explained, index=["PC1", "PC2"]))
 # %%
 pprint(annotation)
 annotation = AnnotationResult(**annotation)
+map_names = annotation.model_dump(exclude_none=True)
 annotation
 
 # %% [markdown]
@@ -144,12 +130,12 @@ TwoLoadingsSchema(loadings).rename(columns=map_names).head(10)
 
 # %%
 # replace wit vuecore plot
-fig, ax = make_plot(pcs, annotation=annotation, **map_names)
+fig, ax = make_plot(pcs, annotation=annotation)
 
 # %% [markdown]
 # ### More than two components
 # With more than two components, the results contain an additional `z` column (and
-# `3`, `4`, ... for further components). The annotation then also has a `z_title`.
+# `3`, `4`, ... for further components). The annotation then also has a `z` name set.
 # The `ThreeComponentSchema` and `ThreeLoadingsSchema` validate these results, and
 # `VarianceRatio` checks that the explained variances are fractions between 0 and 1.
 
@@ -174,11 +160,6 @@ ThreeLoadingsSchema(loadings_3)
 # [umap-learn.readthedocs.io](https://umap-learn.readthedocs.io).
 
 # %%
-# map_names gives the column names for the plot axes (which default to "x" and "y")
-map_names = {
-    "x": "UMAP1",
-    "y": "UMAP2",
-}
 result, annotation = ea.decomposition.run_umap(
     data,
     drop_cols=["sample", "subject"],
@@ -191,10 +172,11 @@ result, annotation = ea.decomposition.run_umap(
 
 # %%
 annotation = AnnotationResult(**annotation)
+map_names = annotation.model_dump(exclude_none=True)
 annotation
 
 # %%
-fig, ax = make_plot(result["umap"], **map_names)
+fig, ax = make_plot(result["umap"], annotation=annotation)
 TwoComponentSchema(result["umap"]).rename(columns=map_names)
 
 # %% [markdown]
@@ -211,10 +193,6 @@ TwoComponentSchema(result["umap"]).rename(columns=map_names)
 # use the `exact` method and a `random_state` for reproducible results here.
 
 # %%
-map_names = {
-    "x": "t-SNE1",
-    "y": "t-SNE2",
-}
 result, annotation = ea.decomposition.run_tsne(
     data,
     drop_cols=["sample", "subject"],
@@ -227,10 +205,11 @@ result, annotation = ea.decomposition.run_tsne(
 
 # %%
 annotation = AnnotationResult(**annotation)
+map_names = annotation.model_dump(exclude_none=True)
 annotation
 
 # %%
-fig, ax = make_plot(result["tsne"], **map_names)
+fig, ax = make_plot(result["tsne"], annotation=annotation)
 TwoComponentSchema(result["tsne"]).rename(columns=map_names)
 
 # %% [markdown]

@@ -62,9 +62,14 @@ AnnotationSchema = SeriesSchema(str)
 class AnnotationResult(pydantic.BaseModel):
     """
     Represents the annotation result from exploratory analysis.
+
+    The fields ``x``, ``y``, ``z`` and ``value`` map the column names of the results
+    to readable names, i.e. they can be used with
+    ``df.rename(columns=annotation.model_dump(exclude_none=True))`` and as axis labels.
     """
 
-    x_title: str
-    y_title: str
-    z_title: str | None = pydantic.Field(default=None)
+    x: str
+    y: str
+    z: str | None = pydantic.Field(default=None)
+    value: str | None = pydantic.Field(default=None)
     group: str | None = pydantic.Field(default=None)

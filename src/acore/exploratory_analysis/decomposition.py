@@ -110,15 +110,16 @@ def run_pca(
         loadings["value"] = loadings.index.map(values.get)
         loadings = loadings.sort_values(by="value", ascending=False)
         args = {
-            "x_title": "PC1" + f" ({var_exp[0]:.2f})",
-            "y_title": "PC2" + f" ({var_exp[1]:.2f})",
+            "x": "PC1" + f" ({var_exp[0]:.2f})",
+            "y": "PC2" + f" ({var_exp[1]:.2f})",
+            "value": "feature_communality",
             "group": "group",
         }
         if components == 2:
             pca_cols = ["x", "y"]
             loadings.columns = ["x", "y", "value"]
         if components > 2:
-            args.update({"z_title": "PC3" + f" ({var_exp[2]:.2f})"})
+            args.update({"z": "PC3" + f" ({var_exp[2]:.2f})"})
             pca_cols = ["x", "y", "z"] + [str(i) for i in range(3, components)]
             loading_cols = [str(i) for i in loadings.columns[3:]]
             loadings.columns = ["x", "y", "z"] + loading_cols
@@ -215,10 +216,10 @@ def run_tsne(
             random_state=random_state,
         )
         X = tsne.fit_transform(X)
-        args = {"x_title": "t-SNE1", "y_title": "t-SNE2"}
+        args = {"x": "t-SNE1", "y": "t-SNE2"}
         embedding_cols = ["x", "y"]
         if components > 2:
-            args.update({"z_title": "t-SNE3"})
+            args.update({"z": "t-SNE3"})
             embedding_cols = ["x", "y", "z"] + [str(i) for i in range(3, components)]
         resultDf = pd.DataFrame(X, columns=embedding_cols)
         resultDf.insert(0, "group", y)
@@ -297,7 +298,7 @@ def run_umap(
     X = umap.UMAP(
         n_neighbors=n_neighbors, min_dist=min_dist, metric=metric
     ).fit_transform(X)
-    args = {"x_title": "UMAP1", "y_title": "UMAP2"}
+    args = {"x": "UMAP1", "y": "UMAP2"}
     embedding_cols = ["x", "y"] + [str(i) for i in range(2, X.shape[1])]
     resultDf = pd.DataFrame(X, columns=embedding_cols)
     resultDf.insert(0, "group", y)
