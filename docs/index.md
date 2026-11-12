@@ -78,6 +78,7 @@ reference/acore
 :caption: MISC:
 :hidden:
 
+skills
 contributing
 authors
 history
