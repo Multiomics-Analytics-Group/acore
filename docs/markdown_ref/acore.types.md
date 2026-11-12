@@ -1638,17 +1638,23 @@ Validate a DataFrame based on the schema specification.
 
 #### z *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 'z'*
 
-### *class* AnnotationResult(, x_title: [str](https://docs.python.org/3/builtins/stdtypes.html#str), y_title: [str](https://docs.python.org/3/builtins/stdtypes.html#str), z_title: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
+### *class* AnnotationResult(, x: [str](https://docs.python.org/3/builtins/stdtypes.html#str), y: [str](https://docs.python.org/3/builtins/stdtypes.html#str), z: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, value: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None, group: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None) = None)
 
 Bases: [`BaseModel`](https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel)
 
 Represents the annotation result from exploratory analysis.
 
-#### x_title *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
+The fields `x`, `y`, `z` and `value` map the column names of the results
+to readable names, i.e. they can be used with
+`df.rename(columns=annotation.model_dump(exclude_none=True))` and as axis labels.
 
-#### y_title *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
+#### x *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
 
-#### z_title *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)*
+#### y *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
+
+#### z *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)*
+
+#### value *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)*
 
 #### group *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)*
 
