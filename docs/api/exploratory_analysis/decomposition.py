@@ -18,6 +18,7 @@
 # %pip install acore
 
 # %%
+from pprint import pprint
 from typing import Optional
 
 import matplotlib.pyplot as plt
@@ -106,6 +107,7 @@ pcs, loadings, var_explained = results_dfs
 # they adhere to the expected format:
 
 # %%
+pprint(var_explained)
 TwoVariance(pd.Series(var_explained, index=["PC1", "PC2"]))
 
 # %% [markdown]
@@ -113,15 +115,9 @@ TwoVariance(pd.Series(var_explained, index=["PC1", "PC2"]))
 # they adhere to the expected format:
 
 # %%
+pprint(annotation)
 annotation = AnnotationResult(**annotation)
 annotation
-
-# %% [markdown]
-# Show PCA for the two first components, highlighting the groups
-
-# %%
-# replace wit vuecore plot
-fig, ax = make_plot(pcs, annotation=annotation, **map_names)
 
 # %% [markdown]
 # Show what was computed and validate that
@@ -132,7 +128,7 @@ fig, ax = make_plot(pcs, annotation=annotation, **map_names)
 # We rename the columns for better readability.
 
 # %%
-TwoComponentSchema(pcs).rename(columns=map_names)
+TwoComponentSchema(pcs).rename(columns=map_names).head(10)
 
 # %% [markdown]
 # The feature communality of the loading is the absolute length of the projection.
@@ -140,7 +136,15 @@ TwoComponentSchema(pcs).rename(columns=map_names)
 # therefore driving the PCA separation.
 
 # %%
-TwoLoadingsSchema(loadings).rename(columns=map_names)
+TwoLoadingsSchema(loadings).rename(columns=map_names).head(10)
+
+# %% [markdown]
+# Show the PCA plot of the first two components. VueCore understands the
+# annotation information (ToDo)
+
+# %%
+# replace wit vuecore plot
+fig, ax = make_plot(pcs, annotation=annotation, **map_names)
 
 # %% [markdown]
 # ### More than two components
@@ -190,14 +194,17 @@ annotation = AnnotationResult(**annotation)
 annotation
 
 # %%
-fig, ax = make_plot(result["umap"], annotation=annotation, **map_names)
+fig, ax = make_plot(result["umap"], **map_names)
 TwoComponentSchema(result["umap"]).rename(columns=map_names)
 
 # %% [markdown]
 # Make sure to check the parameters and tutorials annotations in the API docs at
 # [umap-learn.readthedocs.io](https://umap-learn.readthedocs.io).
-#
+
+
+# %% [markdown]
 # ## t-Distributed Stochastic Neighbor Embedding (t-SNE)
+#
 # Visualize the t-SNE low-dimensional embedding of the data, using
 # [`sklearn.manifold.TSNE`](https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html).
 # The default `barnes_hut` method can differ slightly between CPU architectures, so we
@@ -223,7 +230,7 @@ annotation = AnnotationResult(**annotation)
 annotation
 
 # %%
-fig, ax = make_plot(result["tsne"], annotation=annotation, **map_names)
+fig, ax = make_plot(result["tsne"], **map_names)
 TwoComponentSchema(result["tsne"]).rename(columns=map_names)
 
 # %% [markdown]
