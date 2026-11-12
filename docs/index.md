@@ -22,6 +22,7 @@ getting_started/input_formats.ipynb
 :hidden:
 
 api/overview
+api/exploratory_analysis/index.md
 api/preprocessing/index.md
 api/imputation/index.md
 api/diff_reg/index.md

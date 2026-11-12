@@ -1,4 +1,3 @@
-import platform
 import unittest
 
 import pandas as pd
@@ -22,7 +21,7 @@ class TestExtractMissing(unittest.TestCase):
         min_valid = 2
         expected_result = ["protein1", "protein3"]
 
-        result = ea.extract_number_missing(
+        result = ea.missing.extract_number_missing(
             self.data, min_valid, drop_cols=["sample"], group="group"
         )
 
@@ -32,7 +31,7 @@ class TestExtractMissing(unittest.TestCase):
         missing_max = 0.2
         expected_result = ["protein1", "protein3"]
 
-        result = ea.extract_percentage_missing(
+        result = ea.missing.extract_percentage_missing(
             self.data, missing_max, drop_cols=["sample"], group="group"
         )
 
@@ -70,8 +69,13 @@ class TestDimensionalityReduction(unittest.TestCase):
             ),
             pd.Series([0.71760534, 0.26139782]),
         )
-        exp_dict = {"x_title": "PC1 (0.72)", "y_title": "PC2 (0.26)", "group": "group"}
-        result, annotation = ea.run_pca(
+        exp_dict = {
+            "x": "PC1 (0.72)",
+            "y": "PC2 (0.26)",
+            "value": "feature_communality",
+            "group": "group",
+        }
+        result, annotation = ea.decomposition.run_pca(
             self.data,
             drop_cols=[],
             annotation_cols=[],
@@ -92,7 +96,7 @@ class TestDimensionalityReduction(unittest.TestCase):
 
     def test_run_pca_warns_for_missing_annotation_columns(self):
         with self.assertWarnsRegex(UserWarning, "Annotation columns not found.*sample"):
-            (result, _, _), _ = ea.run_pca(
+            (result, _, _), _ = ea.decomposition.run_pca(
                 self.data,
                 annotation_cols=["sample"],
                 group="group",
@@ -102,41 +106,25 @@ class TestDimensionalityReduction(unittest.TestCase):
 
     def test_run_pca_annotation_from_index(self):
         data = self.data.set_index(pd.Index(["S1", "S2", "S3", "S4"], name="Sample ID"))
-        (result, _, _), _ = ea.run_pca(
+        (result, _, _), _ = ea.decomposition.run_pca(
             data, annotation_cols=["Sample ID"], group="group", components=2
         )
         self.assertListEqual(result["Sample ID"].tolist(), ["S1", "S2", "S3", "S4"])
 
     def test_run_tsne(self):
         components = 2
-        # ! MAC ARM64 yields these results (using the similar installation)
+        # method="exact" is used as the default Barnes-Hut approximation (float32)
+        # gives different results on arm64 and x64 for this tiny dataset.
         expected_result = pd.DataFrame(
             {
                 "group": ["A", "A", "B", "B"],
-                "x": [-113.341728, 36.020717, 57.2992514, -134.729141],
-                "y": [131.169082, -59.616630, 110.601203, -39.086254],
+                "x": [40.735077, 207.908371, 23.888744, -143.473709],
+                "y": [192.089203, 8.426460, -158.064987, 25.697359],
             }
         )
-        # ! Ubuntu x64 yields these results:
-        if not platform.machine() == "arm64":
-            expected_result = pd.DataFrame(
-                {
-                    "group": ["A", "A", "B", "B"],
-                    "x": [
-                        -27.375560760498047,
-                        -7.526909828186035,
-                        -28.731882095336914,
-                        -8.872751235961914,
-                    ],
-                    "y": [
-                        1.547648310661316,
-                        0.17019487917423248,
-                        -18.321491241455078,
-                        -19.713821411132812,
-                    ],
-                }
-            )
-        result, _ = ea.run_tsne(
+        # not that
+
+        result, _ = ea.decomposition.run_tsne(
             self.data,
             drop_cols=["sample", "subject"],
             group="group",
@@ -145,6 +133,8 @@ class TestDimensionalityReduction(unittest.TestCase):
             max_iter=1000,
             init="pca",
             dropna=True,
+            method="exact",
+            random_state=0,
         )
         result = result["tsne"]
         pd.testing.assert_frame_equal(
@@ -152,7 +142,7 @@ class TestDimensionalityReduction(unittest.TestCase):
         )
 
     def test_run_umap(self):
-        _ = ea.run_umap(
+        _ = ea.decomposition.run_umap(
             self.data,
             drop_cols=["sample", "subject"],
             group="group",

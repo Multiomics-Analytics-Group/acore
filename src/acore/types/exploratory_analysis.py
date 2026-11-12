@@ -26,27 +26,50 @@ class TwoLoadingsSchema(TwoComponentSchema):
     )
 
 
+class ThreeComponentSchema(TwoComponentSchema):
+    """
+    Schema for the components DataFrame if three (or more) components are requested.
+    Further components are named "3", "4", ... and are not validated.
+    """
+
+    z: float = Field(coerce=True)
+
+    class Config:
+        strict = False  # allow additional components and annotation columns
+
+
+class ThreeLoadingsSchema(ThreeComponentSchema):
+    """
+    Schema for the PCA loadings DataFrame if three (or more) components are requested.
+    """
+
+    value: float | None = Field(
+        nullable=False,
+        description="Variance of feature explained by the extracted components.",
+    )
+
+
 TwoVariance = SeriesSchema(float, checks=pa.Check(lambda x: x >= 0, element_wise=True))
 
+# explained variance ratios are fractions of the total variance
+VarianceRatio = SeriesSchema(
+    float, checks=pa.Check(lambda x: 0 <= x <= 1, element_wise=True)
+)
+
 AnnotationSchema = SeriesSchema(str)
-
-# Not used currently - integrate pandera types with pydantic
-# https://pandera.readthedocs.io/en/stable/pydantic_integration.html
-# class PcaResult(pydantic.BaseModel):
-#     """
-#     Represents the result of a Principal Component Analysis (PCA).
-#     """
-
-#     components: DataFrame[TwoComponentSchema]
-#     loadings: DataFrame[TwoLoadingsSchema]
-#     variance: TwoVariance
 
 
 class AnnotationResult(pydantic.BaseModel):
     """
     Represents the annotation result from exploratory analysis.
+
+    The fields ``x``, ``y``, ``z`` and ``value`` map the column names of the results
+    to readable names, i.e. they can be used with
+    ``df.rename(columns=annotation.model_dump(exclude_none=True))`` and as axis labels.
     """
 
-    x_title: str
-    y_title: str
+    x: str
+    y: str
+    z: str | None = pydantic.Field(default=None)
+    value: str | None = pydantic.Field(default=None)
     group: str | None = pydantic.Field(default=None)
