@@ -145,13 +145,16 @@ results_dfs_3, annotation_3 = ea.decomposition.run_pca(
 )
 pcs_3, loadings_3, var_explained_3 = results_dfs_3
 VarianceRatio(pd.Series(var_explained_3, index=["PC1", "PC2", "PC3"]))
-AnnotationResult(**annotation_3)
+pprint(annotation_3)
+annotation_3 = AnnotationResult(**annotation_3)
+map_names = annotation_3.model_dump(exclude_none=True)
+annotation_3
 
 # %%
-ThreeComponentSchema(pcs_3)
+ThreeComponentSchema(pcs_3).rename(columns=map_names).head(10)
 
 # %%
-ThreeLoadingsSchema(loadings_3)
+ThreeLoadingsSchema(loadings_3).rename(columns=map_names).head(10)
 
 # %% [markdown]
 # ## Uniform Manifold Approximation and Projection (UMAP)
