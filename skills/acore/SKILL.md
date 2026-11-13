@@ -49,7 +49,7 @@ Load → normalize → impute → test → correct → enrich. Snippets are in
 
 | Step | acore code | Snippet |
 |---|---|---|
-| Normalize | `normalization.normalize_data(df, method="median")` | §1 |
+| Normalize | `normalization.normalize_data(features, method="median")` (feature columns only) | §1 |
 | Impute (KNN) | `imputation_analysis.imputation_KNN(df, ...)` | §2 |
 | ANOVA | `differential_regulation.run_anova(df, group="group")` | §3 |
 | t-test | `differential_regulation.run_ttest(df, c1, c2)` | §4 |
@@ -59,13 +59,15 @@ Load → normalize → impute → test → correct → enrich. Snippets are in
 | Over-representation enrichment | `enrichment_analysis.run_enrichment(...)` | §8 |
 | Correlation | `correlation_analysis.run_correlation(df, method="pearson")` | §9 |
 | Batch correction | `batch_correction.combat_batch_correction(df, batch_col)` | §10 |
-| Coefficient of variation | `exploratory_analysis.calculate_coefficient_variation(df)` | §11 |
+| Coefficient of variation | `exploratory_analysis.variation.calculate_coefficient_variation(df)` | §11 |
 | Enrichment plot | `vuecore.viz.get_enrichment_plots(...)` | §12 |
-| PCA | `exploratory_analysis.run_pca(df, group="group")` | see `acore_api.md` |
+| PCA | `exploratory_analysis.decomposition.run_pca(df, group="group")` | see `acore_api.md` |
 
 Two defaults bite on data that isn't in acore's canonical shape: `drop_cols=None` drops nothing,
-and `subject="subject"` makes `run_anova`/`run_ttest` group on a `subject` column — a `KeyError`
-if the frame has none. Pass `subject=None` for unpaired data.
+and `run_ttest` defaults to `subject="subject"`, which groups on a `subject` column — a `KeyError`
+if the frame has none. Pass `subject=None` for unpaired t-tests. `run_anova` differs: it defaults
+to `subject=None`, so it never detects pairing on its own; name the subject column explicitly for
+a paired/repeated-measures design.
 
 A fuller module→function map (survival, networks, WGCNA, power, ssGSEA, ANCOVA/mixed ANOVA,
 decomposition) is in [`references/acore_api.md`](references/acore_api.md).
@@ -88,8 +90,13 @@ URL = (
 df = pd.read_csv(URL)
 
 # The condition column is `AD`; the rest of the metadata is clinical and there is no
-# `subject` column — hence subject=None. Adapt all four to the user's data.
-norm = normalize_data(df, method="median")
+# `subject` column — hence subject=None. Adapt all of these to the user's data.
+# Normalize only the protein columns: normalize_data transforms every numeric column,
+# which would also rewrite numeric metadata such as the `AD` labels.
+metadata_cols = ["Sample ID", "AD", "age", "male", "collection_site"]
+protein_cols = [c for c in df.columns if c not in metadata_cols]
+normalized_proteins = normalize_data(df[protein_cols], method="median")
+norm = pd.concat([df[metadata_cols], normalized_proteins], axis=1)
 res = run_anova(
     norm,
     group="AD",

@@ -8,7 +8,9 @@ capability from its submodule; `import acore` alone exposes nothing but `__versi
 
 **`acore.normalization`**
 - `normalize_data(data, method="median", normalize=None)` — method ∈ {`median`, `median_polish`,
-  `median_zero`, `quantile`, `linear`, `zscore`}.
+  `median_zero`, `quantile`, `linear`, `zscore`}. `normalize` is an axis (`"samples"` rows or
+  `"features"` columns), not a column subset; it normalizes every numeric column, so pass only the
+  feature columns.
 - `normalize_data_per_group(data, group, method="median", normalize=None)`
 - strategies (`acore.normalization.strategies`): `median_normalization`, `median_zero_normalization`,
   `zscore_normalization`, `median_polish_normalization`, `quantile_normalization`, `linear_normalization`.
@@ -23,7 +25,7 @@ capability from its submodule; `import acore` alone exposes nothing but `__versi
 
 ## Differential regulation / expression — `acore.differential_regulation`
 
-- `run_anova(df, alpha=0.05, drop_cols=None, subject="subject", group="group", permutations=0, correction="fdr_bh", is_logged=True, non_par=False)`
+- `run_anova(df, alpha=0.05, drop_cols=None, subject=None, group="group", permutations=0, correction="fdr_bh", is_logged=True, non_par=False)`
 - `run_ttest(df, condition1, condition2, alpha=0.05, drop_cols=None, subject="subject", group="group", paired=False, correction="fdr_bh", permutations=0, is_logged=True, non_par=False)`
 - `run_ancova(...)`, `run_repeated_measurements_anova(...)`, `run_mixed_anova(...)`,
   `run_two_way_anova(...)`, `run_diff_analysis(...)`
@@ -47,12 +49,10 @@ capability from its submodule; `import acore` alone exposes nothing but `__versi
 
 ## Exploratory / decomposition
 
-**`acore.exploratory_analysis`**
-- `run_pca(data, drop_cols=None, group="group", annotation_cols=None, components=2, dropna=True)`
-- `run_tsne(...)`, `run_umap(...)`
-- `calculate_coefficient_variation(df) -> pd.Series`
-- `extract_number_missing(data, min_valid, drop_cols=None, group="group")`
-- `extract_percentage_missing(data, missing_max, drop_cols=None, group="group", how="all")`
+**`acore.exploratory_analysis`** — functions live in submodules, not the package namespace.
+- `decomposition`: `run_pca(data, drop_cols=None, group="group", annotation_cols=None, components=2, dropna=True)`, `run_tsne(...)`, `run_umap(...)`
+- `variation`: `calculate_coefficient_variation(df) -> pd.Series`
+- `missing`: `extract_number_missing(data, min_valid, drop_cols=None, group="group")`, `extract_percentage_missing(data, missing_max, drop_cols=None, group="group", how="all")`
 
 **`acore.decomposition`** — `pca.py`, `umap.py` (lower-level building blocks).
 

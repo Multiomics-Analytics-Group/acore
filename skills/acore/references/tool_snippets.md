@@ -45,12 +45,18 @@ df = load("omics.csv")
 method = "median"
 assert method in METHODS, f"Invalid method {method!r}; allowed: {sorted(METHODS)}"
 
-norm = normalize_data(df, method=method, normalize=None)
+# normalize_data transforms every numeric column, including numeric metadata such as
+# condition labels, so normalize only the feature columns and keep metadata unchanged.
+metadata_cols = ["sample", "subject", "group"]
+feature_cols = [c for c in df.columns if c not in metadata_cols]
+normalized_features = normalize_data(df[feature_cols], method=method, normalize=None)
+norm = pd.concat([df[metadata_cols], normalized_features], axis=1)
 norm.to_csv("normalized.csv", index=False)
 ```
 
-`normalize` selects a column subset to normalize; leave it `None` to normalize all numeric
-columns. Normalize **before** differential testing.
+`normalize` is an axis, not a column subset: `None`/`"samples"` normalizes each row,
+`"features"` each column (not every method honours it; `quantile`, `median_polish` ignore it).
+Select feature columns on the DataFrame, as above. Normalize **before** differential testing.
 
 ## 2. `imputation_KNN`
 
@@ -62,15 +68,17 @@ imputed = imputation_KNN(
     df,
     drop_cols=None,      # metadata columns to exclude, e.g. ["sample", "subject"]
     group=None,          # impute within group when set
-    cutoff=0.6,          # only impute features present in >= 60% of samples
+    cutoff=0.6,          # min fraction of valid values: features missing in more than 40% are skipped
     alone=True,
     n_neighbors=3,
 )
 imputed.to_csv("imputed.csv", index=False)
 ```
 
-Inspect missingness first (`extract_percentage_missing`) — features above the `cutoff`
-missingness are dropped rather than imputed.
+Inspect missingness first (`extract_percentage_missing`). `cutoff` is the minimum fraction of
+valid values, not a maximum missing fraction: with `cutoff=0.6` a feature missing in more than
+40% of samples (per group, when `group` is set) is not imputed, and with `alone=True` it is then
+dropped.
 
 ## 3. `run_anova`
 
@@ -107,8 +115,11 @@ res = run_ttest(
     condition1="control",
     condition2="treated",
     alpha=0.05,
-    drop_cols=["sample", "subject"],   # REQUIRED: acore defaults to None (drops nothing)
-    subject="subject",                 # use None when the frame has no subject column
+    drop_cols=["sample"],              # REQUIRED: acore defaults to None (drops nothing).
+                                       # Keep `subject` out: run_ttest drops it itself, and a
+                                       # second drop raises KeyError
+    subject=None,                      # unpaired; for paired designs pass the subject column
+                                       # name and set paired=True
     group="group",
     paired=False,
     correction="fdr_bh",
@@ -132,7 +143,9 @@ rejected, adjusted = apply_pvalue_correction(
     method="fdr_bh",   # acore defaults to "bonferroni"; prefer fdr_bh
 )
 res["rejected"], res["padj"] = rejected, adjusted
-print(f"{int(rejected.sum())} of {len(pvalues)} rejected at alpha=0.05")
+# `rejected` is a float array with NaN where the p-value was missing, so count NaN-aware.
+n_rejected = int(np.nansum(rejected))
+print(f"{n_rejected} of {int(np.isfinite(pvalues).sum())} tested rejected at alpha=0.05")
 ```
 
 Report `padj`, never raw `pvalue`.
@@ -165,7 +178,9 @@ enr = run_up_down_regulation_enrichment(
     regulation_data=load("anova.csv"),
     annotation=load("annotations.csv"),
     identifier="identifier",
-    groups=("group1", "group2"),   # the two levels being compared
+    groups=("group1", "group2"),   # NAMES of columns in the regulation table (the
+                                   # anova.csv columns identifying the compared groups),
+                                   # not the condition values like "control"/"treated"
     annotation_col="annotation",
     pval_col="padj",
     group_col="group",
@@ -184,12 +199,25 @@ enr.to_csv("enrichment.csv", index=False)
 ```python
 from acore.enrichment_analysis import run_enrichment
 
+from acore.enrichment_analysis.annotate import annotate_features
+
+annotations = load("annotations.csv")   # columns: identifier, source, annotation
+
+# annotations.csv has no foreground/background membership; run_enrichment groups by
+# `group_col`, so assign it from the selected feature sets first.
+foreground_ids = ["P01234"]                       # e.g. significant proteins from anova.csv
+background_ids = ["P01234", "Q99999", "P05067"]   # e.g. every protein that was tested
+annotations["group"] = annotate_features(
+    annotations["identifier"], foreground_ids, background_ids
+)
+annotations = annotations.dropna(subset=["group"])
+
 res = run_enrichment(
-    load("annotations.csv"),
+    annotations,
     foreground_id="foreground",
     background_id="background",
-    foreground_pop=250,     # size of the foreground population
-    background_pop=5000,    # size of the background population
+    foreground_pop=len(foreground_ids),
+    background_pop=len(background_ids),
     min_detected_in_set=2,
     annotation_col="annotation",
     group_col="group",
@@ -238,7 +266,7 @@ Check a PCA colored by batch before and after.
 ## 11. `calculate_coefficient_variation`
 
 ```python
-from acore.exploratory_analysis import calculate_coefficient_variation
+from acore.exploratory_analysis.variation import calculate_coefficient_variation
 
 df = load("normalized.csv")
 drop_cols = ["sample", "subject", "group"]
@@ -291,7 +319,12 @@ URL = (
 )
 df = pd.read_csv(URL)   # columns: Sample ID, AD, age, male, collection_site, <UniProt ids...>
 
-norm = normalize_data(df, method="median")
+# Normalize only the protein columns; normalize_data would also rewrite numeric
+# metadata such as the `AD` labels.
+metadata_cols = ["Sample ID", "AD", "age", "male", "collection_site"]
+protein_cols = [c for c in df.columns if c not in metadata_cols]
+normalized_proteins = normalize_data(df[protein_cols], method="median")
+norm = pd.concat([df[metadata_cols], normalized_proteins], axis=1)
 res = run_anova(
     norm,
     group="AD",                                             # this dataset's condition column
