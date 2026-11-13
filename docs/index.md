@@ -78,13 +78,9 @@ reference/acore
 :caption: MISC:
 :hidden:
 
-llms
+skills
 contributing
 authors
 history
 README.md
-```
-
-```
-
 ```

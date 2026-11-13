@@ -36,3 +36,4 @@ In case you add a new module or update one, please check the following tasks:
 - [ ] Update `index.md` file in the `docs` folder with the new example
 - [ ] Create **test script** in the `/tests` folder with the name of the subpackage or module
       using pytest or unittests to test your new functionality.
+- [ ] Check if changes impact the how the library is documented for the associated `skills`
