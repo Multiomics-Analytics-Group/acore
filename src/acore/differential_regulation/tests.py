@@ -72,10 +72,13 @@ def calculate_ttest(
 ) -> tuple[float, float, float, float, float, float, float, str]:
     """
     Calculates the t-test for the means of independent samples belonging to two different
-    groups using scipy.stats.ttest_ind_.
+    groups using pingouin.ttest_ or if non-parametric Mann-Whitney U test 
+    using pingouin.mwu_.
     
     .. _scipy.stats.ttest_ind: \
-    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html.
+    https://pingouin-stats.org/generated/pingouin.ttest.html.
+    .. _pingouin.mwu: \
+    https://pingouin-stats.org/generated/pingouin.mwu.html.
 
     :param df: pandas dataframe with groups and subjects as rows and protein identifier
                as column.
@@ -84,6 +87,14 @@ def calculate_ttest(
     :param bool is_logged: data is logged transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
+    :param bool paired: if True, perform a paired t-test
+    :param str tail: alternative hypothesis. Can be 'two-sided', 'greater' or 'less'
+    :param str correction: For unpaired two sample T-tests, specify whether or not to
+        correct for unequal variances using Welch separate variances T-test. If 'auto',
+        it will automatically uses Welch T-test when the sample sizes are unequal, as
+        recommended by Zimmerman 2004.
+    :param float r: Cauchy scale factor for computing the Bayes Factor.
+
     :return: Tuple with t-statistics, two-tailed p-value, mean of first group,
              mean of second group and logfc.
 
@@ -91,6 +102,7 @@ def calculate_ttest(
 
         result = calculate_ttest(df, 'group1', 'group2')
     """
+
     t = None
     pvalue = np.nan
     group1 = df[[condition1]].values
