@@ -22,7 +22,7 @@ from acore.types.differential_analysis import (
     TtestSchema,
 )
 
-from . import tests
+from . import effect_sizes, format_test_table, tests
 
 __all__ = [
     "run_ancova",
@@ -77,24 +77,24 @@ def run_anova(
     non_par: bool = False,
 ) -> DataFrame[AnovaSchema] | DataFrame[AnovaSchemaMultiGroup]:
     """
-    Performs statistical test for each protein in a dataset.
-    Checks what type of data is the input (paired, unpaired or repeated measurements) and
-    performs posthoc tests for multiclass data (i.e., when there are more than two groups,
-    posthoc tests such as pairwise t-tests or Tukey's HSD are used to determine which specific
-    groups differ after finding a significant overall effect).
-    Multiple hypothesis correction uses permutation-based
-    if permutations>0 and Benjamini/Hochberg if permutations=0.
+    Performs statistical test for each protein in a dataset. Checks what type of data is
+    the input (paired, unpaired or repeated measurements) and performs posthoc tests for
+    multiclass data (i.e., when there are more than two groups, posthoc tests such as
+    pairwise t-tests or Tukey's HSD are used to determine which specific groups differ
+    after finding a significant overall effect). Multiple hypothesis correction uses
+    permutation-based if permutations>0 and Benjamini/Hochberg if permutations=0.
 
-    :param pd.DataFrame df: pandas dataframe with samples as rows and protein identifiers as columns
-               (with additional columns 'group', 'sample' and 'subject').
+    :param pd.DataFrame df: pandas dataframe with samples as rows and protein identifiers
+               as columns (with additional columns 'group', 'sample' and 'subject').
     :param float alpha: error rate for multiple hypothesis correction
-    :param list drop_cols: column labels to be dropped from the dataframe. Pass ``None`` or ``[]``
-                           to drop no columns.
+    :param list drop_cols: column labels to be dropped from the dataframe. Pass ``None``
+                           or ``[]`` to drop no columns.
     :param str subject: column with subject identifiers
     :param str group: column with group identifiers
-    :param int permutations: number of permutations used to estimate false discovery rates.
-    :param str correction: method of pvalue correction see apply_pvalue_correction for methods,
-                            use methods available in acore.multiple_testing
+    :param int permutations: number of permutations used to estimate false discovery
+        rates.
+    :param str correction: method of pvalue correction see apply_pvalue_correction for
+                            methods, use methods available in acore.multiple_testing
     :param bool is_logged: whether data is log-transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
@@ -170,7 +170,7 @@ def run_anova(
                 pairwise_cols = pairwise_result.columns
                 pairwise_results.extend(pairwise_result.values.tolist())
             df = df.set_index([group])
-            res = tests.format_anova_table(
+            res = format_test_table.format_anova_table(
                 df,
                 aov_results,
                 pairwise_results,
@@ -257,7 +257,7 @@ def run_ancova(
             pairwise_cols = pairwise_result.columns
             pairwise_results.extend(pairwise_result.values.tolist())
     df = df.set_index([group])
-    res = tests.format_anova_table(
+    res = format_test_table.format_anova_table(
         df,
         ancova_result,
         pairwise_results,
@@ -333,7 +333,7 @@ def run_repeated_measurements_anova(
         pairwise_results.extend(pairwise_result.values.tolist())
 
     df = df.set_index([subject, within])
-    res = tests.format_anova_table(
+    res = format_test_table.format_anova_table(
         df,
         aov_results,
         pairwise_results,
@@ -602,8 +602,8 @@ def run_two_way_anova(
             df[col].reset_index().sort_values(group, ascending=[True, False]),
         ).fit()
         aov_table = sm.stats.anova_lm(model, typ=2)
-        tests.eta_squared(aov_table)
-        tests.omega_squared(aov_table)
+        effect_sizes.eta_squared(aov_table)
+        effect_sizes.omega_squared(aov_table)
         for i in aov_table.index:
             if i != "Residual":
                 t, p, eta, omega = aov_table.loc[
