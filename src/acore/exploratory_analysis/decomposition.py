@@ -40,6 +40,12 @@ def _get_annotations(data, annotation_cols, group):
     return annotations, non_feature_cols.difference([group])
 
 
+def _check_components(components: int) -> None:
+    """Embeddings need at least two components (columns "x" and "y")."""
+    if components < 2:
+        raise ValueError(f"At least two components are required, got {components}.")
+
+
 def run_pca(
     data: pd.DataFrame,
     drop_cols: list[str] | None = None,
@@ -79,6 +85,7 @@ def run_pca(
         annotation_cols = []
     if drop_cols is None:
         drop_cols = []
+    _check_components(components)
     np.random.seed(112736)
     var_exp = []
     args = {}
@@ -195,6 +202,7 @@ def run_tsne(
         annotation_cols = []
     if drop_cols is None:
         drop_cols = []
+    _check_components(components)
     result = {}
     args = {}
     df = data.copy()
@@ -282,6 +290,7 @@ def run_umap(
         annotation_cols = []
     if drop_cols is None:
         drop_cols = []
+    _check_components(components)
     np.random.seed(1145536)
     result = {}
     args = {}
