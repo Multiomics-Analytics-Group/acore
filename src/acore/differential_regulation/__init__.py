@@ -1,5 +1,7 @@
 """Differential regulation module."""
 
+import warnings
+
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
@@ -41,7 +43,18 @@ def run_diff_analysis(
     ttest_vars=("alternative", "p-val", "cohen-d"),
 ) -> pd.DataFrame:
     """Differential analysis procedure between two groups. Calculaes
-    mean per group and t-test for each variable in `vars` between two groups."""
+    mean per group and t-test for each variable in `vars` between two groups.
+
+    .. deprecated::
+        Use :func:`run_ttest` instead, which supports paired and non-parametric
+        tests, multiple testing correction and returns a schema-validated table.
+    """
+    warnings.warn(
+        "run_diff_analysis is deprecated and will be removed in a future release. "
+        "Use run_ttest instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     ret = tests.calc_means_between_groups(
         df, boolean_array=boolean_array, event_names=event_names
     )

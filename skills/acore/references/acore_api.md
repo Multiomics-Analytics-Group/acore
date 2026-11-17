@@ -28,7 +28,7 @@ capability from its submodule; `import acore` alone exposes nothing but `__versi
 - `run_anova(df, alpha=0.05, drop_cols=None, subject=None, group="group", permutations=0, correction="fdr_bh", is_logged=True, non_par=False)`
 - `run_ttest(df, condition1, condition2, alpha=0.05, drop_cols=None, subject="subject", group="group", paired=False, correction="fdr_bh", permutations=0, is_logged=True, non_par=False)`
 - `run_ancova(...)`, `run_repeated_measurements_anova(...)`, `run_mixed_anova(...)`,
-  `run_two_way_anova(...)`, `run_diff_analysis(...)`
+  `run_two_way_anova(...)`, `run_diff_analysis(...)` (deprecated, use `run_ttest`)
 - underlying tests (`acore.differential_regulation.tests`): `calculate_ttest`, `calculate_anova`,
   `calculate_ancova`, `calculate_thsd`, `calculate_pairwise_ttest`,
   `calculate_repeated_measures_anova`, `eta_squared`.
