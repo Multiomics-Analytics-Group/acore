@@ -8,7 +8,7 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.19.3
 #   kernelspec:
-#     display_name: .venv
+#     display_name: acore_py14
 #     language: python
 #     name: python3
 # ---
@@ -210,7 +210,7 @@ ttest.filter(regex="pvalue|padj|FC|rejected").head()
 
 # %%
 vuecore.interactive.get_differential_regulation_plot(
-    data=anova,
+    data=anova.reset_index(),
 )
 # %% [markdown]
 # Done.
