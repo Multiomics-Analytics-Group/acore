@@ -561,7 +561,7 @@ def run_two_way_anova(
     group: list[str] | None = None,
 ) -> tuple[pd.DataFrame, dict[str, pd.Series]]:
     """
-    Run a 2-way ANOVA when data['secondary_group'] is not empty
+    Run a 2-way ANOVA when df['secondary_group'] is not empty
 
     :param pd.DataFrame df: processed pandas DataFrame with samples as rows,
                and proteins and groups as columns.
@@ -574,7 +574,7 @@ def run_two_way_anova(
 
     Example::
 
-        result = run_two_way_anova(data,
+        result = run_two_way_anova(df,
                                    drop_cols=['sample'],
                                    subject='subject',
                                    group=['group', 'secondary_group']
@@ -583,18 +583,18 @@ def run_two_way_anova(
     if group is None:
         group = ["group", "secondary_group"]
     drop_cols = drop_cols or []
-    data = df.copy()
+    df = df.copy()
     factor_a, factor_b = group
-    data = data.set_index([subject] + group)
-    data = data.drop(drop_cols, axis=1)
-    data.columns = data.columns.str.replace(r"-", "_")
+    df = df.set_index([subject] + group)
+    df = df.drop(drop_cols, axis=1)
+    df.columns = df.columns.str.replace(r"-", "_")
 
     aov_result = []
     residuals = {}
-    for col in data.columns:
+    for col in df.columns:
         model = ols(
             f"{col} ~ C({factor_a})*C({factor_b})",
-            data[col].reset_index().sort_values(group, ascending=[True, False]),
+            df[col].reset_index().sort_values(group, ascending=[True, False]),
         ).fit()
         aov_table = sm.stats.anova_lm(model, typ=2)
         tests.eta_squared(aov_table)
