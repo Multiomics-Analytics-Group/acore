@@ -19,6 +19,7 @@ from acore.types.differential_analysis import (
     AncovaSchema,
     AnovaSchema,
     AnovaSchemaMultiGroup,
+    TtestSchema,
 )
 
 from . import tests
@@ -433,31 +434,35 @@ def run_ttest(
     permutations: int = 0,
     is_logged: bool = True,
     non_par: bool = False,
-) -> pd.DataFrame:
+) -> DataFrame[TtestSchema]:
     """
-    Runs t-test (paired/unpaired) for each protein in dataset and performs
+    Runs t-test (paired/unpaired) for each feature in dataset and performs
     permutation-based (if permutations>0) or Benjamini/Hochberg (if permutations=0)
     multiple hypothesis correction.
 
-    :param pd.DataFrame df: Pandas DataFrame with samples as rows and protein identifiers as columns
-               (with additional columns 'group', 'sample' and 'subject').
+    :param pd.DataFrame df: Pandas DataFrame with samples as rows and feature identifiers
+               as columns (with additional columns 'group', 'sample' and 'subject').
     :param str condition1: first of two conditions of the independent variable
     :param str condition2: second of two conditions of the independent variable
     :param float alpha: error rate for multiple hypothesis correction
-    :param list drop_cols: column labels to be dropped from the DataFrame. Pass ``None`` or ``[]``
-                           to drop no columns. The ``subject`` column should not be included here
-                           as it is handled separately based on the ``paired`` parameter.
+    :param list drop_cols: column labels to be dropped from the DataFrame. Pass ``None``
+                           or ``[]`` to drop no columns. The ``subject`` column should
+                           not be included here as it is handled separately based on the
+                           ``paired`` parameter.
     :param str subject: column with subject identifiers
     :param str group: column with group identifiers (independent variable)
     :param bool paired: paired or unpaired samples
-    :param str correction: method of pvalue correction see apply_pvalue_correction for methods
-    :param int permutations: number of permutations used to estimate false discovery rates.
+    :param str correction: method of pvalue correction see apply_pvalue_correction for
+        methods
+    :param int permutations: number of permutations used to estimate false discovery
+        rates.
     :param bool is_logged: data is log-transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
     :return: Pandas DataFrame with columns 'identifier', 'group1', 'group2',
         'mean(group1)', 'mean(group2)', 'std(group1)', 'std(group2)', 'Log2FC', 'FC',
-        'rejected', 'T-statistics', 'p-value', 'correction', '-log10 p-value', and 'method'.
+        'rejected', 'T-statistics', 'p-value', 'correction', '-log10 p-value', and
+        'method'.
 
     Example::
 
@@ -470,7 +475,7 @@ def run_ttest(
                            group='group',
                            paired=False,
                            correction='fdr_bh',
-                           permutations=50
+                           permutations=50,
                 )
     """
     drop_cols = drop_cols or []
@@ -551,7 +556,7 @@ def run_ttest(
     scores.index.name = "identifier"
     scores = scores.reset_index()
 
-    return scores
+    return TtestSchema.validate(scores)
 
 
 def run_two_way_anova(

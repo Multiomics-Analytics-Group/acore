@@ -18,7 +18,9 @@
 #
 # This API example shows the functionality in the [`acore.differential_regulation`](acore.differential_regulation) module:
 #
-# - ANOVA (for two groups) is equivalent to a t-test between two groups
+# - ANOVA (for two groups) using `run_anova` is equivalent to a t-test between two groups
+# using `run_ttest`. It's best to use `run_anova` for two groups, as it will
+# automatically call `run_ttest` and return the same results.
 #
 # Then we can do the same for examples with three
 # and more groups, where a omnibus analysis across groups
@@ -99,6 +101,7 @@ omics_and_meta[[group, *covariates]]
 # %% [markdown]
 # ## ANOVA analysis for two groups
 # - is not controlling for covariates
+# - is equivalent to a t-test between two groups
 
 # %%
 if not isinstance(subject_col, str):
@@ -155,6 +158,43 @@ view
 
 # %% tags=["hide-input"]
 anova.drop(columns=viewed_cols)
+
+# %% [markdown]
+# ## T-test for two groups
+# `run_anova` calls `run_ttest` for two groups. You can also call
+# [`run_ttest`](acore.differential_regulation.run_ttest) directly, which
+# requires the two conditions to compare. The result adheres to the
+# `TtestSchema` and contains one row per feature.
+#
+# - use `paired=True` and `subject` for paired samples
+# - use `non_par=True` for a Mann-Whitney U test instead of a t-test
+
+# %%
+condition1, condition2 = omics_and_meta[group].unique()[:2]
+ttest = (
+    ad.run_ttest(
+        omics_and_meta,
+        condition1=condition1,
+        condition2=condition2,
+        subject=None,
+        drop_cols=covariates,
+        group=group,
+    )
+    .set_index("identifier")
+    .sort_values(by="padj")
+)
+ttest
+
+# %% [markdown]
+# The t-test results are the same as for the ANOVA with two groups.
+
+# %%
+pd.testing.assert_series_equal(
+    ttest["pvalue"], anova["pvalue"].loc[ttest.index], check_names=False
+)
+
+# %% tags=["hide-input"]
+ttest.filter(regex="pvalue|padj|FC|rejected").head()
 
 # %% [markdown]
 # ## View Volcano plot for the ANOVA results
