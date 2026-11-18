@@ -400,7 +400,7 @@ def run_mixed_anova(
     _, padj = apply_pvalue_correction(
         res["pvalue"].tolist(), alpha=alpha, method=correction
     )
-    res["correction"] = "FDR correction BH"
+    res["correction"] = correction
     res["padj"] = padj
     res["rejected"] = res["padj"] < alpha
     res["testing"] = "Interaction"
@@ -538,7 +538,7 @@ def run_ttest(
         rejected, padj = apply_pvalue_correction(
             scores["pvalue"].tolist(), alpha=alpha, method=correction
         )
-        scores["correction"] = "FDR correction BH"
+        scores["correction"] = correction
         scores["padj"] = padj
         scores["rejected"] = rejected.astype(bool)
         corrected = True

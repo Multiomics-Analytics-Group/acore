@@ -59,7 +59,7 @@ def format_anova_table(
         _, padj = apply_pvalue_correction(
             scores["pvalue"].tolist(), alpha=alpha, method=correction
         )
-        scores["correction"] = "FDR correction BH"
+        scores["correction"] = correction
         scores["padj"] = padj
         corrected = True
     # ! scores is omnibus result
