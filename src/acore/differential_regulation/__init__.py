@@ -78,10 +78,15 @@ def run_anova(
     """
     Performs statistical test for each protein in a dataset. Checks what type of data is
     the input (paired, unpaired or repeated measurements) and performs posthoc tests for
-    multiclass data (i.e., when there are more than two groups, posthoc tests such as
-    pairwise t-tests or Tukey's HSD are used to determine which specific groups differ
-    after finding a significant overall effect). Multiple hypothesis correction uses
-    permutation-based if permutations>0 and Benjamini/Hochberg if permutations=0.
+    multiclass data (i.e., when there are more than two groups, pairwise t-tests are used
+    as posthoc tests to determine which specific groups differ after finding a
+    significant overall effect). Multiple hypothesis correction uses permutation-based if
+    permutations>0 and Benjamini/Hochberg if permutations=0.
+
+    With exactly two groups, :func:`run_ttest` is used (paired or unpaired). With more
+    than two groups, a repeated measures ANOVA (:func:`run_repeated_measurements_anova`)
+    is used if all subjects have more than one sample (paired), otherwise a one-way ANOVA
+    is used. ``non_par`` is only supported for exactly two groups.
 
     :param pd.DataFrame df: pandas dataframe with samples as rows and protein identifiers
                as columns (with additional columns 'group', 'sample' and 'subject').
@@ -213,6 +218,12 @@ def run_ancova(
     multiclass data. Multiple hypothesis correction uses permutation-based if
     permutations>0 and Benjamini/Hochberg if permutations=0.
 
+    This is a one-way ANCOVA: a single grouping variable (``group``) is tested while
+    adjusting for the ``covariates``. Repeated measurements are not supported, i.e.
+    ``subject`` is ignored and samples are treated as independent. Unlike
+    :func:`run_anova`, there is no special handling for two groups and no
+    non-parametric alternative (``non_par`` is ignored with a warning).
+
     :param pd.DataFrame df: Pandas DataFrame with samples as rows and protein identifiers
                and covariates as columns (with additional columns 'group', 'sample' and
                'subject').
@@ -220,7 +231,7 @@ def run_ancova(
     :param float alpha: error rate for multiple hypothesis correction
     :param list drop_cols: column labels to be dropped from the DataFrame. Pass ``None``
                            or ``[]`` to drop no columns.
-    :param str subject: column with subject identifiers
+    :param str subject: column with subject identifiers (currently ignored)
     :param str group: column with group identifiers
     :param int permutations: number of permutations used to estimate false discovery
         rates.
