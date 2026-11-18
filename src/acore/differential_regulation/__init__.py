@@ -155,7 +155,8 @@ def run_anova(
                 drop_cols=rm_drop_cols,
                 subject=subject,
                 within=group,
-                permutations=0,
+                permutations=permutations,
+                correction=correction,
                 is_logged=is_logged,
             )
         else:
