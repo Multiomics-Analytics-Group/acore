@@ -96,7 +96,9 @@ def run_anova(
                             methods, use methods available in acore.multiple_testing
     :param bool is_logged: whether data is log-transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
-                         and non-parametric test Mann Whitney U test if not passed
+                         and non-parametric test Mann Whitney U test if not passed. Only
+                         used for two groups; ignored (with a warning) for more than two
+                         groups.
     :return: DataFrame adhering to AnovaSchema or AnovaSchemaMultiGroup. For more than
              two groups, ``posthoc comparison`` labels each pair as ``group1~~group2``.
     :rtype: DataFrame[AnovaSchema] | DataFrame[AnovaSchemaMultiGroup]
@@ -136,6 +138,13 @@ def run_anova(
         )
         res = AnovaSchema.validate(res)
     elif len(df[group].unique()) > 2:
+        if non_par:
+            warnings.warn(
+                "non_par is only supported for two groups and is ignored for more "
+                "than two groups.",
+                UserWarning,
+                stacklevel=2,
+            )
         if paired:
             # subject must not be in drop_cols because run_repeated_measurements_anova
             # needs the subject column in the DataFrame
@@ -217,8 +226,7 @@ def run_ancova(
     :param str correction: method of pvalue correction see apply_pvalue_correction for
                            methods, use methods available in acore.multiple_testing
     :param bool is_logged: whether data is log-transformed
-    :param bool non_par: if True, normality and variance equality assumptions are checked
-                         and non-parametric test Mann Whitney U test if not passed
+    :param bool non_par: not supported, ignored (a warning is raised if True)
     :return: DataFrame adhering to AncovaSchema
     :rtype: DataFrame[AncovaSchema]
 
@@ -230,6 +238,12 @@ def run_ancova(
                             group='group', permutations=50
                 )
     """
+    if non_par:
+        warnings.warn(
+            "non_par is not supported for ANCOVA and is ignored.",
+            UserWarning,
+            stacklevel=2,
+        )
     drop_cols = drop_cols or []
     df = df.drop(drop_cols, axis=1)
     for cova in covariates:
