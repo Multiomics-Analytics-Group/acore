@@ -12,28 +12,22 @@ import scipy.stats
 from statsmodels.formula.api import ols
 
 from acore.differential_regulation.effect_sizes import eta_squared, omega_squared
-from acore.multiple_testing import (
-    apply_pvalue_correction,
-    apply_pvalue_permutation_fdrcorrection,
-    get_max_permutations,
-)
 
 __all__ = [
-    "eta_squared",
-    "omega_squared",
     "calc_means_between_groups",
     "calc_ttest",
-    "calculate_ttest",
-    "calculate_thsd",
-    "calculate_pairwise_ttest",
-    "complement_posthoc",
-    "calculate_anova",
     "calculate_ancova",
-    "calculate_repeated_measures_anova",
+    "calculate_anova",
     "calculate_mixed_anova",
-    "pairwise_ttest_with_covariates",
-    "format_anova_table",
+    "calculate_pairwise_ttest",
     "calculate_pvalue_from_tstats",
+    "calculate_repeated_measures_anova",
+    "calculate_thsd",
+    "calculate_ttest",
+    "complement_posthoc",
+    "eta_squared",
+    "omega_squared",
+    "pairwise_ttest_with_covariates",
 ]
 
 
@@ -478,7 +472,6 @@ def pairwise_ttest_with_covariates(
     pw = complement_posthoc(pw, column, is_logged)
 
     return pw
-
 
 
 def calculate_pvalue_from_tstats(tstat, dfn):
