@@ -1,5 +1,6 @@
 import unittest
 
+import numpy as np
 import pandas as pd
 
 import acore.exploratory_analysis as ea
@@ -153,6 +154,17 @@ class TestDimensionalityReduction(unittest.TestCase):
         )
 
         self.assertEqual(1, 1)
+
+    def test_run_umap_more_components(self):
+        # UMAP needs more samples than components for its spectral initialisation
+        rng = np.random.default_rng(0)
+        data = pd.DataFrame(rng.normal(size=(30, 8)))
+        data["group"] = ["a", "b"] * 15
+        result, args = ea.decomposition.run_umap(data, components=5)
+        self.assertEqual(
+            ["group", "x", "y", "z", "3", "4"], list(result["umap"].columns)
+        )
+        self.assertEqual({"x": "UMAP1", "y": "UMAP2", "z": "UMAP3"}, args)
 
 
 if __name__ == "__main__":

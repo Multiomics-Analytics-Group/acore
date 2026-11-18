@@ -40,6 +40,12 @@ def _get_annotations(data, annotation_cols, group):
     return annotations, non_feature_cols.difference([group])
 
 
+def _check_components(components: int) -> None:
+    """Embeddings need at least two components (columns "x" and "y")."""
+    if components < 2:
+        raise ValueError(f"At least two components are required, got {components}.")
+
+
 def run_pca(
     data: pd.DataFrame,
     drop_cols: list[str] | None = None,
@@ -65,9 +71,10 @@ def run_pca(
                                  level names; missing ones are ignored with a warning.
     :param int components: number of components to keep.
     :param bool dropna: if True removes all columns with any missing values.
-    :return: tuple: 1) three pandas dataframes: components, loadings and variance; 2)
-             xaxis and yaxis titles with components loadings for plotly.
-
+    :return: tuple:
+             1) three pandas dataframes: components, loadings and variance; 2)
+             2) readable names of the embedding columns ("x", "y" and "z" if
+                   more than two components), e.g. for axis titles.
     Example::
 
         result = run_pca(data, drop_cols=['sample', 'subject'], group='group',
@@ -78,6 +85,7 @@ def run_pca(
         annotation_cols = []
     if drop_cols is None:
         drop_cols = []
+    _check_components(components)
     np.random.seed(112736)
     var_exp = []
     args = {}
@@ -174,7 +182,8 @@ def run_tsne(
                              init='random' and the optimization).
     :return: Two dictionaries:
                 1) pandas dataframe with embedding vectors,
-                2) xaxis and yaxis titles for plotly.
+                2) readable names of the embedding columns ("x", "y" and "z" if
+                   more than two components), e.g. for axis titles.
 
     Example::
 
@@ -188,10 +197,12 @@ def run_tsne(
                           dropna=True
                         )
     """
+
     if annotation_cols is None:
         annotation_cols = []
     if drop_cols is None:
         drop_cols = []
+    _check_components(components)
     result = {}
     args = {}
     df = data.copy()
@@ -237,6 +248,7 @@ def run_umap(
     min_dist: float = 0.3,
     metric: str = "cosine",
     dropna: bool = True,
+    components: int = 2,
 ) -> tuple[dict[str, pd.DataFrame], dict[str, str]]:
     """
     Performs Uniform Manifold Approximation and Projection.
@@ -256,9 +268,12 @@ def run_umap(
     :param float min_dist: controls how tightly the embedding is allowed compress points together.
     :param str metric: metric used to measure distance in the input space.
     :param bool dropna: if True removes all columns with any missing values.
+    :param int components: dimension of the embedded space. The columns are named
+                           "x", "y", "z", "3", "4", ... as for PCA and t-SNE.
     :return: Two dictionaries:
                 1) pandas dataframe with embedding of the training data in low-dimensional space,
-                2) xaxis and yaxis titles for plotly.
+                2) readable names of the embedding columns ("x", "y" and "z" if
+                   more than two components), e.g. for axis titles.
 
     Example::
 
@@ -275,6 +290,7 @@ def run_umap(
         annotation_cols = []
     if drop_cols is None:
         drop_cols = []
+    _check_components(components)
     np.random.seed(1145536)
     result = {}
     args = {}
@@ -296,10 +312,16 @@ def run_umap(
     import umap  # slow import (numba compilation), so only import when needed
 
     X = umap.UMAP(
-        n_neighbors=n_neighbors, min_dist=min_dist, metric=metric
+        n_neighbors=n_neighbors,
+        min_dist=min_dist,
+        metric=metric,
+        n_components=components,
     ).fit_transform(X)
     args = {"x": "UMAP1", "y": "UMAP2"}
-    embedding_cols = ["x", "y"] + [str(i) for i in range(2, X.shape[1])]
+    embedding_cols = ["x", "y"]
+    if components > 2:
+        args.update({"z": "UMAP3"})
+        embedding_cols = ["x", "y", "z"] + [str(i) for i in range(3, components)]
     resultDf = pd.DataFrame(X, columns=embedding_cols)
     resultDf.insert(0, "group", y)
     resultDf = pd.concat([resultDf, annotations], axis=1)
