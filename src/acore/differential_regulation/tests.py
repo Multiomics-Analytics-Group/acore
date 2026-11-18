@@ -425,6 +425,10 @@ def calculate_mixed_anova(
         aov_result["identifier"] = column
     except Exception as e:  # noqa: BLE001
         print(f"Mixed Anova for column: {column} could not be calculated. Error {e}")
+        # empty result with expected columns, so callers can still concatenate
+        return pd.DataFrame(
+            columns=["identifier", "DF1", "DF2", "F", "p-unc", "Source"]
+        )
 
     return aov_result[["identifier", "DF1", "DF2", "F", "p-unc", "Source"]]
 
