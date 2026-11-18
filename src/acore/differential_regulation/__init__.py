@@ -412,8 +412,8 @@ def run_mixed_anova(
 
 def run_ttest(
     df: pd.DataFrame,
-    condition1: str,
-    condition2: str,
+    condition1: str | None = None,
+    condition2: str | None = None,
     alpha: float = 0.05,
     drop_cols: list[str] | None = None,
     subject: str | None = "subject",
@@ -431,8 +431,14 @@ def run_ttest(
 
     :param pd.DataFrame df: Pandas DataFrame with samples as rows and feature identifiers
                as columns (with additional columns 'group', 'sample' and 'subject').
-    :param str condition1: first of two conditions of the independent variable
+    :param str condition1: first of two conditions of the independent variable. If
+        ``None`` (together with ``condition2``), the two groups are inferred from the
+        ``group`` column. The order defines the direction of the comparison
+        (``condition1`` vs. ``condition2``): ``log2FC`` is ``mean(condition1) -
+        mean(condition2)`` for logged data, so a positive ``log2FC`` means
+        ``condition1`` is higher than ``condition2``.
     :param str condition2: second of two conditions of the independent variable
+        (the reference in the comparison)
     :param float alpha: error rate for multiple hypothesis correction
     :param list drop_cols: column labels to be dropped from the DataFrame. Pass ``None``
                            or ``[]`` to drop no columns. The ``subject`` column should
@@ -446,6 +452,8 @@ def run_ttest(
     :param int permutations: number of permutations used to estimate false discovery
         rates.
     :param bool is_logged: data is log-transformed
+    :raises ValueError: if conditions are not given and the ``group`` column does not
+        contain exactly two unique groups, or if only one condition is given.
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
     :return: Pandas DataFrame with columns 'identifier', 'group1', 'group2',
@@ -461,6 +469,20 @@ def run_ttest(
                            paired=False, correction='fdr_bh', permutations=50,
                 )
     """
+    if (condition1 is None) != (condition2 is None):
+        raise ValueError(
+            "Provide both condition1 and condition2, or neither to infer them from "
+            f"column '{group}'."
+        )
+    if condition1 is None:
+        available = df[group].dropna().unique().tolist()
+        if len(available) != 2:
+            raise ValueError(
+                f"Found {len(available)} groups in column '{group}': {available}. "
+                "A t-test needs exactly two: please choose two using "
+                "'condition1' and 'condition2'."
+            )
+        condition1, condition2 = available
     drop_cols = drop_cols or []
     columns = [
         "T-Statistics",
