@@ -28,7 +28,8 @@ logger = logging.getLogger(__name__)
 
 TYPE_COLS_MSG = """
 columns: 'terms', 'identifiers', 'foreground',
-    'background', foreground_pop, background_pop, 'pvalue', 'padj' and 'rejected'.
+    'background', foreground_pop, background_pop, 'odds_ratio', 'pvalue', 'padj' and
+    'rejected'.
 """
 
 __all__ = [
@@ -76,7 +77,8 @@ def run_site_regulation_enrichment(
         (only 'fisher' is supported currently).
     :param str regex: how to extract the annotated identifier from the site identifier
     :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
-        'background', foreground_pop, background_pop, 'pvalue', 'padj' and 'rejected'.
+        'background', foreground_pop, background_pop, 'odds_ratio', 'pvalue', 'padj' and
+        'rejected'.
 
     :raises ValueError: if regulation_data is `None` or empty.
 
@@ -301,7 +303,8 @@ def run_regulation_enrichment(
     :param int | None seed: seed of the random number generator used for the
         permutations when ``correction='efdr'``, for reproducible results.
     :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
-        'background', 'foreground_pop', 'background_pop', 'pvalue', 'padj' and 'rejected'.
+        'background', 'foreground_pop', 'background_pop', 'odds_ratio', 'pvalue', 'padj'
+        and 'rejected'.
 
     Example::
 
@@ -410,7 +413,7 @@ generated/statsmodels.stats.multitest.multipletests.html
         p-values and corrected p-values
         Columns are: 'terms', 'identifiers',
         'foreground', 'background', 'foreground_pop', 'background_pop',
-        'pvalue', 'padj' and 'rejected'.
+        'odds_ratio', 'pvalue', 'padj' and 'rejected'.
     :raises ValueError: if ``correction='efdr'`` and ``permutations`` is not > 0.
 
     Example::
@@ -455,6 +458,7 @@ generated/statsmodels.stats.multitest.multipletests.html
     terms = []
     ids = []
     pvalues = []
+    odds_ratios = []
     fnum = []
     bnum = []
     # Aggregate only the identifier column, without copying unrelated metadata.
@@ -474,7 +478,7 @@ generated/statsmodels.stats.multitest.multipletests.html
         num_background = int(counts.get((annotation, background_id), 0))
         if num_foreground < min_detected_in_set:
             continue
-        _, pvalue = run_fisher(
+        odds_ratio, pvalue = run_fisher(
             [num_foreground, foreground_pop - num_foreground],
             [num_background, background_pop - foreground_pop - num_background],
             alternative="greater",
@@ -482,6 +486,7 @@ generated/statsmodels.stats.multitest.multipletests.html
         fnum.append(num_foreground)
         bnum.append(num_background)
         terms.append(annotation)
+        odds_ratios.append(odds_ratio)
         pvalues.append(pvalue)
         ids.append(foreground_ids.get(annotation, ""))
     if len(pvalues) >= 1:
@@ -515,6 +520,7 @@ generated/statsmodels.stats.multitest.multipletests.html
                 "background": bnum,
                 "foreground_pop": foreground_pop,  # no. of foreground features, constant
                 "background_pop": background_pop,  # no. of included features, constant
+                "odds_ratio": odds_ratios,
                 "pvalue": pvalues,
                 "padj": padj,
                 "rejected": rejected.astype(bool),
