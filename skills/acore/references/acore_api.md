@@ -7,6 +7,7 @@ capability from its submodule; `import acore` alone exposes nothing but `__versi
 ## Preprocessing
 
 **`acore.normalization`**
+
 - `normalize_data(data, method="median", normalize=None)` — method ∈ {`median`, `median_polish`,
   `median_zero`, `quantile`, `linear`, `zscore`}. `normalize` is an axis (`"samples"` rows or
   `"features"` columns), not a column subset; it normalizes every numeric column, so pass only the
@@ -16,17 +17,35 @@ capability from its submodule; `import acore` alone exposes nothing but `__versi
   `zscore_normalization`, `median_polish_normalization`, `quantile_normalization`, `linear_normalization`.
 
 **`acore.imputation_analysis`**
+
 - `imputation_KNN(data, drop_cols=None, group=None, cutoff=0.6, alone=True, n_neighbors=3)`
 - `imputation_mixed_norm_KNN(...)`
 - `imputation_normal_distribution(data, drop_cols=None, shift=1.8, nstd=0.3, random_state=112736)`
 
 **`acore.batch_correction`**
+
 - `combat_batch_correction(data, batch_col)` — ComBat via inmoose.
 
 ## Differential regulation / expression — `acore.differential_regulation`
 
+`run_anova` runs `run_ttest` for exactly two groups (paired or unpaired samples). For
+more than two groups, it runs `run_repeated_measurements_anova` if a `subject` column is
+provided and the samples are paired (every subject has more than one sample), otherwise
+it runs a one-way anova across all groups with pairwise t-tests as posthoc tests for each
+pair of groups. `non_par` is only supported for exactly two groups (ignored with a
+warning otherwise).
+
+Use `run_ancova` when you want to control for a covariate. It is a one-way ANCOVA (one
+grouping variable plus covariates); repeated measurements are not supported (`subject` is
+ignored) and `non_par` is ignored with a warning.
+
+Use `run_mixed_anova` when the same subjects are measured under several conditions of one
+factor, for example timepoints, and also differ on a between-subject factor such as
+treatment. Use `run_two_way_anova` when every sample is an independent observation and
+you want main effects and the interaction.
+
 - `run_anova(df, alpha=0.05, drop_cols=None, subject=None, group="group", permutations=0, correction="fdr_bh", is_logged=True, non_par=False)`
-- `run_ttest(df, condition1, condition2, alpha=0.05, drop_cols=None, subject="subject", group="group", paired=False, correction="fdr_bh", permutations=0, is_logged=True, non_par=False)`
+- `run_ttest(df, condition1='condition1', condition2='condition2', alpha=0.05, drop_cols=None, subject="subject", group="group", paired=False, correction="fdr_bh", permutations=0, is_logged=True, non_par=False)`
 - `run_ancova(...)`, `run_repeated_measurements_anova(...)`, `run_mixed_anova(...)`,
   `run_two_way_anova(...)`, `run_diff_analysis(...)` (deprecated, use `run_ttest`)
 - underlying tests (`acore.differential_regulation.tests`): `calculate_ttest`, `calculate_anova`,
@@ -50,6 +69,7 @@ capability from its submodule; `import acore` alone exposes nothing but `__versi
 ## Exploratory / decomposition
 
 **`acore.exploratory_analysis`** — functions live in submodules, not the package namespace.
+
 - `decomposition`: `run_pca(data, drop_cols=None, group="group", annotation_cols=None, components=2, dropna=True)`, `run_tsne(...)`, `run_umap(...)`
 - `variation`: `calculate_coefficient_variation(df) -> pd.Series`
 - `missing`: `extract_number_missing(data, min_valid, drop_cols=None, group="group")`, `extract_percentage_missing(data, missing_max, drop_cols=None, group="group", how="all")`
