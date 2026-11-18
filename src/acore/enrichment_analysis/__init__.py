@@ -14,6 +14,7 @@ import re
 import gseapy as gp
 import pandas as pd
 from pandera.typing.pandas import DataFrame
+from scipy.stats.contingency import odds_ratio as _scipy_odds_ratio
 
 from acore.enrichment_analysis import permutations_enrichment
 from acore.enrichment_analysis.annotate import annotate_features
@@ -28,8 +29,8 @@ logger = logging.getLogger(__name__)
 
 TYPE_COLS_MSG = """
 columns: 'terms', 'identifiers', 'foreground',
-    'background', foreground_pop, background_pop, 'odds_ratio', 'pvalue', 'padj' and
-    'rejected'.
+    'background', foreground_pop, background_pop, 'odds_ratio', 'odds_ratio_lower',
+    'pvalue', 'padj' and 'rejected'.
 """
 
 __all__ = [
@@ -77,8 +78,8 @@ def run_site_regulation_enrichment(
         (only 'fisher' is supported currently).
     :param str regex: how to extract the annotated identifier from the site identifier
     :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
-        'background', foreground_pop, background_pop, 'odds_ratio', 'pvalue', 'padj' and
-        'rejected'.
+        'background', foreground_pop, background_pop, 'odds_ratio', 'odds_ratio_lower',
+        'pvalue', 'padj' and 'rejected'.
 
     :raises ValueError: if regulation_data is `None` or empty.
 
@@ -303,8 +304,8 @@ def run_regulation_enrichment(
     :param int | None seed: seed of the random number generator used for the
         permutations when ``correction='efdr'``, for reproducible results.
     :return: pandas.DataFrame with columns: 'terms', 'identifiers', 'foreground',
-        'background', 'foreground_pop', 'background_pop', 'odds_ratio', 'pvalue', 'padj'
-        and 'rejected'.
+        'background', 'foreground_pop', 'background_pop', 'odds_ratio',
+        'odds_ratio_lower', 'pvalue', 'padj' and 'rejected'.
 
     Example::
 
@@ -386,7 +387,9 @@ def run_enrichment(
     :param str foreground_id: group identifier of features that belong to the foreground.
     :param str background_id: group identifier of features that belong to the background.
     :param int foreground_pop: number of features in the foreground.
-    :param int background_pop: number of features in the background.
+    :param int background_pop: total number of features tested, i.e. the foreground plus
+        the non-foreground (background) features. The non-foreground group therefore has
+        ``background_pop - foreground_pop`` features.
     :param int min_detected_in_set: minimum number of features in the foreground
     :param str annotation_col: name of the column containing annotation terms.
     :param str group_col: name of column containing the group identifiers,
@@ -413,7 +416,7 @@ generated/statsmodels.stats.multitest.multipletests.html
         p-values and corrected p-values
         Columns are: 'terms', 'identifiers',
         'foreground', 'background', 'foreground_pop', 'background_pop',
-        'odds_ratio', 'pvalue', 'padj' and 'rejected'.
+        'odds_ratio', 'odds_ratio_lower', 'pvalue', 'padj' and 'rejected'.
     :raises ValueError: if ``correction='efdr'`` and ``permutations`` is not > 0.
 
     Example::
@@ -459,6 +462,7 @@ generated/statsmodels.stats.multitest.multipletests.html
     ids = []
     pvalues = []
     odds_ratios = []
+    odds_ratios_lower = []
     fnum = []
     bnum = []
     # Aggregate only the identifier column, without copying unrelated metadata.
@@ -478,10 +482,18 @@ generated/statsmodels.stats.multitest.multipletests.html
         num_background = int(counts.get((annotation, background_id), 0))
         if num_foreground < min_detected_in_set:
             continue
-        odds_ratio, pvalue = run_fisher(
+        # 2x2 table: rows are foreground / non-foreground features, columns are
+        # in term / not in term. background_pop is the total number of features,
+        # so non-foreground features number background_pop - foreground_pop.
+        table = [
             [num_foreground, foreground_pop - num_foreground],
             [num_background, background_pop - foreground_pop - num_background],
-            alternative="greater",
+        ]
+        odds_ratio, pvalue = run_fisher(*table, alternative="greater")
+        odds_ratios_lower.append(
+            _scipy_odds_ratio(table, kind="conditional").confidence_interval(
+                confidence_level=0.95, alternative="greater"
+            ).low
         )
         fnum.append(num_foreground)
         bnum.append(num_background)
@@ -519,8 +531,9 @@ generated/statsmodels.stats.multitest.multipletests.html
                 "foreground": fnum,
                 "background": bnum,
                 "foreground_pop": foreground_pop,  # no. of foreground features, constant
-                "background_pop": background_pop,  # no. of included features, constant
+                "background_pop": background_pop,  # total no. of features (fg + non-fg), constant
                 "odds_ratio": odds_ratios,
+                "odds_ratio_lower": odds_ratios_lower,
                 "pvalue": pvalues,
                 "padj": padj,
                 "rejected": rejected.astype(bool),
