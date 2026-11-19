@@ -70,7 +70,11 @@ def test_run_regulation_enrichment():
             "foreground_pop": [4, 4, 4],
             "background_pop": [6, 6, 6],
             "odds_ratio": [1.0, np.inf, np.inf],
-            "odds_ratio_lower": [0.017442446667210003, 0.1351031074648366, 0.0263157894736843],
+            "odds_ratio_lower": [
+                0.017442446667210003,
+                0.1351031074648366,
+                0.0263157894736843,
+            ],
             "pvalue": [0.7999999999999999, 0.4, 0.6666666666666667],
             "padj": [0.7999999999999999, 0.7999999999999999, 0.7999999999999999],
             "rejected": [False, False, False],
