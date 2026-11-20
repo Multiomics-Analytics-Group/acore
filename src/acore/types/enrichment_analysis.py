@@ -12,6 +12,8 @@ class EnrichmentAnalysisSchema(DataFrameModel):
     background: int = Field(ge=0)
     foreground_pop: int = Field(gt=0)
     background_pop: int = Field(gt=0)
+    odds_ratio: float = Field(ge=0, nullable=True)
+    odds_ratio_lower: float = Field(ge=0, nullable=True)
     pvalue: float = Field(ge=0, le=1)
     padj: float = Field(ge=0, le=1)
     rejected: bool = Field(nullable=False)

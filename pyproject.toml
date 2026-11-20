@@ -27,7 +27,7 @@ dependencies = [
   "pandas<3.0.0", # ToDo: update to remove upper limit. Related to pinned pingouin version.
   "dsp-pandas",   # https://github.com/biosustain/dsp_pandas  (import dsp_pandas)
   # scientific computing
-  "scipy",
+  "scipy>=1.10.0",     # PR 111 for lower bound on fisher exact test odds ratio.
   "scikit-learn>=1.5",
   # enrichment analysis dependencies
   "gseapy!=1.1.5",
