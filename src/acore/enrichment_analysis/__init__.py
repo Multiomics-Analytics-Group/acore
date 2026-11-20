@@ -491,9 +491,9 @@ generated/statsmodels.stats.multitest.multipletests.html
         ]
         odds_ratio, pvalue = run_fisher(*table, alternative="greater")
         odds_ratios_lower.append(
-            _scipy_odds_ratio(table, kind="conditional").confidence_interval(
-                confidence_level=0.95, alternative="greater"
-            ).low
+            _scipy_odds_ratio(table, kind="conditional")
+            .confidence_interval(confidence_level=0.95, alternative="greater")
+            .low
         )
         fnum.append(num_foreground)
         bnum.append(num_background)
