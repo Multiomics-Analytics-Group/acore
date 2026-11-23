@@ -68,6 +68,7 @@ dev = [
   "wheel",
   "jupytext",
   "ipykernel",
+  "pre-commit",
 ]
 
 all = [ # Optional dependencies for all non-core analysis modules
