@@ -107,3 +107,6 @@ ENV/
 
 # Mac
 .DS_Store
+
+# Claude Code personal instructions
+CLAUDE.local.md
