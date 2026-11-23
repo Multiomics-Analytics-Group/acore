@@ -23,7 +23,7 @@ Fixes #<NUM>
 
 - [ ] Look at [CONTRIBUTING.md](https://github.com/Multiomics-Analytics-Group/acore/blob/HEAD/CONTRIBUTING.md) for guidance on how to contribute.
 
-In case you add a new module or update one, please check the following tasks:
+In case you add a new module or update one, please check the following tasks (yes, no change, not relevant or no):
 
 - [ ] The folder names defines the name of the subpackage (module)
 - [ ] Add the user-facing functions to the `__init__.py` in the new folder, so that
@@ -37,3 +37,7 @@ In case you add a new module or update one, please check the following tasks:
 - [ ] Create **test script** in the `/tests` folder with the name of the subpackage or module
       using pytest or unittests to test your new functionality.
 - [ ] Check if changes impact the how the library is documented for the associated `skills`
+
+or pass all:
+
+- [ ] none of the above is relevant
