@@ -57,13 +57,13 @@ drop_cols: list[str] = ["collection_site"]
 factor_and_covars: list[str] = [group, *covariates]
 
 # %% [markdown]
-# Alternatively you can use the metabolomics dataset MTBLS13311,
+# Alternatively you can use the metabolomics dataset MTBLS13411,
 # which is also preprocessed and combined.
 
 # %% tags=["hide-input"]
 # BASE = (
 #     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-#     "main/example_data/MTBLS13311/"
+#     "main/example_data/MTBLS13411/"
 # )
 # fname: str = "MTBLS13411_omics_and_meta.csv"  # combined omics and meta data
 # covariates: list[str] = []

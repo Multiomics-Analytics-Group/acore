@@ -58,7 +58,7 @@ def make_plot(
 data = (
     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
     "refs/heads/main/"
-    "example_data/MTBLS13311/MTBLS13411_processed_data.csv"
+    "example_data/MTBLS13411/MTBLS13411_processed_data.csv"
 )
 data = pd.read_csv(data, index_col=0)
 # specific to this data, we shorten some column names for better readability

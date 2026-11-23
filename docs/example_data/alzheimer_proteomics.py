@@ -40,7 +40,7 @@ factor_and_covars: list[str] = [group, *covariates]
 
 # BASE = (
 #     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-#     "HEAD/example_data/MTBLS13311/"
+#     "HEAD/example_data/MTBLS13411/"
 #     ""
 # )
 # CLINIC_ML: str = "MTBLS13411_meta_data.csv"  # clinical data

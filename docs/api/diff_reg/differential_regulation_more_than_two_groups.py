@@ -49,7 +49,7 @@ dsp_pandas.format.set_pandas_options(
 # %% tags=["parameters"]
 BASE = (
     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-    "main/example_data/MTBLS13311/"
+    "main/example_data/MTBLS13411/"
 )
 fname: str = "MTBLS13411_omics_and_meta.csv"  # combined omics and meta data
 covariates: list[str] = []
