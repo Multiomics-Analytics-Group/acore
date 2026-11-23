@@ -11,11 +11,24 @@ import pingouin as pg
 import scipy.stats
 from statsmodels.formula.api import ols
 
-from acore.multiple_testing import (
-    apply_pvalue_correction,
-    apply_pvalue_permutation_fdrcorrection,
-    get_max_permutations,
-)
+from acore.differential_regulation.effect_sizes import eta_squared, omega_squared
+
+__all__ = [
+    "calc_means_between_groups",
+    "calc_ttest",
+    "calculate_ancova",
+    "calculate_anova",
+    "calculate_mixed_anova",
+    "calculate_pairwise_ttest",
+    "calculate_pvalue_from_tstats",
+    "calculate_repeated_measures_anova",
+    "calculate_thsd",
+    "calculate_ttest",
+    "complement_posthoc",
+    "eta_squared",
+    "omega_squared",
+    "pairwise_ttest_with_covariates",
+]
 
 
 # njab.stats.groups_comparision.py (partly renamed functions)
@@ -72,10 +85,13 @@ def calculate_ttest(
 ) -> tuple[float, float, float, float, float, float, float, str]:
     """
     Calculates the t-test for the means of independent samples belonging to two different
-    groups using scipy.stats.ttest_ind_.
+    groups using pingouin.ttest_ or if non-parametric Mann-Whitney U test 
+    using pingouin.mwu_.
     
     .. _scipy.stats.ttest_ind: \
-    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html.
+    https://pingouin-stats.org/generated/pingouin.ttest.html.
+    .. _pingouin.mwu: \
+    https://pingouin-stats.org/generated/pingouin.mwu.html.
 
     :param df: pandas dataframe with groups and subjects as rows and protein identifier
                as column.
@@ -84,6 +100,14 @@ def calculate_ttest(
     :param bool is_logged: data is logged transformed
     :param bool non_par: if True, normality and variance equality assumptions are checked
                          and non-parametric test Mann Whitney U test if not passed
+    :param bool paired: if True, perform a paired t-test
+    :param str tail: alternative hypothesis. Can be 'two-sided', 'greater' or 'less'
+    :param str correction: For unpaired two sample T-tests, specify whether or not to
+        correct for unequal variances using Welch separate variances T-test. If 'auto',
+        it will automatically uses Welch T-test when the sample sizes are unequal, as
+        recommended by Zimmerman 2004.
+    :param float r: Cauchy scale factor for computing the Bayes Factor.
+
     :return: Tuple with t-statistics, two-tailed p-value, mean of first group,
              mean of second group and logfc.
 
@@ -91,6 +115,7 @@ def calculate_ttest(
 
         result = calculate_ttest(df, 'group1', 'group2')
     """
+
     t = None
     pvalue = np.nan
     group1 = df[[condition1]].values
@@ -394,6 +419,10 @@ def calculate_mixed_anova(
         aov_result["identifier"] = column
     except Exception as e:  # noqa: BLE001
         print(f"Mixed Anova for column: {column} could not be calculated. Error {e}")
+        # empty result with expected columns, so callers can still concatenate
+        return pd.DataFrame(
+            columns=["identifier", "DF1", "DF2", "F", "p-unc", "Source"]
+        )
 
     return aov_result[["identifier", "DF1", "DF2", "F", "p-unc", "Source"]]
 
@@ -445,84 +474,6 @@ def pairwise_ttest_with_covariates(
     return pw
 
 
-def format_anova_table(
-    df: pd.DataFrame,
-    aov_results: list[tuple],
-    pairwise_results,
-    pairwise_cols,
-    group: str,
-    permutations: int,
-    alpha: float,
-    correction: str,
-) -> pd.DataFrame:
-    """
-    Performs p-value correction (permutation-based and FDR) and converts pandas dataframe
-    into final format.
-
-    :param df: pandas dataframe with samples as rows and protein identifiers as columns
-               (with additional columns 'group', 'sample' and 'subject').
-    :param list[tuple] aov_results: list of tuples with anova results (one tuple per feature).
-    :param list[dataframes] pairwise_results: list of pandas dataframes with
-                                              posthoc tests results
-    :param str group: column with group identifiers
-    :param float alpha: error rate for multiple hypothesis correction
-    :param int permutations: number of permutations used to estimate false discovery rates
-    :return: Pandas dataframe
-    """
-    columns = ["identifier", "dfk", "dfn", "F-statistics", "pvalue"]
-    scores = pd.DataFrame(aov_results, columns=columns)
-    scores = scores.set_index("identifier")
-    corrected = False
-    # FDR correction
-    if permutations > 0:
-        max_perm = get_max_permutations(df, group=group)
-        if max_perm >= 10:
-            permutations = min(permutations, max_perm)
-            observed_pvalues = scores.pvalue
-            count = apply_pvalue_permutation_fdrcorrection(
-                df,
-                observed_pvalues,
-                group=group,
-                alpha=alpha,
-                permutations=permutations,
-            )
-            scores = scores.join(count)
-            scores["correction"] = f"permutation FDR ({permutations} perm)"
-            corrected = True
-
-    if not corrected:
-        _, padj = apply_pvalue_correction(
-            scores["pvalue"].tolist(), alpha=alpha, method=correction
-        )
-        scores["correction"] = "FDR correction BH"
-        scores["padj"] = padj
-        corrected = True
-    # ! scores is omnibus result
-    res = pd.DataFrame(pairwise_results, columns=pairwise_cols).set_index("identifier")
-    if not res.empty:
-        res = res.join(scores[["F-statistics", "pvalue", "padj"]].astype("float"))
-        res["correction"] = scores["correction"]
-    else:
-        res = scores
-        res["log2FC"] = np.nan
-
-    res = res.reset_index()
-    if {"group1", "group2"}.issubset(res.columns):
-        res["posthoc comparison"] = (
-            res["group1"].astype(str) + "~~" + res["group2"].astype(str)
-        )
-    res["rejected"] = res["padj"] < alpha
-    # ! double check this
-    if "posthoc pvalue" in res.columns:
-        res["-log10 posthoc pvalue"] = [
-            -np.log10(x) for x in res["posthoc pvalue"].values
-        ]
-    if "pvalue" in res.columns:
-        res["-log10 pvalue"] = [-np.log10(x) for x in res["pvalue"].values]
-
-    return res
-
-
 def calculate_pvalue_from_tstats(tstat, dfn):
     """
     Calculate two-tailed p-values from T- or F-statistics.
@@ -534,30 +485,3 @@ def calculate_pvalue_from_tstats(tstat, dfn):
     pval = scipy.stats.t.sf(np.abs(tstat), dfn) * 2
 
     return pval
-
-
-def eta_squared(aov: pd.DataFrame) -> pd.DataFrame:
-    """
-    Calculates the effect size using Eta-squared.
-
-    :param aov: pandas dataframe with anova results from statsmodels.
-    :return: Pandas dataframe with additional Eta-squared column.
-    """
-    aov["eta_sq"] = "NaN"
-    aov["eta_sq"] = aov[:-1]["sum_sq"] / sum(aov["sum_sq"])
-    return aov
-
-
-def omega_squared(aov: pd.DataFrame) -> pd.DataFrame:
-    """
-    Calculates the effect size using Omega-squared.
-
-    :param aov: pandas dataframe with anova results from statsmodels.
-    :return: Pandas dataframe with additional Omega-squared column.
-    """
-    mse = aov["sum_sq"][-1] / aov["df"][-1]
-    aov["omega_sq"] = "NaN"
-    aov["omega_sq"] = (aov[:-1]["sum_sq"] - (aov[:-1]["df"] * mse)) / (
-        sum(aov["sum_sq"]) + mse
-    )
-    return aov
