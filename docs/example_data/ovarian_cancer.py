@@ -1,3 +1,18 @@
+# ---
+# jupyter:
+#   jupytext:
+#     cell_metadata_filter: -all
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.19.3
+#   kernelspec:
+#     display_name: acore_py14
+#     language: python
+#     name: acore_py14
+# ---
+
 # %% [markdown]
 # (nb_ref_ovarian_data)=
 # # Download from journal (ovarian cancer proteome)
@@ -23,6 +38,7 @@
 # %pip install acore openpyxl
 
 # %%
+import zipfile
 from pathlib import Path
 
 import pandas as pd
@@ -116,6 +132,46 @@ pgs
 # %%
 fname_meta = Path("../../example_data/PXD010372/processed/meta_patients.csv")
 pd.read_csv(fname_meta, index_col=0)
+
+# %% [markdown]
+# ## Data from PRIDE
+# The raw files and the MaxQuant search results of the study are also available on
+# [PRIDE](https://www.ebi.ac.uk/pride/archive/projects/PXD010372) (PXD010372).
+# Note that the MaxQuant output is not the curated and filtered table the authors
+# provided in the supplementary data, which we used above.
+# We can use `acore` to download two files from the project:
+#
+# - `Proteome_OvCa-Patients_Biobank.zip`: MaxQuant output of the patient proteomes
+# - `PXD010372_community_annotated.sdrf.tsv`: sample metadata in SDRF format
+
+# %%
+pxd_id = "PXD010372"
+folder_downloads = Path("downloaded")
+fnames_pride = [
+    "Proteome_OvCa-Patients_Biobank.zip",
+    "PXD010372_community_annotated.sdrf.tsv",
+]
+for fname in fnames_pride:
+    acore.io.download_PRIDE_data(pxd_id=pxd_id, file_name=fname, to=folder_downloads)
+
+# %% [markdown]
+# The zip archive contains the MaxQuant output files. We can inspect the content
+# without extracting it.
+
+# %%
+with zipfile.ZipFile(folder_downloads / fnames_pride[0]) as zf:
+    for info in zf.infolist():
+        print(f"{info.filename:50} {info.file_size / 1e6:8.1f} MB")
+
+# %% [markdown]
+# Load the sample metadata (one row per raw file).
+
+# %%
+sdrf = pd.read_csv(folder_downloads / fnames_pride[1], sep="\t")
+sdrf.shape
+
+# %%
+sdrf.dropna(axis=1, how="all").head()
 
 # %% [markdown]
 # Done.
