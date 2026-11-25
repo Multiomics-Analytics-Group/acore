@@ -71,13 +71,13 @@ _DEFAULT_ALPHA_CANDIDATES = np.arange(0.4, 1.01, 0.05)
 
 
 def qc_rlsc_loess(
-    x_qc,
-    y_qc,
-    x_all,
-    always_use_default=False,
-    default=0.75,
-    alpha_candidates=None,
-):
+    x_qc: np.ndarray,
+    y_qc: np.ndarray,
+    x_all: np.ndarray,
+    always_use_default: bool = False,
+    default: float = 0.75,
+    alpha_candidates: list[float] | np.ndarray | None = None,
+) -> tuple[np.ndarray, float]:
     """
     Estimate a QC-based drift curve using LOESS smoothing with
     leave-one-out cross-validation (LOOCV) to select the optimal
@@ -193,15 +193,15 @@ def qc_rlsc_loess(
 
 
 def run_loess_drift_correction(
-    data,
-    qc_rows,
-    sample_rows,
+    data: pd.DataFrame,
+    qc_rows: list[str],
+    sample_rows: list[str],
     sample_order: pd.DataFrame,
     filter_percent: float | None = None,
     qc_min_threshold: int = 4,
-    always_use_default=False,
-    default=0.75,
-):
+    always_use_default: bool = False,
+    default: float = 0.75,
+) -> tuple[pd.DataFrame, dict[str, dict]]:
     """
     Perform QC-based drift correction across multiple features using
     LOESS regression and spline interpolation.

@@ -17,7 +17,7 @@ def _find_unrar() -> str | None:
 
 
 # ! unrar must be installed in the system
-def unrar(filepath, to):
+def unrar(filepath: str | Path, to: str | Path) -> None:
     """
     Decompress RAR file
 
@@ -25,8 +25,8 @@ def unrar(filepath, to):
     for some archives (``rarfile`` falls back to other tools such as ``bsdtar`` if
     ``unrar`` is not on PATH). Falls back to ``rarfile`` if ``unrar`` is not found.
 
-    :param str filepath: path to rar file
-    :param str to: where to extract all files
+    :param str | Path filepath: path to rar file
+    :param str | Path to: where to extract all files
 
     """
     filepath = Path(filepath).resolve()

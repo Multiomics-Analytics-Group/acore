@@ -51,7 +51,7 @@ def run_diff_analysis(
     df: pd.DataFrame,
     boolean_array: pd.Series,
     event_names: tuple[str, str] = ("1", "0"),
-    ttest_vars=("alternative", "p-val", "cohen-d"),
+    ttest_vars: tuple[str, ...] = ("alternative", "p-val", "cohen-d"),
 ) -> pd.DataFrame:
     """Differential analysis procedure between two groups. Calculaes
     mean per group and t-test for each variable in `vars` between two groups."""

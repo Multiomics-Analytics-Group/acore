@@ -1,11 +1,12 @@
 import warnings
-from collections.abc import Iterable
+from collections.abc import Hashable, Iterable
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
 
-def convertToEdgeList(data, cols):
+def convertToEdgeList(data: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
     """
     This function converts a pandas dataframe to an edge list where index becomes the source nodes and columns the target nodes.
 
@@ -23,7 +24,7 @@ def convertToEdgeList(data, cols):
 MAX_LISTED_COLUMNS = 20
 
 
-def check_columns_in_data(data: pd.DataFrame, **parameters) -> None:
+def check_columns_in_data(data: pd.DataFrame, **parameters: Any) -> None:
     """
     Raise a ValueError naming every requested column that is not in the data.
 
@@ -70,7 +71,7 @@ def columns_to_drop(
     columns: Iterable | None,
     parameter: str,
     required: dict[str, str | list[str] | None] | None = None,
-):
+) -> list[Hashable]:
     """
     Return the columns to drop that are in the data, warning about the others.
 
@@ -126,7 +127,7 @@ def columns_to_drop(
 
 
 # TODO move to dsp_pandas
-def check_is_paired(df, subject, group):
+def check_is_paired(df: pd.DataFrame, subject: str | None, group: str) -> bool:
     """
     Check if samples are paired.
 
@@ -144,7 +145,13 @@ def check_is_paired(df, subject, group):
     return is_pair
 
 
-def transform_into_wide_format(data, index, columns, values, extra=None):
+def transform_into_wide_format(
+    data: pd.DataFrame | None,
+    index: str | list[str] | None,
+    columns: str,
+    values: str,
+    extra: list[str] | None = None,
+) -> pd.DataFrame:
     """
     This function converts a Pandas DataFrame from long to wide format using
     pandas pivot_table() function.
@@ -195,7 +202,12 @@ def transform_into_wide_format(data, index, columns, values, extra=None):
     return df
 
 
-def transform_into_long_format(data, drop_columns, group, columns=None):
+def transform_into_long_format(
+    data: pd.DataFrame | None,
+    drop_columns: list[str],
+    group: str | list[str],
+    columns: list[str] | None = None,
+) -> pd.DataFrame:
     """
     Converts a Pandas DataDrame from wide to long format using pd.melt()
     function.
@@ -226,7 +238,7 @@ def transform_into_long_format(data, drop_columns, group, columns=None):
     return long_data
 
 
-def remove_group(data):
+def remove_group(data: pd.DataFrame) -> pd.DataFrame:
     """
     Removes column with label 'group'.
 
@@ -241,7 +253,7 @@ def remove_group(data):
     return data
 
 
-def calculate_fold_change(df, condition1, condition2):
+def calculate_fold_change(df: pd.DataFrame, condition1: str, condition2: str) -> float:
     """
     Calculates fold-changes between two groups for all proteins in a dataframe.
 
@@ -274,7 +286,9 @@ def calculate_fold_change(df, condition1, condition2):
     return fold_change
 
 
-def pooled_standard_deviation(sample1, sample2, ddof):
+def pooled_standard_deviation(
+    sample1: np.ndarray, sample2: np.ndarray, ddof: int
+) -> float:
     """
     Calculates the pooled standard deviation.
     For more information visit https://www.hackdeploy.com/learn-what-is-statistical-power-with-python/.
@@ -293,7 +307,7 @@ def pooled_standard_deviation(sample1, sample2, ddof):
     return np.sqrt(numerator / denominator)
 
 
-def cohens_d(sample1, sample2, ddof):
+def cohens_d(sample1: np.ndarray, sample2: np.ndarray, ddof: int) -> float:
     """
     Calculates Cohen's d effect size based on the distance between two means, measured in standard deviations.
     For more information visit https://www.hackdeploy.com/learn-what-is-statistical-power-with-python/.
@@ -308,7 +322,9 @@ def cohens_d(sample1, sample2, ddof):
     return (u1 - u2) / s_pooled
 
 
-def hedges_g(df, condition1, condition2, ddof=0):
+def hedges_g(
+    df: pd.DataFrame, condition1: str, condition2: str, ddof: int = 0
+) -> float:
     """
     Calculates Hedges’ g effect size (more accurate for sample sizes below 20 than Cohen's d).
     For more information visit https://docs.scipy.org/doc/numpy/reference/generated/numpy.nanstd.html.
@@ -358,7 +374,7 @@ def hedges_g(df, condition1, condition2, ddof=0):
     return g
 
 
-def unit_vector(vector):
+def unit_vector(vector: np.ndarray) -> np.ndarray:
     """
     Returns the unit vector of the vector.
     :param tuple vector: vector
@@ -367,7 +383,7 @@ def unit_vector(vector):
     return vector / np.linalg.norm(vector)
 
 
-def flatten(t, my_list=None):
+def flatten(t: Iterable, my_list: list | None = None) -> list:
     """
     Code from: https://gist.github.com/shaxbee/0ada767debf9eefbdb6e
     Acknowledgements: Zbigniew Mandziejewicz (shaxbee)
@@ -388,7 +404,7 @@ def flatten(t, my_list=None):
     return my_list
 
 
-def angle_between(v1, v2):
+def angle_between(v1: np.ndarray, v2: np.ndarray) -> float:
     """
     Returns the angle in radians between vectors 'v1' and 'v2'
 
@@ -404,14 +420,14 @@ def angle_between(v1, v2):
     return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
 
-def append_to_list(mylist, myappend):
+def append_to_list(mylist: list, myappend: Any) -> None:
     if isinstance(myappend, list):
         mylist.extend(myappend)
     else:
         mylist.append(myappend)
 
 
-def generator_to_dict(genvar):
+def generator_to_dict(genvar: Iterable[Iterable[Hashable]]) -> dict[Hashable, int]:
     dictvar = {}
     for i, gen in enumerate(genvar):
         dictvar.update({n: i for n in gen})

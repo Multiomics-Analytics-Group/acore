@@ -54,7 +54,7 @@ def normalize_data(
     data: pd.DataFrame,
     method: str = "median",
     normalize: str | None = None,
-):
+) -> pd.DataFrame:
     """
     This function normalizes the data using the selected method. Normalizes only nummeric
     data, but keeps the non-numeric columns in the output DataFrame.

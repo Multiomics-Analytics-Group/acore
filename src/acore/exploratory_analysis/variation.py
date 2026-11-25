@@ -91,7 +91,7 @@ def get_coefficient_variation(
     data: pd.DataFrame,
     drop_columns: list[str] | None = None,
     group: str = "group",
-):
+) -> pd.DataFrame:
     """
     Extracts the coefficients of variation in each group.
 

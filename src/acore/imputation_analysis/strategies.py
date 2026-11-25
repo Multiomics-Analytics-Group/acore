@@ -181,7 +181,7 @@ def imputation_mixed_norm_KNN(
     cutoff: float = 0.6,
     random_state: int = 112736,
     n_neighbors: int = 3,
-):
+) -> pd.DataFrame:
     """
     Missing values are replaced in two steps:
 

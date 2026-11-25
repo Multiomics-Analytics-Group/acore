@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 def download_from_ftp(
-    ftp_url: str, user: str, password: str, to: str, file_name
+    ftp_url: str, user: str, password: str, to: str | Path, file_name: str
 ) -> str:
     """Download a file from an FTP server."""
     to = Path(to)

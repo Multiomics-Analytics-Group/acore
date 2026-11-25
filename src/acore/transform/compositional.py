@@ -5,7 +5,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import FunctionTransformer
 
 
-def calc_clr(x):
+def calc_clr(x: np.ndarray | pd.DataFrame) -> np.ndarray:
     """
     Calculate the centered log-ratio (CLR) transformation.
 

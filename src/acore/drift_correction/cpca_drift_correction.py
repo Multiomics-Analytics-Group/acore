@@ -14,7 +14,7 @@ from sklearn.preprocessing import StandardScaler
 logger = logging.getLogger(__name__)
 
 
-def check_missingness(df: pd.DataFrame, rows_to_check: list):
+def check_missingness(df: pd.DataFrame, rows_to_check: list) -> bool:
     """
     This function checks for NAs in the data frame inside some user-provided rows.
 
@@ -39,7 +39,7 @@ def check_missingness(df: pd.DataFrame, rows_to_check: list):
 
 
 def run_cpca_drift_correction(
-    df: pd.DataFrame, sample_rows, qc_rows, n_comps: int = 1
+    df: pd.DataFrame, sample_rows: list, qc_rows: list, n_comps: int = 1
 ) -> pd.DataFrame:
     """
     Corrects technical drift using Common Principal Components Analysis (CPCA).
@@ -99,10 +99,11 @@ def run_cpca_drift_correction(
 
 def cpca_centroid(
     df: pd.DataFrame,
-    sample_rows,  # list of row indices, OR dict {group_name: [row indices]}
+    # list of row indices, OR dict {group_name: [row indices]}
+    sample_rows: list | dict[str, list],
     qc_rows: list,
     log_transform: bool = True,
-):
+) -> float:
     # Normalise sample_rows to a dict
     if isinstance(sample_rows, list):
         sample_groups = {"Samples": sample_rows}

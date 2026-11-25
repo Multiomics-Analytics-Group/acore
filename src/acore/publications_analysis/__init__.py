@@ -16,7 +16,7 @@ except ImportError as e:
 Entrez.email = "kg@dtu.dk"
 
 
-def getMedlineAbstracts(idList):
+def getMedlineAbstracts(idList: list[str]) -> pd.DataFrame:
     fields = {
         "TI": "title",
         "AU": "authors",
@@ -58,11 +58,11 @@ def getMedlineAbstracts(idList):
 
 
 def get_publications_abstracts(
-    data,
-    publication_col="publication",
-    join_by=None,
-    index="PMID",
-):
+    data: pd.DataFrame,
+    publication_col: str = "publication",
+    join_by: list[str] | None = None,
+    index: str = "PMID",
+) -> pd.DataFrame:
     """
     Accesses NCBI PubMed over the WWW and retrieves the abstracts corresponding
     to a list of one or more PubMed IDs.

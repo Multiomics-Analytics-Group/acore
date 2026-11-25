@@ -1,3 +1,5 @@
+from typing import Any
+
 import pandas as pd
 
 try:
@@ -11,7 +13,9 @@ except ImportError as e:
     ) from e
 
 
-def get_data_ready_for_km(dfs_dict, args):
+def get_data_ready_for_km(
+    dfs_dict: dict[str, pd.DataFrame], args: dict[str, Any]
+) -> pd.DataFrame | None:
     kmdf = None
     for df_key in dfs_dict:
         if df_key == "clinical":
@@ -36,7 +40,13 @@ def get_data_ready_for_km(dfs_dict, args):
     return kmdf
 
 
-def group_data_based_on_marker(df, marker, index_col, how, value):
+def group_data_based_on_marker(
+    df: pd.DataFrame,
+    marker: str | None,
+    index_col: str | None,
+    how: str,
+    value: float | None,
+) -> pd.DataFrame:
     mdf = pd.DataFrame()
     if (
         index_col is not None
@@ -70,7 +80,13 @@ def group_data_based_on_marker(df, marker, index_col, how, value):
     return mdf
 
 
-def run_km(data, time_col, event_col, group_col, args=None):
+def run_km(
+    data: pd.DataFrame | dict[str, pd.DataFrame],
+    time_col: str,
+    event_col: str,
+    group_col: str,
+    args: dict[str, Any] | None = None,
+) -> tuple[list[KaplanMeierFitter] | pd.DataFrame, str | None]:
     if args is None:
         args = {}
     kmdf = None
@@ -88,7 +104,9 @@ def run_km(data, time_col, event_col, group_col, args=None):
     return kmf, summary
 
 
-def get_km_results(df, group_col, time_col, event_col):
+def get_km_results(
+    df: pd.DataFrame, group_col: str, time_col: str, event_col: str
+) -> tuple[list[KaplanMeierFitter], str | None]:
     models = []
     summary_ = None
     summary_result = None
@@ -122,7 +140,9 @@ def get_km_results(df, group_col, time_col, event_col):
     return models, summary_result
 
 
-def get_hazard_ratio_results(df, group_col, time_col, event_col):
+def get_hazard_ratio_results(
+    df: pd.DataFrame, group_col: str, time_col: str, event_col: str
+) -> list[NelsonAalenFitter]:
     models = []
     df = df[[event_col, time_col, group_col]].dropna()
     df[event_col] = df[event_col].astype("category")

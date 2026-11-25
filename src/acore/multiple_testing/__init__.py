@@ -98,8 +98,12 @@ def apply_pvalue_twostage_fdrcorrection(
 
 
 def apply_pvalue_permutation_fdrcorrection(
-    df, observed_pvalues, group, alpha=0.05, permutations=50
-):
+    df: pd.DataFrame,
+    observed_pvalues: pd.Series,
+    group: str,
+    alpha: float = 0.05,
+    permutations: int = 50,
+) -> pd.DataFrame:
     """
     This function applies multiple hypothesis testing correction using a permutation-based false discovery rate approach.
 
@@ -153,7 +157,9 @@ def apply_pvalue_permutation_fdrcorrection(
     return qvalues
 
 
-def calculate_anova(df: pd.DataFrame, column: str, group: str = "group"):
+def calculate_anova(
+    df: pd.DataFrame, column: str, group: str = "group"
+) -> tuple[str, float, float, float, float]:
     """
     Calculates one-way ANOVA using pingouin.
 
@@ -170,7 +176,9 @@ def calculate_anova(df: pd.DataFrame, column: str, group: str = "group"):
     return (column, df1, df2, t, pvalue)
 
 
-def get_counts_permutation_fdr(value, random, observed, n, alpha):
+def get_counts_permutation_fdr(
+    value: float, random: np.ndarray, observed: pd.Series, n: int, alpha: float
+) -> tuple[float, bool]:
     """
     Calculates local FDR values (q-values) by computing the fraction of accepted hits from the permuted data over accepted hits from the measured data normalized by the total number of permutations.
 
@@ -260,14 +268,14 @@ def compute_efdr(
     return rejected, efdr
 
 
-def get_max_permutations(df, group="group"):
+def get_max_permutations(df: pd.DataFrame, group: str = "group") -> float:
     """
     Get maximum number of permutations according to number of samples.
 
     :param df: pandas dataframe with samples as rows and protein identifiers as columns
     :param str group: column with group identifiers
     :return: Maximum number of permutations.
-    :rtype: int
+    :rtype: float
     """
     num_groups = len(list(df.index))
     num_per_group = df.groupby(group).size().tolist()

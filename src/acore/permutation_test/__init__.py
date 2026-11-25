@@ -39,6 +39,7 @@ observed).
 
 import warnings
 from collections.abc import Callable
+from typing import Any
 
 import numpy as np
 from scipy.stats import (
@@ -63,8 +64,8 @@ def paired_permutation(
     cond2: np.ndarray,
     metric: str | Callable = "t-statistic",
     n_permutations: int = 10000,
-    rng: np.random.Generator = None,
-    **kwargs,
+    rng: np.random.Generator | None = None,
+    **kwargs: Any,
 ) -> dict:
     """
     Perform a permutation test for paired samples.
@@ -186,9 +187,9 @@ def paired_permutation(
 
 
 def chi2_permutation(
-    *groups,
+    *groups: np.ndarray,
     n_permutations: int = 10000,
-    rng: np.random.Generator = None,
+    rng: np.random.Generator | None = None,
 ) -> dict:
     """
     Perform a permutation test for categorical data using the chi-squared statistic.
@@ -248,8 +249,8 @@ def indep_permutation(
     group2: np.ndarray,
     metric: str | Callable = "t-statistic",
     n_permutations: int = 10000,
-    rng: np.random.Generator = None,
-    **kwargs,
+    rng: np.random.Generator | None = None,
+    **kwargs: Any,
 ) -> dict:
     """
     Perform a permutation test for independent samples.

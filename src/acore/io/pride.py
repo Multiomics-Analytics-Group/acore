@@ -8,12 +8,12 @@ from .ftp import download_from_ftp
 
 
 def download_PRIDE_data(
-    pxd_id,
-    file_name,
-    to=".",
-    user="",
-    password="",
-    date_field="publicationDate",
+    pxd_id: str,
+    file_name: str,
+    to: str | Path = ".",
+    user: str = "",
+    password: str = "",
+    date_field: str = "publicationDate",
     overwrite: bool = False,
 ) -> dict:
     """
@@ -25,7 +25,7 @@ def download_PRIDE_data(
 
     :param str pxd_id: PRIDE project identifier (id. PXD013599).
     :param str file_name: name of the file to dowload
-    :param str to: local directory where the file should be downloaded
+    :param str | Path to: local directory where the file should be downloaded
     :param str user: username to access biomedical database server if required.
     :param str password: password to access biomedical database server if required.
     :param str date_field: projects deposited in PRIDE are search based on date, either

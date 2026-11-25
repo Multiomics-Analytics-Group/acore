@@ -15,7 +15,7 @@ def filter_by_missingness(
     method: str = "classic",
     samples: list | None = None,
     groups: dict | str | None = None,
-):
+) -> pd.DataFrame:
     """
     Implementation of the 80%-rule.
 
@@ -83,7 +83,7 @@ def filter_cv(
     data: pd.DataFrame,
     samples: list,
     qcs: list,
-):
+) -> pd.DataFrame:
     """
     Implementation of coefficient of variation (CV)-based filtering.
 
@@ -129,7 +129,7 @@ def filter_blanks(
     blanks: list,
     samples: list,
     threshold: float = 0.5,
-):
+) -> pd.DataFrame:
     """
     Filtering out features that show up in the blanks control.
 

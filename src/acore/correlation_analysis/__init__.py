@@ -1,5 +1,5 @@
 import itertools
-from typing import NamedTuple
+from typing import Any, NamedTuple
 
 import numpy as np
 import pandas as pd
@@ -22,7 +22,7 @@ class CorrelationCoefficient(NamedTuple):
         )
 
 
-def corr_lower_triangle(df: pd.DataFrame, **kwargs) -> pd.DataFrame:
+def corr_lower_triangle(df: pd.DataFrame, **kwargs: Any) -> pd.DataFrame:
     """Compute the correlation matrix, returning only unique values (lower triangle).
     Passes kwargs to [pandas.DataFrame.corr](pandas.DataFrame.corr) method.
     """
@@ -138,14 +138,14 @@ def run_correlation(
 
 
 def run_multi_correlation(
-    df_dict,
-    alpha=0.05,
-    subject="subject",
-    on=None,
-    group="group",
-    method="pearson",
-    correction="fdr_bh",
-):
+    df_dict: dict[str, pd.DataFrame],
+    alpha: float = 0.05,
+    subject: str = "subject",
+    on: list[str] | None = None,
+    group: str = "group",
+    method: str = "pearson",
+    correction: str = "fdr_bh",
+) -> pd.DataFrame | None:
     """
     This function merges all input dataframes and calculates pairwise correlations for all columns.
 
@@ -189,7 +189,9 @@ def run_multi_correlation(
     return correlation
 
 
-def calculate_rm_correlation(df: pd.DataFrame, x: str, y: str, subject: str):
+def calculate_rm_correlation(
+    df: pd.DataFrame, x: str, y: str, subject: str
+) -> tuple[str, str, float, float, float]:
     """
     Computes correlation and p-values between two columns a and b in df with
     repeated measures (rm).
@@ -215,7 +217,12 @@ def calculate_rm_correlation(df: pd.DataFrame, x: str, y: str, subject: str):
     )
 
 
-def run_rm_correlation(df, alpha=0.05, subject="subject", correction="fdr_bh"):
+def run_rm_correlation(
+    df: pd.DataFrame,
+    alpha: float = 0.05,
+    subject: str = "subject",
+    correction: str = "fdr_bh",
+) -> pd.DataFrame:
     """
     Computes pairwise repeated measurements correlations for all columns in dataframe,
     and returns results as an edge list with 'weight' as correlation score,
@@ -289,7 +296,7 @@ def calculate_pvalue_correlation_old(r: pd.DataFrame, n_obs: int) -> pd.DataFram
     return p
 
 
-def calculate_pvalue_correlation(r, n_obs):
+def calculate_pvalue_correlation(r: np.ndarray, n_obs: int) -> np.ndarray:
     """Calculate p-values for Pearson correlation using a all values from the
     correlation matrix.
 
@@ -299,7 +306,7 @@ def calculate_pvalue_correlation(r, n_obs):
 
     Parameters
     ----------
-    r : pd.DataFrame
+    r : np.ndarray
         Correlation matrix.
     n_obs : int
         Number of observations used to calculate the correlation matrix (assumes no
@@ -307,7 +314,7 @@ def calculate_pvalue_correlation(r, n_obs):
 
     Returns
     -------
-    pd.DataFrame
+    np.ndarray
         p-value matrix assuming fixed number of observations.
     """
     upper_idx = np.triu_indices_from(r, k=1)

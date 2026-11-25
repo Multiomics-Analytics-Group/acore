@@ -6,19 +6,22 @@ except ImportError as e:
         "Install it with: pip install 'acore[all]'"
         f"\n\nError: {e}"
     ) from e
+from typing import Any
+
 import numpy as np
+import pandas as pd
 from sklearn import cluster, ensemble
 
 
 def run_mapper(
-    data,
-    lenses=None,
-    n_cubes=15,
-    overlap=0.5,
-    n_clusters=3,
-    linkage="complete",
-    affinity="correlation",
-):
+    data: pd.DataFrame,
+    lenses: list[str] | None = None,
+    n_cubes: int = 15,
+    overlap: float = 0.5,
+    n_clusters: int = 3,
+    linkage: str = "complete",
+    affinity: str = "correlation",
+) -> tuple[dict[str, Any], dict[str, dict[int, Any]]]:
     """
 
     :param data:
