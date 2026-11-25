@@ -9,7 +9,7 @@ except ImportError as e:
         f"\n\nError: {e}"
     ) from e
 
-from typing import Any
+from collections.abc import Hashable
 
 import numpy as np
 import pandas as pd
@@ -19,7 +19,9 @@ from sklearn.cluster import AffinityPropagation
 from acore import utils
 
 
-def get_network_communities(graph: nx.Graph, args: dict[str, Any]) -> dict[Any, int]:
+def get_network_communities(
+    graph: nx.Graph, args: dict[str, str]
+) -> dict[Hashable, int]:
     """
     Finds communities in a graph using different methods. For more information on the methods visit:
 
@@ -107,7 +109,7 @@ def get_snf_clusters(
     return (fused_aff, fused_labels, num_clusters, silhouette)
 
 
-def most_central_edge(G: nx.Graph) -> Any:
+def most_central_edge(G: nx.Graph) -> Hashable:
     """
     Compute the eigenvector centrality for the graph G, and finds the highest value.
 
@@ -117,14 +119,14 @@ def most_central_edge(G: nx.Graph) -> Any:
 
     :param nx.Graph G: networkx graph whose edges have a ``width`` attribute.
     :return: The node with the highest eigenvector centrality.
-    :rtype: Any
+    :rtype: Hashable
     """
     centrality = nx.eigenvector_centrality_numpy(G, weight="width")
 
     return max(centrality, key=centrality.get)
 
 
-def get_louvain_partitions(G: nx.Graph, weight: str) -> dict[Any, int]:
+def get_louvain_partitions(G: nx.Graph, weight: str) -> dict[Hashable, int]:
     """
     Computes the partition of the graph nodes which maximises the modularity (or try..) using the Louvain heuristices. For more information visit https://python-louvain.readthedocs.io/en/latest/api.html.
 
