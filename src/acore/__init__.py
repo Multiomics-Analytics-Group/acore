@@ -4,7 +4,9 @@ import dsp_pandas  # sets up pandas formatting options
 
 from . import (
     batch_correction,
+    correlation_analysis,
     decomposition,
+    differential_regulation,
     enrichment_analysis,
     exploratory_analysis,
     filter_metabolomics,
@@ -18,7 +20,9 @@ from . import (
 
 __all__ = [
     "batch_correction",
+    "correlation_analysis",
     "decomposition",
+    "differential_regulation",
     "dsp_pandas",
     "enrichment_analysis",
     "exploratory_analysis",
