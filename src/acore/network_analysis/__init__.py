@@ -9,6 +9,9 @@ except ImportError as e:
         f"\n\nError: {e}"
     ) from e
 
+from typing import Any
+
+import numpy as np
 import pandas as pd
 from sklearn import cluster
 from sklearn.cluster import AffinityPropagation
@@ -16,7 +19,7 @@ from sklearn.cluster import AffinityPropagation
 from acore import utils
 
 
-def get_network_communities(graph, args):
+def get_network_communities(graph: nx.Graph, args: dict[str, Any]) -> dict[Any, int]:
     """
     Finds communities in a graph using different methods. For more information on the methods visit:
 
@@ -25,9 +28,19 @@ def get_network_communities(graph, args):
         - https://networkx.github.io/documentation/latest/reference/algorithms/generated/networkx.algorithms.community.centrality.girvan_newman.html
         - https://networkx.github.io/documentation/latest/reference/generated/networkx.convert_matrix.to_pandas_adjacency.html
 
-    :param graph graph: networkx graph
-    :param dict args: config file arguments
-    :return: Dictionary of nodes and which community they belong to (from 0 to number of communities).
+    :param nx.Graph graph: networkx graph whose nodes are grouped into communities.
+    :param dict args: settings, read by key. ``values`` is the name of the edge
+                      attribute that holds the edge weight; it is required by every
+                      algorithm except ``girvan_newman`` and ``affinity_propagation``
+                      (which reads the edge attribute ``width`` instead).
+                      ``communities_algorithm`` picks the method and is one of
+                      ``'louvain'``, ``'greedy_modularity'``,
+                      ``'asyn_label_propagation'``, ``'girvan_newman'`` and
+                      ``'affinity_propagation'``; it defaults to ``'louvain'`` and is
+                      added to ``args`` when absent.
+    :return: Dictionary mapping each node to the number of the community it belongs
+             to (from 0 to the number of communities minus one).
+    :rtype: dict
     """
     if "communities_algorithm" not in args:
         args["communities_algorithm"] = "louvain"
@@ -58,18 +71,28 @@ def get_network_communities(graph, args):
     return communities
 
 
-def get_snf_clusters(data_tuples, num_clusters=None, metric="euclidean", k=5, mu=0.5):
+def get_snf_clusters(
+    data_tuples: list[tuple[np.ndarray, str]],
+    num_clusters: int | None = None,
+    metric: str = "euclidean",
+    k: int = 5,
+    mu: float = 0.5,
+) -> tuple[np.ndarray, list[int], int, float]:
     """
     Cluster samples based on Similarity Network Fusion (SNF) (ref: https://www.ncbi.nlm.nih.gov/pubmed/24464287)
 
-    :param df_tuples: list of (dataset,metric) tuples
-    :param index: how the datasets can be merged (common columns)
-    :param num_clusters: number of clusters to be identified, if None, the algorithm finds the best number based on SNF algorithm (recommended)
-    :param distance_metric: distance metric used to calculate the sample similarity network
-    :param k: number of neighbors used to measure local affinity (KNN)
-    :param mu: normalization factor to scale similarity kernel when constructing affinity matrix
-    :return tuple: 1) fused_aff: affinity clustered samples, 2) fused_labels: cluster labels,
-                    3) num_clusters: number of clusters, 4) silhouette: average silhouette score
+    :param list data_tuples: one ``(data, metric)`` tuple per dataset, where ``data``
+                              is a samples-by-features array and ``metric`` the
+                              distance metric used to compare its samples. Every
+                              dataset must hold the same samples in the same order.
+    :param int num_clusters: number of clusters to be identified, if None, the algorithm finds the best number based on SNF algorithm (recommended)
+    :param str metric: distance metric used to calculate the sample similarity network
+    :param int k: number of neighbors used to measure local affinity (KNN)
+    :param float mu: normalization factor to scale similarity kernel when constructing affinity matrix
+    :return: Tuple of 1) fused_aff: the fused sample-by-sample affinity matrix,
+             2) fused_labels: cluster labels, numbered from 1, in sample order,
+             3) num_clusters: number of clusters, 4) silhouette: average silhouette score
+    :rtype: tuple
     """
     affinities = []
     for d, m in data_tuples:
@@ -84,26 +107,31 @@ def get_snf_clusters(data_tuples, num_clusters=None, metric="euclidean", k=5, mu
     return (fused_aff, fused_labels, num_clusters, silhouette)
 
 
-def most_central_edge(G):
+def most_central_edge(G: nx.Graph) -> Any:
     """
     Compute the eigenvector centrality for the graph G, and finds the highest value.
 
-    :param graph G: networkx graph
-    :return: Highest eigenvector centrality value.
-    :rtype: float
+    This is the ``most_valuable_edge`` callable that ``girvan_newman`` takes in
+    :func:`get_network_communities`. It ranks nodes, using the edge attribute ``width``
+    as weight, and returns the node with the highest centrality, not the centrality value.
+
+    :param nx.Graph G: networkx graph whose edges have a ``width`` attribute.
+    :return: The node with the highest eigenvector centrality.
+    :rtype: Any
     """
     centrality = nx.eigenvector_centrality_numpy(G, weight="width")
 
     return max(centrality, key=centrality.get)
 
 
-def get_louvain_partitions(G, weight):
+def get_louvain_partitions(G: nx.Graph, weight: str) -> dict[Any, int]:
     """
     Computes the partition of the graph nodes which maximises the modularity (or try..) using the Louvain heuristices. For more information visit https://python-louvain.readthedocs.io/en/latest/api.html.
 
-    :param graph G: networkx graph which is decomposed.
-    :param str weight: the key in graph to use as weight.
-    :return: The partition, with communities numbered from 0 to number of communities.
+    :param nx.Graph G: networkx graph which is decomposed.
+    :param str weight: name of the edge attribute to use as weight.
+    :return: The partition: a dictionary mapping each node to its community, with
+             communities numbered from 0 to the number of communities minus one.
     :rtype: dict
     """
     partition = community.best_partition(G, weight=weight)
@@ -112,26 +140,32 @@ def get_louvain_partitions(G, weight):
 
 
 def run_snf(
-    df_dict,
-    index,
-    num_clusters=None,
-    distance_metric="euclidean",
-    k_affinity=5,
-    mu_affinity=0.5,
-):
+    df_dict: dict[str, pd.DataFrame],
+    index: str,
+    num_clusters: int | None = None,
+    distance_metric: str = "euclidean",
+    k_affinity: int = 5,
+    mu_affinity: float = 0.5,
+) -> tuple[pd.DataFrame, np.ndarray, pd.DataFrame, float]:
     """
     Runs Similarity Network Fusion: integration of multiple omics datasets to identify
     similar samples (clusters) (ref: https://www.ncbi.nlm.nih.gov/pubmed/24464287).
     We make use of the pyton version SNFpy (https://github.com/rmarkello/snfpy)
 
-    :param df_dict: dictionary of datasets to be used (i.e {'rnaseq': rnaseq_data, 'proteomics': proteomics_data})
-    :param index: how the datasets can be merged (common columns)
-    :param num_clusters: number of clusters to be identified, if None, the algorithm finds the best number based on SNF algorithm (recommended)
-    :param distance_metric: distance metric used to calculate the sample similarity network
-    :param k_affinity: number of neighbors used to measure local affinity (KNN)
-    :param mu_ffinity: normalization factor to scale similarity kernel when constructing affinity matrix
-    :return tuple: 1) feature_df: SNF features and mutual information score (MIscore), 2) fused_aff: adjacent similarity matrix, 3)fused_labels: cluster labels,
-                    4) silhouette: silhouette score
+    :param dict df_dict: dictionary of datasets to be used (i.e {'rnaseq': rnaseq_data, 'proteomics': proteomics_data}).
+                         Each dataset has one row per sample, the sample identifier
+                         in the column ``index`` and the other columns as features.
+    :param str index: name of the column that identifies a sample in every dataset; only the
+                      samples present in all datasets are used.
+    :param int num_clusters: number of clusters to be identified, if None, the algorithm finds the best number based on SNF algorithm (recommended)
+    :param str distance_metric: distance metric used to calculate the sample similarity network
+    :param int k_affinity: number of neighbors used to measure local affinity (KNN)
+    :param float mu_affinity: normalization factor to scale similarity kernel when constructing affinity matrix
+    :return: Tuple of 1) feature_df: SNF features and mutual information score (MIscore),
+             2) fused_aff: the fused sample-by-sample similarity matrix,
+             3) fused_labels: a dataframe with one row per sample and the cluster in
+             the column ``cluster``, 4) silhouette: silhouette score
+    :rtype: tuple
     """
     datasets = []
     dataset_labels = []
