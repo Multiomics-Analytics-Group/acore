@@ -1,36 +1,40 @@
 # Example datasets
 
-The example datasets are not part of the package distributed Python package `acore`,
-but are used in the documentation and examples. This is done by downloading the data from
-GitHub directly.
+The example datasets are not part of the Python package `acore`, but are used in the
+documentation and examples. This is done by downloading the data from GitHub directly.
+Folders with a README (linked below) describe the origin and processing of the data.
 
-## mgnify
+## Proteomics
 
-- [MGnify](https://www.ebi.ac.uk/metagenomics/) is a resource for the analysis and archiving of metagenomic data. The example is from ...
+- [PXD008541](PXD008541/README.md) - human primary brown and white fat cell secretome
+  (used in the `Download_PRIDE_data` recipe)
+- [PXD010372](PXD010372/README.md) - ovarian cancer proteome
+  ([article](https://www.sciencedirect.com/science/article/pii/S0092867418311668),
+  taken from supplementary tables); used in the enrichment examples. The MaxQuant output
+  and sample annotations are also on PRIDE, see the
+  [download notebook](../docs/example_data/ovarian_cancer.py)
+- [PXD016278](PXD016278/README.md) - Alzheimer's disease cerebrospinal fluid proteome
+  ([publication](https://www.embopress.org/doi/full/10.15252/msb.20199356)), curated
+  version from OmicLearn
+- [alzheimer_proteomics](alzheimer_proteomics/README.md) - processed Alzheimer's
+  dataset, see the
+  [processing notebook](../docs/example_data/alzheimer_proteomics.py)
+- [syntethic_pep_enrichment](syntethic_pep_enrichment/README.md) - synthetic
+  peptide-level differential analysis with protein-level pathway annotations (enrichment)
 
-## PXD008541 - Human primary brown and white fat cell secretome
+## Metabolomics and lipidomics
 
-- [PXD008541](https://www.ebi.ac.uk/pride/archive/projects/PXD008541)
+- [MTBLS13411](MTBLS13411/README.md) - metabolomics of phage resistance in
+  enterotoxigenic *Escherichia coli* (used in the exploratory and differential
+  regulation examples)
+- [MTBLS733](MTBLS733/README.md) - untargeted metabolomics benchmark feature table
+- [aradopsis_seedling_lipids](aradopsis_seedling_lipids/README.md) - untargeted
+  Arabidopsis seedling lipids (three conditions, with QC samples)
+- `DidacMauricio_hilic` (no README) - HILIC positive mode metabolomics, including
+  injection order (e.g. for drift correction)
 
-- used in `Download_PRIDE_data` recipe for documentation:
-  [LINK](https://analytics-core.readthedocs.io/en/latest/api_examples/Download_PRIDE_data.html)
-- only metadata in sample names (which are in columns)
+## Metagenomics
 
-## PXD010372 - Ovarian cancer proteome
-
-- [article](https://www.sciencedirect.com/science/article/pii/S0092867418311668) - data taken directly from supplementary tables
-- PRIDE project [PXD010372](https://www.ebi.ac.uk/pride/archive/projects/PXD010372) - for reference
-- some custom preprocessing done
-
-## PXD016278 - Alzheimer Data
-
-Proteome Profiling in Cerebrospinal Fluid Reveals Novel Biomarkers of Alzheimer's Disease
-
-- [PXD016278](https://www.ebi.ac.uk/pride/archive/projects/PXD016278)
-- [publication](https://www.embopress.org/doi/full/10.15252/msb.20199356)
-- [curated data version from omiclearn](https://github.com/MannLabs/OmicLearn/tree/master/omiclearn/data)
-
-Is currently still hosted on njab repo (can be moved), see [here](https://github.com/RasmussenLab/njab/tree/main/docs/tutorial/data). Currently used in API
-recipe:
-
-- [Normalization of samples in a dataset example](https://analytics-core.readthedocs.io/en/latest/api_examples/normalization_analysis.html)
+- `mgnify` (no README) - paired functional annotation data from
+  [MGnify](https://www.ebi.ac.uk/metagenomics/), a resource for the analysis and
+  archiving of metagenomic data

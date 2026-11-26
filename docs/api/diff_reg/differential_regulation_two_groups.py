@@ -32,6 +32,8 @@
 # %pip install acore vuecore
 
 # %% tags=["hide-input"]
+from pathlib import Path
+
 import dsp_pandas
 import pandas as pd
 import vuecore.interactive
@@ -44,10 +46,12 @@ dsp_pandas.format.set_pandas_options(
 )
 
 # %% tags=["parameters"]
-BASE = (
-    "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-    "main/example_data/alzheimer_proteomics/"
+# acore repository on GitHub: fallback outside a clone of the repository (e.g. Colab)
+github_url: str = (
+    "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/refs/heads/main"
 )
+# folder in the repository, searched from the working directory upwards
+data_dir: str = "example_data/alzheimer_proteomics"
 # data is already preprocessed: log2, filtered
 fname: str = "alzheimer_example_omics_and_clinic.csv"  # combined omics and meta data
 covariates: list[str] = ["age", "male"]
@@ -57,14 +61,11 @@ drop_cols: list[str] = ["collection_site"]
 factor_and_covars: list[str] = [group, *covariates]
 
 # %% [markdown]
-# Alternatively you can use the metabolomics dataset MTBLS13311,
+# Alternatively you can use the metabolomics dataset MTBLS13411,
 # which is also preprocessed and combined.
 
 # %% tags=["hide-input"]
-# BASE = (
-#     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-#     "main/example_data/MTBLS13311/"
-# )
+# data_dir: str = "example_data/MTBLS13411"
 # fname: str = "MTBLS13411_omics_and_meta.csv"  # combined omics and meta data
 # covariates: list[str] = []
 # group: str = "Factor Value[Strain type]"
@@ -76,10 +77,22 @@ factor_and_covars: list[str] = [group, *covariates]
 # ## ANOVA analysis for two groups
 # Use combined dataset for ANOVA analysis.
 # Drop unnecessary columns, if there are any specified in `drop_cols`.
+#
+# Inside a clone of the acore repository the data is read from the repository (faster,
+# works offline), otherwise (e.g. on Google Colab) it is downloaded from GitHub.
+
+# %% tags=["hide-input"]
+local_paths = [
+    parent / data_dir
+    for parent in (Path.cwd(), *Path.cwd().parents)
+    if (parent / data_dir).is_dir()
+]
+base_path = local_paths[0] if local_paths else f"{github_url}/{data_dir}"
+print(f"Loading data from: {base_path}")
 
 # %% tags=["hide-input"]
 omics_and_meta = (
-    pd.read_csv(f"{BASE}/{fname}", index_col=subject_col)
+    pd.read_csv(f"{base_path}/{fname}", index_col=subject_col)
     .convert_dtypes()
     .dropna(subset=factor_and_covars)
     .drop(columns=drop_cols)

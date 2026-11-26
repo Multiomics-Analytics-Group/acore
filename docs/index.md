@@ -37,6 +37,7 @@ api/testing/index.md
 
 analyses/overview.md
 analyses/ovarian_cancer_enrichment.ipynb
+analyses/MTBLS13411_metabolomics.ipynb
 analyses/PXD040621 proteomics reanalysis </downloaded/PXD040621_analysis>
 ```
 

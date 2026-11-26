@@ -27,8 +27,8 @@ from pathlib import Path
 
 import dsp_pandas
 import pandas as pd
-import plotly.graph_objects as go
-from vuecore import viz
+import vuecore
+from vuecore.dimensionality_reduction import get_embedding_plot_interactive
 
 import acore
 import acore.differential_regulation
@@ -47,7 +47,7 @@ base_path: str = (
 omics: str = f"{base_path}/omics.csv"
 meta_pgs: str = f"{base_path}/meta_pgs.csv"
 meta: str = f"{base_path}/meta_patients.csv"
-features_to_sample: int = 100
+features_to_sample: int | None = 100  # None: use all protein groups
 
 # %% [markdown]
 # # Load processed data
@@ -77,18 +77,22 @@ ax = (
 idx_always_included = ["Q5HYN5", "P39059", "O43432", "O43175"]
 
 # %% tags=["hide-input"]
-df_omics = (
-    df_omics
-    # .dropna(axis=1)
-    .drop(idx_always_included, axis=1)
-    .dropna(thresh=18, axis=1)
-    .sample(
-        features_to_sample - len(idx_always_included),
-        axis=1,
-        random_state=42,
+if features_to_sample is None:
+    # no sampling: use all protein groups with enough non-NaN values
+    df_omics = df_omics.dropna(thresh=18, axis=1)
+else:
+    df_omics = (
+        df_omics
+        # .dropna(axis=1)
+        .drop(idx_always_included, axis=1)
+        .dropna(thresh=18, axis=1)
+        .sample(
+            features_to_sample - len(idx_always_included),
+            axis=1,
+            random_state=42,
+        )
+        .join(df_omics[idx_always_included])
     )
-    .join(df_omics[idx_always_included])
-)
 df_omics
 
 # %% [markdown]
@@ -132,11 +136,12 @@ from urllib.error import HTTPError
 from acore.io.uniprot import fetch_annotations, process_annotations
 
 # annotations are cached in the repository to avoid querying UniProt on each docs build
+suffix_annotations = "all" if features_to_sample is None else features_to_sample
 fname_annotations = (
-    f"example_data/PXD010372/processed/annotations_{features_to_sample}.csv"
+    f"example_data/PXD010372/processed/annotations_{suffix_annotations}.csv"
 )
 fname = Path(fname_annotations)
-url_annotations = f"{base_path}/annotations_{features_to_sample}.csv"
+url_annotations = f"{base_path}/annotations_{suffix_annotations}.csv"
 try:
     annotations = pd.read_csv(fname, index_col=0)
     print(f"Loaded annotations from {fname}")
@@ -440,10 +445,13 @@ loadings
 # for this, which is also developed by the Multiomics Analytics Group.
 
 # %%
-args = {"factor": 2, "loadings": 2}  # increase number of loadings or scaling factor
-# #! pca_results has three items, but docstring requests only two -> double check
-figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
-figure = go.Figure(data=figure["data"], layout=figure["layout"])
+figure = get_embedding_plot_interactive(
+    pca_result,
+    annotation=pca_annotation,
+    loading_factor=2,  # scaling factor of the loadings
+    top_n_loadings=15,
+    title="PCA enrichment",
+)
 figure
 
 # %% [markdown]

@@ -204,13 +204,13 @@ html_theme_options = {
 # sphinx-apidoc needs to be called manually if Sphinx is running there.
 # https://github.com/readthedocs/readthedocs.org/issues/1139
 
-if os.environ.get("READTHEDOCS") == "True":
-    # Set the Plotly renderer to notebook for ReadTheDocs (visualize plotly figures
-    # in the documentation) - needed for plotly6
-    # Plotly normally decides itself fine which renderer to use, so keep it to RTD
-    # see https://plotly.com/python/renderers/#setting-the-default-renderer
-    os.environ["PLOTLY_RENDERER"] = "notebook"
+# Set the Plotly renderer to notebook (visualize plotly figures in the documentation)
+# - needed for plotly6. Otherwise only the plotly mime type is stored, which myst-nb
+# cannot render (warning: 'skipping unknown output mime type').
+# see https://plotly.com/python/renderers/#setting-the-default-renderer
+os.environ["PLOTLY_RENDERER"] = "notebook"
 
+if os.environ.get("READTHEDOCS") == "True":
     PROJECT_ROOT = Path(__file__).parent.parent
     PACKAGE_ROOT = PROJECT_ROOT / "src" / "acore"
 

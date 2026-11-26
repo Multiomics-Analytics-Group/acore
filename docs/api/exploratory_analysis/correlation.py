@@ -8,6 +8,8 @@
 # %pip install acore
 
 # %%
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import scipy
@@ -18,13 +20,24 @@ import acore.correlation_analysis as ca
 # %% [markdown]
 # ## Load metabolomics example data
 
+# %% [markdown]
+# Inside a clone of the acore repository the data is read from the repository (faster,
+# works offline), otherwise (e.g. on Google Colab) it is downloaded from GitHub.
+
 # %%
-data = (
+local_dir = "example_data/MTBLS13411"  # searched from the working directory upwards
+github_url = (
     "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-    "refs/heads/main/"
-    "example_data/MTBLS13311/MTBLS13411_processed_data.csv"
+    "refs/heads/main/example_data/MTBLS13411"
 )
-data = pd.read_csv(data, index_col=0)
+local_paths = [
+    parent / local_dir
+    for parent in (Path.cwd(), *Path.cwd().parents)
+    if (parent / local_dir).is_dir()
+]
+base_path = local_paths[0] if local_paths else github_url
+print(f"Loading data from: {base_path}")
+data = pd.read_csv(f"{base_path}/MTBLS13411_processed_data.csv", index_col=0)
 # specific to this data, we shorten some column names for better readability
 data.columns = data.columns.str.split("(").str[-1].str.replace(")", "")
 data

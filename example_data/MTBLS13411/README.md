@@ -14,10 +14,10 @@ factor = 'Factor Value[Strain type]'
 group = 'group' # was generated based on sample names
 
 # read from local folder if it exists, otherwise directly from GitHub
-local_dir = Path('example_data/MTBLS13311')
+local_dir = Path('example_data/MTBLS13411')
 github_url = (
     'https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/'
-    'main/example_data/MTBLS13311'
+    'main/example_data/MTBLS13411'
 )
 base = local_dir if local_dir.is_dir() else github_url
 
