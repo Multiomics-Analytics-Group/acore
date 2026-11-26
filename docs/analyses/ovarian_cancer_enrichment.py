@@ -27,8 +27,8 @@ from pathlib import Path
 
 import dsp_pandas
 import pandas as pd
-import plotly.graph_objects as go
-from vuecore import viz
+import vuecore
+from vuecore.dimensionality_reduction import get_embedding_plot_interactive
 
 import acore
 import acore.differential_regulation
@@ -440,10 +440,13 @@ loadings
 # for this, which is also developed by the Multiomics Analytics Group.
 
 # %%
-args = {"factor": 2, "loadings": 2}  # increase number of loadings or scaling factor
-# #! pca_results has three items, but docstring requests only two -> double check
-figure = viz.get_pca_plot(data=pca_result, identifier="PCA enrichment", args=args)
-figure = go.Figure(data=figure["data"], layout=figure["layout"])
+figure = get_embedding_plot_interactive(
+    pca_result,
+    annotation=pca_annotation,
+    loading_factor=2,  # scaling factor of the loadings
+    top_n_loadings=15,
+    title="PCA enrichment",
+)
 figure
 
 # %% [markdown]
