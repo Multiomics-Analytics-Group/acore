@@ -35,6 +35,8 @@
 # %pip install acore
 
 # %% tags=["hide-input"]
+from pathlib import Path
+
 import dsp_pandas
 import pandas as pd
 import vuecore.plots.basic.scatter
@@ -47,10 +49,12 @@ dsp_pandas.format.set_pandas_options(
 )
 
 # %% tags=["parameters"]
-BASE = (
-    "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/"
-    "main/example_data/MTBLS13411/"
+# acore repository on GitHub: fallback outside a clone of the repository (e.g. Colab)
+github_url: str = (
+    "https://raw.githubusercontent.com/Multiomics-Analytics-Group/acore/refs/heads/main"
 )
+# folder in the repository, searched from the working directory upwards
+data_dir: str = "example_data/MTBLS13411"
 fname: str = "MTBLS13411_omics_and_meta.csv"  # combined omics and meta data
 covariates: list[str] = []
 group: str = "group"
@@ -60,10 +64,22 @@ factor_and_covars: list[str] = [group, *covariates]
 
 # %% [markdown]
 # Use combined dataset for ANOVA analysis.
+#
+# Inside a clone of the acore repository the data is read from the repository (faster,
+# works offline), otherwise (e.g. on Google Colab) it is downloaded from GitHub.
+
+# %% tags=["hide-input"]
+local_paths = [
+    parent / data_dir
+    for parent in (Path.cwd(), *Path.cwd().parents)
+    if (parent / data_dir).is_dir()
+]
+base_path = local_paths[0] if local_paths else f"{github_url}/{data_dir}"
+print(f"Loading data from: {base_path}")
 
 # %% tags=["hide-input"]
 omics_and_meta = (
-    pd.read_csv(f"{BASE}/{fname}", index_col=subject_col)
+    pd.read_csv(f"{base_path}/{fname}", index_col=subject_col)
     .convert_dtypes()
     .dropna(subset=factor_and_covars)
 )
