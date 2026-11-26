@@ -44,6 +44,7 @@ import pandas as pd
 
 import acore.differential_regulation
 import acore.enrichment_analysis
+from vuecore.interactive import get_enrichment_plot
 
 # %% tags=["parameters"]
 base_path: str = (
@@ -99,7 +100,10 @@ diff_reg.head()
 # Up- and downregulated features (adjusted p-value and absolute log2 fold change above
 # `lfc_cutoff`) are tested separately against all features using Fisher's exact test.
 # The output follows the
-# [`EnrichmentAnalysisSchema`](acore.types.enrichment_analysis.EnrichmentAnalysisSchema).
+# [`EnrichmentAnalysisSchema`](acore.types.enrichment_analysis.EnrichmentAnalysisSchema)
+# and includes the odds ratio and the lower bound of its 95% confidence interval
+# (`odds_ratio_lower`). As this example only uses 100 protein groups, no term is
+# significant at the default `correction_alpha` of 0.05, so a threshold of 0.1 is used.
 
 # %%
 ora = acore.enrichment_analysis.run_up_down_regulation_enrichment(
@@ -108,6 +112,7 @@ ora = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     pval_col="padj",
     min_detected_in_set=1,
     lfc_cutoff=0.5,
+    correction_alpha=0.1,
 )
 ora
 
@@ -128,6 +133,21 @@ ora_efdr = acore.enrichment_analysis.run_up_down_regulation_enrichment(
     seed=42,
 )
 ora_efdr[["terms", "direction", "pvalue", "padj", "rejected"]].head()
+
+# %% [markdown]
+# ### Plot the ORA results
+# The [`vuecore`](https://github.com/Multiomics-Analytics-Group/vuecore) package plots
+# the significant terms of one comparison. By default, the terms are ranked by the lower
+# bound of the 95% confidence interval of the odds ratio (`odds_ratio_lower`), which is
+# shown on a log scale (the dotted line at 1 marks no enrichment). The marker size is
+# the number of foreground features of the term, the marker shape the direction of
+# regulation and the color bar the adjusted p-value. Terms without a positive lower
+# bound cannot be shown on a log scale and are dropped. Use `x="padj"` to show
+# $-\log_{10}$(padj) on the x-axis instead.
+
+# %%
+figure = get_enrichment_plot(ora, width=900, height=500, title="ORA")
+figure.show()
 
 # %% [markdown]
 # ## Single sample GSEA (ssGSEA)
