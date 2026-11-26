@@ -15,9 +15,10 @@ from [Coscia et al. (2018)](https://doi.org/10.1016/j.cell.2018.08.065) (PRIDE
   [processed/](../example_data/PXD010372/processed))
 - preparation: [ovarian cancer download notebook](../example_data/ovarian_cancer.ipynb)
 
-## Curated metabolomics experiment
+## Phage-resistant _E. coli_ metabolomics
 
-Metabolomics of phage resistance in enterotoxigenic _Escherichia coli_ (MetaboLights
+[UMAP and differential analysis](MTBLS13411_metabolomics.ipynb) of the metabolome of
+phage-resistant enterotoxigenic _Escherichia coli_ (MetaboLights
 [MTBLS13411](https://www.ebi.ac.uk/metabolights/editor/MTBLS13411/files)).
 
 - data: [example_data/MTBLS13411](../example_data/MTBLS13411), with features and metadata
