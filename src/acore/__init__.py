@@ -1,6 +1,6 @@
 from importlib.metadata import version
 
-import dsp_pandas  # sets up pandas formatting options
+import dsp_pandas  # noqa: F401  # sets up pandas formatting options
 
 from . import (
     batch_correction,
@@ -14,8 +14,8 @@ from . import (
     io,
     multiple_testing,
     normalization,
-    types,
-    utils,
+    types,  # noqa: F401  # imported but kept out of __all__
+    utils,  # noqa: F401  # imported but kept out of __all__
 )
 
 __all__ = [
