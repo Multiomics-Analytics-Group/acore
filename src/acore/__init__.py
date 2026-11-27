@@ -31,7 +31,5 @@ __all__ = [
     "io",
     "multiple_testing",
     "normalization",
-    "types",
-    "utils",
 ]
 __version__ = version("acore")

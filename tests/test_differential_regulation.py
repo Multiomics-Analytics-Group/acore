@@ -58,7 +58,7 @@ class TestCalculateTtest(unittest.TestCase):
         non_par = False
 
         expected_result = pg.ttest(df[condition1], df[condition2], paired=False)
-        result = dr.calculate_ttest(
+        result = dr.tests.calculate_ttest(
             df, condition1, condition2, is_logged=is_logged, non_par=non_par
         )
 
@@ -75,7 +75,7 @@ class TestCalculateTtest(unittest.TestCase):
         non_par = True
 
         expected_result = pg.mwu(df[condition1], df[condition2])
-        result = dr.calculate_ttest(
+        result = dr.tests.calculate_ttest(
             df, condition1, condition2, is_logged=is_logged, non_par=non_par
         )
 
@@ -110,7 +110,7 @@ class TestCalculateTtest(unittest.TestCase):
             expected_result["Source"] == group, ["F", "DF", "p-unc"]
         ].values[0]
 
-        result = dr.calculate_ancova(
+        result = dr.tests.calculate_ancova(
             self.df, column, group=group, covariates=covariates
         )
 
@@ -139,7 +139,7 @@ class TestCalculateTtest(unittest.TestCase):
             0, ["F", "p-unc"]
         ].values.tolist()
         expected_df1, expected_df2 = expected_result["DF"]
-        result = dr.calculate_repeated_measures_anova(
+        result = dr.tests.calculate_repeated_measures_anova(
             self.df, column, subject=subject, within=within
         )
 
@@ -167,7 +167,7 @@ class TestCalculateTtest(unittest.TestCase):
             ["identifier", "DF1", "DF2", "F", "p-unc", "Source"]
         ]
 
-        result = dr.calculate_mixed_anova(
+        result = dr.tests.calculate_mixed_anova(
             self.df, column, subject=subject, within=within, between=between
         )
 
