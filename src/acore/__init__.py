@@ -4,7 +4,10 @@ import dsp_pandas  # sets up pandas formatting options
 
 from . import (
     batch_correction,
+    correlation_analysis,
     decomposition,
+    differential_regulation,
+    drift_correction,
     enrichment_analysis,
     exploratory_analysis,
     filter_metabolomics,
@@ -12,13 +15,14 @@ from . import (
     io,
     multiple_testing,
     normalization,
-    types,
-    utils,
 )
 
 __all__ = [
     "batch_correction",
+    "correlation_analysis",
     "decomposition",
+    "differential_regulation",
+    "drift_correction",
     "dsp_pandas",
     "enrichment_analysis",
     "exploratory_analysis",
@@ -27,7 +31,5 @@ __all__ = [
     "io",
     "multiple_testing",
     "normalization",
-    "types",
-    "utils",
 ]
 __version__ = version("acore")
