@@ -23,7 +23,6 @@ __all__ = [
     "correlation_analysis",
     "decomposition",
     "differential_regulation",
-    "dsp_pandas",
     "enrichment_analysis",
     "exploratory_analysis",
     "filter_metabolomics",

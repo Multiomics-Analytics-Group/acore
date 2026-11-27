@@ -32,9 +32,11 @@ columns: 'terms', 'identifiers', 'foreground',
 """
 
 __all__ = [
+    "run_enrichment",
     "run_fisher",
     "run_gsea",
     "run_kolmogorov_smirnov",
+    "run_regulation_enrichment",
     "run_site_regulation_enrichment",
     "run_up_down_regulation_enrichment",
 ]
