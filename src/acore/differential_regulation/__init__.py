@@ -19,20 +19,10 @@ from acore.types.differential_analysis import (
     AnovaSchemaMultiGroup,
 )
 
-from .tests import (  # calculate_thsd, complement_posthoc,
-    calc_means_between_groups,
-    calc_ttest,
-    calculate_ancova,
-    calculate_anova,
-    calculate_mixed_anova,
-    calculate_pairwise_ttest,
-    calculate_repeated_measures_anova,
-    calculate_ttest,
-    eta_squared,
-    format_anova_table,
-    omega_squared,
-    pairwise_ttest_with_covariates,
-)
+# The statistical helpers stay behind the module: only the run_* functions
+# below are public, and calculate_anova, the one-way ANOVA of a single column.
+from . import tests
+from .tests import calculate_anova
 
 __all__ = [
     "run_ancova",
@@ -55,10 +45,10 @@ def run_diff_analysis(
 ) -> pd.DataFrame:
     """Differential analysis procedure between two groups. Calculaes
     mean per group and t-test for each variable in `vars` between two groups."""
-    ret = calc_means_between_groups(
+    ret = tests.calc_means_between_groups(
         df, boolean_array=boolean_array, event_names=event_names
     )
-    ttests = calc_ttest(df, boolean_array=boolean_array, variables=ret.index)
+    ttests = tests.calc_ttest(df, boolean_array=boolean_array, variables=ret.index)
     ret = ret.join(ttests.loc[:, pd.IndexSlice[:, ttest_vars]])
     return ret
 
@@ -159,7 +149,7 @@ def run_anova(
             for col in df.columns.drop(group).tolist():
                 aov = calculate_anova(df[[group, col]], column=col, group=group)
                 aov_results.append(aov)
-                pairwise_result = calculate_pairwise_ttest(
+                pairwise_result = tests.calculate_pairwise_ttest(
                     df[[group, col]],
                     column=col,
                     subject=subject,
@@ -169,7 +159,7 @@ def run_anova(
                 pairwise_cols = pairwise_result.columns
                 pairwise_results.extend(pairwise_result.values.tolist())
             df = df.set_index([group])
-            res = format_anova_table(
+            res = tests.format_anova_table(
                 df,
                 aov_results,
                 pairwise_results,
@@ -246,17 +236,17 @@ def run_ancova(
     ancova_result = []
     for col in df.columns.tolist():
         if col not in covariates and col != group:
-            ancova = calculate_ancova(
+            ancova = tests.calculate_ancova(
                 df[[group, col] + covariates], col, group=group, covariates=covariates
             )
             ancova_result.append(ancova)
-            pairwise_result = pairwise_ttest_with_covariates(
+            pairwise_result = tests.pairwise_ttest_with_covariates(
                 df, column=col, group=group, covariates=covariates, is_logged=is_logged
             )
             pairwise_cols = pairwise_result.columns
             pairwise_results.extend(pairwise_result.values.tolist())
     df = df.set_index([group])
-    res = format_anova_table(
+    res = tests.format_anova_table(
         df,
         ancova_result,
         pairwise_results,
@@ -317,11 +307,11 @@ def run_repeated_measurements_anova(
     index = [within, subject]
     for col in df.columns.drop(index).tolist():
         cols = index + [col]
-        aov = calculate_repeated_measures_anova(
+        aov = tests.calculate_repeated_measures_anova(
             df[cols], column=col, subject=subject, within=within
         )
         aov_results.append(aov)
-        pairwise_result = calculate_pairwise_ttest(
+        pairwise_result = tests.calculate_pairwise_ttest(
             df[[within, subject, col]],
             subject=subject,
             column=col,
@@ -332,7 +322,7 @@ def run_repeated_measurements_anova(
         pairwise_results.extend(pairwise_result.values.tolist())
 
     df = df.set_index([subject, within])
-    res = format_anova_table(
+    res = tests.format_anova_table(
         df,
         aov_results,
         pairwise_results,
@@ -398,7 +388,7 @@ def run_mixed_anova(
     index = [within, subject, between]
     for col in df.columns.drop(index).tolist():
         cols = index + [col]
-        aov = calculate_mixed_anova(
+        aov = tests.calculate_mixed_anova(
             df[cols], column=col, subject=subject, within=within, between=between
         )
         aov_results.append(aov)
@@ -498,7 +488,7 @@ def run_ttest(
             df = df.drop([subject], axis=1)
 
     scores = df.T.apply(
-        func=calculate_ttest,
+        func=tests.calculate_ttest,
         axis=1,
         result_type="expand",
         args=(condition1, condition2, paired, is_logged, non_par),
@@ -597,8 +587,8 @@ def run_two_way_anova(
             data[col].reset_index().sort_values(group, ascending=[True, False]),
         ).fit()
         aov_table = sm.stats.anova_lm(model, typ=2)
-        eta_squared(aov_table)
-        omega_squared(aov_table)
+        tests.eta_squared(aov_table)
+        tests.omega_squared(aov_table)
         for i in aov_table.index:
             if i != "Residual":
                 t, p, eta, omega = aov_table.loc[
