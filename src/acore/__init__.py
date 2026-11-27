@@ -1,9 +1,10 @@
 from importlib.metadata import version
 
-import dsp_pandas  # sets up pandas formatting options
+import dsp_pandas  # noqa: F401  # sets up pandas formatting options
 
 from . import (
     batch_correction,
+    correlation_analysis,
     decomposition,
     differential_regulation,
     drift_correction,
@@ -14,12 +15,11 @@ from . import (
     io,
     multiple_testing,
     normalization,
-    types,
-    utils,
 )
 
 __all__ = [
     "batch_correction",
+    "correlation_analysis",
     "decomposition",
     "drift_correction",
     "dsp_pandas",
@@ -31,7 +31,5 @@ __all__ = [
     "io",
     "multiple_testing",
     "normalization",
-    "types",
-    "utils",
 ]
 __version__ = version("acore")
