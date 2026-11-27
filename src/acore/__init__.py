@@ -14,8 +14,6 @@ from . import (
     io,
     multiple_testing,
     normalization,
-    types,  # noqa: F401  # imported but kept out of __all__
-    utils,  # noqa: F401  # imported but kept out of __all__
 )
 
 __all__ = [
